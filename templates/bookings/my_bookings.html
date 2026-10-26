@@ -1,0 +1,57 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}ประวัติการจองของฉัน - WellTrip{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-bold text-forest">ประวัติการจองและคำสั่งซื้อของฉัน</h1>
+    <p class="text-xs text-earth/60">ตรวจสอบสถานะคำสั่งซื้อ โฮมสเตย์ สปา และสินค้า OTOP</p>
+  </div>
+
+  {% if bookings %}
+    <div class="space-y-4">
+      {% for b in bookings %}
+        <div class="card-luxury p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-2">
+            <div class="flex items-center space-x-3">
+              <span class="text-base font-bold text-forest">{{ b.booking_code }}</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold
+                           {% if b.status == 'CONFIRMED' %} bg-emerald-100 text-emerald-800
+                           {% elif b.status == 'AWAITING_PAYMENT' %} bg-amber-100 text-amber-800
+                           {% elif b.status == 'PAYMENT_EXPIRED' %} bg-rose-100 text-rose-800
+                           {% else %} bg-gray-100 text-gray-800 {% endif %}">
+                {{ b.get_status_display }}
+              </span>
+            </div>
+            
+            <div class="text-xs text-earth/60 flex items-center space-x-3">
+              <span>สั่งซื้อเมื่อ: {{ b.created_at|date:"d M Y H:i" }}</span>
+              <span>•</span>
+              <span>{{ b.items.count }} รายการ</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between sm:justify-end space-x-4 border-t sm:border-t-0 pt-3 sm:pt-0">
+            <div class="text-right">
+              <span class="text-base font-bold text-gold block">฿{{ b.total_amount }}</span>
+            </div>
+            <a href="{% url 'bookings:detail' b.id %}" class="btn-primary text-xs px-5 py-2">
+              ดูรายละเอียด &rarr;
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card-luxury p-12 text-center space-y-3">
+      <h3 class="text-base font-bold text-forest">ยังไม่มีประวัติการจอง</h3>
+      <p class="text-xs text-earth/60">คุณยังไม่เคยทำการจองบริการใดๆ ในระบบ</p>
+      <a href="{% url 'accommodations:list' %}" class="btn-primary text-xs px-6 py-2.5 inline-block">
+        เลือกชมโฮมสเตย์ &rarr;
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,11 +1,8 @@
 from django.urls import path
-from django.shortcuts import render
+from . import views
 
 app_name = 'payments'
 
-def index(request):
-    return render(request, 'payments/checkout.html')
-
 urlpatterns = [
-    path('', index, name='checkout'),
+    path('instruction/<uuid:booking_id>/', views.payment_instruction_view, name='payment_instruction'),
 ]
