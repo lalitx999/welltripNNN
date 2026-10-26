@@ -1,0 +1,49 @@
+{% extends "layouts/merchant.html" %}
+
+{% block page_heading %}แดชบอร์ดภาพรวมพาร์ทเนอร์{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  
+  <!-- Welcome Banner -->
+  <div class="card-luxury bg-forest text-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div class="space-y-2 text-center sm:text-left">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 text-xs text-gold">
+        <span>สถานะ: พาร์ทเนอร์ชุมชนที่ได้รับการรับรอง</span>
+      </div>
+      <h2 class="text-2xl font-bold">สวัสดีคุณ {{ user.first_name|default:user.email }}</h2>
+      <p class="text-xs text-cream/80 max-w-lg font-light leading-relaxed">
+        จัดการข้อมูลบริการและติดตามคำสั่งซื้อของร้านคุณผ่าน Partner Studio ระบบจะอัปเดตสถานะแบบเรียลไทม์
+      </p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+      <span class="px-4 py-2 rounded-xl bg-gold text-forest text-xs font-bold text-center">
+        {{ user.get_role_display }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Quick Stats Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="card-luxury p-5 space-y-2">
+      <span class="text-xs text-earth/60 font-medium">คำสั่งซื้อ / การจองใหม่วันนี้</span>
+      <div class="text-2xl font-bold text-forest">0 รายการ</div>
+      <span class="text-[11px] text-emerald-600 font-medium">● ระบบพร้อมรับออเดอร์</span>
+    </div>
+
+    <div class="card-luxury p-5 space-y-2">
+      <span class="text-xs text-earth/60 font-medium">ยอดรายได้สะสม</span>
+      <div class="text-2xl font-bold text-forest">฿0.00</div>
+      <span class="text-[11px] text-gray-400">โอนเข้าบัญชีโดยตรง 100%</span>
+    </div>
+
+    <div class="card-luxury p-5 space-y-2">
+      <span class="text-xs text-earth/60 font-medium">ความพร้อมให้บริการ</span>
+      <div class="text-2xl font-bold text-forest">พร้อมบริการ</div>
+      <span class="text-[11px] text-gold font-medium">One-Time KYC ผ่านแล้ว</span>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

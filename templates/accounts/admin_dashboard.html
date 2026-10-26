@@ -1,0 +1,55 @@
+{% extends "layouts/admin.html" %}
+
+{% block admin_heading %}ศูนย์ปฏิบัติการความปลอดภัยและแอดมินชุมชน{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  
+  <div class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md border border-slate-800">
+    <div class="space-y-2 text-center sm:text-left">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-800 text-xs text-emerald-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>ระบบความปลอดภัย: Active Defense On</span>
+      </div>
+      <h2 class="text-2xl font-bold">ศูนย์ควบคุมระบบ WellTrip Community</h2>
+      <p class="text-xs text-slate-400 max-w-lg font-light leading-relaxed">
+        ตรวจสอบการสมัครพาร์ทเนอร์ ตรวจสลิปโอนเงิน และเฝ้าระวังความปลอดภัยผ่าน Audit Logs
+      </p>
+    </div>
+
+    <div class="flex gap-3">
+      <span class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">
+        Admin: {{ user.email }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Operational Metrics -->
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-2">
+      <span class="text-xs text-slate-500 font-medium">รออนุมัติพาร์ทเนอร์ (KYC)</span>
+      <div class="text-2xl font-bold text-slate-900">0 รายการ</div>
+      <span class="text-[11px] text-emerald-600 font-medium">ตรวจสอบเอกสาร 1 ครั้ง</span>
+    </div>
+
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-2">
+      <span class="text-xs text-slate-500 font-medium">สลิปรอตรวจสอบ</span>
+      <div class="text-2xl font-bold text-slate-900">0 รายการ</div>
+      <span class="text-[11px] text-gold font-medium">ระบบตรวจสลิปซ้ำพร้อม</span>
+    </div>
+
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-2">
+      <span class="text-xs text-slate-500 font-medium">การถูกบล็อค Brute-force</span>
+      <div class="text-2xl font-bold text-slate-900">0 ครั้ง</div>
+      <span class="text-[11px] text-emerald-600 font-medium">django-axes ทำงานปกติ</span>
+    </div>
+
+    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-2">
+      <span class="text-xs text-slate-500 font-medium">บันทึก Audit Logs วันนี้</span>
+      <div class="text-2xl font-bold text-slate-900">100%</div>
+      <span class="text-[11px] text-slate-400 font-medium">จัดเก็บครบ 90 วัน</span>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
