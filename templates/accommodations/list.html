@@ -1,0 +1,83 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}ที่พักและโฮมสเตย์ชุมชน - WellTrip{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+  <div class="space-y-2">
+    <div class="inline-flex items-center space-x-2 text-xs font-semibold text-gold uppercase tracking-wider">
+      <span>โฮมสเตย์มาตรฐานวิถีชุมชน</span>
+    </div>
+    <h1 class="text-3xl font-bold text-forest">ที่พักและโฮมสเตย์ธรรมชาติ</h1>
+    <p class="text-sm text-earth/70">สัมผัสวิถีชีวิตดั้งเดิม พักผ่อนท่ามกลางธรรมชาติอันสงบเงียบและปลอดภัย</p>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="card-luxury p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+    <div class="relative w-full sm:w-80">
+      <input type="text" placeholder="ค้นหาชื่อที่พัก, ตำบล หรืออำเภอ..." 
+             class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest">
+      <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+
+    <div class="flex items-center space-x-3 w-full sm:w-auto">
+      <select class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest">
+        <option value="">ทุกอำเภอ (ศรีสะเกษ)</option>
+        <option value="muang">เมืองศรีสะเกษ</option>
+        <option value="khunhan">ขุนหาญ</option>
+        <option value="kantharalak">กันทรลักษ์</option>
+        <option value="utsumphon">อุทุมพรพิสัย</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Grid of Homestays -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Sample Card 1 -->
+    <div class="card-luxury overflow-hidden group">
+      <div class="h-48 bg-stone-200 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+        <div class="absolute top-3 left-3 z-20">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-forest text-gold">วิถีเกษตรอินทรีย์</span>
+        </div>
+        <div class="absolute bottom-3 left-3 right-3 z-20 flex justify-between items-end text-white">
+          <span class="text-xs font-light">อ.ขุนหาญ, ศรีสะเกษ</span>
+          <span class="text-sm font-bold text-gold">฿1,200 <span class="text-[10px] font-normal text-cream">/คืน</span></span>
+        </div>
+      </div>
+      <div class="p-5 space-y-3">
+        <h3 class="text-base font-bold text-forest group-hover:text-gold transition-colors">โฮมสเตย์สวนภูมินทร์</h3>
+        <p class="text-xs text-earth/70 line-clamp-2">พักผ่อนริมสวนผลไม้ปลอดสารพิษ สัมผัสวิถีชีวิตชาวสวนขุนหาญ พร้อมอาหารเช้าพื้นถิ่น</p>
+        <div class="pt-2 flex items-center justify-between border-t border-gray-100 text-xs">
+          <span class="text-emerald-700 font-medium">● ห้องว่างพร้อมจอง</span>
+          <a href="#" class="font-semibold text-forest hover:text-gold">ดูรายละเอียด &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sample Card 2 -->
+    <div class="card-luxury overflow-hidden group">
+      <div class="h-48 bg-stone-200 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+        <div class="absolute top-3 left-3 z-20">
+          <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-forest text-gold">ริมอ่างเก็บน้ำ</span>
+        </div>
+        <div class="absolute bottom-3 left-3 right-3 z-20 flex justify-between items-end text-white">
+          <span class="text-xs font-light">อ.กันทรลักษ์, ศรีสะเกษ</span>
+          <span class="text-sm font-bold text-gold">฿950 <span class="text-[10px] font-normal text-cream">/คืน</span></span>
+        </div>
+      </div>
+      <div class="p-5 space-y-3">
+        <h3 class="text-base font-bold text-forest group-hover:text-gold transition-colors">บ้านสวนสายธารโฮมสเตย์</h3>
+        <p class="text-xs text-earth/70 line-clamp-2">บ้านไม้ใต้ถุนสูง รับลมเย็นธรรมชาติ เงียบสงบ เหมาะสำหรับฟื้นฟูกายใจ</p>
+        <div class="pt-2 flex items-center justify-between border-t border-gray-100 text-xs">
+          <span class="text-emerald-700 font-medium">● ห้องว่างพร้อมจอง</span>
+          <a href="#" class="font-semibold text-forest hover:text-gold">ดูรายละเอียด &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

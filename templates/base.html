@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <!-- Security & PWA Meta -->
+  <meta name="theme-color" content="#1F2925">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="{% url 'core:manifest' %}">
+  
+  <title>{% block title %}WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน{% endblock %}</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Compiled Tailwind CSS -->
+  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+  
+  <!-- Vendor Scripts (Local) -->
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+  <script src="{% static 'js/alpine.min.js' %}" defer></script>
+  
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-full flex flex-col bg-cream font-sans text-earth antialiased"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+      x-data="{ mobileMenuOpen: false }">
+
+  <!-- HTMX Loading Indicator bar -->
+  <div id="loading-bar" class="htmx-indicator fixed top-0 left-0 right-0 h-1 bg-gold z-50"></div>
+
+  <!-- Main Content Layout Slot -->
+  {% block layout %}
+    {% block content %}{% endblock %}
+  {% endblock %}
+
+  <!-- Global Toast Messages -->
+  {% if messages %}
+    <div class="fixed bottom-5 right-5 z-50 flex flex-col space-y-3 max-w-sm w-full px-4">
+      {% for message in messages %}
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+             class="p-4 rounded-2xl shadow-lg border text-sm font-medium transition-all duration-300
+                    {% if message.tags == 'error' %} bg-red-50 border-red-200 text-red-800
+                    {% elif message.tags == 'success' %} bg-emerald-50 border-emerald-200 text-emerald-800
+                    {% else %} bg-white border-gray-200 text-gray-800 {% endif %} flex items-center justify-between">
+          <span>{{ message }}</span>
+          <button @click="show = false" class="ml-3 text-gray-400 hover:text-gray-600 focus:outline-none">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Register Service Worker (PWA) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('{% url "core:service_worker" %}')
+          .then((reg) => console.log('WellTrip SW registered'))
+          .catch((err) => console.warn('WellTrip SW registration failed:', err));
+      });
+    }
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

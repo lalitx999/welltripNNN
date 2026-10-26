@@ -1,0 +1,35 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}แผนที่ชุมชนสุขภาวะ - WellTrip{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-forest">แผนที่ชุมชน & จุดเช็คอินพาสปอร์ต</h1>
+      <p class="text-sm text-earth/70">พิกัดโฮมสเตย์ ร้านอาหาร สปา จุดถ่ายภาพ และ QR สะสมตราประทับดิจิทัล</p>
+    </div>
+    <div class="flex space-x-2">
+      <span class="px-3 py-1.5 rounded-full text-xs font-semibold bg-gold/20 text-gold-800">
+        Sisaket Cultural Map
+      </span>
+    </div>
+  </div>
+
+  <!-- Interactive Map Canvas Container -->
+  <div class="card-luxury p-2 h-[550px] relative overflow-hidden bg-stone-100 flex items-center justify-center">
+    <div class="text-center space-y-3 p-6">
+      <div class="w-16 h-16 rounded-full bg-forest text-gold mx-auto flex items-center justify-center shadow-lg">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-forest">ระบบแผนที่ชุมชนพร้อมแสดงผล</h3>
+      <p class="text-xs text-earth/60 max-w-sm mx-auto">
+        รองรับการแสดงหมุดพิกัด 5 หมวดหมู่ และระบบสแกน QR Code เก็บตราประทับดิจิทัล (จะลงรายละเอียดใน EP 7)
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

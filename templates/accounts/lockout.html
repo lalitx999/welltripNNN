@@ -1,0 +1,32 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}บัญชีถูกระงับชั่วคราว - WellTrip Security{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center py-16 px-4">
+  <div class="card-luxury max-w-md w-full p-8 text-center space-y-5 border-rose-200">
+    <div class="w-16 h-16 rounded-full bg-rose-50 text-rose-600 mx-auto flex items-center justify-center shadow-inner">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </div>
+
+    <div class="space-y-2">
+      <h2 class="text-xl font-bold text-rose-900">การเข้าถึงถูกระงับชั่วคราว (Security Lockout)</h2>
+      <p class="text-xs text-earth/70 leading-relaxed">
+        เนื่องจากมีการพยายามเข้าสู่ระบบไม่ถูกต้องเกิน 5 ครั้งต่อเนื่อง เพื่อความปลอดภัยของข้อมูล บัญชีหรือที่อยู่ IP ของคุณจะถูกระงับการเข้าถึงเป็นเวลา 15 นาที
+      </p>
+    </div>
+
+    <div class="p-3 bg-gray-50 rounded-xl text-[11px] text-gray-500 text-left">
+      <div><strong>คำแนะนำ:</strong></div>
+      <div>1. รอเวลาประมาณ 15 นาทีก่อนลองใหม่อีกครั้ง</div>
+      <div>2. หากจำรหัสผ่านไม่ได้ โปรดติดต่อผู้ดูแลระบบชุมชน</div>
+    </div>
+
+    <a href="{% url 'core:home' %}" class="inline-block text-xs font-semibold text-forest hover:underline">
+      กลับสู่หน้าหลัก
+    </a>
+  </div>
+</div>
+{% endblock %}

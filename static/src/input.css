@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cream font-sans text-earth antialiased;
+  }
+}
+
+/* HTMX transition indicators */
+.htmx-indicator {
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+  opacity: 1;
+}
+
+/* Luxury card styling */
+.card-luxury {
+  @apply bg-white rounded-luxury border border-gray-100 shadow-sm transition-all duration-200 hover:shadow-md;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-full bg-forest text-white font-medium shadow-sm hover:bg-forest-dark transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2;
+}
+
+.btn-gold {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-full bg-gold text-white font-medium shadow-sm hover:bg-gold-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2;
+}

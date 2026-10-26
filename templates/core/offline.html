@@ -1,0 +1,20 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}ออฟไลน์ - WellTrip{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-20 px-4 text-center">
+  <div class="w-16 h-16 rounded-full bg-forest-50 text-forest mx-auto flex items-center justify-center mb-4">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 4.243a9 9 0 01-12.728 0m0 0l2.829-2.829m-2.829 2.829L3 21m2.828-15.364a9 9 0 0112.728 0" />
+    </svg>
+  </div>
+  <h2 class="text-xl font-bold text-forest mb-2">ไม่พบสัญญาณอินเทอร์เน็ต</h2>
+  <p class="text-xs text-earth/70 leading-relaxed mb-6">
+    คุณกำลังใช้งานในโหมดออฟไลน์ ข้อมูลที่พักหรือจุดเช็คอินที่เคยเปิดไว้ยังคงแสดงผลได้ตามปกติ
+  </p>
+  <button onclick="window.location.reload()" class="btn-primary text-xs px-6 py-2.5">
+    ลองเชื่อมต่อใหม่อีกครั้ง
+  </button>
+</div>
+{% endblock %}
