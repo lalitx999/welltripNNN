@@ -1,11 +1,11 @@
 from django.urls import path
-from django.shortcuts import render
+from . import views
 
 app_name = 'accommodations'
 
-def index(request):
-    return render(request, 'accommodations/list.html')
-
 urlpatterns = [
-    path('', index, name='list'),
+    path('', views.list_view, name='list'),
+    path('studio/', views.homestay_studio_view, name='homestay_studio'),
+    path('studio/room/create/', views.room_create_view, name='room_create'),
+    path('studio/calendar/', views.calendar_view, name='calendar'),
 ]

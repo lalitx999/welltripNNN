@@ -1,11 +1,10 @@
 from django.urls import path
-from django.shortcuts import render
+from . import views
 
 app_name = 'otop'
 
-def index(request):
-    return render(request, 'otop/list.html')
-
 urlpatterns = [
-    path('', index, name='list'),
+    path('', views.list_view, name='list'),
+    path('studio/', views.otop_studio_view, name='otop_studio'),
+    path('studio/stock/<uuid:product_id>/', views.otop_stock_update_view, name='stock_update'),
 ]

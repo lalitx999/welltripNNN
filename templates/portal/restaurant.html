@@ -1,0 +1,90 @@
+{% extends "layouts/merchant.html" %}
+
+{% block page_heading %}สตูดิโอจัดการเมนูอาหารสุขภาพ 5 นิเวศน์{% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-5xl">
+  
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left: Menu Items List -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-forest">เมนูสุขภาพของคุณ ({{ menus.count }} รายการ)</h2>
+      </div>
+
+      {% if menus %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {% for menu in menus %}
+            <div class="card-luxury p-5 flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-start justify-between gap-2 mb-2">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-800">
+                    {{ menu.get_wellness_category_display }}
+                  </span>
+                  <span class="text-sm font-bold text-forest">฿{{ menu.price }}</span>
+                </div>
+                <h3 class="text-sm font-bold text-forest">{{ menu.name }}</h3>
+                <p class="text-xs text-earth/70 line-clamp-2 mt-1">{{ menu.description|default:"-" }}</p>
+              </div>
+
+              <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+                <span class="text-[11px] text-gray-500">
+                  {% if menu.calorie_estimate %}{{ menu.calorie_estimate }} kcal{% else %}ไม่ได้ระบุ kcal{% endif %}
+                </span>
+                <form method="POST" action="{% url 'services:food_delete' menu.id %}" onsubmit="return confirm('ยืนยันลบเมนูนี้?');">
+                  {% csrf_token %}
+                  <button type="submit" class="text-rose-600 hover:text-rose-800 font-medium text-[11px]">ลบเมนู</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="card-luxury p-10 text-center text-xs text-gray-500">
+          ยังไม่มีเมนูอาหารสุขภาพ กรุณาเพิ่มเมนูทางด้านขวา
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Add Menu Form -->
+    <div class="card-luxury p-6 space-y-4 h-fit">
+      <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">เพิ่มเมนูสุขภาพใหม่</h3>
+      <form method="POST" action="{% url 'services:restaurant_studio' %}" enctype="multipart/form-data" class="space-y-3">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">ชื่อเมนู</label>
+          {{ form.name }}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">หมวดหมู่นิเวศน์สุขภาพ</label>
+          {{ form.wellness_category }}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">คำอธิบายและวัตถุดิบ</label>
+          {{ form.description }}
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-earth mb-1">ราคา (บาท)</label>
+            {{ form.price }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-earth mb-1">แคลอรี่โดยประมาณ</label>
+            {{ form.calorie_estimate }}
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">รูปภาพเมนู (ไม่เกิน 10MB)</label>
+          {{ form.image }}
+        </div>
+        <button type="submit" class="btn-primary w-full text-xs py-2.5 mt-2">
+          + บันทึกเมนูใหม่
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

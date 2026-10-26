@@ -1,0 +1,25 @@
+<div id="stock-counter-{{ product.id }}" class="inline-flex items-center space-x-2 bg-gray-50 border border-gray-200 rounded-xl px-2 py-1 shadow-inner">
+  <!-- Decrement Button -->
+  <button hx-post="{% url 'otop:stock_update' product.id %}"
+          hx-vals='{"delta": -1}'
+          hx-target="#stock-counter-{{ product.id }}"
+          hx-swap="outerHTML"
+          {% if product.stock_quantity == 0 %}disabled{% endif %}
+          class="w-6 h-6 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 flex items-center justify-center font-bold text-xs disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+    -
+  </button>
+
+  <!-- Stock Quantity Counter with Animation -->
+  <span class="w-10 text-center font-bold text-xs {% if product.stock_quantity == 0 %}text-rose-600{% else %}text-forest{% endif %}">
+    {{ product.stock_quantity }}
+  </span>
+
+  <!-- Increment Button -->
+  <button hx-post="{% url 'otop:stock_update' product.id %}"
+          hx-vals='{"delta": 1}'
+          hx-target="#stock-counter-{{ product.id }}"
+          hx-swap="outerHTML"
+          class="w-6 h-6 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 flex items-center justify-center font-bold text-xs transition-all">
+    +
+  </button>
+</div>

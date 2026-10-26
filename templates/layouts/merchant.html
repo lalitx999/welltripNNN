@@ -4,59 +4,89 @@
 <div class="min-h-screen bg-cream flex">
   
   <!-- Sidebar for Partner Studio -->
-  <aside class="w-64 bg-forest-dark text-white flex flex-col border-r border-forest/30 hidden md:flex">
+  <aside class="w-64 bg-forest-dark text-white flex flex-col border-r border-forest/30 hidden md:flex shrink-0">
     <div class="h-20 px-6 flex items-center space-x-3 border-b border-forest/20">
-      <div class="w-9 h-9 rounded-xl bg-forest flex items-center justify-center text-gold">
+      <div class="w-9 h-9 rounded-xl bg-forest flex items-center justify-center text-gold shadow-md">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       </div>
       <div>
         <span class="text-base font-bold text-white block">Partner Studio</span>
-        <span class="text-[11px] text-gold font-medium">{{ user.get_role_display|default:"ผู้ประกอบการ" }}</span>
+        <span class="text-[11px] text-gold font-medium truncate block max-w-[140px]">{{ user.get_role_display|default:"ผู้ประกอบการ" }}</span>
       </div>
     </div>
 
-    <!-- Navigation links -->
+    <!-- Navigation links with active domain highlights -->
     <nav class="flex-grow px-4 py-6 space-y-1.5 text-sm">
-      <a href="/portal/" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-forest text-gold font-medium">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <a href="{% url 'accounts:portal_dashboard' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-cream/80 hover:bg-forest/50 hover:text-white font-medium transition-colors">
+        <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
-        <span>แดชบอร์ด</span>
+        <span>แดชบอร์ดภาพรวม</span>
       </a>
 
-      <a href="/portal/calendar/" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-cream/70 hover:bg-forest/50 hover:text-white font-medium transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        <span>ปฏิทินการจอง</span>
-      </a>
+      {% if user.role == "HOMESTAY_OWNER" or user.is_superuser %}
+        <a href="{% url 'accommodations:homestay_studio' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-cream/80 hover:bg-forest/50 hover:text-white font-medium transition-colors">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          <span>จัดการโฮมสเตย์ & ห้องพัก</span>
+        </a>
 
-      <a href="/portal/orders/" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-cream/70 hover:bg-forest/50 hover:text-white font-medium transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        <span>รายการสั่งซื้อ</span>
-      </a>
+        <a href="{% url 'accommodations:calendar' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-cream/80 hover:bg-forest/50 hover:text-white font-medium transition-colors">
+          <svg class="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>ปฏิทินราคา & ห้องว่าง (PMS)</span>
+        </a>
+      {% endif %}
+
+      {% if user.role == "RESTAURANT_OWNER" or user.is_superuser %}
+        <a href="{% url 'services:restaurant_studio' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-cream/80 hover:bg-forest/50 hover:text-white font-medium transition-colors">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          <span>เมนูอาหารสุขภาพ 5 นิเวศน์</span>
+        </a>
+      {% endif %}
+
+      {% if user.role == "WELLNESS_OWNER" or user.is_superuser %}
+        <a href="{% url 'services:wellness_studio' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-cream/80 hover:bg-forest/50 hover:text-white font-medium transition-colors">
+          <svg class="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>บริการนวด & รอบเวลา (Slots)</span>
+        </a>
+      {% endif %}
+
+      {% if user.role == "OTOP_OWNER" or user.is_superuser %}
+        <a href="{% url 'otop:otop_studio' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-cream/80 hover:bg-forest/50 hover:text-white font-medium transition-colors">
+          <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+          <span>สินค้าชุมชน OTOP & สต็อก</span>
+        </a>
+      {% endif %}
     </nav>
 
     <!-- Bottom user action -->
     <div class="p-4 border-t border-forest/20 text-xs">
-      <div class="text-cream/80 truncate mb-2">{{ user.email }}</div>
+      <div class="text-cream/80 truncate mb-1">{{ user.email }}</div>
       <a href="{% url 'accounts:logout' %}" class="text-red-400 hover:text-red-300 font-medium">ออกจากระบบ</a>
     </div>
   </aside>
 
   <!-- Main Content View -->
-  <div class="flex-1 flex flex-col">
-    <!-- Topbar -->
+  <div class="flex-1 flex flex-col min-w-0">
     <header class="h-20 bg-white border-b border-gray-100 px-6 flex items-center justify-between shadow-sm">
-      <h1 class="text-lg font-bold text-forest">{% block page_heading %}ภาพรวมร้านค้า{% endblock %}</h1>
-      <a href="{% url 'core:home' %}" class="text-xs text-earth/70 hover:text-forest">กลับหน้าหลัก &rarr;</a>
+      <h1 class="text-lg font-bold text-forest">{% block page_heading %}Partner Studio{% endblock %}</h1>
+      <div class="flex items-center space-x-3">
+        <a href="{% url 'core:home' %}" class="text-xs text-earth/70 hover:text-forest">ไปหน้าเว็บท่องเที่ยว &rarr;</a>
+      </div>
     </header>
 
-    <main class="flex-1 p-6 md:p-8">
+    <main class="flex-1 p-6 md:p-8 overflow-y-auto">
       {% block content %}{% endblock %}
     </main>
   </div>

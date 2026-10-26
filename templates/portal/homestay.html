@@ -1,0 +1,146 @@
+{% extends "layouts/merchant.html" %}
+
+{% block page_heading %}สตูดิโอจัดการโฮมสเตย์และห้องพัก{% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-5xl">
+  
+  <!-- Section 1: Homestay Details Form -->
+  <div class="card-luxury p-6 sm:p-8 space-y-6">
+    <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+      <div>
+        <h2 class="text-lg font-bold text-forest">ข้อมูลทั่วไปของโฮมสเตย์</h2>
+        <p class="text-xs text-earth/60">ข้อมูลนี้จะนำไปแสดงบนหน้าเว็บหลักและระบบค้นหาสำหรับนักท่องเที่ยว</p>
+      </div>
+      <span class="px-3 py-1 rounded-full text-xs font-semibold 
+                   {% if accommodation.status == 'ACTIVE' %} bg-emerald-100 text-emerald-800
+                   {% elif accommodation.status == 'PENDING_VERIFICATION' %} bg-amber-100 text-amber-800
+                   {% else %} bg-rose-100 text-rose-800 {% endif %}">
+        {{ accommodation.get_status_display }}
+      </span>
+    </div>
+
+    <form method="POST" action="{% url 'accommodations:homestay_studio' %}" class="space-y-4">
+      {% csrf_token %}
+      
+      <div>
+        <label class="block text-xs font-semibold text-earth mb-1">ชื่อโฮมสเตย์</label>
+        {{ form.name }}
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-earth mb-1">คำอธิบายและจุดเด่น</label>
+        {{ form.description }}
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">ที่อยู่ / พิกัดสถานที่</label>
+          {{ form.address }}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">ตำบล / แขวง</label>
+          {{ form.subdistrict }}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">อำเภอ / เขต</label>
+          {{ form.district }}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">จังหวัด</label>
+          {{ form.province }}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">รหัสไปรษณีย์</label>
+          {{ form.postal_code }}
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button type="submit" class="btn-primary text-xs px-6 py-2.5">
+          บันทึกการเปลี่ยนแปลง
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Section 2: Rooms List & Room Creator -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left: Rooms List -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-forest">รายการห้องพัก ({{ rooms.count }} ห้อง)</h2>
+        <a href="{% url 'accommodations:calendar' %}" class="text-xs font-semibold text-gold hover:underline">
+          จัดการปฏิทินราคา (PMS) &rarr;
+        </a>
+      </div>
+
+      {% if rooms %}
+        <div class="space-y-3">
+          {% for room in rooms %}
+            <div class="card-luxury p-5 flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-forest">{{ room.name }}</h3>
+                <div class="flex items-center space-x-3 text-xs text-earth/60 mt-1">
+                  <span>ประเภท: {{ room.room_type }}</span>
+                  <span>•</span>
+                  <span>ความจุ: {{ room.capacity_people }} ท่าน</span>
+                  <span>•</span>
+                  <span>ทั้งหมด: {{ room.total_rooms_count }} ห้อง</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-bold text-forest">฿{{ room.base_price_per_night }}</div>
+                <span class="text-[10px] text-gray-400">ต่อคืน</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="card-luxury p-8 text-center text-xs text-gray-500">
+          ยังไม่มีห้องพัก กรุณาเพิ่มห้องพักใหม่ทางด้านขวา
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Add Room Form -->
+    <div class="card-luxury p-6 space-y-4 h-fit">
+      <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">เพิ่มห้องพักใหม่</h3>
+      <form method="POST" action="{% url 'accommodations:room_create' %}" class="space-y-3">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">ชื่อห้องพัก</label>
+          {{ room_form.name }}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">ประเภท</label>
+          {{ room_form.room_type }}
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-earth mb-1">ความจุ (คน)</label>
+            {{ room_form.capacity_people }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-earth mb-1">จำนวนห้อง</label>
+            {{ room_form.total_rooms_count }}
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">ราคาเริ่มต้น (บาท/คืน)</label>
+          {{ room_form.base_price_per_night }}
+        </div>
+        <button type="submit" class="btn-primary w-full text-xs py-2.5 mt-2">
+          + เพิ่มห้องพัก
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

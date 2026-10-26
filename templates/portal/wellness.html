@@ -1,0 +1,162 @@
+{% extends "layouts/merchant.html" %}
+
+{% block page_heading %}สตูดิโอบริการนวดแผนไทยและสปา (Wellness Studio){% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-5xl">
+  
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left: Services List & Slots -->
+    <div class="lg:col-span-2 space-y-6">
+      
+      <!-- Services -->
+      <div class="space-y-3">
+        <h2 class="text-base font-bold text-forest">บริการนวดและสปาของคุณ ({{ services.count }} รายการ)</h2>
+        {% if services %}
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% for s in services %}
+              <div class="card-luxury p-5 flex flex-col justify-between space-y-2">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-gold font-semibold">{{ s.duration_minutes }} นาที</span>
+                    <span class="text-sm font-bold text-forest">฿{{ s.price }}</span>
+                  </div>
+                  <h3 class="text-sm font-bold text-forest mt-1">{{ s.name }}</h3>
+                  <p class="text-xs text-earth/70 line-clamp-2">{{ s.description|default:"-" }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="card-luxury p-8 text-center text-xs text-gray-500">
+            ยังไม่มีบริการสปา กรุณาเพิ่มบริการทางด้านขวา
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Time Slots Table -->
+      <div class="space-y-3">
+        <h2 class="text-base font-bold text-forest">รอบเวลาให้บริการ (Time Slots ที่เปิดรับ)</h2>
+        {% if slots %}
+          <div class="card-luxury overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-gray-50 border-b border-gray-100 text-earth/70 uppercase">
+                <tr>
+                  <th class="p-3.5">บริการ</th>
+                  <th class="p-3.5">วันที่</th>
+                  <th class="p-3.5">รอบเวลา</th>
+                  <th class="p-3.5">ที่ว่างคงเหลือ</th>
+                  <th class="p-3.5 text-right">การจัดการ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                {% for slot in slots %}
+                  <tr class="hover:bg-cream/40 transition-colors">
+                    <td class="p-3.5 font-bold text-forest">{{ slot.service.name }}</td>
+                    <td class="p-3.5 font-medium text-earth/70">{{ slot.date|date:"d M Y" }}</td>
+                    <td class="p-3.5 font-semibold text-gold">{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</td>
+                    <td class="p-3.5 font-semibold">
+                      {% if slot.capacity_available > 0 %}
+                        <span class="text-emerald-700">{{ slot.capacity_available }}/{{ slot.capacity_total }} ที่</span>
+                      {% else %}
+                        <span class="text-rose-600 font-bold">เต็ม</span>
+                      {% endif %}
+                    </td>
+                    <td class="p-3.5 text-right">
+                      <form method="POST" action="{% url 'services:wellness_slot_delete' slot.id %}" onsubmit="return confirm('ยืนยันลบรอบเวลานี้?');">
+                        {% csrf_token %}
+                        <button type="submit" class="text-rose-600 hover:text-rose-800 font-medium text-[11px]">ลบ</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="card-luxury p-8 text-center text-xs text-gray-500">
+            ยังไม่มีการเปิดรอบเวลาบริการ
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- Right: Add Forms (Service & Slot) -->
+    <div class="space-y-6">
+      
+      <!-- Add Service -->
+      <div class="card-luxury p-6 space-y-4">
+        <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">1. เพิ่มบริการนวด/สปา</h3>
+        <form method="POST" action="{% url 'services:wellness_studio' %}" enctype="multipart/form-data" class="space-y-3">
+          {% csrf_token %}
+          <div>
+            <label class="block text-xs font-semibold text-earth mb-1">ชื่อบริการ</label>
+            {{ form.name }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-earth mb-1">คำอธิบาย</label>
+            {{ form.description }}
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-earth mb-1">ราคา (บาท)</label>
+              {{ form.price }}
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-earth mb-1">ระยะเวลา (นาที)</label>
+              {{ form.duration_minutes }}
+            </div>
+          </div>
+          <button type="submit" class="btn-primary w-full text-xs py-2.5 mt-2">
+            + บันทึกบริการ
+          </button>
+        </form>
+      </div>
+
+      <!-- Add Slot -->
+      {% if services %}
+        <div class="card-luxury p-6 space-y-4">
+          <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">2. เปิดรอบเวลาบริการ (Slot)</h3>
+          <form method="POST" action="{% url 'services:wellness_slot_create' %}" class="space-y-3">
+            {% csrf_token %}
+            <div>
+              <label class="block text-xs font-semibold text-earth mb-1">เลือกบริการ</label>
+              <select name="service_id" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-forest">
+                {% for s in services %}
+                  <option value="{{ s.id }}">{{ s.name }} ({{ s.duration_minutes }} นาที)</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-earth mb-1">วันที่</label>
+              {{ slot_form.date }}
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-earth mb-1">เวลาเริ่ม</label>
+                {{ slot_form.start_time }}
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-earth mb-1">เวลาสิ้นสุด</label>
+                {{ slot_form.end_time }}
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-earth mb-1">ความจุรอบนี้ (ท่าน)</label>
+              {{ slot_form.capacity_total }}
+            </div>
+            <button type="submit" class="btn-gold w-full text-xs py-2.5 mt-2">
+              + เปิดรอบเวลานี้
+            </button>
+          </form>
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

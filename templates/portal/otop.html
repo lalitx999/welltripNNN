@@ -1,0 +1,96 @@
+{% extends "layouts/merchant.html" %}
+
+{% block page_heading %}สตูดิโอจัดการสินค้าชุมชน OTOP & สต็อก{% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-5xl">
+  
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left: OTOP Products List & Inline Stock Editor -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-forest">รายการสินค้า OTOP ของคุณ ({{ products.count }} ชิ้น)</h2>
+        <span class="text-[11px] text-gray-500">ปรับสต็อกสินค้าได้ทันทีผ่านปุ่ม +/-</span>
+      </div>
+
+      {% if products %}
+        <div class="card-luxury overflow-hidden">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-gray-50 border-b border-gray-100 text-earth/70 uppercase">
+              <tr>
+                <th class="p-3.5">สินค้า</th>
+                <th class="p-3.5">หมวดหมู่</th>
+                <th class="p-3.5">ราคา</th>
+                <th class="p-3.5 text-center">สต็อกคงเหลือ (ปรับได้ทันที)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              {% for p in products %}
+                <tr class="hover:bg-cream/40 transition-colors">
+                  <td class="p-3.5">
+                    <div class="font-bold text-forest">{{ p.name }}</div>
+                    <div class="text-[11px] text-gray-400 line-clamp-1">{{ p.description|default:"-" }}</div>
+                  </td>
+                  <td class="p-3.5">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-100 text-stone-800">
+                      {{ p.get_category_display }}
+                    </span>
+                  </td>
+                  <td class="p-3.5 font-bold text-gold">฿{{ p.price }}</td>
+                  <td class="p-3.5 text-center">
+                    {% include "portal/partials/otop_stock_counter.html" with product=p %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="card-luxury p-10 text-center text-xs text-gray-500">
+          ยังไม่มีสินค้า OTOP ในร้านของคุณ กรุณาเพิ่มสินค้าทางด้านขวา
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Add OTOP Product Form -->
+    <div class="card-luxury p-6 space-y-4 h-fit">
+      <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">เพิ่มสินค้า OTOP ใหม่</h3>
+      <form method="POST" action="{% url 'otop:otop_studio' %}" enctype="multipart/form-data" class="space-y-3">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">ชื่อสินค้า</label>
+          {{ form.name }}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">หมวดหมู่</label>
+          {{ form.category }}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">คำอธิบายสินค้า</label>
+          {{ form.description }}
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-earth mb-1">ราคา (บาท)</label>
+            {{ form.price }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-earth mb-1">สต็อกเริ่มต้น</label>
+            {{ form.stock_quantity }}
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-earth mb-1">รูปภาพสินค้า (ไม่เกิน 10MB)</label>
+          {{ form.image }}
+        </div>
+        <button type="submit" class="btn-primary w-full text-xs py-2.5 mt-2">
+          + บันทึกสินค้า OTOP
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
