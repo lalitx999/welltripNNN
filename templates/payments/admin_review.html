@@ -1,0 +1,103 @@
+{% extends "layouts/admin.html" %}
+
+{% block admin_heading %}ตรวจสอบและอนุมัติสลิป {{ payment.booking.booking_code }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-4xl">
+  
+  <div class="flex items-center justify-between">
+    <a href="{% url 'payments:admin_list' %}" class="text-xs text-slate-500 hover:text-slate-800">
+      &larr; กลับไปยังรายการสลิปทั้งหมด
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    <!-- Left: Slip Image Inspection -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+      <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">รูปภาพสลิปที่แนบมา</h3>
+      
+      {% if slip and slip.image %}
+        <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center max-h-[500px]">
+          <img src="{{ slip.image.url }}" alt="Slip image" class="max-h-[500px] w-auto object-contain">
+        </div>
+        <div class="text-center">
+          <a href="{{ slip.image.url }}" target="_blank" class="text-xs text-forest hover:underline font-semibold">
+            เปิดดูภาพขนาดเต็ม (แท็บใหม่) &rarr;
+          </a>
+        </div>
+      {% else %}
+        <div class="p-12 text-center text-xs text-slate-400">
+          ไม่พบไฟล์รูปภาพสลิป
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Order Details & Approval Actions -->
+    <div class="space-y-6">
+      
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+        <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">รายละเอียดการสั่งซื้อ</h3>
+        
+        <div class="space-y-2.5 text-xs">
+          <div class="flex justify-between">
+            <span class="text-slate-500">รหัสการจอง</span>
+            <span class="font-bold text-slate-900">{{ payment.booking.booking_code }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">ชื่อลูกค้า</span>
+            <span class="font-semibold text-slate-800">{{ payment.booking.customer.first_name }} {{ payment.booking.customer.last_name }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">อีเมล</span>
+            <span class="text-slate-700">{{ payment.booking.customer.email }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">ยอดเงินที่ต้องตรงกัน</span>
+            <span class="text-base font-bold text-emerald-700">฿{{ payment.amount }}</span>
+          </div>
+          {% if slip and slip.provider_reference %}
+            <div class="flex justify-between pt-2 border-t border-slate-100">
+              <span class="text-slate-500">รหัสอ้างอิงธุรกรรมธนาคาร</span>
+              <span class="font-mono font-bold text-slate-900">{{ slip.provider_reference }}</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Action Form -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+        <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">ผลการตรวจสอบ</h3>
+
+        <form method="POST" action="{% url 'payments:admin_review' payment.id %}" class="space-y-4">
+          {% csrf_token %}
+          
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">บันทึกเพิ่มเติม (ถ้ามี)</label>
+            <textarea name="verification_notes" rows="2"
+                      class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-slate-900"
+                      placeholder="เช่น ยอดเงินตรงเวลาถูกต้อง โอนจากบัญชี..."></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <button type="submit" name="action" value="APPROVE"
+                    onclick="return confirm('ยืนยันอนุมัติการชำระเงินนี้? ระบบจะเปลี่ยนสถานะการจองเป็น CONFIRMED');"
+                    class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md">
+              ✓ อนุมัติการชำระเงิน
+            </button>
+
+            <button type="submit" name="action" value="REJECT"
+                    onclick="return confirm('ยืนยันปฏิเสธสลิปนี้?');"
+                    class="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md">
+              ✕ ปฏิเสธสลิป
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
