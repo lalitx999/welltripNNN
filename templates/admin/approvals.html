@@ -1,0 +1,85 @@
+{% extends "layouts/admin.html" %}
+
+{% block admin_heading %}อนุมัติพาร์ทเนอร์ชุมชน (One-Time Merchant KYC){% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-6xl">
+  
+  <div class="space-y-1">
+    <h2 class="text-base font-bold text-slate-900">การอนุมัติร้านค้าแบบ One-Time KYC</h2>
+    <p class="text-xs text-slate-500">
+      เมื่อเจ้าหน้าที่อนุมัติพาร์ทเนอร์ บัญชีผู้ใช้จะเปิดใช้งาน และบริการ/ห้องพักของร้านจะเปลี่ยนเป็นสถานะ ACTIVE โดยอัตโนมัติ
+    </p>
+  </div>
+
+  <!-- Pending Merchants List -->
+  <div class="space-y-4">
+    <h3 class="text-sm font-bold text-slate-900">พาร์ทเนอร์ใหม่ที่รอการอนุมัติ ({{ pending_merchants.count }} ราย)</h3>
+    {% if pending_merchants %}
+      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase">
+            <tr>
+              <th class="p-4">ชื่อ - นามสกุล</th>
+              <th class="p-4">อีเมล</th>
+              <th class="p-4">เบอร์โทรศัพท์</th>
+              <th class="p-4">ประเภทผู้ประกอบการ</th>
+              <th class="p-4">วันที่สมัคร</th>
+              <th class="p-4 text-right">ดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            {% for m in pending_merchants %}
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="p-4 font-bold text-slate-900">{{ m.first_name }} {{ m.last_name }}</td>
+                <td class="p-4 text-slate-700">{{ m.email }}</td>
+                <td class="p-4 font-mono text-slate-600">{{ m.phone_number|default:"-" }}</td>
+                <td class="p-4">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-800">
+                    {{ m.get_role_display }}
+                  </span>
+                </td>
+                <td class="p-4 text-slate-400">{{ m.date_joined|date:"d M Y H:i" }}</td>
+                <td class="p-4 text-right">
+                  <form method="POST" action="{% url 'accounts:admin_approve_merchant' m.id %}" onsubmit="return confirm('ยืนยันอนุมัติพาร์ทเนอร์นี้?');">
+                    {% csrf_token %}
+                    <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 shadow-sm">
+                      ✓ อนุมัติ KYC
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-xs text-slate-400">
+        ไม่มีพาร์ทเนอร์รอการอนุมัติในขณะนี้
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Pending Homestays if any -->
+  {% if pending_accommodations %}
+    <div class="space-y-4 pt-4">
+      <h3 class="text-sm font-bold text-slate-900">โฮมสเตย์ที่รอการตรวจสอบ ({{ pending_accommodations.count }} แห่ง)</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {% for acc in pending_accommodations %}
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-900 text-sm">{{ acc.name }}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 font-semibold">รออนุมัติ</span>
+            </div>
+            <p class="text-xs text-slate-500">{{ acc.address }}, {{ acc.district }}, {{ acc.province }}</p>
+            <div class="text-[11px] text-slate-400 pt-2 border-t border-slate-100">
+              เจ้าของ: {{ acc.owner.email }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
