@@ -167,12 +167,14 @@ CONTENT_SECURITY_POLICY = {
         'script-src': (
             "'self'",
             "'unsafe-inline'",  # Needed for Alpine.js dynamic reactivity
-            "https://cdn.jsdelivr.net",  # CDN fallback for HTMX / Alpine if needed
+            "https://cdn.jsdelivr.net",
+            "https://unpkg.com",
         ),
         'style-src': (
             "'self'",
             "'unsafe-inline'",
             "https://fonts.googleapis.com",
+            "https://unpkg.com",
         ),
         'font-src': (
             "'self'",

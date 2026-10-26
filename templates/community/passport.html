@@ -1,0 +1,101 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}สมุดพาสปอร์ตท่องเที่ยวสุขภาวะดิจิทัล - WellTrip{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+  
+  <!-- Passport Cover Banner -->
+  <div class="card-luxury bg-gradient-to-r from-forest-dark via-forest to-forest-dark text-white p-8 sm:p-10 relative overflow-hidden shadow-xl border border-forest/50">
+    <div class="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-gold/10 blur-2xl pointer-events-none"></div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+      <div class="space-y-3 text-center sm:text-left">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 text-xs text-gold font-medium border border-white/20">
+          <span>{{ badge.icon }} ระดับนักเดินทาง: {{ badge.name }}</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+          Digital Cultural Passport
+        </h1>
+        <p class="text-xs sm:text-sm text-cream/80 max-w-md font-light leading-relaxed">
+          สมุดบันทึกการเดินทางวิถีสุขภาวะและภูมิปัญญาชุมชน สะสมตราประทับดิจิทัลเพื่อรับสิทธิประโยชน์และของที่ระลึก
+        </p>
+      </div>
+
+      <!-- Passport Stamp Counter Seal -->
+      <div class="w-32 h-32 rounded-full border-4 border-gold/40 bg-white/5 backdrop-blur-md flex flex-col items-center justify-center text-center p-4 shadow-inner">
+        <span class="text-3xl font-bold text-gold">{{ stamp_count }}</span>
+        <span class="text-[10px] text-cream uppercase tracking-wider font-medium">ตราประทับ</span>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="pt-6 mt-6 border-t border-forest/40 space-y-2 relative z-10">
+      <div class="flex justify-between text-xs text-cream/80">
+        <span>เป้าหมายการเดินทางในชุมชน</span>
+        <span class="font-bold text-gold">{{ stamp_count }} / {{ all_locations|default:"10" }} แห่ง</span>
+      </div>
+      <div class="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
+        <div class="bg-gold h-2.5 rounded-full transition-all duration-500" 
+             style="width: {% if all_locations %}{% widthratio stamp_count all_locations 100 %}{% else %}0{% endif %}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stamps Grid -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-bold text-forest">ตราประทับที่สะสมแล้ว ({{ stamp_count }} ดวง)</h2>
+      <a href="{% url 'community:map' %}" class="text-xs font-semibold text-gold hover:underline">
+        ค้นหาจุดเช็คอินบนแผนที่ &rarr;
+      </a>
+    </div>
+
+    {% if stamps %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for s in stamps %}
+          <div class="card-luxury p-6 flex flex-col items-center text-center space-y-3 relative overflow-hidden group hover:border-gold/50 transition-all">
+            
+            <!-- Circular Seal -->
+            <div class="w-24 h-24 rounded-full border-4 border-dashed border-forest/30 bg-cream/50 flex flex-col items-center justify-center p-2 transform group-hover:rotate-6 transition-transform">
+              <div class="w-16 h-16 rounded-full bg-forest text-gold flex items-center justify-center shadow-md">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-forest-50 text-forest">
+                {{ s.location.get_category_display }}
+              </span>
+              <h3 class="text-sm font-bold text-forest">{{ s.location.title }}</h3>
+              <p class="text-[11px] text-gray-400">ประทับเมื่อ {{ s.stamped_at|date:"d M Y, H:i" }} น.</p>
+            </div>
+
+            <div class="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider pt-1">
+              ✓ Verified Check-In
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card-luxury p-14 text-center space-y-4">
+        <div class="w-16 h-16 rounded-full bg-cream text-gold mx-auto flex items-center justify-center">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+          </svg>
+        </div>
+        <h3 class="text-base font-bold text-forest">ยังไม่มีตราประทับในสมุดพาสปอร์ต</h3>
+        <p class="text-xs text-earth/60 max-w-sm mx-auto">
+          เปิดแผนที่ท่องเที่ยว เดินทางไปยังจุดเช็คอินชุมชน และสแกนป้าย QR เพื่อรับตราประทับดิจิทัลดวงแรกของคุณ!
+        </p>
+        <a href="{% url 'community:map' %}" class="btn-primary text-xs px-6 py-2.5 inline-block">
+          เปิดดูแผนที่ท่องเที่ยว &rarr;
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,11 +1,11 @@
 from django.urls import path
-from django.shortcuts import render
+from . import views
 
 app_name = 'community'
 
-def index(request):
-    return render(request, 'community/map.html')
-
 urlpatterns = [
-    path('', index, name='map'),
+    path('map/', views.map_view, name='map'),
+    path('api/locations/', views.locations_api_view, name='locations_api'),
+    path('passport/', views.passport_view, name='passport'),
+    path('stamp/<str:qr_secret>/', views.claim_stamp_view, name='claim_stamp'),
 ]
