@@ -3,19 +3,22 @@
 {% block admin_heading %}ตรวจสอบสลิปโอนเงิน (Slip Verification){% endblock %}
 
 {% block content %}
-<div class="space-y-6 max-w-6xl">
+<div class="space-y-6 max-w-6xl pb-12">
   
-  <div class="flex items-center justify-between">
-    <div>
-      <h2 class="text-base font-bold text-slate-900">รายการสลิปรอตรวจสอบความถูกต้อง ({{ payments.count }} รายการ)</h2>
-      <p class="text-xs text-slate-500">ตรวจสอบความถูกต้องของยอดเงินและรหัสอ้างอิงกับบัญชีธนาคารชุมชน</p>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="space-y-1">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="receipt" class="w-5 h-5 text-amber-400"></i>
+        <h2 class="text-base font-bold text-white">รายการสลิปรอตรวจสอบความถูกต้อง ({{ payments.count }} รายการ)</h2>
+      </div>
+      <p class="text-xs text-slate-400">ตรวจสอบความถูกต้องของยอดเงินและรหัสอ้างอิงกับบัญชีธนาคารชุมชน</p>
     </div>
   </div>
 
   {% if payments %}
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+    <div class="bg-slate-950/60 rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
       <table class="w-full text-left text-xs">
-        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase">
+        <thead class="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase font-semibold">
           <tr>
             <th class="p-4">รหัสการจอง</th>
             <th class="p-4">ลูกค้า</th>
@@ -25,24 +28,26 @@
             <th class="p-4 text-right">ดำเนินการ</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody class="divide-y divide-slate-800/80">
           {% for p in payments %}
-            <tr class="hover:bg-slate-50 transition-colors">
-              <td class="p-4 font-bold text-slate-900">{{ p.booking.booking_code }}</td>
-              <td class="p-4 text-slate-700">
-                <div>{{ p.booking.customer.first_name }} {{ p.booking.customer.last_name }}</div>
-                <div class="text-[11px] text-slate-400">{{ p.booking.customer.email }}</div>
+            <tr class="hover:bg-slate-900/40 transition-colors">
+              <td class="p-4 font-mono font-bold text-white">{{ p.booking.booking_code }}</td>
+              <td class="p-4 text-slate-200">
+                <div class="font-medium">{{ p.booking.customer.first_name }} {{ p.booking.customer.last_name }}</div>
+                <div class="text-[11px] text-slate-500 font-mono">{{ p.booking.customer.email }}</div>
               </td>
-              <td class="p-4 font-bold text-emerald-700">฿{{ p.amount }}</td>
-              <td class="p-4 text-slate-500">{{ p.created_at|date:"d M Y H:i" }}</td>
+              <td class="p-4 font-bold text-emerald-400 text-sm">฿{{ p.amount }}</td>
+              <td class="p-4 text-slate-400">{{ p.created_at|date:"d M Y H:i" }}</td>
               <td class="p-4">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                  รอตรวจสอบ
+                <span class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-800/60">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span>รอตรวจสอบ</span>
                 </span>
               </td>
               <td class="p-4 text-right">
-                <a href="{% url 'payments:admin_review' p.id %}" class="inline-flex items-center px-3 py-1.5 rounded-xl bg-forest text-white text-xs font-semibold hover:bg-forest-dark">
-                  ตรวจสลิป &rarr;
+                <a href="{% url 'payments:admin_review' p.id %}" class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-forest hover:bg-forest-light text-white text-xs font-bold transition-all shadow-md">
+                  <span>ตรวจสลิป</span>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
               </td>
             </tr>
@@ -51,8 +56,10 @@
       </table>
     </div>
   {% else %}
-    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center text-xs text-slate-500">
-      ไม่มีสลิปรอการตรวจสอบในขณะนี้
+    <div class="bg-slate-950/60 rounded-3xl border border-slate-800 p-12 text-center text-xs text-slate-400 space-y-3 shadow-xl">
+      <i data-lucide="check-circle-2" class="w-10 h-10 text-emerald-500/50 mx-auto"></i>
+      <p class="font-medium text-slate-300">ไม่มีสลิปรอการตรวจสอบในขณะนี้</p>
+      <p class="text-[11px] text-slate-500">ระบบการเงินทำงานเป็นปกติ สลิปทั้งหมดได้รับการอนุมัติเรียบร้อยแล้ว</p>
     </div>
   {% endif %}
 

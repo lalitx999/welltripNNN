@@ -2,79 +2,97 @@
 {% load static %}
 
 {% block layout %}
-<div class="min-h-screen bg-slate-50 flex">
+<div class="min-h-screen bg-slate-900/95 flex text-slate-100 antialiased font-sans">
   
   <!-- Sidebar for Admin Operations -->
-  <aside class="w-64 bg-slate-900 text-slate-200 flex flex-col border-r border-slate-800 hidden md:flex shrink-0">
-    <div class="h-20 px-6 flex items-center space-x-3 border-b border-slate-800">
-      <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip Logo" class="w-10 h-10 rounded-xl object-cover shadow-md border border-slate-700">
-      <div>
-        <span class="text-base font-bold text-white block">WellTrip Ops</span>
-        <span class="text-[11px] text-emerald-400 font-medium">ศูนย์บัญชาการแอดมิน</span>
+  <aside class="w-64 bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800 hidden md:flex shrink-0 select-none shadow-2xl">
+    <!-- Brand Header -->
+    <div class="h-20 px-6 flex items-center space-x-3.5 border-b border-slate-800/80 bg-slate-950">
+      <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip Logo" class="w-10 h-10 rounded-xl object-cover shadow-md ring-1 ring-emerald-500/30">
+      <div class="min-w-0 flex-1">
+        <span class="text-sm font-bold text-white tracking-wide block truncate">WellTrip Ops</span>
+        <span class="text-[11px] text-emerald-400 font-medium truncate flex items-center gap-1.5 mt-0.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          ศูนย์บัญชาการแอดมิน
+        </span>
       </div>
     </div>
 
     <!-- Navigation links -->
-    <nav class="flex-grow px-4 py-6 space-y-1.5 text-sm">
-      <a href="{% url 'accounts:admin_dashboard' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-colors">
-        <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
+    <nav class="flex-grow px-3.5 py-6 space-y-1 text-xs font-medium overflow-y-auto">
+      <div class="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">ควบคุมระบบ</div>
+
+      <a href="{% url 'accounts:admin_dashboard' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+        <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform"></i>
         <span>ภาพรวมศูนย์บัญชาการ</span>
       </a>
 
-      <a href="{% url 'accounts:admin_approvals' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-colors">
-        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span>อนุมัติพาร์ทเนอร์ (One-Time KYC)</span>
+      <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">การเงิน & ตรวจสอบ</div>
+
+      <a href="{% url 'accounts:admin_approvals' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
+        <span>อนุมัติพาร์ทเนอร์ (KYC)</span>
       </a>
 
-      <a href="{% url 'payments:admin_list' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-colors">
-        <svg class="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-        <span>ตรวจสลิปโอนเงิน (Slip Verification)</span>
+      <a href="{% url 'payments:admin_list' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+        <i data-lucide="receipt" class="w-4 h-4 text-amber-300 group-hover:scale-110 transition-transform"></i>
+        <span>ตรวจสลิปโอนเงิน (Slips)</span>
       </a>
 
-      <a href="{% url 'accounts:admin_catalog' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-colors">
-        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-        </svg>
+      <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">ชุมชน & ความปลอดภัย</div>
+
+      <a href="{% url 'accounts:admin_catalog' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+        <i data-lucide="grid-2x2" class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform"></i>
         <span>แคตตาล็อกรวมชุมชน</span>
       </a>
 
-      <a href="{% url 'accounts:admin_users' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-colors">
-        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
+      <a href="{% url 'accounts:admin_users' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+        <i data-lucide="users" class="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform"></i>
         <span>จัดการผู้ใช้งาน (Users)</span>
       </a>
 
-      <a href="{% url 'accounts:admin_audit' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-colors">
-        <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+      <a href="{% url 'accounts:admin_audit' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+        <i data-lucide="activity" class="w-4 h-4 text-rose-400 group-hover:scale-110 transition-transform"></i>
         <span>Audit Logs (ความปลอดภัย)</span>
       </a>
     </nav>
 
     <!-- Bottom user action -->
-    <div class="p-4 border-t border-slate-800 text-xs">
-      <div class="text-slate-400 truncate mb-2">{{ user.email }}</div>
-      <a href="{% url 'accounts:logout' %}" class="text-rose-400 hover:text-rose-300 font-medium">ออกจากระบบ</a>
+    <div class="p-4 border-t border-slate-800 bg-slate-950 text-xs">
+      <div class="flex items-center justify-between mb-2">
+        <div class="min-w-0">
+          <span class="text-white font-medium block truncate">{{ user.first_name|default:user.email }}</span>
+          <span class="text-[10px] text-slate-400 truncate block">{{ user.email }}</span>
+        </div>
+      </div>
+      <a href="{% url 'accounts:logout' %}" class="flex items-center space-x-2 text-rose-400 hover:text-rose-300 font-medium transition-colors pt-2 border-t border-slate-800/60">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        <span>ออกจากระบบ</span>
+      </a>
     </div>
   </aside>
 
   <!-- Main Content View -->
-  <div class="flex-1 flex flex-col min-w-0">
-    <header class="h-20 bg-white border-b border-slate-200 px-6 flex items-center justify-between shadow-sm">
-      <h1 class="text-lg font-bold text-slate-900">{% block admin_heading %}ศูนย์ปฏิบัติการความปลอดภัย{% endblock %}</h1>
-      <div class="flex items-center space-x-4">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-          Active Security Enforced
+  <div class="flex-1 flex flex-col min-w-0 bg-slate-900/60">
+    <header class="h-20 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 px-6 sm:px-8 flex items-center justify-between shadow-sm sticky top-0 z-20">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-300 md:hidden">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-white">{% block admin_heading %}ศูนย์ปฏิบัติการความปลอดภัย{% endblock %}</h1>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Enterprise Management Console & Financial Compliance</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/50">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Security Guard Active</span>
         </span>
-        <a href="{% url 'core:home' %}" class="text-xs text-slate-500 hover:text-slate-800">ไปหน้าเว็บ &rarr;</a>
+        <a href="{% url 'core:home' %}" class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+          <span>ไปหน้าเว็บ</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400"></i>
+        </a>
       </div>
     </header>
 

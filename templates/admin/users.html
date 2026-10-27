@@ -3,19 +3,22 @@
 {% block admin_heading %}ระบบจัดการผู้ใช้งาน (Enterprise User Management){% endblock %}
 
 {% block content %}
-<div class="space-y-6 max-w-6xl">
+<div class="space-y-6 max-w-6xl pb-12">
 
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-    <div>
-      <h2 class="text-base font-bold text-slate-900">ทะเบียนผู้ใช้งานระบบทั้งหมด</h2>
-      <p class="text-xs text-slate-500">
+    <div class="space-y-1">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="users" class="w-5 h-5 text-indigo-400"></i>
+        <h2 class="text-base font-bold text-white">ทะเบียนผู้ใช้งานระบบทั้งหมด</h2>
+      </div>
+      <p class="text-xs text-slate-400">
         ตรวจสอบรายชื่อผู้ใช้งาน จัดการสิทธิ์ และดำเนินการลบบัญชีภายใต้มาตรการ Cascade Guard และ Hierarchy Security
       </p>
     </div>
   </div>
 
   <!-- Search & Filter Bar -->
-  <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+  <div class="bg-slate-950/60 p-4 rounded-3xl border border-slate-800 shadow-xl">
     <form method="GET" action="{% url 'accounts:admin_users' %}" class="flex flex-col sm:flex-row gap-3">
       <div class="flex-1 relative">
         <input 
@@ -23,17 +26,17 @@
           name="q" 
           value="{{ query }}" 
           placeholder="ค้นหาด้วย อีเมล, ชื่อ, นามสกุล หรือเบอร์โทร..." 
-          class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-forest focus:border-transparent"
+          class="w-full pl-10 pr-4 py-2.5 border border-slate-700 bg-slate-900 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
-        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
+        <div class="absolute left-3.5 top-3 text-slate-500">
+          <i data-lucide="search" class="w-4 h-4"></i>
+        </div>
       </div>
 
       <div class="sm:w-64">
         <select 
           name="role" 
-          class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest focus:border-transparent"
+          class="w-full px-3.5 py-2.5 border border-slate-700 bg-slate-900 rounded-2xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           <option value="">-- ทุกบทบาทผู้ใช้งาน --</option>
           {% for role_key, role_label in role_choices %}
@@ -42,12 +45,13 @@
         </select>
       </div>
 
-      <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors shadow-sm">
-        ค้นหา
+      <button type="submit" class="inline-flex items-center justify-center space-x-1.5 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold transition-all shadow-md">
+        <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+        <span>ค้นหา</span>
       </button>
 
       {% if query or role_filter %}
-        <a href="{% url 'accounts:admin_users' %}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-medium text-center transition-colors">
+        <a href="{% url 'accounts:admin_users' %}" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl text-xs font-medium text-center transition-colors">
           ล้างตัวกรอง
         </a>
       {% endif %}
@@ -55,10 +59,10 @@
   </div>
 
   <!-- Users Table -->
-  <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+  <div class="bg-slate-950/60 rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
     <div class="overflow-x-auto">
       <table class="w-full text-left text-xs">
-        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase font-semibold">
+        <thead class="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase font-semibold">
           <tr>
             <th class="p-4">ผู้ใช้งาน</th>
             <th class="p-4">เบอร์โทรศัพท์</th>
@@ -68,50 +72,51 @@
             <th class="p-4 text-right">การจัดการ</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody class="divide-y divide-slate-800/80">
           {% for u in page_obj %}
-            <tr class="hover:bg-slate-50/70 transition-colors">
+            <tr class="hover:bg-slate-900/40 transition-colors">
               <td class="p-4">
-                <div class="font-bold text-slate-900">{{ u.full_name }}</div>
-                <div class="text-[11px] text-slate-500 font-mono">{{ u.email }}</div>
+                <div class="font-bold text-white">{{ u.full_name }}</div>
+                <div class="text-[11px] text-slate-400 font-mono">{{ u.email }}</div>
               </td>
-              <td class="p-4 font-mono text-slate-600">{{ u.phone_number|default:"-" }}</td>
+              <td class="p-4 font-mono text-slate-400">{{ u.phone_number|default:"-" }}</td>
               <td class="p-4">
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold 
-                  {% if u.role == 'SUPER_ADMIN' %}bg-purple-100 text-purple-800
-                  {% elif u.role == 'COMMUNITY_ADMIN' %}bg-indigo-100 text-indigo-800
-                  {% elif u.is_merchant %}bg-amber-100 text-amber-800
-                  {% else %}bg-slate-100 text-slate-700{% endif %}">
+                  {% if u.role == 'SUPER_ADMIN' %}bg-purple-950 text-purple-300 border border-purple-800
+                  {% elif u.role == 'COMMUNITY_ADMIN' %}bg-indigo-950 text-indigo-300 border border-indigo-800
+                  {% elif u.is_merchant %}bg-amber-950 text-amber-300 border border-amber-800
+                  {% else %}bg-slate-800 text-slate-300 border border-slate-700{% endif %}">
                   {{ u.get_role_display }}
                 </span>
               </td>
               <td class="p-4">
                 <div class="flex items-center space-x-1.5">
                   {% if u.is_active %}
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span class="text-emerald-700 font-medium">ปกติ (Active)</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="text-emerald-400 font-medium">ปกติ (Active)</span>
                   {% else %}
-                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                    <span class="text-rose-600 font-medium">ระงับ (Soft-Deleted)</span>
+                    <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                    <span class="text-rose-400 font-medium">ระงับ (Soft-Deleted)</span>
                   {% endif %}
                 </div>
                 {% if u.email_verified %}
-                  <div class="text-[10px] text-emerald-600 font-medium mt-0.5">ยืนยันอีเมลแล้ว</div>
+                  <div class="text-[10px] text-emerald-400/80 font-medium mt-0.5">ยืนยันอีเมลแล้ว</div>
                 {% else %}
-                  <div class="text-[10px] text-amber-600 font-medium mt-0.5">ยังไม่ยืนยันอีเมล</div>
+                  <div class="text-[10px] text-amber-400/80 font-medium mt-0.5">ยังไม่ยืนยันอีเมล</div>
                 {% endif %}
               </td>
               <td class="p-4 text-slate-400">{{ u.date_joined|date:"d M Y H:i" }}</td>
               <td class="p-4 text-right">
                 {% if u.id == request.user.id %}
-                  <span class="text-[11px] text-slate-400 italic">บัญชีปัจจุบัน</span>
+                  <span class="text-[11px] text-slate-500 italic">บัญชีปัจจุบัน</span>
                 {% elif request.user.role == 'COMMUNITY_ADMIN' and u.role == 'SUPER_ADMIN' %}
-                  <span class="text-[11px] text-purple-500 font-medium">สงวนสิทธิ์ Super Admin</span>
+                  <span class="text-[11px] text-purple-400 font-medium">สงวนสิทธิ์ Super Admin</span>
                 {% else %}
                   <form method="POST" action="{% url 'accounts:admin_delete_user' u.id %}" onsubmit="return confirm('ยืนยันลบหรือระงับบัญชีผู้ใช้ {{ u.email }} ? หากมีประวัติการจองหรือการเงิน ระบบจะดำเนินการ Soft-Delete เพื่อคงหลักฐานทางกฎหมาย');" class="inline">
                     {% csrf_token %}
-                    <button type="submit" class="px-3 py-1 rounded-lg text-rose-600 hover:text-white hover:bg-rose-600 border border-rose-200 text-xs font-semibold transition-colors">
-                      ลบบัญชี
+                    <button type="submit" class="inline-flex items-center space-x-1 px-3 py-1.5 rounded-xl text-rose-400 hover:text-white hover:bg-rose-600 border border-rose-800/80 text-xs font-semibold transition-colors">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                      <span>ลบบัญชี</span>
                     </button>
                   </form>
                 {% endif %}
@@ -119,7 +124,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="6" class="p-8 text-center text-xs text-slate-400">
+              <td colspan="6" class="p-8 text-center text-xs text-slate-500">
                 ไม่พบข้อมูลผู้ใช้งานที่ตรงตามเงื่อนไข
               </td>
             </tr>
@@ -130,16 +135,16 @@
 
     <!-- Pagination -->
     {% if page_obj.has_other_pages %}
-      <div class="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 bg-slate-50/50">
+      <div class="p-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 bg-slate-900/60">
         <div>
           แสดงหน้า {{ page_obj.number }} จาก {{ page_obj.paginator.num_pages }} (ทั้งหมด {{ page_obj.paginator.count }} รายการ)
         </div>
-        <div class="flex space-x-1">
+        <div class="flex space-x-1.5">
           {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="px-3 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100">ก่อนหน้า</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="px-3.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white transition-colors">ก่อนหน้า</a>
           {% endif %}
           {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="px-3 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100">ถัดไป</a>
+            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="px-3.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white transition-colors">ถัดไป</a>
           {% endif %}
         </div>
       </div>

@@ -3,58 +3,61 @@
 {% block admin_heading %}บันทึกการตรวจสอบความปลอดภัย (Security Audit Logs){% endblock %}
 
 {% block content %}
-<div class="space-y-6 max-w-6xl">
+<div class="space-y-6 max-w-6xl pb-12">
   
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-    <div>
-      <h2 class="text-base font-bold text-slate-900">ประวัติความเคลื่อนไหวสำคัญในระบบ (Security Events)</h2>
-      <p class="text-xs text-slate-500">เก็บบันทึกข้อมูลความปลอดภัยขั้นต่ำ 90 วัน ไม่บันทึกรหัสผ่านหรือข้อมูลส่วนบุคคลเกินจำเป็น</p>
+    <div class="space-y-1">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="activity" class="w-5 h-5 text-rose-400"></i>
+        <h2 class="text-base font-bold text-white">ประวัติความเคลื่อนไหวสำคัญในระบบ (Security Events)</h2>
+      </div>
+      <p class="text-xs text-slate-400">เก็บบันทึกข้อมูลความปลอดภัยขั้นต่ำ 90 วัน ไม่บันทึกรหัสผ่านหรือข้อมูลส่วนบุคคลเกินจำเป็น</p>
     </div>
 
     <!-- Filter by Action -->
     <div class="flex items-center space-x-2 text-xs">
-      <a href="{% url 'accounts:admin_audit' %}" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 font-semibold">ทั้งหมด</a>
-      <a href="{% url 'accounts:admin_audit' %}?action=LOGIN" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 font-semibold">LOGIN</a>
-      <a href="{% url 'accounts:admin_audit' %}?action=PERMISSION_DENIED" class="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 font-semibold">PERMISSION_DENIED</a>
+      <a href="{% url 'accounts:admin_audit' %}" class="px-3.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white font-semibold transition-colors">ทั้งหมด</a>
+      <a href="{% url 'accounts:admin_audit' %}?action=LOGIN" class="px-3.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold transition-colors">LOGIN</a>
+      <a href="{% url 'accounts:admin_audit' %}?action=PERMISSION_DENIED" class="px-3.5 py-1.5 rounded-xl border border-rose-800 bg-rose-950/80 text-rose-300 font-semibold transition-colors">PERMISSION_DENIED</a>
     </div>
   </div>
 
-  <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+  <div class="bg-slate-950/60 rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
     <table class="w-full text-left text-xs">
-      <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase">
+      <thead class="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase font-semibold">
         <tr>
-          <th class="p-3.5">วันและเวลา</th>
-          <th class="p-3.5">ผู้ดำเนินการ</th>
-          <th class="p-3.5">การกระทำ (Action)</th>
-          <th class="p-3.5">เป้าหมาย (Model / Object)</th>
-          <th class="p-3.5">IP Address</th>
-          <th class="p-3.5">รายละเอียด (Changes)</th>
+          <th class="p-4">วันและเวลา</th>
+          <th class="p-4">ผู้ดำเนินการ</th>
+          <th class="p-4">การกระทำ (Action)</th>
+          <th class="p-4">เป้าหมาย (Model / Object)</th>
+          <th class="p-4">IP Address</th>
+          <th class="p-4">รายละเอียด (Changes)</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
+      <tbody class="divide-y divide-slate-800/80 font-mono text-[11px]">
         {% for log in logs %}
-          <tr class="hover:bg-slate-50">
-            <td class="p-3.5 text-slate-500 font-sans whitespace-nowrap">{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
-            <td class="p-3.5 font-sans font-semibold text-slate-800">{{ log.user.email|default:"Anonymous" }}</td>
-            <td class="p-3.5">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold font-sans
-                           {% if log.action == 'PERMISSION_DENIED' %} bg-rose-100 text-rose-800
-                           {% elif log.action == 'LOGIN' %} bg-emerald-100 text-emerald-800
-                           {% elif log.action == 'LOGOUT' %} bg-slate-100 text-slate-800
-                           {% else %} bg-sky-100 text-sky-800 {% endif %}">
+          <tr class="hover:bg-slate-900/40 transition-colors">
+            <td class="p-4 text-slate-400 font-sans whitespace-nowrap">{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
+            <td class="p-4 font-sans font-semibold text-slate-200">{{ log.user.email|default:"Anonymous" }}</td>
+            <td class="p-4">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold font-sans
+                           {% if log.action == 'PERMISSION_DENIED' %} bg-rose-950 text-rose-300 border border-rose-800
+                           {% elif log.action == 'LOGIN' %} bg-emerald-950 text-emerald-300 border border-emerald-800
+                           {% elif log.action == 'LOGOUT' %} bg-slate-800 text-slate-300 border border-slate-700
+                           {% else %} bg-sky-950 text-sky-300 border border-sky-800 {% endif %}">
                 {{ log.action }}
               </span>
             </td>
-            <td class="p-3.5 text-slate-700">{{ log.model_name }}:{{ log.object_id|truncatechars:12 }}</td>
-            <td class="p-3.5 text-slate-500">{{ log.ip_address|default:"127.0.0.1" }}</td>
-            <td class="p-3.5 text-slate-600 max-w-xs truncate" title="{{ log.changes }}">
+            <td class="p-4 text-slate-400">{{ log.model_name }}:{{ log.object_id|truncatechars:12 }}</td>
+            <td class="p-4 text-slate-500">{{ log.ip_address|default:"127.0.0.1" }}</td>
+            <td class="p-4 text-slate-400 max-w-xs truncate" title="{{ log.changes }}">
               {{ log.changes }}
             </td>
           </tr>
         {% empty %}
           <tr>
-            <td colspan="6" class="p-8 text-center text-slate-400 font-sans text-xs">
-              ยังไม่มีประวัติการบันทึก Audit Logs
+            <td colspan="6" class="p-12 text-center text-slate-500 font-sans text-xs">
+              ยังไม่มีประวัติการบันทึก Audit Logs ในช่วงเวลานี้
             </td>
           </tr>
         {% endfor %}

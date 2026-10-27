@@ -3,38 +3,49 @@
 {% block admin_heading %}ตรวจสอบแคตตาล็อกรวมชุมชน (Community Catalog Audit){% endblock %}
 
 {% block content %}
-<div class="space-y-8 max-w-6xl">
+<div class="space-y-8 max-w-6xl pb-12">
   
-  <div>
-    <h2 class="text-base font-bold text-slate-900">ภาพรวมสินค้าและบริการทั้งหมดในระบบ</h2>
-    <p class="text-xs text-slate-500">ตรวจสอบความถูกต้อง พร้อมแสดงข้อมูลติดต่อเจ้าของจริง (ชื่อ, อีเมล, เบอร์โทรศัพท์)</p>
+  <div class="space-y-1">
+    <div class="flex items-center space-x-2">
+      <i data-lucide="layers" class="w-5 h-5 text-cyan-400"></i>
+      <h2 class="text-base font-bold text-white">ภาพรวมสินค้าและบริการทั้งหมดในระบบ</h2>
+    </div>
+    <p class="text-xs text-slate-400">ตรวจสอบความถูกต้อง พร้อมแสดงข้อมูลติดต่อเจ้าของจริง (ชื่อ, อีเมล, เบอร์โทรศัพท์)</p>
   </div>
 
   <!-- Homestays -->
   <div class="space-y-3">
-    <h3 class="text-sm font-bold text-slate-900">1. โฮมสเตย์ชุมชน ({{ accommodations.count }})</h3>
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+        <i data-lucide="hotel" class="w-4 h-4 text-emerald-400"></i>
+        <span>1. โฮมสเตย์ชุมชน ({{ accommodations.count }})</span>
+      </h3>
+    </div>
+    <div class="bg-slate-950/60 rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
       <table class="w-full text-left text-xs">
-        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase">
+        <thead class="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase font-semibold">
           <tr>
-            <th class="p-3.5">ชื่อโฮมสเตย์</th>
-            <th class="p-3.5">จังหวัด/อำเภอ</th>
-            <th class="p-3.5">เจ้าของโฮมสเตย์</th>
-            <th class="p-3.5">เบอร์โทรศัพท์</th>
-            <th class="p-3.5">สถานะ</th>
+            <th class="p-4">ชื่อโฮมสเตย์</th>
+            <th class="p-4">จังหวัด/อำเภอ</th>
+            <th class="p-4">เจ้าของโฮมสเตย์</th>
+            <th class="p-4">เบอร์โทรศัพท์</th>
+            <th class="p-4 text-right">สถานะ</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody class="divide-y divide-slate-800/80">
           {% for a in accommodations %}
-            <tr class="hover:bg-slate-50">
-              <td class="p-3.5 font-bold text-slate-900">{{ a.name }}</td>
-              <td class="p-3.5 text-slate-600">{{ a.district }}, {{ a.province }}</td>
-              <td class="p-3.5 text-slate-800">{{ a.owner.first_name }} {{ a.owner.last_name }} ({{ a.owner.email }})</td>
-              <td class="p-3.5 font-mono text-slate-600">{{ a.owner.phone_number|default:"-" }}</td>
-              <td class="p-3.5">
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold
-                             {% if a.status == 'ACTIVE' %} bg-emerald-100 text-emerald-800
-                             {% else %} bg-amber-100 text-amber-800 {% endif %}">
+            <tr class="hover:bg-slate-900/40 transition-colors">
+              <td class="p-4 font-bold text-white">{{ a.name }}</td>
+              <td class="p-4 text-slate-300">{{ a.district }}, {{ a.province }}</td>
+              <td class="p-4 text-slate-300">
+                <div class="font-medium text-white">{{ a.owner.first_name }} {{ a.owner.last_name }}</div>
+                <div class="text-[11px] text-slate-500 font-mono">{{ a.owner.email }}</div>
+              </td>
+              <td class="p-4 font-mono text-slate-400">{{ a.owner.phone_number|default:"-" }}</td>
+              <td class="p-4 text-right">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold
+                             {% if a.status == 'ACTIVE' %} bg-emerald-950 text-emerald-300 border border-emerald-800
+                             {% else %} bg-amber-950 text-amber-300 border border-amber-800 {% endif %}">
                   {{ a.get_status_display }}
                 </span>
               </td>
@@ -47,26 +58,37 @@
 
   <!-- OTOP Products -->
   <div class="space-y-3">
-    <h3 class="text-sm font-bold text-slate-900">2. สินค้าชุมชน OTOP ({{ otop_items.count }})</h3>
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+        <i data-lucide="package" class="w-4 h-4 text-gold"></i>
+        <span>2. สินค้าชุมชน OTOP ({{ otop_items.count }})</span>
+      </h3>
+    </div>
+    <div class="bg-slate-950/60 rounded-3xl border border-slate-800 overflow-hidden shadow-xl">
       <table class="w-full text-left text-xs">
-        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase">
+        <thead class="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase font-semibold">
           <tr>
-            <th class="p-3.5">ชื่อสินค้า</th>
-            <th class="p-3.5">หมวดหมู่</th>
-            <th class="p-3.5">ราคา</th>
-            <th class="p-3.5">สต็อก</th>
-            <th class="p-3.5">ผู้ผลิต/เจ้าของ</th>
+            <th class="p-4">ชื่อสินค้า</th>
+            <th class="p-4">หมวดหมู่</th>
+            <th class="p-4">ราคา</th>
+            <th class="p-4">สต็อก</th>
+            <th class="p-4 text-right">ผู้ผลิต/เจ้าของ</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody class="divide-y divide-slate-800/80">
           {% for o in otop_items %}
-            <tr class="hover:bg-slate-50">
-              <td class="p-3.5 font-bold text-slate-900">{{ o.name }}</td>
-              <td class="p-3.5 text-slate-600">{{ o.get_category_display }}</td>
-              <td class="p-3.5 font-bold text-emerald-700">฿{{ o.price }}</td>
-              <td class="p-3.5 font-semibold text-slate-800">{{ o.stock_quantity }} ชิ้น</td>
-              <td class="p-3.5 text-slate-700">{{ o.owner.email }} ({{ o.owner.phone_number|default:"-" }})</td>
+            <tr class="hover:bg-slate-900/40 transition-colors">
+              <td class="p-4 font-bold text-white">{{ o.name }}</td>
+              <td class="p-4 text-slate-400">
+                <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-300 border border-slate-700">
+                  {{ o.get_category_display }}
+                </span>
+              </td>
+              <td class="p-4 font-bold text-emerald-400 text-sm">฿{{ o.price }}</td>
+              <td class="p-4 font-semibold text-white">{{ o.stock_quantity }} ชิ้น</td>
+              <td class="p-4 text-right text-slate-300 font-mono text-[11px]">
+                {{ o.owner.email }}
+              </td>
             </tr>
           {% endfor %}
         </tbody>

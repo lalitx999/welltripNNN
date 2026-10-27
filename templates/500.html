@@ -3,20 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>500 - เกิดข้อผิดพลาดในระบบ - WellTrip</title>
+  <title>500 - ข้อผิดพลาดของระบบ - WellTrip</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #FAF9F6; color: #111827; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-    .card { background: white; border-radius: 24px; padding: 2.5rem; max-width: 420px; text-align: center; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #E5E7EB; }
-    h1 { font-size: 1.25rem; color: #193E30; margin-bottom: 0.5rem; }
-    p { font-size: 0.85rem; color: #6B7280; line-height: 1.5; margin-bottom: 1.5rem; }
-    .btn { display: inline-block; background: #193E30; color: white; text-decoration: none; padding: 0.75rem 1.75rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 500; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Thai', sans-serif;
+    }
   </style>
 </head>
-<body>
-  <div class="card">
-    <h1>ขออภัย เกิดข้อผิดพลาดในระบบ (500)</h1>
-    <p>ระบบความปลอดภัยได้บันทึกข้อผิดพลาดนี้ไว้แล้ว ทีมงานกำลังเร่งดำเนินการแก้ไข โปรดลองใหม่อีกครั้งในภายหลัง</p>
-    <a href="/" class="btn">กลับสู่หน้าแรก</a>
+<body class="bg-[#faf9f6] text-[#2d2a26] min-h-screen flex items-center justify-center p-4 antialiased">
+  <div class="bg-white rounded-3xl border border-stone-200/90 max-w-md w-full p-8 sm:p-10 text-center space-y-6 shadow-xl relative overflow-hidden">
+    <!-- Subtle glow -->
+    <div class="absolute -right-12 -top-12 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+    <div class="w-20 h-20 rounded-3xl bg-amber-50 text-amber-600 mx-auto flex items-center justify-center ring-1 ring-amber-200/60 shadow-inner">
+      <i data-lucide="wrench" class="w-10 h-10 text-amber-600"></i>
+    </div>
+
+    <div class="space-y-2">
+      <span class="text-xs font-bold text-amber-600 tracking-widest uppercase">500 Server Error</span>
+      <h1 class="text-xl sm:text-2xl font-bold text-[#14231d]">เกิดข้อผิดพลาดภายในระบบ</h1>
+      <p class="text-xs text-stone-500 leading-relaxed max-w-xs mx-auto">
+        ระบบความปลอดภัยได้บันทึกข้อผิดพลาดนี้ไว้เรียบร้อยแล้ว ทีมงานวิศวกรกำลังเร่งตรวจสอบและแก้ไข
+      </p>
+    </div>
+
+    <div class="pt-2">
+      <a href="/" class="inline-flex items-center justify-center space-x-2 px-8 py-3 rounded-full bg-[#14231d] text-white hover:bg-[#1a2e26] text-xs font-bold transition-all shadow-md">
+        <i data-lucide="home" class="w-4 h-4 text-[#c49a45]"></i>
+        <span>กลับสู่หน้าแรก</span>
+      </a>
+    </div>
   </div>
+
+  <script>
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  </script>
 </body>
 </html>

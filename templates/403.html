@@ -3,20 +3,31 @@
 {% block title %}403 - ปฏิเสธการเข้าถึง - WellTrip{% endblock %}
 
 {% block content %}
-<div class="min-h-[60vh] flex items-center justify-center py-16 px-4">
-  <div class="card-luxury max-w-md w-full p-8 text-center space-y-4">
-    <div class="w-16 h-16 rounded-full bg-rose-50 text-rose-600 mx-auto flex items-center justify-center">
-      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
+<div class="min-h-[70vh] flex items-center justify-center py-16 px-4">
+  <div class="bg-white rounded-3xl border border-stone-200/90 max-w-md w-full p-8 sm:p-10 text-center space-y-6 shadow-xl relative overflow-hidden">
+    <!-- Subtle glow -->
+    <div class="absolute -right-12 -top-12 w-40 h-40 bg-rose-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
+    <div class="w-20 h-20 rounded-3xl bg-rose-50 text-rose-600 mx-auto flex items-center justify-center ring-1 ring-rose-200/60 shadow-inner">
+      <i data-lucide="shield-alert" class="w-10 h-10 text-rose-600"></i>
     </div>
-    <h1 class="text-xl font-bold text-forest">ปฏิเสธการเข้าถึง (403 Forbidden)</h1>
-    <p class="text-xs text-earth/70">
-      คุณไม่มีสิทธิ์ในการเข้าถึงหน้าหรือทรัพยากรนี้ ระบบได้ทำการบันทึกข้อมูลความปลอดภัยเรียบร้อยแล้ว
-    </p>
-    <div class="pt-2">
-      <a href="{% url 'core:home' %}" class="btn-primary text-xs px-6 py-2.5">
-        กลับสู่หน้าหลัก
+
+    <div class="space-y-2">
+      <span class="text-xs font-bold text-rose-600 tracking-widest uppercase">403 Access Denied</span>
+      <h1 class="text-xl sm:text-2xl font-bold text-forest">ปฏิเสธการเข้าถึงทรัพยากรนี้</h1>
+      <p class="text-xs text-earth/70 leading-relaxed max-w-xs mx-auto">
+        คุณไม่มีสิทธิ์ในการเข้าถึงหน้าหรือทรัพยากรนี้ ระบบความปลอดภัยได้ทำการบันทึกข้อมูลเพื่อความปลอดภัย
+      </p>
+    </div>
+
+    <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a href="{% url 'core:home' %}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md">
+        <i data-lucide="home" class="w-4 h-4 text-gold"></i>
+        <span>กลับสู่หน้าแรก</span>
+      </a>
+      <a href="{% url 'accounts:login' %}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-full border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-bold text-forest transition-colors">
+        <i data-lucide="log-in" class="w-4 h-4"></i>
+        <span>เข้าสู่ระบบใหม่</span>
       </a>
     </div>
   </div>

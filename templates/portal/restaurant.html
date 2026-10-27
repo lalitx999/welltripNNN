@@ -3,57 +3,71 @@
 {% block page_heading %}สตูดิโอจัดการเมนูอาหารสุขภาพ 5 นิเวศน์{% endblock %}
 
 {% block content %}
-<div class="space-y-8 max-w-5xl">
+<div class="space-y-8 max-w-5xl pb-12">
   
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <!-- Left: Menu Items List -->
     <div class="lg:col-span-2 space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-base font-bold text-forest">เมนูสุขภาพของคุณ ({{ menus.count }} รายการ)</h2>
+        <div class="flex items-center space-x-2">
+          <i data-lucide="utensils" class="w-4 h-4 text-forest"></i>
+          <h2 class="text-sm font-bold text-forest">เมนูสุขภาพของคุณ ({{ menus.count }} รายการ)</h2>
+        </div>
+        <span class="text-[11px] text-earth/50">โภชนาการตามธาตุทั้ง 5</span>
       </div>
 
       {% if menus %}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {% for menu in menus %}
-            <div class="card-luxury p-5 flex flex-col justify-between space-y-3">
-              <div>
-                <div class="flex items-start justify-between gap-2 mb-2">
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-800">
-                    {{ menu.get_wellness_category_display }}
+            <div class="bg-white rounded-3xl border border-stone-200/80 p-5 flex flex-col justify-between space-y-4 hover:border-gold/40 transition-all shadow-xs group">
+              <div class="space-y-2">
+                <div class="flex items-start justify-between gap-2">
+                  <span class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-100">
+                    <i data-lucide="leaf" class="w-3 h-3 text-emerald-600"></i>
+                    <span>{{ menu.get_wellness_category_display }}</span>
                   </span>
-                  <span class="text-sm font-bold text-forest">฿{{ menu.price }}</span>
+                  <span class="text-sm font-bold text-forest group-hover:text-gold transition-colors">฿{{ menu.price }}</span>
                 </div>
                 <h3 class="text-sm font-bold text-forest">{{ menu.name }}</h3>
-                <p class="text-xs text-earth/70 line-clamp-2 mt-1">{{ menu.description|default:"-" }}</p>
+                <p class="text-xs text-earth/70 line-clamp-2 leading-relaxed">{{ menu.description|default:"-" }}</p>
               </div>
 
-              <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
-                <span class="text-[11px] text-gray-500">
-                  {% if menu.calorie_estimate %}{{ menu.calorie_estimate }} kcal{% else %}ไม่ได้ระบุ kcal{% endif %}
+              <div class="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+                <span class="inline-flex items-center space-x-1 text-[11px] text-earth/60 font-medium">
+                  <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-500"></i>
+                  <span>{% if menu.calorie_estimate %}{{ menu.calorie_estimate }} kcal{% else %}ไม่ได้ระบุแคลอรี่{% endif %}</span>
                 </span>
                 <form method="POST" action="{% url 'services:food_delete' menu.id %}" onsubmit="return confirm('ยืนยันลบเมนูนี้?');">
                   {% csrf_token %}
-                  <button type="submit" class="text-rose-600 hover:text-rose-800 font-medium text-[11px]">ลบเมนู</button>
+                  <button type="submit" class="inline-flex items-center space-x-1 text-rose-600 hover:text-rose-800 font-semibold text-[11px] transition-colors">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <span>ลบเมนู</span>
+                  </button>
                 </form>
               </div>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <div class="card-luxury p-10 text-center text-xs text-gray-500">
-          ยังไม่มีเมนูอาหารสุขภาพ กรุณาเพิ่มเมนูทางด้านขวา
+        <div class="bg-white rounded-3xl border border-stone-200/80 p-12 text-center text-xs text-earth/50 space-y-3 shadow-xs">
+          <i data-lucide="salad" class="w-10 h-10 text-stone-300 mx-auto"></i>
+          <p>ยังไม่มีเมนูอาหารสุขภาพ กรุณาเพิ่มเมนูทางแบบฟอร์มด้านขวา</p>
         </div>
       {% endif %}
     </div>
 
     <!-- Right: Add Menu Form -->
-    <div class="card-luxury p-6 space-y-4 h-fit">
-      <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">เพิ่มเมนูสุขภาพใหม่</h3>
-      <form method="POST" action="{% url 'services:restaurant_studio' %}" enctype="multipart/form-data" class="space-y-3">
+    <div class="bg-white rounded-3xl border border-stone-200/80 p-6 space-y-4 h-fit shadow-xs">
+      <div class="flex items-center space-x-2 border-b border-stone-100 pb-3">
+        <i data-lucide="plus-circle" class="w-4 h-4 text-gold"></i>
+        <h3 class="text-sm font-bold text-forest">เพิ่มเมนูสุขภาพใหม่</h3>
+      </div>
+
+      <form method="POST" action="{% url 'services:restaurant_studio' %}" enctype="multipart/form-data" class="space-y-3.5">
         {% csrf_token %}
         <div>
-          <label class="block text-xs font-semibold text-earth mb-1">ชื่อเมนู</label>
+          <label class="block text-xs font-semibold text-earth mb-1">ชื่อเมนู <span class="text-rose-500">*</span></label>
           {{ form.name }}
         </div>
         <div>
@@ -61,7 +75,7 @@
           {{ form.wellness_category }}
         </div>
         <div>
-          <label class="block text-xs font-semibold text-earth mb-1">คำอธิบายและวัตถุดิบ</label>
+          <label class="block text-xs font-semibold text-earth mb-1">คำอธิบายและวัตถุดิบชุมชน</label>
           {{ form.description }}
         </div>
         <div class="grid grid-cols-2 gap-3">
@@ -78,8 +92,9 @@
           <label class="block text-xs font-semibold text-earth mb-1">รูปภาพเมนู (ไม่เกิน 10MB)</label>
           {{ form.image }}
         </div>
-        <button type="submit" class="btn-primary w-full text-xs py-2.5 mt-2">
-          + บันทึกเมนูใหม่
+        <button type="submit" class="w-full inline-flex items-center justify-center space-x-2 py-3 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md mt-2">
+          <i data-lucide="plus" class="w-4 h-4 text-gold"></i>
+          <span>บันทึกเมนูใหม่</span>
         </button>
       </form>
     </div>

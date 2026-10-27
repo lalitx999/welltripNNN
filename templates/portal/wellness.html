@@ -3,7 +3,7 @@
 {% block page_heading %}สตูดิโอบริการนวดแผนไทยและสปา (Wellness Studio){% endblock %}
 
 {% block content %}
-<div class="space-y-8 max-w-5xl">
+<div class="space-y-8 max-w-5xl pb-12">
   
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
@@ -12,61 +12,85 @@
       
       <!-- Services -->
       <div class="space-y-3">
-        <h2 class="text-base font-bold text-forest">บริการนวดและสปาของคุณ ({{ services.count }} รายการ)</h2>
+        <div class="flex items-center space-x-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-forest"></i>
+          <h2 class="text-sm font-bold text-forest">บริการนวดและสปาของคุณ ({{ services.count }} รายการ)</h2>
+        </div>
+
         {% if services %}
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {% for s in services %}
-              <div class="card-luxury p-5 flex flex-col justify-between space-y-2">
+              <div class="bg-white rounded-3xl border border-stone-200/80 p-5 flex flex-col justify-between space-y-3 shadow-xs hover:border-gold/40 transition-colors">
                 <div>
                   <div class="flex items-center justify-between">
-                    <span class="text-xs text-gold font-semibold">{{ s.duration_minutes }} นาที</span>
+                    <span class="inline-flex items-center space-x-1 text-xs text-gold font-bold">
+                      <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                      <span>{{ s.duration_minutes }} นาที</span>
+                    </span>
                     <span class="text-sm font-bold text-forest">฿{{ s.price }}</span>
                   </div>
-                  <h3 class="text-sm font-bold text-forest mt-1">{{ s.name }}</h3>
-                  <p class="text-xs text-earth/70 line-clamp-2">{{ s.description|default:"-" }}</p>
+                  <h3 class="text-sm font-bold text-forest mt-2">{{ s.name }}</h3>
+                  <p class="text-xs text-earth/70 line-clamp-2 mt-1 leading-relaxed">{{ s.description|default:"-" }}</p>
                 </div>
               </div>
             {% endfor %}
           </div>
         {% else %}
-          <div class="card-luxury p-8 text-center text-xs text-gray-500">
-            ยังไม่มีบริการสปา กรุณาเพิ่มบริการทางด้านขวา
+          <div class="bg-white rounded-3xl border border-stone-200/80 p-8 text-center text-xs text-earth/50 space-y-2 shadow-xs">
+            <i data-lucide="sparkles" class="w-8 h-8 text-stone-300 mx-auto"></i>
+            <p>ยังไม่มีบริการสปา กรุณาเพิ่มบริการทางแบบฟอร์มด้านขวา</p>
           </div>
         {% endif %}
       </div>
 
       <!-- Time Slots Table -->
       <div class="space-y-3">
-        <h2 class="text-base font-bold text-forest">รอบเวลาให้บริการ (Time Slots ที่เปิดรับ)</h2>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="calendar" class="w-4 h-4 text-forest"></i>
+            <h2 class="text-sm font-bold text-forest">รอบเวลาให้บริการ (Time Slots ที่เปิดรับ)</h2>
+          </div>
+          <span class="text-[11px] text-earth/50">จัดการรอบเวลา</span>
+        </div>
+
         {% if slots %}
-          <div class="card-luxury overflow-hidden">
+          <div class="bg-white rounded-3xl border border-stone-200/80 overflow-hidden shadow-xs">
             <table class="w-full text-left text-xs">
-              <thead class="bg-gray-50 border-b border-gray-100 text-earth/70 uppercase">
+              <thead class="bg-stone-50/80 border-b border-stone-100 text-earth/70 uppercase font-semibold">
                 <tr>
-                  <th class="p-3.5">บริการ</th>
-                  <th class="p-3.5">วันที่</th>
-                  <th class="p-3.5">รอบเวลา</th>
-                  <th class="p-3.5">ที่ว่างคงเหลือ</th>
-                  <th class="p-3.5 text-right">การจัดการ</th>
+                  <th class="p-4">บริการ</th>
+                  <th class="p-4">วันที่</th>
+                  <th class="p-4">รอบเวลา</th>
+                  <th class="p-4">ที่ว่างคงเหลือ</th>
+                  <th class="p-4 text-right">การจัดการ</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-100">
+              <tbody class="divide-y divide-stone-100">
                 {% for slot in slots %}
                   <tr class="hover:bg-cream/40 transition-colors">
-                    <td class="p-3.5 font-bold text-forest">{{ slot.service.name }}</td>
-                    <td class="p-3.5 font-medium text-earth/70">{{ slot.date|date:"d M Y" }}</td>
-                    <td class="p-3.5 font-semibold text-gold">{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</td>
-                    <td class="p-3.5 font-semibold">
+                    <td class="p-4 font-bold text-forest">{{ slot.service.name }}</td>
+                    <td class="p-4 font-medium text-earth/70">{{ slot.date|date:"d M Y" }}</td>
+                    <td class="p-4 font-bold text-gold">{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</td>
+                    <td class="p-4 font-semibold">
                       {% if slot.capacity_available > 0 %}
-                        <span class="text-emerald-700">{{ slot.capacity_available }}/{{ slot.capacity_total }} ที่</span>
+                        <span class="text-emerald-700 flex items-center gap-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                          {{ slot.capacity_available }}/{{ slot.capacity_total }} ที่
+                        </span>
                       {% else %}
-                        <span class="text-rose-600 font-bold">เต็ม</span>
+                        <span class="text-rose-600 font-bold flex items-center gap-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                          เต็ม
+                        </span>
                       {% endif %}
                     </td>
-                    <td class="p-3.5 text-right">
+                    <td class="p-4 text-right">
                       <form method="POST" action="{% url 'services:wellness_slot_delete' slot.id %}" onsubmit="return confirm('ยืนยันลบรอบเวลานี้?');">
                         {% csrf_token %}
-                        <button type="submit" class="text-rose-600 hover:text-rose-800 font-medium text-[11px]">ลบ</button>
+                        <button type="submit" class="inline-flex items-center space-x-1 text-rose-600 hover:text-rose-800 font-semibold text-[11px] transition-colors">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                          <span>ลบ</span>
+                        </button>
                       </form>
                     </td>
                   </tr>
@@ -75,8 +99,9 @@
             </table>
           </div>
         {% else %}
-          <div class="card-luxury p-8 text-center text-xs text-gray-500">
-            ยังไม่มีการเปิดรอบเวลาบริการ
+          <div class="bg-white rounded-3xl border border-stone-200/80 p-8 text-center text-xs text-earth/50 space-y-2 shadow-xs">
+            <i data-lucide="clock" class="w-8 h-8 text-stone-300 mx-auto"></i>
+            <p>ยังไม่มีการเปิดรอบเวลาบริการ</p>
           </div>
         {% endif %}
       </div>
@@ -87,12 +112,16 @@
     <div class="space-y-6">
       
       <!-- Add Service -->
-      <div class="card-luxury p-6 space-y-4">
-        <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">1. เพิ่มบริการนวด/สปา</h3>
-        <form method="POST" action="{% url 'services:wellness_studio' %}" enctype="multipart/form-data" class="space-y-3">
+      <div class="bg-white rounded-3xl border border-stone-200/80 p-6 space-y-4 shadow-xs">
+        <div class="flex items-center space-x-2 border-b border-stone-100 pb-3">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-gold"></i>
+          <h3 class="text-sm font-bold text-forest">1. เพิ่มบริการนวด/สปา</h3>
+        </div>
+
+        <form method="POST" action="{% url 'services:wellness_studio' %}" enctype="multipart/form-data" class="space-y-3.5">
           {% csrf_token %}
           <div>
-            <label class="block text-xs font-semibold text-earth mb-1">ชื่อบริการ</label>
+            <label class="block text-xs font-semibold text-earth mb-1">ชื่อบริการ <span class="text-rose-500">*</span></label>
             {{ form.name }}
           </div>
           <div>
@@ -109,21 +138,26 @@
               {{ form.duration_minutes }}
             </div>
           </div>
-          <button type="submit" class="btn-primary w-full text-xs py-2.5 mt-2">
-            + บันทึกบริการ
+          <button type="submit" class="w-full inline-flex items-center justify-center space-x-2 py-3 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md mt-2">
+            <i data-lucide="plus" class="w-4 h-4 text-gold"></i>
+            <span>บันทึกบริการ</span>
           </button>
         </form>
       </div>
 
       <!-- Add Slot -->
       {% if services %}
-        <div class="card-luxury p-6 space-y-4">
-          <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">2. เปิดรอบเวลาบริการ (Slot)</h3>
-          <form method="POST" action="{% url 'services:wellness_slot_create' %}" class="space-y-3">
+        <div class="bg-white rounded-3xl border border-stone-200/80 p-6 space-y-4 shadow-xs">
+          <div class="flex items-center space-x-2 border-b border-stone-100 pb-3">
+            <i data-lucide="calendar-plus" class="w-4 h-4 text-gold"></i>
+            <h3 class="text-sm font-bold text-forest">2. เปิดรอบเวลาบริการ (Slot)</h3>
+          </div>
+
+          <form method="POST" action="{% url 'services:wellness_slot_create' %}" class="space-y-3.5">
             {% csrf_token %}
             <div>
               <label class="block text-xs font-semibold text-earth mb-1">เลือกบริการ</label>
-              <select name="service_id" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-forest">
+              <select name="service_id" required class="w-full px-3.5 py-2.5 rounded-2xl border border-stone-200 bg-stone-50 text-xs font-medium text-earth focus:ring-2 focus:ring-forest">
                 {% for s in services %}
                   <option value="{{ s.id }}">{{ s.name }} ({{ s.duration_minutes }} นาที)</option>
                 {% endfor %}
@@ -147,8 +181,9 @@
               <label class="block text-xs font-semibold text-earth mb-1">ความจุรอบนี้ (ท่าน)</label>
               {{ slot_form.capacity_total }}
             </div>
-            <button type="submit" class="btn-gold w-full text-xs py-2.5 mt-2">
-              + เปิดรอบเวลานี้
+            <button type="submit" class="w-full inline-flex items-center justify-center space-x-2 py-3 rounded-full bg-gold text-forest hover:bg-gold-light text-xs font-bold transition-all shadow-md mt-2">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+              <span>เปิดรอบเวลานี้</span>
             </button>
           </form>
         </div>

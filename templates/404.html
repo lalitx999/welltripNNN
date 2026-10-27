@@ -3,20 +3,32 @@
 {% block title %}404 - ไม่พบหน้าที่ต้องการ - WellTrip{% endblock %}
 
 {% block content %}
-<div class="min-h-[60vh] flex items-center justify-center py-16 px-4">
-  <div class="card-luxury max-w-md w-full p-8 text-center space-y-4">
-    <div class="w-16 h-16 rounded-full bg-forest-50 text-forest mx-auto flex items-center justify-center">
-      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+<div class="min-h-[70vh] flex items-center justify-center py-16 px-4">
+  <div class="bg-white rounded-3xl border border-stone-200/90 max-w-md w-full p-8 sm:p-10 text-center space-y-6 shadow-xl relative overflow-hidden">
+    <!-- Background subtle pattern -->
+    <div class="absolute -right-12 -top-12 w-40 h-40 bg-gold/5 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="absolute -left-12 -bottom-12 w-40 h-40 bg-forest/5 rounded-full blur-2xl pointer-events-none"></div>
+
+    <div class="w-20 h-20 rounded-3xl bg-forest/5 text-forest mx-auto flex items-center justify-center ring-1 ring-gold/20 shadow-inner">
+      <i data-lucide="compass" class="w-10 h-10 text-gold animate-spin-slow"></i>
     </div>
-    <h1 class="text-xl font-bold text-forest">ไม่พบหน้าที่คุณต้องการ (404 Not Found)</h1>
-    <p class="text-xs text-earth/70">
-      หน้าที่คุณกำลังค้นหาอาจถูกย้าย เปลี่ยนชื่อ หรือไม่มีอยู่ในระบบการท่องเที่ยวชุมชน
-    </p>
-    <div class="pt-2">
-      <a href="{% url 'core:home' %}" class="btn-primary text-xs px-6 py-2.5">
-        กลับสู่หน้าแรก
+
+    <div class="space-y-2">
+      <span class="text-xs font-bold text-gold tracking-widest uppercase">404 Page Not Found</span>
+      <h1 class="text-xl sm:text-2xl font-bold text-forest">ไม่พบหน้าที่คุณต้องการค้นหา</h1>
+      <p class="text-xs text-earth/70 leading-relaxed max-w-xs mx-auto">
+        หน้าที่คุณกำลังค้นหาอาจถูกย้าย เปลี่ยนชื่อ หรือไม่มีอยู่ในเส้นทางการท่องเที่ยวเชิงสุขภาพชุมชน
+      </p>
+    </div>
+
+    <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a href="{% url 'core:home' %}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md">
+        <i data-lucide="home" class="w-4 h-4 text-gold"></i>
+        <span>กลับสู่หน้าแรก</span>
+      </a>
+      <a href="{% url 'accommodations:list' %}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-full border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-bold text-forest transition-colors">
+        <i data-lucide="map" class="w-4 h-4"></i>
+        <span>ค้นหาที่พัก</span>
       </a>
     </div>
   </div>

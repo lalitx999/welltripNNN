@@ -3,23 +3,33 @@
 {% block page_heading %}ปฏิทินราคาและจัดการห้องว่าง (Mini-PMS){% endblock %}
 
 {% block content %}
-<div class="space-y-6 max-w-5xl">
+<div class="space-y-6 max-w-5xl pb-12">
   
   <!-- Room Selector -->
-  <div class="card-luxury p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-    <div class="space-y-1">
-      <h2 class="text-sm font-bold text-forest">เลือกห้องพักที่ต้องการจัดการปฏิทิน</h2>
-      <p class="text-xs text-earth/60">กำหนดราคาพิเศษและปรับจำนวนห้องว่างรายวัน</p>
+  <div class="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+    <div class="flex items-start space-x-3.5">
+      <div class="w-10 h-10 rounded-2xl bg-forest/5 flex items-center justify-center text-forest shrink-0">
+        <i data-lucide="calendar-check" class="w-5 h-5 text-gold"></i>
+      </div>
+      <div>
+        <h2 class="text-sm font-bold text-forest">เลือกห้องพักที่ต้องการจัดการปฏิทิน</h2>
+        <p class="text-xs text-earth/60 mt-0.5">กำหนดราคาพิเศษรายวัน และปรับจำนวนห้องว่างที่เปิดรับจอง</p>
+      </div>
     </div>
 
-    <form method="GET" action="{% url 'accommodations:calendar' %}" class="flex items-center space-x-2 w-full sm:w-auto">
-      <select name="room_id" onchange="this.form.submit()" class="px-4 py-2 rounded-xl border border-gray-200 text-xs font-semibold focus:ring-2 focus:ring-forest">
-        {% for r in rooms %}
-          <option value="{{ r.id }}" {% if selected_room and selected_room.id == r.id %}selected{% endif %}>
-            {{ r.name }} (ราคาเริ่มต้น ฿{{ r.base_price_per_night }})
-          </option>
-        {% endfor %}
-      </select>
+    <form method="GET" action="{% url 'accommodations:calendar' %}" class="w-full sm:w-auto">
+      <div class="relative">
+        <select name="room_id" onchange="this.form.submit()" class="w-full sm:w-64 pl-4 pr-10 py-2.5 rounded-2xl border border-stone-200 bg-stone-50 text-xs font-semibold text-forest focus:ring-2 focus:ring-forest appearance-none shadow-xs">
+          {% for r in rooms %}
+            <option value="{{ r.id }}" {% if selected_room and selected_room.id == r.id %}selected{% endif %}>
+              {{ r.name }} (฿{{ r.base_price_per_night }}/คืน)
+            </option>
+          {% endfor %}
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-400">
+          <i data-lucide="chevron-down" class="w-4 h-4"></i>
+        </div>
+      </div>
     </form>
   </div>
 
@@ -28,36 +38,57 @@
       
       <!-- Left: Calendar Entries -->
       <div class="lg:col-span-2 space-y-4">
-        <h3 class="text-sm font-bold text-forest">รายการราคาและห้องว่างที่กำหนดไว้ ({{ pricing_list|length }} วันข้างหน้า)</h3>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="clock" class="w-4 h-4 text-forest"></i>
+            <h3 class="text-sm font-bold text-forest">รายการราคาและห้องว่างที่บันทึกไว้ ({{ pricing_list|length }} วันข้างหน้า)</h3>
+          </div>
+          <span class="text-[11px] text-earth/50">อัปเดตแบบเรียลไทม์</span>
+        </div>
         
         {% if pricing_list %}
-          <div class="card-luxury overflow-hidden">
+          <div class="bg-white rounded-3xl border border-stone-200/80 overflow-hidden shadow-xs">
             <table class="w-full text-left text-xs">
-              <thead class="bg-gray-50 border-b border-gray-100 text-earth/70 uppercase">
+              <thead class="bg-stone-50/80 border-b border-stone-100 text-earth/70 uppercase font-semibold">
                 <tr>
-                  <th class="p-3.5">วันที่</th>
-                  <th class="p-3.5">ราคาต่อคืน</th>
-                  <th class="p-3.5">ห้องว่าง (เหลือ)</th>
-                  <th class="p-3.5">สถานะ</th>
+                  <th class="p-4">วันที่</th>
+                  <th class="p-4">ราคาต่อคืน</th>
+                  <th class="p-4">ห้องว่าง (เหลือ)</th>
+                  <th class="p-4 text-right">สถานะ</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-100">
+              <tbody class="divide-y divide-stone-100">
                 {% for p in pricing_list %}
                   <tr class="hover:bg-cream/40 transition-colors">
-                    <td class="p-3.5 font-medium text-forest">{{ p.date|date:"D, d M Y" }}</td>
-                    <td class="p-3.5 font-bold text-gold">฿{{ p.price }}</td>
-                    <td class="p-3.5 font-semibold">
+                    <td class="p-4 font-semibold text-forest">
+                      <div class="flex items-center space-x-2">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-stone-400"></i>
+                        <span>{{ p.date|date:"D, d M Y" }}</span>
+                      </div>
+                    </td>
+                    <td class="p-4 font-bold text-gold text-sm">฿{{ p.price }}</td>
+                    <td class="p-4 font-semibold">
                       {% if p.available_count > 0 %}
-                        <span class="text-emerald-700">{{ p.available_count }} ห้อง</span>
+                        <span class="text-emerald-700 flex items-center gap-1">
+                          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                          {{ p.available_count }} ห้อง
+                        </span>
                       {% else %}
-                        <span class="text-rose-600 font-bold">ห้องเต็ม</span>
+                        <span class="text-rose-600 font-bold flex items-center gap-1">
+                          <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                          ห้องเต็ม
+                        </span>
                       {% endif %}
                     </td>
-                    <td class="p-3.5">
+                    <td class="p-4 text-right">
                       {% if p.available_count > 0 %}
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-800">เปิดรับจอง</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                          เปิดรับจอง
+                        </span>
                       {% else %}
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-800">งดรับจอง</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200">
+                          งดรับจอง
+                        </span>
                       {% endif %}
                     </td>
                   </tr>
@@ -66,42 +97,54 @@
             </table>
           </div>
         {% else %}
-          <div class="card-luxury p-8 text-center text-xs text-gray-500">
-            ยังไม่มีการบันทึกราคารายวัน ระบบจะใช้ราคาเริ่มต้น (฿{{ selected_room.base_price_per_night }}) เป็นค่าเริ่มต้น
+          <div class="bg-white rounded-3xl border border-stone-200/80 p-10 text-center text-xs text-earth/50 space-y-2 shadow-xs">
+            <i data-lucide="calendar-x" class="w-8 h-8 text-stone-300 mx-auto"></i>
+            <p>ยังไม่มีการบันทึกราคารายวันพิเศษ ระบบจะใช้ราคาเริ่มต้น (฿{{ selected_room.base_price_per_night }}) เป็นค่าเริ่มต้นในการรับจอง</p>
           </div>
         {% endif %}
       </div>
 
       <!-- Right: Set Daily Price / Availability -->
-      <div class="card-luxury p-6 space-y-4 h-fit">
-        <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">กำหนดราคา / ห้องว่าง</h3>
-        <form method="POST" action="{% url 'accommodations:calendar' %}?room_id={{ selected_room.id }}" class="space-y-3">
+      <div class="bg-white rounded-3xl border border-stone-200/80 p-6 space-y-4 h-fit shadow-xs">
+        <div class="flex items-center space-x-2 border-b border-stone-100 pb-3">
+          <i data-lucide="edit-3" class="w-4 h-4 text-gold"></i>
+          <h3 class="text-sm font-bold text-forest">กำหนดราคา / ห้องว่าง</h3>
+        </div>
+
+        <form method="POST" action="{% url 'accommodations:calendar' %}?room_id={{ selected_room.id }}" class="space-y-4">
           {% csrf_token %}
           <div>
-            <label class="block text-xs font-semibold text-earth mb-1">วันที่ต้องการปรับ</label>
+            <label class="block text-xs font-semibold text-earth mb-1.5">วันที่ต้องการปรับ</label>
             {{ form.date }}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-earth mb-1">ราคาคืนนี้ (บาท)</label>
+            <label class="block text-xs font-semibold text-earth mb-1.5">ราคาคืนนี้ (บาท)</label>
             {{ form.price }}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-earth mb-1">จำนวนห้องที่เปิดรับ</label>
+            <label class="block text-xs font-semibold text-earth mb-1.5">จำนวนห้องที่เปิดรับ (สต็อก)</label>
             {{ form.available_count }}
           </div>
-          <button type="submit" class="btn-primary w-full text-xs py-2.5 mt-2">
-            บันทึกราคาและสต็อก
+          <button type="submit" class="w-full inline-flex items-center justify-center space-x-2 py-3 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md mt-2">
+            <i data-lucide="check" class="w-4 h-4 text-gold"></i>
+            <span>บันทึกราคาและสต็อก</span>
           </button>
         </form>
       </div>
 
     </div>
   {% else %}
-    <div class="card-luxury p-12 text-center space-y-3">
-      <h3 class="text-base font-bold text-forest">ยังไม่มีห้องพักในระบบ</h3>
-      <p class="text-xs text-earth/60">กรุณาเพิ่มห้องพักในหน้าจัดการโฮมสเตย์ก่อนเริ่มใช้งานปฏิทิน</p>
-      <a href="{% url 'accommodations:homestay_studio' %}" class="btn-primary text-xs px-6 py-2.5 inline-block">
-        ไปเพิ่มห้องพัก &rarr;
+    <div class="bg-white rounded-3xl border border-stone-200/80 p-12 text-center space-y-4 shadow-xs">
+      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+        <i data-lucide="home" class="w-6 h-6"></i>
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-base font-bold text-forest">ยังไม่มีห้องพักในระบบ</h3>
+        <p class="text-xs text-earth/60">กรุณาเพิ่มห้องพักในหน้าจัดการโฮมสเตย์ก่อนเริ่มใช้งานปฏิทิน</p>
+      </div>
+      <a href="{% url 'accommodations:homestay_studio' %}" class="inline-flex items-center space-x-2 px-6 py-2.5 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md">
+        <span>ไปเพิ่มห้องพัก</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
       </a>
     </div>
   {% endif %}
