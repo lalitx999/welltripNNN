@@ -39,6 +39,7 @@ class Accommodation(models.Model):
     
     latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    google_maps_url = models.URLField(max_length=500, blank=True, default="")
 
     status = models.CharField(
         max_length=30,
@@ -73,6 +74,19 @@ class Accommodation(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{slugify(self.name, allow_unicode=True)}-{uuid.uuid4().hex[:6]}"
+        if self.google_maps_url:
+            import re
+            m = re.search(r'@(-?\d+\.\d+),(-?\d+\.\d+)', self.google_maps_url)
+            if not m:
+                m = re.search(r'[?&](?:q|ll)=(-?\d+\.\d+),(-?\d+\.\d+)', self.google_maps_url)
+            if not m:
+                m = re.search(r'^(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)$', self.google_maps_url)
+            if m:
+                try:
+                    self.latitude = Decimal(m.group(1))
+                    self.longitude = Decimal(m.group(2))
+                except Exception:
+                    pass
         super().save(*args, **kwargs)
 
 

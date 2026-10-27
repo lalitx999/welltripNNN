@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q
+from django.utils import timezone
 
 from apps.accounts.models import UserRoles
 from apps.accounts.permissions import role_required, can_edit_object
@@ -67,11 +68,11 @@ def detail_view(request, identifier):
     and direct room booking form.
     """
     try:
-        accommodation = Accommodation.objects.prefetch_related('rooms').get(slug=identifier, status=AccommodationStatus.ACTIVE)
+        accommodation = Accommodation.objects.select_related('owner').prefetch_related('rooms__images').get(slug=identifier, status=AccommodationStatus.ACTIVE)
     except (Accommodation.DoesNotExist, ValueError):
-        accommodation = get_object_or_404(Accommodation.objects.prefetch_related('rooms'), id=identifier, status=AccommodationStatus.ACTIVE)
+        accommodation = get_object_or_404(Accommodation.objects.select_related('owner').prefetch_related('rooms__images'), id=identifier, status=AccommodationStatus.ACTIVE)
 
-    rooms = accommodation.rooms.filter(is_active=True)
+    rooms = accommodation.rooms.filter(is_active=True).prefetch_related('images')
 
     return render(request, 'accommodations/detail.html', {
         'accommodation': accommodation,
@@ -206,12 +207,47 @@ def calendar_view(request):
     selected_room_id = request.GET.get('room_id') or (rooms.first().id if rooms.exists() else None)
     selected_room = rooms.filter(id=selected_room_id).first() if selected_room_id else None
 
+    import calendar
+    from datetime import date
+
+    # Year & Month determination
+    try:
+        year = int(request.GET.get('year') or timezone.now().year)
+        month = int(request.GET.get('month') or timezone.now().month)
+        if not (1 <= month <= 12):
+            month = timezone.now().month
+    except (ValueError, TypeError):
+        year = timezone.now().year
+        month = timezone.now().month
+
+    # Prev and Next month navigation
+    if month == 1:
+        prev_month = 12
+        prev_year = year - 1
+    else:
+        prev_month = month - 1
+        prev_year = year
+
+    if month == 12:
+        next_month = 1
+        next_year = year + 1
+    else:
+        next_month = month + 1
+        next_year = year
+
+    thai_months = [
+        "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ]
+    month_name = f"{thai_months[month]} {year + 543}"
+
     if request.method == "POST" and selected_room:
         form = RoomPricingCalendarForm(request.POST)
         if form.is_valid():
+            p_date = form.cleaned_data['date']
             pricing, created = RoomPricingCalendar.objects.update_or_create(
                 room=selected_room,
-                date=form.cleaned_data['date'],
+                date=p_date,
                 defaults={
                     'price': form.cleaned_data['price'],
                     'available_count': form.cleaned_data['available_count'],
@@ -229,9 +265,43 @@ def calendar_view(request):
                 },
             )
             messages.success(request, f"อัปเดตราคาและจำนวนห้องว่างวันที่ {pricing.date} สำเร็จ")
-            return redirect(f"{request.path}?acc_id={accommodation.id}&room_id={selected_room.id}")
+            return redirect(f"{request.path}?acc_id={accommodation.id}&room_id={selected_room.id}&year={p_date.year}&month={p_date.month}")
 
-    pricing_list = selected_room.pricing_calendars.order_by('date')[:30] if selected_room else []
+    # Build Calendar Matrix
+    cal = calendar.monthcalendar(year, month)
+    pricing_map = {}
+    if selected_room:
+        for p in RoomPricingCalendar.objects.filter(room=selected_room, date__year=year, date__month=month):
+            pricing_map[p.date.day] = p
+
+    calendar_weeks = []
+    today = timezone.now().date()
+    for week in cal:
+        week_days = []
+        for day in week:
+            if day == 0:
+                week_days.append(None)
+            else:
+                day_date = date(year, month, day)
+                p = pricing_map.get(day)
+                price = p.price if p else (selected_room.base_price_per_night if selected_room else Decimal("650.00"))
+                available_count = p.available_count if p else (selected_room.total_rooms_count if selected_room else 1)
+                is_custom = p is not None
+                is_past = day_date < today
+                is_today = day_date == today
+                week_days.append({
+                    'day': day,
+                    'date_str': day_date.strftime('%Y-%m-%d'),
+                    'price': price,
+                    'available_count': available_count,
+                    'total_count': selected_room.total_rooms_count if selected_room else 1,
+                    'is_custom': is_custom,
+                    'is_past': is_past,
+                    'is_today': is_today,
+                    'is_sold_out': available_count <= 0,
+                })
+        calendar_weeks.append(week_days)
+
     form = RoomPricingCalendarForm()
 
     return render(request, 'portal/calendar.html', {
@@ -239,6 +309,13 @@ def calendar_view(request):
         'owner_accommodations': owner_accommodations,
         'rooms': rooms,
         'selected_room': selected_room,
-        'pricing_list': pricing_list,
+        'calendar_weeks': calendar_weeks,
+        'year': year,
+        'month': month,
+        'prev_year': prev_year,
+        'prev_month': prev_month,
+        'next_year': next_year,
+        'next_month': next_month,
+        'month_name': month_name,
         'form': form,
     })

@@ -7,7 +7,7 @@ from apps.core.services.media import sanitize_and_strip_image
 class AccommodationForm(forms.ModelForm):
     class Meta:
         model = Accommodation
-        fields = ['name', 'description', 'address', 'subdistrict', 'district', 'province', 'postal_code']
+        fields = ['name', 'description', 'address', 'subdistrict', 'district', 'province', 'postal_code', 'google_maps_url']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-forest'}),
             'description': forms.Textarea(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-forest', 'rows': 3}),
@@ -16,6 +16,7 @@ class AccommodationForm(forms.ModelForm):
             'district': forms.TextInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-forest'}),
             'province': forms.TextInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-forest'}),
             'postal_code': forms.TextInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-forest'}),
+            'google_maps_url': forms.TextInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-forest', 'placeholder': 'เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225'}),
         }
 
 
