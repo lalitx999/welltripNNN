@@ -16,6 +16,7 @@ urlpatterns = [
     path('bookings/', include('apps.bookings.urls')),
     path('payments/', include('apps.payments.urls')),
     path('community/', include('apps.community.urls')),
+    path('ai/', include('apps.ai_recommendations.urls')),
 ]
 
 if settings.DEBUG:

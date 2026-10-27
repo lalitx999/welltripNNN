@@ -1,0 +1,1 @@
+# ai_recommendations app

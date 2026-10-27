@@ -36,6 +36,7 @@ LOCAL_APPS = [
     'apps.bookings.apps.BookingsConfig',
     'apps.payments.apps.PaymentsConfig',
     'apps.community.apps.CommunityConfig',
+    'apps.ai_recommendations.apps.AiRecommendationsConfig',
     'apps.core.apps.CoreConfig',
 ]
 
