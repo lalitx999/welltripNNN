@@ -45,7 +45,7 @@ def cart_add_view(request):
     title = request.POST.get('title', 'สินค้า/บริการ')
     price = request.POST.get('price', '0.00')
     quantity = int(request.POST.get('quantity', 1))
-    item_date = request.POST.get('date', '')
+    item_date = request.POST.get('date', '') or request.POST.get('check_in', '')
 
     # Check if duplicate item already in cart (for non-dated items)
     found = False

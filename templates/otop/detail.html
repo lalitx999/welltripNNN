@@ -99,14 +99,19 @@
           </span>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-3">
+        <form method="POST" action="{% url 'bookings:cart_add' %}" class="flex flex-col sm:flex-row gap-3">
+          {% csrf_token %}
+          <input type="hidden" name="item_type" value="OTOP">
+          <input type="hidden" name="entity_id" value="{{ product.id }}">
+          <input type="hidden" name="title" value="{{ product.name }}">
+          <input type="hidden" name="price" value="{{ product.price }}">
+          <input type="hidden" name="quantity" :value="qty" value="1">
           <button 
-            type="button"
-            onclick="alert('เพิ่มสินค้าลงตะกร้าเรียบร้อยแล้ว')"
+            type="submit"
             class="flex-1 min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
           >
             <i data-lucide="shopping-bag" class="w-4 h-4 text-[#c49a45]"></i>
-            <span>สั่งซื้อสินค้า / สั่งจอง</span>
+            <span>เพิ่มลงตะกร้าสินค้า</span>
           </button>
           <a
             href="{% url 'otop:list' %}"
@@ -114,7 +119,7 @@
           >
             ดูสินค้าอื่น
           </a>
-        </div>
+        </form>
       </div>
 
       <!-- Trust Assurances -->

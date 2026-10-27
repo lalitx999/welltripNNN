@@ -42,9 +42,26 @@ def process_checkout(user, cart_items, customer_notes="", request=None):
 
         if item_type == BookingItemType.ROOM:
             # Book room for specified date
-            room = Room.objects.select_related("accommodation__owner").get(id=entity_id)
+            try:
+                room = Room.objects.select_related("accommodation__owner").get(id=entity_id)
+            except (Room.DoesNotExist, ValueError):
+                acc = Accommodation.objects.select_related("owner").get(id=entity_id)
+                room = acc.rooms.first()
+                if not room:
+                    room = Room.objects.create(
+                        accommodation=acc,
+                        name=f"ห้องพัก {acc.name}",
+                        base_price_per_night=acc.min_price_per_night,
+                    )
+
             booking_date_str = item.get("date")
-            booking_date = datetime.strptime(booking_date_str, "%Y-%m-%d").date() if isinstance(booking_date_str, str) else booking_date_str
+            if booking_date_str:
+                try:
+                    booking_date = datetime.strptime(str(booking_date_str)[:10], "%Y-%m-%d").date()
+                except Exception:
+                    booking_date = timezone.now().date()
+            else:
+                booking_date = timezone.now().date()
 
             # Row lock the calendar row for this date
             calendar = (
@@ -85,31 +102,54 @@ def process_checkout(user, cart_items, customer_notes="", request=None):
             })
 
         elif item_type == BookingItemType.WELLNESS:
-            slot = (
-                WellnessTimeSlot.objects.select_for_update()
-                .select_related("service__owner")
-                .get(id=int(entity_id))
-            )
+            slot = None
+            try:
+                slot = (
+                    WellnessTimeSlot.objects.select_for_update()
+                    .select_related("service__owner")
+                    .get(id=int(entity_id))
+                )
+            except (ValueError, TypeError, WellnessTimeSlot.DoesNotExist):
+                slot = None
 
-            if slot.capacity_available < quantity:
-                raise StockUnavailableError(f"รอบเวลาบริการ '{slot.service.name}' เต็มแล้ว")
+            if slot:
+                if slot.capacity_available < quantity:
+                    raise StockUnavailableError(f"รอบเวลาบริการ '{slot.service.name}' เต็มแล้ว")
 
-            slot.capacity_available -= quantity
-            slot.save(update_fields=["capacity_available"])
+                slot.capacity_available -= quantity
+                slot.save(update_fields=["capacity_available"])
 
-            subtotal = slot.service.price * quantity
-            total_booking_amount += subtotal
+                subtotal = slot.service.price * quantity
+                total_booking_amount += subtotal
 
-            pending_items_to_create.append({
-                "vendor": slot.service.owner,
-                "item_type": BookingItemType.WELLNESS,
-                "entity_id": str(slot.id),
-                "item_title_snapshot": f"{slot.service.name} [{slot.start_time.strftime('%H:%M')}-{slot.end_time.strftime('%H:%M')}]",
-                "unit_price_snapshot": slot.service.price,
-                "quantity": quantity,
-                "subtotal": subtotal,
-                "booking_metadata": {"date": str(slot.date), "slot_id": slot.id},
-            })
+                pending_items_to_create.append({
+                    "vendor": slot.service.owner,
+                    "item_type": BookingItemType.WELLNESS,
+                    "entity_id": str(slot.id),
+                    "item_title_snapshot": f"{slot.service.name} [{slot.start_time.strftime('%H:%M')}-{slot.end_time.strftime('%H:%M')}]",
+                    "unit_price_snapshot": slot.service.price,
+                    "quantity": quantity,
+                    "subtotal": subtotal,
+                    "booking_metadata": {"date": str(slot.date), "slot_id": slot.id},
+                })
+            else:
+                service = (
+                    WellnessService.objects.select_related("owner")
+                    .get(id=entity_id)
+                )
+                subtotal = service.price * quantity
+                total_booking_amount += subtotal
+
+                pending_items_to_create.append({
+                    "vendor": service.owner,
+                    "item_type": BookingItemType.WELLNESS,
+                    "entity_id": str(service.id),
+                    "item_title_snapshot": f"{service.name} ({service.duration_minutes} นาที)",
+                    "unit_price_snapshot": service.price,
+                    "quantity": quantity,
+                    "subtotal": subtotal,
+                    "booking_metadata": {"duration_minutes": service.duration_minutes},
+                })
 
         elif item_type == BookingItemType.OTOP:
             product = (

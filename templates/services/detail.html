@@ -100,18 +100,23 @@
       </div>
 
       <!-- Action Button -->
-      <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+      <form method="POST" action="{% url 'bookings:cart_add' %}" class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+        {% csrf_token %}
+        <input type="hidden" name="item_type" value="{% if service_type == 'food' %}FOOD{% else %}WELLNESS{% endif %}">
+        <input type="hidden" name="entity_id" value="{{ item.id }}">
+        <input type="hidden" name="title" value="{{ item.name }}">
+        <input type="hidden" name="price" value="{{ item.price }}">
+        <input type="hidden" name="quantity" value="1">
         <button 
-          type="button"
-          onclick="alert('เพิ่มรายการเรียบร้อยแล้ว')"
+          type="submit"
           class="flex-1 min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
         >
           <i data-lucide="shopping-bag" class="w-4 h-4 text-[#c49a45]"></i>
           <span>
             {% if service_type == 'food' %}
-              สั่งจองเมนูอาหารสุขภาพ
+              สั่งจองเมนูอาหาร (เพิ่มลงตะกร้า)
             {% else %}
-              จองรอบเวลาบริการสปา
+              จองบริการสปา (เพิ่มลงตะกร้า)
             {% endif %}
           </span>
         </button>
@@ -121,7 +126,7 @@
         >
           ดูบริการอื่น
         </a>
-      </div>
+      </form>
 
     </div>
 

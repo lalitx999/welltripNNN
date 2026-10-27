@@ -58,7 +58,7 @@ def service_detail_view(request, service_type, item_id):
         })
     elif service_type in ('wellness', 'spa'):
         item = get_object_or_404(WellnessService.objects.select_related('owner'), id=item_id, is_active=True)
-        slots = item.time_slots.filter(capacity_available__gt=0).order_by('slot_date', 'start_time')
+        slots = item.time_slots.filter(capacity_available__gt=0).order_by('date', 'start_time')
         return render(request, 'services/detail.html', {
             'item': item,
             'service_type': 'wellness',
