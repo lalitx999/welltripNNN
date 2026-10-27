@@ -8,4 +8,9 @@ urlpatterns = [
     path('api/locations/', views.locations_api_view, name='locations_api'),
     path('passport/', views.passport_view, name='passport'),
     path('stamp/<str:qr_secret>/', views.claim_stamp_view, name='claim_stamp'),
+    path('stories/', views.stories_list_view, name='stories_list'),
+    path('stories/<uuid:story_id>/', views.story_detail_view, name='story_detail'),
+    path('coupon/validate/', views.validate_coupon_htmx_view, name='validate_coupon'),
+    path('location/my-events/', views.my_location_events_view, name='my_location_events'),
 ]
+

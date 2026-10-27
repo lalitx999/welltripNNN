@@ -8,7 +8,7 @@ from apps.accounts.models import User, UserRoles
 from apps.accommodations.models import Accommodation, Room, RoomPricingCalendar, AccommodationStatus
 from apps.services.models import FoodMenu, FoodWellnessCategory, WellnessService, WellnessTimeSlot
 from apps.otop.models import OTOPProduct, OTOPCategory
-from apps.community.models import MapLocation, MapLocationCategory
+from apps.community.models import MapLocation, MapLocationCategory, Coupon, EditorialEntry
 
 
 class Command(BaseCommand):
@@ -344,4 +344,80 @@ class Command(BaseCommand):
             },
         )
 
+        # 7. Coupons & Promo Codes
+        Coupon.objects.get_or_create(
+            code="WELLTRIP100",
+            defaults={
+                "discount_amount": Decimal("100.00"),
+                "min_purchase": Decimal("500.00"),
+                "expires_at": timezone.now() + timedelta(days=365),
+                "is_active": True,
+            },
+        )
+        Coupon.objects.get_or_create(
+            code="SISAKET50",
+            defaults={
+                "discount_amount": Decimal("50.00"),
+                "min_purchase": Decimal("300.00"),
+                "expires_at": timezone.now() + timedelta(days=365),
+                "is_active": True,
+            },
+        )
+
+        # 8. Editorial Stories & Community Wisdom
+        EditorialEntry.objects.get_or_create(
+            title="การฟื้นฟูวิถีย้อมผ้าไหมสีมะเกลือโบราณ ชุมชนบ้านโนนกอง ศรีสะเกษ",
+            defaults={
+                "kind": EditorialEntry.Kind.STORY,
+                "title_en": "Reviving the Ancient Ebony-Dyed Silk Heritage of Ban Non Kong",
+                "summary": "สืบสานภูมิปัญญาการย้อมผ้าไหมด้วยผลมะเกลือธรรมชาติ ภูมิปัญญาอีสานใต้ที่ให้สีดำสนิท นุ่ม เงางาม และเป็นมิตรต่อสิ่งแวดล้อม",
+                "body": (
+                    "ชุมชนบ้านโนนกอง อำเภอกันทรลักษ์ จังหวัดศรีสะเกษ เป็นแหล่งทอผ้าไหมมัดหมี่โบราณที่สืบทอดกันมากว่าร้อยปี "
+                    "เอกลักษณ์อันเลื่องชื่อคือ 'การย้อมมะเกลือ' โดยใช้ผลมะเกลือสดจากต้นในชุมชน นำมาตำและหมักจนเกิดสีดำสนิทธรรมชาติ "
+                    "ต้องผ่านกระบวนการย้อมและตากแดดซ้ำๆ กว่า 30-40 แดด เพื่อให้เม็ดสีแทรกซึมลึกสู่เส้นไหม "
+                    "ผ้าไหมย้อมมะเกลือของที่นี่จึงไม่เพียงแต่มีสีดำขลับสง่างาม แต่ยังมีคุณสมบัตินุ่ม ลื่นมือ ยิ่งซักยิ่งเงา "
+                    "และที่สำคัญคือกระบวนการทั้งหมดไม่ใช้สารเคมีสังเคราะห์แม้แต่น้อย ช่วยรักษาสิ่งแวดล้อมและสุขภาพของช่างทอ"
+                ),
+                "location": "อ.กันทรลักษ์ จ.ศรีสะเกษ",
+                "image_url": "/static/images/cocoa_craft_sisaket.jpg",
+                "is_published": True,
+            },
+        )
+        EditorialEntry.objects.get_or_create(
+            title="มหัศจรรย์ดินภูเขาไฟ: ทำไมทุเรียนและหอมแดงขุนหาญถึงมีเอกลักษณ์ GI",
+            defaults={
+                "kind": EditorialEntry.Kind.COMMUNITY,
+                "title_en": "The Volcanic Soil Miracle: Why Sisaket Durian & Shallots Earned GI Status",
+                "summary": "ดินแดนแห่งภูเขาไฟโบราณที่อุดมด้วยแร่ธาตุโพแทสเซียม ฟอสฟอรัส และกำมะถันธรรมชาติ รังสรรค์ผลผลิตเกษตรอินทรีย์ระดับโลก",
+                "body": (
+                    "อำเภอขุนหาญและอำเภอกันทรลักษ์ เป็นพื้นที่ที่เคยเป็นแนวภูเขาไฟโบราณเมื่อหลายล้านปีก่อน "
+                    "ทำให้ดินในแถบนี้เป็นดินสีแดงร่วนซุยที่อุดมสมบูรณ์ไปด้วยแร่ธาตุอาหารพืชธรรมชาติอย่างหนาแน่น "
+                    "ส่งผลให้ 'ทุเรียนภูเขาไฟศรีสะเกษ' มีเนื้อแห้ง เนียนนุ่ม ละเอียด หวานมัน กลิ่นไม่ฉุนรุนแรง "
+                    "ขณะที่ 'หอมแดงศรีสะเกษ' มีเปลือกบาง สีแดงเข้ม กลิ่นหอมฉุนและมีสารเควอร์ซิทีนสูงกว่าปกติ "
+                    "การท่องเที่ยวเชิงเกษตรที่นี่จึงเปิดโอกาสให้นักท่องเที่ยวได้เด็ดผลไม้สดจากต้น และเรียนรู้วิถีเกษตรอินทรีย์ปลอดสารพิษอย่างแท้จริง"
+                ),
+                "location": "อ.ขุนหาญ จ.ศรีสะเกษ",
+                "image_url": "/static/images/sisaket-nature-concept.webp",
+                "is_published": True,
+            },
+        )
+        EditorialEntry.objects.get_or_create(
+            title="ปราสาทสระกำแพงใหญ่: อารยธรรมหินทรายพันปีและสปิริตแห่งอีสานใต้",
+            defaults={
+                "kind": EditorialEntry.Kind.ATTRACTION,
+                "title_en": "Prasat Sa Kamphaeng Yai: Millennium-Old Sandstone Heritage",
+                "summary": "โบราณสถานศิลปะขอมโบราณที่สมบูรณ์และงดงามที่สุดแห่งหนึ่งในจังหวัดศรีสะเกษ ศูนย์รวมจิตวิญญาณและประวัติศาสตร์ท้องถิ่น",
+                "body": (
+                    "ปราสาทสระกำแพงใหญ่ หรือวัดสระกำแพงใหญ่ ตั้งอยู่ที่อำเภออุทุมพรพิสัย ก่อสร้างขึ้นในราวพุทธศตวรรษที่ 16 "
+                    "เพื่อเป็นเทวาลัยตามคติศาสนาฮินดู ตัวปราสาทประกอบด้วยปรางค์ก่อด้วยอิฐและหินทราย 3 องค์บนฐานศิลาแลงเดียวกัน "
+                    "ลวดลายทับหลังและหน้าบันสลักเสลาด้วยความประณีต เช่น ภาพพระศิวะร่ายรำ และพระนารายณ์บรรทมสินธุ์ "
+                    "สะท้อนถึงการผสมผสานทางวัฒนธรรมและภูมิปัญญาเชิงช่างโบราณที่สืบเนื่องมาจนถึงวิถีชุมชนรอบข้างในปัจจุบัน"
+                ),
+                "location": "อ.อุทุมพรพิสัย จ.ศรีสะเกษ",
+                "image_url": "/static/images/attractions/prasat-sa-kamphaeng-yai.jpg",
+                "is_published": True,
+            },
+        )
+
         self.stdout.write(self.style.SUCCESS("WellTrip demo data seeded successfully!"))
+

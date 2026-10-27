@@ -1,0 +1,106 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}เรื่องเล่าชุมชนและภูมิปัญญาท้องถิ่นศรีสะเกษ | WellTrip{% endblock %}
+
+{% block content %}
+<div class="bg-cream py-10 lg:py-16 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Header -->
+    <div class="text-center max-w-3xl mx-auto mb-10">
+      <span class="inline-block px-3.5 py-1 rounded-full bg-forest-50 border border-forest/10 text-xs font-semibold text-forest uppercase tracking-wider mb-3">
+        Wisdom &amp; Stories
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-bold text-forest tracking-tight">
+        เรื่องเล่าวิถีชุมชน <br>
+        <span class="text-gold">และภูมิปัญญาเมืองศรีสะเกษ</span>
+      </h1>
+      <p class="text-sm text-earth/70 mt-2 font-light">
+        สัมผัสเรื่องราวการสืบทอดภูมิปัญญาย้อมผ้าไหมมะเกลือ เกษตรอินทรีย์ดินภูเขาไฟ และเทศกาลประเพณีท้องถิ่น
+      </p>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="flex items-center justify-center flex-wrap gap-2 mb-10">
+      <a href="{% url 'community:stories_list' %}"
+         class="text-xs px-4 py-2 rounded-full font-medium transition-all duration-200 border
+                {% if selected_kind == 'ALL' %} bg-forest text-white border-forest shadow-sm {% else %} bg-white text-earth/80 border-gray-200 hover:border-forest/40 {% endif %}">
+        ทั้งหมด
+      </a>
+      {% for code, label in kinds %}
+        <a href="?kind={{ code }}"
+           class="text-xs px-4 py-2 rounded-full font-medium transition-all duration-200 border
+                  {% if selected_kind == code %} bg-forest text-white border-forest shadow-sm {% else %} bg-white text-earth/80 border-gray-200 hover:border-forest/40 {% endif %}">
+          {{ label }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- Stories Grid -->
+    {% if stories %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for story in stories %}
+          <article class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 flex flex-col group transition-all duration-300 hover:shadow-lg">
+            <!-- Cover Image -->
+            <div class="h-48 w-full overflow-hidden relative bg-stone-100">
+              {% if story.image_url %}
+                <img src="{{ story.image_url }}" alt="{{ story.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+              {% else %}
+                <img src="{% static 'images/sisaket-nature-concept.webp' %}" alt="{{ story.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+              {% endif %}
+              <div class="absolute top-3 left-3">
+                <span class="px-2.5 py-1 rounded-full bg-forest-dark/80 backdrop-blur-md text-[11px] font-medium text-white shadow-sm">
+                  {{ story.get_kind_display }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6 flex-grow flex flex-col justify-between">
+              <div>
+                {% if story.location %}
+                  <div class="flex items-center space-x-1 text-xs text-gold font-medium mb-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>{{ story.location }}</span>
+                  </div>
+                {% endif %}
+                <h2 class="text-base font-bold text-forest group-hover:text-gold transition-colors line-clamp-2">
+                  <a href="{% url 'community:story_detail' story.id %}">{{ story.title }}</a>
+                </h2>
+                <p class="text-xs text-earth/70 mt-2 line-clamp-3 leading-relaxed font-light">
+                  {{ story.summary|default:story.body|truncatechars:140 }}
+                </p>
+              </div>
+
+              <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between text-xs">
+                <span class="text-earth/50">{{ story.updated_at|date:"d M Y" }}</span>
+                <a href="{% url 'community:story_detail' story.id %}" class="font-semibold text-forest group-hover:text-gold flex items-center space-x-1 transition-colors">
+                  <span>อ่านต่อ</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="bg-white p-12 rounded-3xl border border-dashed border-gray-200 text-center max-w-lg mx-auto">
+        <div class="w-12 h-12 rounded-full bg-forest-50 text-forest flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+          </svg>
+        </div>
+        <h3 class="text-base font-bold text-forest">ยังไม่มีบทความในหมวดหมู่นี้</h3>
+        <p class="text-xs text-earth/60 mt-1">ทีมงานชุมชนกำลังรวบรวมเรื่องเล่าภูมิปัญญาเพื่อนำมาเผยแพร่ในเร็วๆ นี้</p>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
