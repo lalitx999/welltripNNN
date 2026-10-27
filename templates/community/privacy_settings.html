@@ -1,0 +1,199 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}ตั้งค่าความเป็นส่วนตัวและพิกัดตำแหน่ง (PDPA Privacy Settings) — WellTrip Sisaket{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8"
+     x-data="{
+       busy: false,
+       message: null,
+       confirmDelete: false,
+       hasLocation: {{ latest_event|yesno:'true,false' }},
+       deleteHistory() {
+         this.busy = true;
+         fetch('{% url 'community:my_location_events' %}', {
+           method: 'DELETE',
+           headers: {
+             'X-CSRFToken': '{{ csrf_token }}',
+             'Accept': 'application/json'
+           }
+         })
+         .then(r => r.json())
+         .then(data => {
+           this.busy = false;
+           this.confirmDelete = false;
+           this.hasLocation = false;
+           try {
+             localStorage.removeItem('wt_location_handled');
+             localStorage.removeItem('wt_user_coords');
+           } catch(e) {}
+           this.message = {
+             type: 'success',
+             text: 'ลบประวัติตำแหน่งและข้อมูลพิกัดออกจากฐานข้อมูลเรียบร้อยแล้ว (ตามสิทธิ์ PDPA Right to be Forgotten)'
+           };
+         })
+         .catch(err => {
+           this.busy = false;
+           this.message = { type: 'error', text: 'เกิดข้อผิดพลาดในการลบข้อมูล กรุณาลองใหม่อีกครั้ง' };
+         });
+       }
+     }">
+
+  <!-- Breadcrumbs -->
+  <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+    <a href="{% url 'core:home' %}" class="hover:text-[#1f2925] transition-colors">หน้าหลัก</a>
+    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+    <span class="text-[#c49a45] font-bold">ตั้งค่าความเป็นส่วนตัว (PDPA)</span>
+  </nav>
+
+  <header class="space-y-3 border-b border-slate-200 pb-6">
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+      <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-700"></i>
+      <span>PDPA PRIVACY CONTROLS</span>
+    </div>
+    <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1f2925]">
+      การตั้งค่าความเป็นส่วนตัวและสิทธิ์ในการจัดการข้อมูล
+    </h1>
+    <p class="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-2xl">
+      สิทธิ์ของท่านตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) ท่านสามารถตรวจสอบสถานะการเข้าถึงพิกัด และสั่งลบข้อมูลตำแหน่งออกจากระบบได้ทันที
+    </p>
+  </header>
+
+  <!-- Feedback Alert Message -->
+  <template x-if="message">
+    <div :class="message.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'"
+         class="p-4 rounded-2xl border text-xs flex items-center justify-between">
+      <span x-text="message.text"></span>
+      <button @click="message = null" class="text-xs font-bold cursor-pointer">✕</button>
+    </div>
+  </template>
+
+  <div class="space-y-6">
+    
+    <!-- Card 1: Coarse Location Status -->
+    <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs space-y-6">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-[#c49a45] flex items-center justify-center shrink-0">
+            <i data-lucide="map-pin" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="font-serif text-lg font-bold text-[#1f2925]">
+              ข้อมูลพิกัดตำแหน่งที่บันทึกในระบบ (Coarse GPS)
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">
+              ระบบบันทึกพิกัดแบบหยาบ (ความแม่นยำประมาณ 1.1 กม.) เพื่อแนะนำแหล่งท่องเที่ยวและคำนวณระยะทางเท่านั้น
+            </p>
+          </div>
+        </div>
+
+        <span class="px-3 py-1 rounded-full text-xs font-bold shrink-0 {% if latest_event %}bg-emerald-50 text-emerald-700 border border-emerald-200{% else %}bg-slate-100 text-slate-500{% endif %}"
+              x-text="hasLocation ? 'บันทึกอยู่' : 'ไม่มีข้อมูลในระบบ'">
+          {% if latest_event %}บันทึกอยู่{% else %}ไม่มีข้อมูลในระบบ{% endif %}
+        </span>
+      </div>
+
+      <!-- Current Location Details Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100" x-show="hasLocation">
+        <div class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200/70 space-y-1">
+          <span class="text-[10px] text-slate-400 font-bold uppercase">พิกัดละติจูด (หยาบ)</span>
+          <div class="text-sm font-black text-[#1f2925] font-mono">
+            {{ latest_event.latitude|default:"15.12" }}° N
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200/70 space-y-1">
+          <span class="text-[10px] text-slate-400 font-bold uppercase">พิกัดลองจิจูด (หยาบ)</span>
+          <div class="text-sm font-black text-[#1f2925] font-mono">
+            {{ latest_event.longitude|default:"104.32" }}° E
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200/70 space-y-1">
+          <span class="text-[10px] text-slate-400 font-bold uppercase">บันทึกเมื่อ</span>
+          <div class="text-xs font-bold text-[#1f2925]">
+            {{ latest_event.created_at|date:"d M Y H:i น."|default:"-" }}
+          </div>
+        </div>
+      </div>
+
+      <div x-show="!hasLocation" class="text-center py-6 text-xs text-slate-400">
+        ยังไม่มีประวัติการบันทึกพิกัดตำแหน่งในบัญชีของคุณ
+      </div>
+
+      <!-- Action: Delete Location (Right to be Forgotten) -->
+      <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4" x-show="hasLocation">
+        <div class="text-xs text-slate-500">
+          ท่านสามารถสั่งลบประวัติตำแหน่งทั้งหมดออกจากเซิร์ฟเวอร์ได้ทันทีโดยไม่มีการเก็บสำเนา
+        </div>
+
+        <div>
+          <button
+            type="button"
+            x-show="!confirmDelete"
+            @click="confirmDelete = true"
+            class="px-4 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>ลบประวัติตำแหน่ง (PDPA)</span>
+          </button>
+
+          <!-- Confirmation prompt -->
+          <div x-show="confirmDelete" class="flex items-center gap-2">
+            <span class="text-xs text-rose-600 font-bold">ยืนยันการลบ?</span>
+            <button
+              type="button"
+              @click="deleteHistory()"
+              :disabled="busy"
+              class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer"
+            >
+              <span x-text="busy ? 'กำลังลบ...' : 'ใช่, ลบเลย'"></span>
+            </button>
+            <button
+              type="button"
+              @click="confirmDelete = false"
+              class="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
+            >
+              ยกเลิก
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Security & Privacy Principles -->
+    <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs space-y-4">
+      <h3 class="font-serif text-lg font-bold text-[#1f2925]">
+        หลักการคุ้มครองข้อมูลของโครงการวิจัย WellTrip Sisaket
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-600 leading-relaxed">
+        <div class="flex items-start gap-3 p-3 rounded-2xl bg-[#faf9f6]">
+          <i data-lucide="shield" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
+          <div>
+            <div class="font-bold text-[#1f2925]">ความปลอดภัยระดับสูง</div>
+            <div class="text-slate-500 mt-0.5">ระบบเก็บบันทึกรหัสผ่านด้วยการแฮชแบบหน่วยความจำสูง และปกป้องข้อมูลด้วยสถาปัตยกรรม OWASP Top 10</div>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-3 rounded-2xl bg-[#faf9f6]">
+          <i data-lucide="lock" class="w-5 h-5 text-[#c49a45] shrink-0 mt-0.5"></i>
+          <div>
+            <div class="font-bold text-[#1f2925]">ไม่ส่งต่อข้อมูลแก่บุคคลภายนอก</div>
+            <div class="text-slate-500 mt-0.5">ข้อมูลการท่องเที่ยวและพิกัดใช้เฉพาะภายในแพลตฟอร์มเพื่อการเชื่อมต่อชุมชน ไม่มีการนำไปจำหน่ายหรือใช้เชิงพาณิชย์อื่น</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+        <a href="{% url 'core:terms' %}" class="inline-flex items-center gap-1 font-bold text-[#c49a45] hover:underline">
+          <span>อ่านข้อตกลงและนโยบายคุ้มครองข้อมูลส่วนบุคคลฉบับเต็ม</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

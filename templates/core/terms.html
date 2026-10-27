@@ -1,0 +1,98 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}ข้อตกลงการใช้งานและนโยบายคุ้มครองข้อมูลส่วนบุคคล (Terms & PDPA) — WellTrip Sisaket{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  
+  <!-- Breadcrumbs -->
+  <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+    <a href="{% url 'core:home' %}" class="hover:text-[#1f2925] transition-colors">หน้าหลัก</a>
+    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+    <span class="text-[#c49a45] font-bold">ข้อตกลงและนโยบายความเป็นส่วนตัว</span>
+  </nav>
+
+  <header class="space-y-3 border-b border-slate-200 pb-6">
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+      <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-700"></i>
+      <span>LEGAL & PDPA COMPLIANCE</span>
+    </div>
+    <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1f2925]">
+      ข้อตกลงการใช้งานและนโยบายความเป็นส่วนตัว
+    </h1>
+    <p class="text-xs sm:text-sm text-slate-500">
+      อัปเดตล่าสุด: ตุลาคม 2569 · แพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะจังหวัดศรีสะเกษ (WellTrip)
+    </p>
+  </header>
+
+  <div class="prose max-w-none text-slate-700 space-y-6 text-xs sm:text-sm leading-relaxed bg-white p-6 sm:p-10 rounded-3xl border border-slate-200/90 shadow-xs">
+    
+    <section class="space-y-2">
+      <h2 class="text-base sm:text-lg font-bold text-[#1f2925] font-serif border-l-4 border-[#c49a45] pl-3">
+        1. บทนำและวัตถุประสงค์
+      </h2>
+      <p>
+        แพลตฟอร์ม WellTrip พัฒนาขึ้นภายใต้โครงการวิจัยนวัตกรรมการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาชุมชน มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) เพื่อส่งเสริมการท่องเที่ยวชุมชน กระจายรายได้สู่ผู้ประกอบการท้องถิ่น และสนับสนุนการดูแลสุขภาพแบบองค์รวม
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-base sm:text-lg font-bold text-[#1f2925] font-serif border-l-4 border-[#c49a45] pl-3">
+        2. การเก็บรวบรวมข้อมูลส่วนบุคคลตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)
+      </h2>
+      <p>
+        เรายึดมั่นในหลักการจำกัดข้อมูลให้เพียงพอต่อความจำเป็น (Data Minimization):
+      </p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>ข้อมูลบัญชีผู้ใช้:</strong> ชื่อ นามสกุล เบอร์โทรศัพท์ และอีเมล สำหรับการติดต่อ ยืนยันการจอง และการชำระเงิน</li>
+        <li><strong>ข้อมูลตำแหน่งที่ตั้ง (Coarse GPS):</strong> บันทึกเฉพาะเมื่อได้รับความยินยอมจากท่านเท่านั้น โดยระบบจะ<strong>ปัดทศนิยมพิกัดเหลือ 2 ตำแหน่ง (~1.1 กิโลเมตร)</strong> เพื่อป้องกันการระบุตำแหน่งที่พักอาศัยที่แม่นยำเกินไป และนำไปใช้เฉพาะคำนวณระยะทางสู่สถานที่ท่องเที่ยวในจังหวัดศรีสะเกษ</li>
+        <li><strong>รหัสผ่าน:</strong> เข้ารหัสทางเดียวด้วยมาตรฐานความปลอดภัยสูงระดับสากล ไม่มีการจัดเก็บรหัสผ่านเป็นข้อความธรรมดา</li>
+      </ul>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-base sm:text-lg font-bold text-[#1f2925] font-serif border-l-4 border-[#c49a45] pl-3">
+        3. สิทธิ์ของเจ้าของข้อมูล (Data Subject Rights)
+      </h2>
+      <p>
+        ท่านมีสิทธิ์ตามกฎหมาย PDPA ทุกประการ รวมถึง<strong>สิทธิ์ในการขอลบข้อมูลตำแหน่ง (Right to be Forgotten)</strong> โดยท่านสามารถเข้าสู่หน้า <a href="{% url 'community:my_location_events' %}" class="text-[#c49a45] font-bold hover:underline">ตั้งค่าความเป็นส่วนตัว (PDPA)</a> เพื่อลบประวัติตำแหน่งที่เคยบันทึกไว้ทั้งหมดออกจากระบบได้ทันที
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-base sm:text-lg font-bold text-[#1f2925] font-serif border-l-4 border-[#c49a45] pl-3">
+        4. การชำระเงินและการตรวจสอบสลิป
+      </h2>
+      <p>
+        การชำระเงินในระบบดำเนินการผ่าน PromptPay QR และการแนบสลิปโอนเงิน ทีมงานผู้ดูแลระบบจะตรวจสอบความถูกต้องของยอดเงินและเวลาโอนเงินอย่างรัดกุม โดยไม่มีการเผยแพร่ข้อมูลทางการเงินของท่านสู่สาธารณะ
+      </p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-base sm:text-lg font-bold text-[#1f2925] font-serif border-l-4 border-[#c49a45] pl-3">
+        5. ช่องทางการติดต่อเจ้าหน้าที่คุ้มครองข้อมูล
+      </h2>
+      <p>
+        หากมีข้อสงสัยเกี่ยวกับนโยบายความเป็นส่วนตัวหรือต้องการใช้สิทธิ์ตามกฎหมาย PDPA สามารถติดต่อได้ที่:
+        <br>
+        <strong>ศูนย์ประสานงาน WellTrip Sisaket</strong>
+        <br>
+        อีเมล: support@welltripthailand.com · สายด่วน: 045-962-455
+      </p>
+    </section>
+
+  </div>
+
+  <div class="flex items-center justify-between pt-4">
+    <a href="{% url 'community:my_location_events' %}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#1f2925] text-white text-xs font-bold shadow-xs hover:bg-[#2b3832] transition">
+      <i data-lucide="settings" class="w-4 h-4 text-[#c49a45]"></i>
+      <span>ไปยังหน้าตั้งค่าความเป็นส่วนตัว (PDPA)</span>
+    </a>
+    <a href="{% url 'core:home' %}" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
+      กลับสู่หน้าหลัก
+    </a>
+  </div>
+
+</div>
+{% endblock %}

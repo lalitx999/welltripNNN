@@ -213,7 +213,7 @@ def validate_coupon_htmx_view(request):
 def my_location_events_view(request):
     """
     PDPA User Rights:
-    GET: View the latest coarse location logged in PostgreSQL.
+    GET: View the latest coarse location logged in database (HTML or JSON).
     DELETE: Purge all historical location records for this user immediately.
     """
     if request.method == "DELETE":
@@ -229,13 +229,64 @@ def my_location_events_view(request):
         return JsonResponse({"deleted": True, "count": deleted_count})
 
     latest_event = LocationEvent.objects.filter(user=request.user).order_by("-created_at").first()
-    if not latest_event:
-        return JsonResponse({"has_location": False})
 
-    return JsonResponse({
-        "has_location": True,
-        "latitude": float(latest_event.latitude) if latest_event.latitude else None,
-        "longitude": float(latest_event.longitude) if latest_event.longitude else None,
-        "outcome": latest_event.outcome,
-        "created_at": latest_event.created_at.strftime("%Y-%m-%d %H:%M น."),
+    # If JSON is explicitly requested (e.g. from fetch)
+    accept_header = request.headers.get("Accept", "")
+    if "application/json" in accept_header and "text/html" not in accept_header:
+        if not latest_event:
+            return JsonResponse({"has_location": False})
+        return JsonResponse({
+            "has_location": True,
+            "latitude": float(latest_event.latitude) if latest_event.latitude else None,
+            "longitude": float(latest_event.longitude) if latest_event.longitude else None,
+            "outcome": latest_event.outcome,
+            "created_at": latest_event.created_at.strftime("%Y-%m-%d %H:%M น."),
+        })
+
+    # Browser navigation: Render full PDPA Privacy Settings HTML page
+    return render(request, "community/privacy_settings.html", {
+        "latest_event": latest_event,
+        "page_title": "ตั้งค่าความเป็นส่วนตัวและพิกัดตำแหน่ง (PDPA) — WellTrip",
     })
+
+
+@require_http_methods(["POST"])
+def record_location_consent_api_view(request):
+    """
+    Records coarse GPS location consent from tourist (PDPA Data Minimization ~1.1km).
+    Logs an AuditLog entry when user is authenticated.
+    """
+    import json
+    from datetime import timedelta
+    from django.utils import timezone
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        data = request.POST
+
+    outcome = data.get("outcome", "denied").lower()
+    lat = data.get("latitude")
+    lng = data.get("longitude")
+
+    if request.user.is_authenticated:
+        coarse_lat = round(Decimal(str(lat)), 2) if lat is not None else None
+        coarse_lng = round(Decimal(str(lng)), 2) if lng is not None else None
+
+        event = LocationEvent.objects.create(
+            user=request.user,
+            outcome=outcome,
+            latitude=coarse_lat,
+            longitude=coarse_lng,
+            expires_at=timezone.now() + timedelta(days=90),
+        )
+
+        record_audit_log(
+            request=request,
+            action="LOCATION_CONSENT",
+            model_name="LocationEvent",
+            object_id=str(event.id),
+            changes={"outcome": outcome, "coarse_lat": str(coarse_lat), "coarse_lng": str(coarse_lng)},
+            user=request.user,
+        )
+
+    return JsonResponse({"status": "ok", "outcome": outcome})

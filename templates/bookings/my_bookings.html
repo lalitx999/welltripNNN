@@ -1,77 +1,196 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}ประวัติการจองของฉัน - WellTrip Sisaket{% endblock %}
+{% block title %}คำสั่งซื้อและการจองของฉัน — WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 pb-16">
   
-  <div class="space-y-1.5 border-b border-slate-200 pb-4">
-    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
-      <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>
-      <span>MY TRIPS & BOOKINGS</span>
+  <!-- ============================================================================== -->
+  <!-- 1. BREADCRUMB & PAGE HEADER                                                    -->
+  <!-- ============================================================================== -->
+  <div class="space-y-2">
+    <nav class="flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+      <a href="{% url 'core:home' %}" class="hover:text-[#1B2A24] transition-colors">หน้าหลัก</a>
+      <span class="text-stone-300">/</span>
+      <span class="text-[#1B2A24] font-semibold">การจองของฉัน</span>
+    </nav>
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-stone-900 font-serif tracking-tight">
+          คำสั่งซื้อและการจองของฉัน
+        </h1>
+        <p class="text-stone-500 text-xs sm:text-sm mt-0.5">
+          ตรวจสอบสถานะการจองโฮมสเตย์ บริการนวดสปา อาหารสุขภาพ และสินค้าชุมชน OTOP
+        </p>
+      </div>
+
+      <a href="{% url 'core:home' %}" class="px-4 py-2 rounded-2xl bg-white border border-stone-200 text-stone-700 hover:text-stone-900 text-xs font-bold transition shadow-2xs inline-flex items-center gap-1.5 self-start sm:self-auto">
+        <i data-lucide="plus" class="w-3.5 h-3.5 text-[#C49A45]"></i>
+        <span>จองบริการเพิ่ม</span>
+      </a>
     </div>
-    <h1 class="font-serif text-2xl sm:text-4xl font-bold text-[#1f2925]">ประวัติการจองและคำสั่งซื้อของฉัน</h1>
-    <p class="text-xs sm:text-sm text-slate-500">
-      ตรวจสอบสถานะคำสั่งซื้อ โฮมสเตย์ บริการสปา และสินค้า OTOP ที่คุณได้สั่งจอง
-    </p>
   </div>
 
+
+  <!-- ============================================================================== -->
+  <!-- 2. FOUR STATUS TABS (all, active, completed, cancelled)                        -->
+  <!-- ============================================================================== -->
+  <div class="border-b border-stone-200 flex gap-4 sm:gap-6 text-sm font-semibold overflow-x-auto pt-2 scrollbar-none select-none">
+    
+    <!-- Tab 1: All -->
+    <a href="?tab=all" 
+       class="pb-3 flex items-center gap-2 border-b-2 transition-all whitespace-nowrap
+              {% if active_tab == 'all' %} border-[#1B2A24] text-stone-900 font-bold
+              {% else %} border-transparent text-stone-500 hover:text-stone-800 {% endif %}">
+      <span>ทั้งหมด</span>
+      <span class="text-xs px-2 py-0.5 rounded-full {% if active_tab == 'all' %}bg-stone-900 text-white{% else %}bg-stone-100 text-stone-600{% endif %}">
+        {{ all_count }}
+      </span>
+    </a>
+
+    <!-- Tab 2: Active -->
+    <a href="?tab=active" 
+       class="pb-3 flex items-center gap-2 border-b-2 transition-all whitespace-nowrap
+              {% if active_tab == 'active' %} border-[#1B2A24] text-stone-900 font-bold
+              {% else %} border-transparent text-stone-500 hover:text-stone-800 {% endif %}">
+      <span>กำลังดำเนินการ</span>
+      {% if active_count > 0 %}
+        <span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-0.5 rounded-full border border-amber-200">
+          {{ active_count }}
+        </span>
+      {% else %}
+        <span class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">0</span>
+      {% endif %}
+    </a>
+
+    <!-- Tab 3: Completed -->
+    <a href="?tab=completed" 
+       class="pb-3 flex items-center gap-2 border-b-2 transition-all whitespace-nowrap
+              {% if active_tab == 'completed' %} border-[#1B2A24] text-stone-900 font-bold
+              {% else %} border-transparent text-stone-500 hover:text-stone-800 {% endif %}">
+      <span>สำเร็จแล้ว</span>
+      <span class="text-xs px-2 py-0.5 rounded-full {% if active_tab == 'completed' %}bg-stone-900 text-white{% else %}bg-stone-100 text-stone-600{% endif %}">
+        {{ completed_count }}
+      </span>
+    </a>
+
+    <!-- Tab 4: Cancelled / Expired -->
+    <a href="?tab=cancelled" 
+       class="pb-3 flex items-center gap-2 border-b-2 transition-all whitespace-nowrap
+              {% if active_tab == 'cancelled' %} border-[#1B2A24] text-stone-900 font-bold
+              {% else %} border-transparent text-stone-500 hover:text-stone-800 {% endif %}">
+      <span>ยกเลิก / หมดเวลา</span>
+      <span class="text-xs px-2 py-0.5 rounded-full {% if active_tab == 'cancelled' %}bg-stone-900 text-white{% else %}bg-stone-100 text-stone-600{% endif %}">
+        {{ cancelled_count }}
+      </span>
+    </a>
+
+  </div>
+
+
+  <!-- ============================================================================== -->
+  <!-- 3. BOOKINGS LIST (Rich Cards with Status Badges and Actions)                   -->
+  <!-- ============================================================================== -->
   {% if bookings %}
-    <div class="space-y-4">
+    <div class="space-y-4 pt-2">
       {% for b in bookings %}
-        <div class="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-[#c49a45]/40">
-          <div class="space-y-2">
-            <div class="flex items-center gap-3">
-              <span class="text-base font-bold text-[#1f2925] tracking-wide">{{ b.booking_code }}</span>
-              <span class="px-3 py-1 rounded-full text-[10px] font-bold
-                           {% if b.status == 'CONFIRMED' %} bg-emerald-100 text-emerald-800
-                           {% elif b.status == 'AWAITING_PAYMENT' %} bg-amber-100 text-amber-800
-                           {% elif b.status == 'PAYMENT_EXPIRED' %} bg-rose-100 text-rose-800
-                           {% else %} bg-slate-100 text-slate-700 {% endif %}">
+        <div class="bg-white rounded-3xl border border-stone-200/90 shadow-xs hover:border-[#C49A45]/50 transition overflow-hidden p-5 sm:p-6 space-y-4">
+          
+          <!-- Card Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-3.5">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="font-mono text-base font-bold text-stone-900 tracking-wide">{{ b.booking_code }}</span>
+              <span class="px-3 py-1 rounded-full text-xs font-bold
+                {% if b.status == 'CONFIRMED' %} bg-emerald-100 text-emerald-800 border border-emerald-200
+                {% elif b.status == 'AWAITING_PAYMENT' %} bg-amber-100 text-amber-800 border border-amber-200 animate-pulse
+                {% elif b.status == 'COMPLETED' %} bg-teal-100 text-teal-800 border border-teal-200
+                {% elif b.status == 'PAYMENT_EXPIRED' %} bg-rose-100 text-rose-800 border border-rose-200
+                {% else %} bg-stone-100 text-stone-700 {% endif %}">
                 {{ b.get_status_display }}
               </span>
             </div>
-            
-            <div class="text-xs text-slate-500 flex items-center gap-2 font-medium">
-              <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
-              <span>สั่งซื้อเมื่อ: {{ b.created_at|date:"d M Y H:i" }} น.</span>
-              <span>•</span>
-              <span>{{ b.items.count }} รายการ</span>
+
+            <div class="text-xs text-stone-400 font-medium">
+              สั่งซื้อเมื่อ {{ b.created_at|date:"d M Y H:i" }} น.
             </div>
           </div>
 
-          <div class="flex items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-3 sm:pt-0">
-            <div class="text-right">
-              <span class="text-xs text-slate-400 block font-medium">ยอดชำระ</span>
-              <span class="text-lg sm:text-xl font-serif font-bold text-[#c49a45]">฿{{ b.total_amount|floatformat:0 }}</span>
-            </div>
-            <a 
-              href="{% url 'bookings:detail' b.id %}" 
-              class="px-5 py-2.5 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
-            >
-              <span>ดูรายละเอียด</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-            </a>
+          <!-- Items Snapshot -->
+          <div class="space-y-2">
+            {% for item in b.items.all %}
+              <div class="flex items-center justify-between text-xs py-1">
+                <div class="flex items-center gap-2.5 truncate mr-3">
+                  <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold shrink-0
+                    {% if item.item_type == 'ROOM' %} bg-emerald-50 text-emerald-700
+                    {% elif item.item_type == 'FOOD' %} bg-amber-50 text-amber-700
+                    {% elif item.item_type == 'WELLNESS' %} bg-teal-50 text-teal-700
+                    {% else %} bg-purple-50 text-purple-700 {% endif %}">
+                    {{ item.get_item_type_display }}
+                  </span>
+                  <span class="font-semibold text-stone-800 truncate">{{ item.item_title_snapshot }}</span>
+                  <span class="text-stone-400 shrink-0">x {{ item.quantity }}</span>
+                </div>
+                <span class="font-mono text-stone-900 font-semibold shrink-0">฿{{ item.subtotal|floatformat:0 }}</span>
+              </div>
+            {% empty %}
+              <div class="text-xs text-stone-400 italic">คำสั่งซื้อชุมชน</div>
+            {% endfor %}
           </div>
+
+          <!-- Countdown Pill if Awaiting Payment -->
+          {% if b.status == 'AWAITING_PAYMENT' %}
+            <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="clock" class="w-4 h-4 text-amber-600 animate-spin"></i>
+                <span class="font-medium">กรุณาชำระเงินและแนบสลิปเพื่อล็อคโควตาชุมชน</span>
+              </div>
+              <a href="{% url 'payments:payment_instruction' b.id %}" class="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition shadow-xs whitespace-nowrap">
+                ชำระเงินทันที ➔
+              </a>
+            </div>
+          {% endif %}
+
+          <!-- Card Footer with Total & Action Buttons -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 border-t border-stone-100">
+            <div>
+              <span class="text-[11px] text-stone-400 block font-medium">ยอดรวมสุทธิ</span>
+              <span class="text-xl font-serif font-bold text-[#C49A45]">฿{{ b.total_amount|floatformat:2 }}</span>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+              {% if b.status == 'CONFIRMED' %}
+                <a href="{% url 'bookings:detail' b.id %}" class="px-5 py-2.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5">
+                  <i data-lucide="ticket" class="w-4 h-4 text-emerald-300"></i>
+                  <span>ดิจิทัลเวาเชอร์ (Digital Voucher)</span>
+                </a>
+              {% endif %}
+
+              <a href="{% url 'bookings:detail' b.id %}" class="px-4 py-2.5 rounded-2xl bg-[#1B2A24] hover:bg-[#2B3832] text-white text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5">
+                <span>ดูรายละเอียด</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#C49A45]"></i>
+              </a>
+            </div>
+          </div>
+
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <div class="bg-white rounded-3xl border border-slate-200 p-14 text-center space-y-4 shadow-xs">
-      <div class="w-16 h-16 rounded-2xl bg-slate-100 text-[#c49a45] mx-auto flex items-center justify-center">
-        <i data-lucide="calendar-x" class="w-8 h-8"></i>
+    <div class="bg-white rounded-3xl p-12 text-center border border-stone-200/90 shadow-xs space-y-4 my-6">
+      <div class="w-16 h-16 rounded-3xl bg-stone-100 text-stone-400 flex items-center justify-center mx-auto">
+        <i data-lucide="inbox" class="w-8 h-8"></i>
       </div>
-      <h3 class="text-base font-bold text-[#1f2925]">ยังไม่มีประวัติการจอง</h3>
-      <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-        คุณยังไม่มีรายการจองที่พักหรือบริการในระบบ เริ่มต้นค้นหาโฮมสเตย์ชุมชนเพื่อวางแผนทริปสุขภาพได้เลย
-      </p>
-      <a 
-        href="{% url 'accommodations:list' %}" 
-        class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1f2925] text-[#faf9f6] text-xs font-bold hover:bg-[#2b3832] transition shadow-md"
-      >
-        <span>เลือกชมโฮมสเตย์</span>
-        <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45]"></i>
+      <div class="space-y-1">
+        <h3 class="font-bold text-base text-stone-800">ไม่พบรายการจองในแท็บนี้</h3>
+        <p class="text-xs text-stone-500 max-w-sm mx-auto">
+          ยังไม่มีคำสั่งซื้อในหมวดหมู่นี้ คุณสามารถเริ่มต้นสำรวจโฮมสเตย์และบริการเพื่อสุขภาพได้ทันที
+        </p>
+      </div>
+      <a href="{% url 'accommodations:list' %}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#1B2A24] text-white text-xs font-bold hover:bg-[#2B3832] transition shadow-sm">
+        <i data-lucide="compass" class="w-4 h-4 text-[#C49A45]"></i>
+        <span>สำรวจที่พักและบริการ</span>
       </a>
     </div>
   {% endif %}

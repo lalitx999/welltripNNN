@@ -10,5 +10,6 @@ urlpatterns = [
     path('checkout/', views.checkout_view, name='checkout'),
     path('my/', views.my_bookings_view, name='my_bookings'),
     path('my-orders/', views.my_bookings_view, name='my_orders'),
+    path('my-bookings/', views.my_bookings_view, name='my_bookings_alias'),
     path('detail/<uuid:booking_id>/', views.booking_detail_view, name='detail'),
 ]

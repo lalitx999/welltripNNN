@@ -20,38 +20,50 @@
 
     <!-- Navigation links -->
     <nav class="flex-grow px-3.5 py-6 space-y-1 text-xs font-medium overflow-y-auto">
-      <div class="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">ควบคุมระบบ</div>
+      <div class="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">ศูนย์บัญชาการ</div>
 
-      <a href="{% url 'accounts:admin_dashboard' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+      <a href="/accounts/admin-center/?tab=overview" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
         <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform"></i>
-        <span>ภาพรวมศูนย์บัญชาการ</span>
+        <span>1. ภาพรวมศูนย์ควบคุม</span>
       </a>
 
       <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">การเงิน & ตรวจสอบ</div>
 
-      <a href="{% url 'accounts:admin_approvals' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+      <a href="/accounts/admin-center/?tab=approvals" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
         <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
-        <span>อนุมัติพาร์ทเนอร์ (KYC)</span>
+        <span>2. อนุมัติพาร์ทเนอร์ (KYC)</span>
       </a>
 
-      <a href="{% url 'payments:admin_list' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+      <a href="/accounts/admin-center/?tab=payments" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
         <i data-lucide="receipt" class="w-4 h-4 text-amber-300 group-hover:scale-110 transition-transform"></i>
-        <span>ตรวจสลิปโอนเงิน (Slips)</span>
+        <span>3. ตรวจสลิปโอนเงิน (Slips)</span>
       </a>
 
-      <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">ชุมชน & ความปลอดภัย</div>
+      <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">แคตตาล็อก & สมาชิก</div>
 
-      <a href="{% url 'accounts:admin_catalog' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+      <a href="/accounts/admin-center/?tab=catalog" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
         <i data-lucide="grid-2x2" class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform"></i>
-        <span>แคตตาล็อกรวมชุมชน</span>
+        <span>4. แคตตาล็อกรวมชุมชน</span>
       </a>
 
-      <a href="{% url 'accounts:admin_users' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+      <a href="/accounts/admin-center/?tab=users" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
         <i data-lucide="users" class="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform"></i>
-        <span>จัดการผู้ใช้งาน (Users)</span>
+        <span>5. จัดการผู้ใช้งาน (Users)</span>
       </a>
 
-      <a href="{% url 'accounts:admin_audit' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+      <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">พิกัด & เรื่องราวชุมชน</div>
+
+      <a href="/accounts/admin-center/?tab=locations" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+        <i data-lucide="map-pin" class="w-4 h-4 text-teal-400 group-hover:scale-110 transition-transform"></i>
+        <span>6. จุดเช็คอิน & พาสปอร์ต</span>
+      </a>
+
+      <a href="/accounts/admin-center/?tab=content" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group">
+        <i data-lucide="book-open" class="w-4 h-4 text-purple-400 group-hover:scale-110 transition-transform"></i>
+        <span>7. เรื่องราว & บทความมรดก</span>
+      </a>
+
+      <a href="{% url 'accounts:admin_audit' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group mt-2 pt-2 border-t border-slate-800/60">
         <i data-lucide="activity" class="w-4 h-4 text-rose-400 group-hover:scale-110 transition-transform"></i>
         <span>Audit Logs (ความปลอดภัย)</span>
       </a>

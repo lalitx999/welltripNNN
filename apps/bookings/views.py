@@ -132,10 +132,42 @@ def checkout_view(request):
 
 @login_required
 def my_bookings_view(request):
-    """Lists current tourist's bookings with status and countdowns."""
-    bookings = Booking.objects.filter(customer=request.user).order_by('-created_at')
+    """
+    Lists current tourist's bookings with 4 status tabs and countdowns:
+    1. all: ทั้งหมด
+    2. active: กำลังดำเนินการ (AWAITING_PAYMENT, CONFIRMED)
+    3. completed: สำเร็จแล้ว (COMPLETED)
+    4. cancelled: ยกเลิก / คืนเงิน (CANCELLED, PAYMENT_EXPIRED)
+    """
+    user = request.user
+    active_tab = request.GET.get('tab', 'all').strip().lower()
+
+    base_qs = Booking.objects.filter(customer=user).prefetch_related('items').order_by('-created_at')
+
+    # Tab counts
+    all_count = base_qs.count()
+    active_count = base_qs.filter(status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED]).count()
+    completed_count = base_qs.filter(status=BookingStatus.COMPLETED).count()
+    cancelled_count = base_qs.filter(status__in=[BookingStatus.CANCELLED, BookingStatus.PAYMENT_EXPIRED]).count()
+
+    # Filtered queryset based on tab
+    if active_tab == 'active':
+        bookings = base_qs.filter(status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED])
+    elif active_tab == 'completed':
+        bookings = base_qs.filter(status=BookingStatus.COMPLETED)
+    elif active_tab == 'cancelled':
+        bookings = base_qs.filter(status__in=[BookingStatus.CANCELLED, BookingStatus.PAYMENT_EXPIRED])
+    else:
+        active_tab = 'all'
+        bookings = base_qs
+
     return render(request, 'bookings/my_bookings.html', {
         'bookings': bookings,
+        'active_tab': active_tab,
+        'all_count': all_count,
+        'active_count': active_count,
+        'completed_count': completed_count,
+        'cancelled_count': cancelled_count,
     })
 
 

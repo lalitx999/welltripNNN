@@ -7,14 +7,17 @@ from apps.services.models import FoodMenu, WellnessService
 from apps.otop.models import OTOPProduct
 
 
+from apps.bookings.models import Booking, BookingStatus
+from apps.community.models import PassportStamp, LocationEvent, MapLocation
+
+
 @require_GET
-def home_view(request):
+def landing_view(request):
     """
-    Landing Page view:
+    Public Landing Page view:
     Binds real database catalog counts, featured multi-vendor experiences,
     AI wellness goals, and live system statistics to home.html.
     """
-    # Real live counts
     total_stays = Accommodation.objects.filter(status=AccommodationStatus.ACTIVE).count()
     total_wellness = WellnessService.objects.filter(is_active=True).count()
     total_foods = FoodMenu.objects.filter(is_available=True).count()
@@ -109,6 +112,58 @@ def home_view(request):
         'stats': stats,
     }
     return render(request, 'core/home.html', context)
+
+
+# Maintain backward compatibility alias
+home_view = landing_view
+
+
+@require_GET
+def tourist_home_view(request):
+    """
+    Dedicated Tourist Home Dashboard (/home/):
+    Personalized portal for travelers showing active trips, quick booking actions,
+    cultural stamps, and tailored wellness recommendations.
+    """
+    user = request.user
+    active_bookings = []
+    active_bookings_count = 0
+    stamps_count = 0
+    total_bookings_count = 0
+
+    if user.is_authenticated:
+        active_bookings = Booking.objects.filter(
+            customer=user,
+            status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED]
+        ).order_by('-created_at')[:3]
+        active_bookings_count = Booking.objects.filter(
+            customer=user,
+            status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED]
+        ).count()
+        total_bookings_count = Booking.objects.filter(customer=user).count()
+        stamps_count = PassportStamp.objects.filter(user=user).count()
+
+    # Domain catalog samples for quick access
+    featured_stays = Accommodation.objects.filter(status=AccommodationStatus.ACTIVE)[:3]
+    featured_foods = FoodMenu.objects.filter(is_available=True)[:3]
+    featured_spas = WellnessService.objects.filter(is_active=True)[:3]
+    featured_otop = OTOPProduct.objects.filter(is_active=True)[:3]
+    map_locations = MapLocation.objects.filter(is_active=True)[:6]
+
+    context = {
+        'page_title': 'หน้าหลักนักท่องเที่ยว — WellTrip สุขภาวะชุมชนศรีสะเกษ',
+        'active_bookings': active_bookings,
+        'active_bookings_count': active_bookings_count,
+        'total_bookings_count': total_bookings_count,
+        'stamps_count': stamps_count,
+        'featured_stays': featured_stays,
+        'featured_foods': featured_foods,
+        'featured_spas': featured_spas,
+        'featured_otop': featured_otop,
+        'map_locations': map_locations,
+    }
+    return render(request, 'core/home_tourist.html', context)
+
 
 
 
@@ -215,4 +270,12 @@ def contact_view(request):
     """Contact Us page: Official support channels, office address, and contact forms."""
     return render(request, 'core/contact.html', {
         'page_title': 'ติดต่อเรา — WellTrip ช่องทางติดต่อและศูนย์ประสานงานชุมชน',
+    })
+
+
+@require_GET
+def terms_view(request):
+    """Terms of Service and PDPA Privacy Policy page."""
+    return render(request, 'core/terms.html', {
+        'page_title': 'ข้อตกลงการใช้งานและนโยบายคุ้มครองข้อมูลส่วนบุคคล — WellTrip',
     })

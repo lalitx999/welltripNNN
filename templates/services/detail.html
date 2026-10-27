@@ -1,0 +1,131 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}
+  {% if service_type == 'food' %}
+    {{ item.name }} - เมนูอาหารสุขภาพ WellTrip Sisaket
+  {% else %}
+    {{ item.name }} - บริการสปา & นวดแผนไทย WellTrip Sisaket
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  
+  <!-- Breadcrumbs -->
+  <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+    <a href="{% url 'core:home' %}" class="hover:text-[#1f2925] transition-colors">หน้าหลัก</a>
+    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+    <a href="{% url 'services:list' %}" class="hover:text-[#1f2925] transition-colors">อาหารสุขภาพ & สปา</a>
+    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+    <span class="text-[#c49a45] font-bold truncate">{{ item.name }}</span>
+  </nav>
+
+  <!-- Main Container (2 Columns) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+    
+    <!-- Left: Image Showcase (6 cols) -->
+    <div class="lg:col-span-6 space-y-4">
+      <div class="relative overflow-hidden rounded-3xl bg-slate-100 aspect-4/3 shadow-lg border border-slate-200/80">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-full object-cover">
+        {% elif service_type == 'food' %}
+          <img src="{% static 'images/organic_community_food.jpg' %}" alt="{{ item.name }}" class="w-full h-full object-cover">
+        {% else %}
+          <img src="{% static 'images/eco_wellness_spa.jpg' %}" alt="{{ item.name }}" class="w-full h-full object-cover">
+        {% endif %}
+
+        <span class="absolute top-4 left-4 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1f2925]/90 text-[#c49a45] backdrop-blur-md border border-[#c49a45]/30">
+          {% if service_type == 'food' %}
+            {{ item.get_wellness_category_display|default:"อาหารสุขภาพชุมชน" }}
+          {% else %}
+            นวดและสปาสมุนไพรสด
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    <!-- Right: Information & Booking (6 cols) -->
+    <div class="lg:col-span-6 space-y-6">
+      
+      <div class="space-y-2 border-b border-slate-200 pb-6">
+        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#c49a45] uppercase tracking-wider">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span>
+            {% if service_type == 'food' %}
+              HEALTHY DINING
+            {% else %}
+              TRADITIONAL WELLNESS TREATMENT
+            {% endif %}
+          </span>
+        </span>
+
+        <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1f2925]">
+          {{ item.name }}
+        </h1>
+
+        <div class="flex items-baseline gap-2 pt-2">
+          <span class="text-3xl sm:text-4xl font-serif font-bold text-[#c49a45]">
+            ฿{{ item.price|floatformat:0 }}
+          </span>
+          <span class="text-xs text-slate-400">
+            {% if service_type == 'food' %}
+              / จาน (ประมาณ {{ item.calorie_estimate|default:"320" }} kcal)
+            {% else %}
+              / เซสชัน ({{ item.duration_minutes|default:60 }} นาที)
+            {% endif %}
+          </span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">รายละเอียด</h3>
+        <p class="text-sm text-slate-600 leading-relaxed font-normal whitespace-pre-line">
+          {{ item.description|default:"ปรุงและดูแลด้วยวัตถุดิบและภูมิปัญญาท้องถิ่นจ.ศรีสะเกษ สด สะอาด ปลอดภัยเพื่อสุขภาพที่ดีของคุณ" }}
+        </p>
+      </div>
+
+      <!-- Provider / Restaurant Info -->
+      <div class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200/80 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center shrink-0">
+          <i data-lucide="store" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">ผู้ให้บริการชุมชน</span>
+          <span class="block text-xs font-bold text-[#1f2925]">
+            {{ item.owner.first_name|default:item.owner.email }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+        <button 
+          type="button"
+          onclick="alert('เพิ่มรายการเรียบร้อยแล้ว')"
+          class="flex-1 min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <i data-lucide="shopping-bag" class="w-4 h-4 text-[#c49a45]"></i>
+          <span>
+            {% if service_type == 'food' %}
+              สั่งจองเมนูอาหารสุขภาพ
+            {% else %}
+              จองรอบเวลาบริการสปา
+            {% endif %}
+          </span>
+        </button>
+        <a
+          href="{% url 'services:list' %}"
+          class="px-6 min-h-[48px] rounded-2xl border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center justify-center transition"
+        >
+          ดูบริการอื่น
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

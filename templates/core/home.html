@@ -264,6 +264,131 @@
   </section>
 
   <!-- ============================================================================== -->
+  <!-- LOCATION CONSENT COMPONENT (PDPA Compliant Coarse Geolocation Consent)          -->
+  <!-- ============================================================================== -->
+  <section class="mx-auto max-w-6xl px-3 sm:px-6"
+           x-data="{
+             hidden: false,
+             busy: false,
+             success: false,
+             init() {
+               try {
+                 if (localStorage.getItem('wt_location_handled') === 'true') {
+                   this.hidden = true;
+                 }
+               } catch(e) {}
+             },
+             grantLocation() {
+               if (!navigator.geolocation) {
+                 this.denyLocation();
+                 return;
+               }
+               this.busy = true;
+               navigator.geolocation.getCurrentPosition(
+                 (pos) => {
+                   fetch('{% url 'community:record_location_consent_api' %}', {
+                     method: 'POST',
+                     headers: {
+                       'Content-Type': 'application/json',
+                       'X-CSRFToken': '{{ csrf_token }}'
+                     },
+                     body: JSON.stringify({
+                       outcome: 'granted',
+                       latitude: pos.coords.latitude,
+                       longitude: pos.coords.longitude
+                     })
+                   })
+                   .then(r => r.json())
+                   .then(() => {
+                     this.busy = false;
+                     this.success = true;
+                     try { localStorage.setItem('wt_location_handled', 'true'); } catch(e) {}
+                     setTimeout(() => { this.hidden = true; }, 3000);
+                   })
+                   .catch(() => {
+                     this.busy = false;
+                     this.hidden = true;
+                     try { localStorage.setItem('wt_location_handled', 'true'); } catch(e) {}
+                   });
+                 },
+                 (err) => {
+                   this.busy = false;
+                   this.hidden = true;
+                   try { localStorage.setItem('wt_location_handled', 'true'); } catch(e) {}
+                   fetch('{% url 'community:record_location_consent_api' %}', {
+                     method: 'POST',
+                     headers: {
+                       'Content-Type': 'application/json',
+                       'X-CSRFToken': '{{ csrf_token }}'
+                     },
+                     body: JSON.stringify({ outcome: 'denied' })
+                   });
+                 },
+                 { timeout: 10000 }
+               );
+             },
+             denyLocation() {
+               this.hidden = true;
+               try { localStorage.setItem('wt_location_handled', 'true'); } catch(e) {}
+               fetch('{% url 'community:record_location_consent_api' %}', {
+                 method: 'POST',
+                 headers: {
+                   'Content-Type': 'application/json',
+                   'X-CSRFToken': '{{ csrf_token }}'
+                 },
+                 body: JSON.stringify({ outcome: 'denied' })
+               });
+             }
+           }"
+           x-show="!hidden">
+    <div class="rounded-2xl sm:rounded-3xl border border-[#c49a45]/40 bg-gradient-to-r from-[#1f2925] via-[#24332d] to-[#1f2925] p-4 sm:p-5 text-white shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3 text-center sm:text-left">
+        <div class="w-10 h-10 rounded-2xl bg-white/10 text-[#c49a45] flex items-center justify-center shrink-0 border border-white/10">
+          <i data-lucide="locate-fixed" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-white flex items-center gap-1.5 justify-center sm:justify-start">
+            <span>ยินยอมแชร์ตำแหน่งเพื่อแนะนำทริปใกล้คุณ (PDPA Coarse Location)</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-mono border border-emerald-500/30">ความแม่นยำ ~1.1km</span>
+          </div>
+          <p class="text-[11px] text-stone-300 font-light mt-0.5">
+            ระบบจะคำนวณระยะทางสู่โฮมสเตย์และร้านอาหารสุขภาพในศรีสะเกษ และคุณสามารถลบประวัติตำแหน่งได้ตลอดเวลา
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <template x-if="success">
+          <span class="text-xs font-bold text-emerald-400 flex items-center gap-1">
+            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            <span>บันทึกตำแหน่งเรียบร้อย</span>
+          </span>
+        </template>
+        <template x-if="!success">
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              @click="grantLocation()"
+              :disabled="busy"
+              class="px-4 py-2 rounded-xl bg-[#c49a45] hover:bg-[#d6af5d] text-[#1f2925] text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+              <span x-text="busy ? 'กำลังระบุ...' : 'ยินยอม'"></span>
+            </button>
+            <button
+              type="button"
+              @click="denyLocation()"
+              class="px-3 py-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 text-stone-300 text-xs font-medium transition cursor-pointer"
+            >
+              ไว้คราวหลัง
+            </button>
+          </div>
+        </template>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================================== -->
   <!-- 4. COMPACT PROMOTIONAL BANNER: AI WELLNESS CURATOR (ลิงก์ถูกต้องไปหน้า AI)     -->
   <!-- ============================================================================== -->
   <section class="mx-auto max-w-6xl px-3 sm:px-6">

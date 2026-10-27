@@ -16,5 +16,6 @@ urlpatterns = [
     path('settings/', views.my_location_events_view, name='settings'),
     path('coupon/validate/', views.validate_coupon_htmx_view, name='validate_coupon'),
     path('location/my-events/', views.my_location_events_view, name='my_location_events'),
+    path('api/location-consent/', views.record_location_consent_api_view, name='record_location_consent_api'),
 ]
 

@@ -76,8 +76,8 @@
             <span>นักท่องเที่ยว</span>
           </a>
           <a
-            href="{% url 'accounts:register' %}?role=merchant"
-            class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl transition-all {% if request.GET.role == 'merchant' or is_merchant_form == 'HOMESTAY_OWNER' or is_merchant_form == 'WELLNESS_OWNER' or is_merchant_form == 'RESTAURANT_OWNER' or is_merchant_form == 'OTOP_OWNER' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}text-slate-600 hover:text-[#1f2925]{% endif %}"
+            href="{% url 'accounts:register_merchant' %}"
+            class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl transition-all text-slate-600 hover:text-[#1f2925]"
           >
             <i data-lucide="store" class="w-3.5 h-3.5"></i>
             <span>ผู้ประกอบการ</span>

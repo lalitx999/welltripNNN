@@ -122,3 +122,54 @@ class EmailVerificationOTP(models.Model):
     def __str__(self):
         return f"OTP for {self.email} ({self.otp_code}) - Used: {self.is_used}"
 
+
+class MerchantApprovalStatus(models.TextChoices):
+    PENDING = "PENDING", "อยู่ระหว่างการตรวจสอบ (Pending Review)"
+    APPROVED = "APPROVED", "อนุมัติแล้ว (Approved)"
+    REJECTED = "REJECTED", "ไม่ผ่านการอนุมัติ (Rejected)"
+
+
+class MerchantProfile(models.Model):
+    """Store rich shop / vendor registration details for onboarding & approval."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="merchant_profile",
+    )
+    business_name = models.CharField(max_length=200)
+    business_category = models.CharField(
+        max_length=50,
+        choices=[
+            ("HOMESTAY", "โฮมสเตย์ / ที่พักชุมชน"),
+            ("RESTAURANT", "ร้านอาหารเพื่อสุขภาพ"),
+            ("WELLNESS", "บริการสุขภาพ & สปา"),
+            ("OTOP", "สินค้า OTOP ชุมชน"),
+        ],
+        default="HOMESTAY",
+    )
+    description = models.TextField(blank=True, default="")
+    google_maps_url = models.URLField(max_length=500, blank=True, default="")
+    phone_number = models.CharField(max_length=30, blank=True, default="")
+    opening_hours = models.CharField(
+        max_length=150, blank=True, default="08:00 - 18:00 น."
+    )
+    cover_image_url = models.TextField(blank=True, default="")
+    status = models.CharField(
+        max_length=20,
+        choices=MerchantApprovalStatus.choices,
+        default=MerchantApprovalStatus.PENDING,
+        db_index=True,
+    )
+    rejection_reason = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "merchant_profiles"
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.business_name} ({self.status}) - {self.user.email}"
+
+

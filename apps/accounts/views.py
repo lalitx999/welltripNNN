@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django_ratelimit.decorators import ratelimit
 
-from apps.accounts.forms import LoginForm, UserRegistrationForm
+from apps.accounts.forms import LoginForm, UserRegistrationForm, MerchantRegistrationForm
 from apps.accounts.models import UserRoles
 from apps.accounts.permissions import role_required
 from apps.accounts.services.audit import record_audit_log, get_client_ip
@@ -100,6 +100,50 @@ def register_view(request):
     return render(request, 'accounts/register.html', {'form': form})
 
 
+@ratelimit(key='ip', rate='10/m', method=['POST'], block=True)
+@require_http_methods(["GET", "POST"])
+def merchant_register_view(request):
+    """
+    Merchant Registration View (3-Step Wizard compatible).
+    Enables vendor onboarding for Homestays, Restaurants, Wellness, and OTOP.
+    Creates account with status PENDING for Admin KYC Approval.
+    """
+    if request.user.is_authenticated:
+        return redirect_after_auth(request.user)
+
+    form = MerchantRegistrationForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            user, merchant = form.save()
+
+            record_audit_log(
+                request=request,
+                action="REGISTER_MERCHANT",
+                model_name="MerchantProfile",
+                object_id=str(merchant.id),
+                changes={
+                    "email": user.email,
+                    "role": user.role,
+                    "business_name": merchant.business_name,
+                    "category": merchant.business_category,
+                    "status": merchant.status,
+                },
+                user=user,
+            )
+
+            # Auto-login after successful registration with explicit backend
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            request.session.cycle_key()
+
+            messages.success(request, f"ยื่นคำขอเปิดร้าน '{merchant.business_name}' สำเร็จ ขณะนี้อยู่ระหว่างการตรวจสอบโดยผู้ดูแลระบบ (Pending Review)")
+            return redirect('accounts:portal_dashboard')
+        else:
+            messages.error(request, "ข้อมูลการลงทะเบียนผู้ประกอบการไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง")
+
+    return render(request, 'accounts/register_merchant.html', {'form': form})
+
+
 @require_http_methods(["POST", "GET"])
 def logout_view(request):
     """
@@ -148,10 +192,9 @@ def portal_dashboard_view(request):
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 def admin_dashboard_view(request):
-    """Admin Operations Landing Dashboard."""
-    return render(request, 'accounts/admin_dashboard.html', {
-        'page_title': 'ศูนย์ปฏิบัติการชุมชน (Admin Operations)',
-    })
+    """Admin Operations Landing Dashboard: Forward to Unified Command Center."""
+    from . import admin_views
+    return admin_views.admin_command_center_view(request)
 
 
 @require_http_methods(["GET", "POST"])
@@ -182,7 +225,22 @@ def profile_view(request):
         messages.success(request, "บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว")
         return redirect('accounts:profile')
 
+    from apps.bookings.models import Booking, BookingStatus
+    from apps.community.models import PassportStamp
+
+    total_bookings_count = Booking.objects.filter(customer=user).count()
+    active_bookings_count = Booking.objects.filter(
+        customer=user,
+        status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED]
+    ).count()
+    stamps_count = PassportStamp.objects.filter(user=user).count()
+    merchant_profile = getattr(user, 'merchant_profile', None)
+
     return render(request, 'accounts/profile.html', {
-        'page_title': 'โปรไฟล์ส่วนตัว - WellTrip',
+        'page_title': 'โปรไฟล์ส่วนตัว — WellTrip',
+        'total_bookings_count': total_bookings_count,
+        'active_bookings_count': active_bookings_count,
+        'stamps_count': stamps_count,
+        'merchant_profile': merchant_profile,
     })
 

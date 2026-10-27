@@ -54,3 +54,8 @@ class OTOPProduct(models.Model):
 
     def __str__(self):
         return f"{self.name} - ฿{self.price} (คงเหลือ {self.stock_quantity})"
+
+    @property
+    def stock(self):
+        """Backward-compatible alias for stock_quantity."""
+        return self.stock_quantity

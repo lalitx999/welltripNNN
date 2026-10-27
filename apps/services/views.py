@@ -38,12 +38,34 @@ def list_view(request):
 
     return render(request, 'services/list.html', {
         'menus': menus_qs,
+        'food_menus': menus_qs,
         'services': services_qs,
+        'wellness_services': services_qs,
         'active_category': category,
         'query': query,
         'total_menus': menus_qs.count(),
         'total_services': services_qs.count(),
     })
+
+
+def service_detail_view(request, service_type, item_id):
+    """Detail view for a single food menu or wellness service."""
+    if service_type == 'food':
+        item = get_object_or_404(FoodMenu.objects.select_related('owner'), id=item_id, is_available=True)
+        return render(request, 'services/detail.html', {
+            'item': item,
+            'service_type': 'food',
+        })
+    elif service_type in ('wellness', 'spa'):
+        item = get_object_or_404(WellnessService.objects.select_related('owner'), id=item_id, is_active=True)
+        slots = item.time_slots.filter(capacity_available__gt=0).order_by('slot_date', 'start_time')
+        return render(request, 'services/detail.html', {
+            'item': item,
+            'service_type': 'wellness',
+            'slots': slots,
+        })
+    else:
+        return redirect('services:list')
 
 
 
