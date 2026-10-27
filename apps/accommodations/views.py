@@ -80,18 +80,31 @@ def detail_view(request, identifier):
 
 
 
-@role_required(UserRoles.HOMESTAY_OWNER)
+@role_required(UserRoles.HOMESTAY_OWNER, UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN)
 @require_http_methods(["GET", "POST"])
 def homestay_studio_view(request):
     """
     Homestay Owner Partner Studio:
     Manages the homestay profile and rooms with strict row-level isolation.
     """
-    # Strictly query accommodation owned by request.user (Anti-IDOR)
-    accommodation, created = Accommodation.objects.get_or_create(
-        owner=request.user,
-        defaults={'name': f"โฮมสเตย์ของ {request.user.first_name or request.user.email}"}
-    )
+    if request.user.is_superuser or request.user.role == UserRoles.COMMUNITY_ADMIN:
+        owner_accommodations = Accommodation.objects.all()
+    else:
+        owner_accommodations = Accommodation.objects.filter(owner=request.user)
+
+    acc_id = request.GET.get('acc_id') or request.POST.get('accommodation_id')
+    if acc_id:
+        accommodation = owner_accommodations.filter(id=acc_id).first()
+    else:
+        accommodation = owner_accommodations.first()
+
+    if not accommodation:
+        accommodation = Accommodation.objects.create(
+            owner=request.user,
+            name=f"โฮมสเตย์ของ {request.user.first_name or request.user.email}",
+            status=AccommodationStatus.ACTIVE,
+        )
+        owner_accommodations = Accommodation.objects.filter(owner=request.user)
 
     if request.method == "POST":
         form = AccommodationForm(request.POST, instance=accommodation)
@@ -104,8 +117,8 @@ def homestay_studio_view(request):
                 object_id=str(acc.id),
                 changes=form.cleaned_data,
             )
-            messages.success(request, "บันทึกข้อมูลโฮมสเตย์เรียบร้อยแล้ว")
-            return redirect('accommodations:homestay_studio')
+            messages.success(request, f"บันทึกข้อมูล '{acc.name}' เรียบร้อยแล้ว")
+            return redirect(f"{request.path}?acc_id={acc.id}")
     else:
         form = AccommodationForm(instance=accommodation)
 
@@ -114,19 +127,24 @@ def homestay_studio_view(request):
 
     return render(request, 'portal/homestay.html', {
         'accommodation': accommodation,
+        'owner_accommodations': owner_accommodations,
         'form': form,
         'rooms': rooms,
         'room_form': room_form,
     })
 
 
-@role_required(UserRoles.HOMESTAY_OWNER)
+@role_required(UserRoles.HOMESTAY_OWNER, UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN)
 @require_http_methods(["POST"])
 def room_create_view(request):
     """Adds a new room to the owner's homestay."""
-    accommodation = get_object_or_404(Accommodation, owner=request.user)
-    form = RoomForm(request.POST)
+    acc_id = request.POST.get('accommodation_id')
+    if request.user.is_superuser or request.user.role == UserRoles.COMMUNITY_ADMIN:
+        accommodation = get_object_or_404(Accommodation, id=acc_id) if acc_id else Accommodation.objects.first()
+    else:
+        accommodation = get_object_or_404(Accommodation, id=acc_id, owner=request.user) if acc_id else Accommodation.objects.filter(owner=request.user).first()
 
+    form = RoomForm(request.POST)
     if form.is_valid():
         room = form.save(commit=False)
         room.accommodation = accommodation
@@ -143,21 +161,50 @@ def room_create_view(request):
     else:
         messages.error(request, "ข้อมูลห้องพักไม่ถูกต้อง กรุณาตรวจสอบ")
 
-    return redirect('accommodations:homestay_studio')
+    return redirect(f"/accommodations/studio/?acc_id={accommodation.id}")
 
 
-@role_required(UserRoles.HOMESTAY_OWNER)
+@role_required(UserRoles.HOMESTAY_OWNER, UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN)
+@require_http_methods(["POST"])
+def room_delete_view(request, room_id):
+    """Deletes a room from the owner's homestay."""
+    if request.user.is_superuser or request.user.role == UserRoles.COMMUNITY_ADMIN:
+        room = get_object_or_404(Room, id=room_id)
+    else:
+        room = get_object_or_404(Room, id=room_id, accommodation__owner=request.user)
+
+    acc_id = room.accommodation_id
+    room_name = room.name
+    room.delete()
+    messages.success(request, f"ลบห้องพัก '{room_name}' เรียบร้อยแล้ว")
+    return redirect(f"/accommodations/studio/?acc_id={acc_id}")
+
+
+@role_required(UserRoles.HOMESTAY_OWNER, UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN)
 @require_http_methods(["GET", "POST"])
 def calendar_view(request):
     """
     Mini-PMS Room Pricing & Availability Calendar:
     Allows owners to adjust nightly prices and availability.
     """
-    accommodation = get_object_or_404(Accommodation, owner=request.user)
-    rooms = accommodation.rooms.all()
+    if request.user.is_superuser or request.user.role == UserRoles.COMMUNITY_ADMIN:
+        owner_accommodations = Accommodation.objects.all()
+    else:
+        owner_accommodations = Accommodation.objects.filter(owner=request.user)
 
+    acc_id = request.GET.get('acc_id')
+    if acc_id:
+        accommodation = owner_accommodations.filter(id=acc_id).first()
+    else:
+        accommodation = owner_accommodations.first()
+
+    if not accommodation:
+        messages.warning(request, "ยังไม่มีข้อมูลที่พัก กรุณาสร้างที่พักก่อนจัดการปฏิทิน")
+        return redirect('accommodations:homestay_studio')
+
+    rooms = accommodation.rooms.all()
     selected_room_id = request.GET.get('room_id') or (rooms.first().id if rooms.exists() else None)
-    selected_room = get_object_or_404(Room, id=selected_room_id, accommodation=accommodation) if selected_room_id else None
+    selected_room = rooms.filter(id=selected_room_id).first() if selected_room_id else None
 
     if request.method == "POST" and selected_room:
         form = RoomPricingCalendarForm(request.POST)
@@ -182,13 +229,14 @@ def calendar_view(request):
                 },
             )
             messages.success(request, f"อัปเดตราคาและจำนวนห้องว่างวันที่ {pricing.date} สำเร็จ")
-            return redirect(f"{request.path}?room_id={selected_room.id}")
+            return redirect(f"{request.path}?acc_id={accommodation.id}&room_id={selected_room.id}")
 
     pricing_list = selected_room.pricing_calendars.order_by('date')[:30] if selected_room else []
     form = RoomPricingCalendarForm()
 
     return render(request, 'portal/calendar.html', {
         'accommodation': accommodation,
+        'owner_accommodations': owner_accommodations,
         'rooms': rooms,
         'selected_room': selected_room,
         'pricing_list': pricing_list,

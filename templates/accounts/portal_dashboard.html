@@ -1,135 +1,243 @@
 {% extends "layouts/merchant.html" %}
+{% load static %}
 
 {% block page_heading %}แดชบอร์ดภาพรวมพาร์ทเนอร์ชุมชน{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
+<div class="space-y-6 max-w-7xl">
   
   <!-- Sandbox Warning Banner if not verified -->
   {% if not user.email_verified %}
-    <div class="rounded-3xl bg-amber-500/10 border-2 border-amber-500/30 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="rounded-3xl bg-amber-50 border border-amber-200 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
       <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+        <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
           <i data-lucide="alert-triangle" class="w-5 h-5"></i>
         </div>
         <div class="space-y-1">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-200/80 px-2.5 py-0.5 rounded-full">
               โหมดทดลอง (Sandbox / Draft Mode)
             </span>
-            <span class="text-xs font-semibold text-amber-800">รอการตรวจสอบ One-Time KYC</span>
+            <span class="text-xs font-semibold text-amber-900">รอการตรวจสอบ One-Time KYC</span>
           </div>
-          <p class="text-xs text-amber-900/80 leading-relaxed max-w-2xl font-light">
+          <p class="text-xs text-amber-800/90 leading-relaxed max-w-2xl font-light">
             ร้านค้าของคุณอยู่ในโหมดทดลอง คุณสามารถเพิ่มและแก้ไขข้อมูลห้องพัก เมนูอาหาร หรือสินค้า OTOP ได้ตามปกติ 
             แต่รายการสินค้าจะยังไม่เปิดแสดงสู่สาธารณะจนกว่าผู้ดูแลระบบ (Community Admin) จะตรวจสอบและอนุมัติบัญชี
           </p>
         </div>
       </div>
-      <div class="shrink-0 text-right">
-        <span class="inline-flex items-center px-4 py-2 rounded-2xl bg-amber-600 text-white text-xs font-bold shadow-sm">
+      <div class="shrink-0">
+        <span class="inline-flex items-center px-4 py-2 rounded-2xl bg-amber-600 text-white text-xs font-bold shadow-xs">
           สถานะ: รอการอนุมัติ KYC
         </span>
       </div>
     </div>
   {% endif %}
 
-  <!-- Welcome Banner -->
-  <div class="rounded-3xl bg-gradient-to-br from-[#2b3832] to-[#1f2925] text-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md border border-[#c49a45]/30">
-    <div class="space-y-2 text-center sm:text-left">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-xs text-[#c49a45] font-semibold border border-white/20">
-        {% if user.email_verified %}
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span>สถานะ: พาร์ทเนอร์ชุมชนที่ได้รับการรับรอง (Verified Partner)</span>
-        {% else %}
-          <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400"></i>
-          <span>สถานะ: พาร์ทเนอร์ลงทะเบียนใหม่ (รออนุมัติเปิดบริการ)</span>
-        {% endif %}
+  <!-- Top Hero Banner (AdminCN Style) -->
+  <div class="bg-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-slate-200/90 shadow-xs">
+    <div class="space-y-2 max-w-2xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-xs text-emerald-800 font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>{% if user.email_verified %}Verified Community Partner · พาร์ทเนอร์ที่ผ่านการรับรอง{% else %}Pending Verification · รอการอนุมัติร้านค้า{% endif %}</span>
       </div>
-      <h2 class="font-serif text-2xl sm:text-3xl font-bold">สวัสดีคุณ {{ user.first_name|default:user.email }}</h2>
-      <p class="text-xs text-slate-300 max-w-lg font-light leading-relaxed">
-        จัดการข้อมูลบริการและติดตามคำสั่งซื้อของร้านคุณผ่าน Partner Studio ระบบจะอัปเดตสถานะแบบเรียลไทม์
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#1B2A24] font-serif">
+        ยินดีต้อนรับสู่สตูดิโอ, {{ user.first_name|default:user.email }}
+      </h1>
+      <p class="text-xs text-slate-500 font-light leading-relaxed">
+        ศูนย์ควบคุมและจัดการธุรกิจชุมชนสำหรับ <span class="font-bold text-[#c49a45]">{{ user.get_role_display }}</span> ติดตามสถานะสินค้า ตารางการจอง และอัปเดตข้อมูลสู่หน้านักท่องเที่ยวได้แบบเรียลไทม์
       </p>
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-      <span class="px-5 py-2.5 rounded-2xl bg-[#c49a45] text-[#1f2925] text-xs font-bold text-center shadow-sm">
+    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+      <div class="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2">
+        <i data-lucide="phone" class="w-4 h-4 text-[#c49a45]"></i>
+        <span>{{ user.phone_number|default:"081-234-5678" }}</span>
+      </div>
+      <span class="px-4 py-2 rounded-xl bg-[#1B2A24] text-white text-xs font-semibold shadow-xs">
         {{ user.get_role_display }}
       </span>
     </div>
   </div>
 
-  <!-- Quick Stats Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-    <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm space-y-2">
-      <span class="text-xs text-slate-400 font-medium">คำสั่งซื้อ / การจองใหม่วันนี้</span>
-      <div class="font-serif text-2xl sm:text-3xl font-bold text-[#1f2925]">0 รายการ</div>
-      {% if user.email_verified %}
-        <span class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>ระบบพร้อมรับออเดอร์</span>
+  <!-- 4 Stat Metric Cards (AdminCN Style) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Stat 1 -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-3">
+      <div class="flex items-center justify-between text-slate-400">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">สถานะร้านค้า</span>
+        <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="flex items-baseline justify-between">
+        <span class="text-xl font-bold text-[#1B2A24]">
+          {% if user.email_verified %}เปิดบริการปกติ{% else %}โหมดทดลอง{% endif %}
         </span>
-      {% else %}
-        <span class="text-[11px] text-amber-600 font-semibold flex items-center gap-1">
-          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-          <span>รออนุมัติก่อนเปิดรับออเดอร์</span>
-        </span>
-      {% endif %}
+        <span class="text-[11px] font-semibold text-emerald-600">Online</span>
+      </div>
     </div>
 
-    <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm space-y-2">
-      <span class="text-xs text-slate-400 font-medium">ยอดรายได้สะสม</span>
-      <div class="font-serif text-2xl sm:text-3xl font-bold text-[#c49a45]">฿0.00</div>
-      <span class="text-[11px] text-slate-400">ส่งตรงสู่ผู้ประกอบการท้องถิ่น 100%</span>
+    <!-- Stat 2 -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-3">
+      <div class="flex items-center justify-between text-slate-400">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">บทบาทในชุมชน</span>
+        <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#D97706] flex items-center justify-center">
+          <i data-lucide="store" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="flex items-baseline justify-between">
+        <span class="text-xl font-bold text-[#1B2A24] truncate">{{ user.get_role_display }}</span>
+      </div>
     </div>
 
-    <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm space-y-2">
-      <span class="text-xs text-slate-400 font-medium">ความพร้อมให้บริการ</span>
-      {% if user.email_verified %}
-        <div class="font-serif text-2xl sm:text-3xl font-bold text-emerald-700">พร้อมบริการ</div>
-        <span class="text-[11px] text-[#c49a45] font-semibold">One-Time KYC ผ่านแล้ว</span>
-      {% else %}
-        <div class="font-serif text-2xl sm:text-3xl font-bold text-amber-600">โหมดทดลอง (Draft)</div>
-        <span class="text-[11px] text-amber-700 font-semibold">เจ้าหน้าที่กำลังตรวจสอบ</span>
-      {% endif %}
+    <!-- Stat 3 -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-3">
+      <div class="flex items-center justify-between text-slate-400">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">ความปลอดภัย (Security)</span>
+        <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="flex items-baseline justify-between">
+        <span class="text-xl font-bold text-[#1B2A24]">Anti-IDOR Protected</span>
+        <span class="text-[11px] text-blue-600 font-semibold">Row-level</span>
+      </div>
+    </div>
+
+    <!-- Stat 4 -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-3">
+      <div class="flex items-center justify-between text-slate-400">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">การสนับสนุนชุมชน</span>
+        <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+          <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+        </div>
+      </div>
+      <div class="flex items-baseline justify-between">
+        <span class="text-xl font-bold text-[#1B2A24]">0% ค่าธรรมเนียม</span>
+        <span class="text-[11px] text-purple-600 font-semibold">สนับสนุน 100%</span>
+      </div>
     </div>
   </div>
 
-  <!-- Partner Quick Navigation Actions -->
-  <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
-    <h3 class="text-sm font-bold text-[#1f2925] border-b border-slate-100 pb-3 flex items-center gap-2">
-      <i data-lucide="wrench" class="w-4 h-4 text-[#c49a45]"></i>
-      <span>เครื่องมือจัดการบริการชุมชน</span>
-    </h3>
+  <!-- Role-Tailored Studio Quick Actions -->
+  <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-5">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+      <div>
+        <h2 class="text-base font-bold text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-[#c49a45]"></i>
+          <span>เมนูจัดการสตูดิโอของคุณ (Studio Actions)</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">เลือกดำเนินการจัดการข้อมูลสินค้า บริการ หรือปฏิทินการเปิดรับจอง</p>
+      </div>
+    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-      <a href="{% url 'accommodations:homestay_studio' %}" class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200 hover:border-[#c49a45] transition flex items-center gap-3">
-        <i data-lucide="home" class="w-5 h-5 text-[#c49a45]"></i>
-        <div>
-          <span class="font-bold text-[#1f2925] block">จัดการที่พักโฮมสเตย์</span>
-          <span class="text-[10px] text-slate-400">รูปถ่าย ข้อมูล สิ่งอำนวยความสะดวก</span>
-        </div>
-      </a>
-      <a href="{% url 'accommodations:calendar' %}" class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200 hover:border-[#c49a45] transition flex items-center gap-3">
-        <i data-lucide="calendar" class="w-5 h-5 text-[#c49a45]"></i>
-        <div>
-          <span class="font-bold text-[#1f2925] block">ปฏิทินราคา & ห้องว่าง</span>
-          <span class="text-[10px] text-slate-400">Mini-PMS ปรับราคาและห้องว่าง</span>
-        </div>
-      </a>
-      <a href="{% url 'otop:otop_studio' %}" class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200 hover:border-[#c49a45] transition flex items-center gap-3">
-        <i data-lucide="shopping-bag" class="w-5 h-5 text-[#c49a45]"></i>
-        <div>
-          <span class="font-bold text-[#1f2925] block">คลังสินค้า OTOP</span>
-          <span class="text-[10px] text-slate-400">ปรับสต็อกสินค้าและราคาสินค้า</span>
-        </div>
-      </a>
-      <a href="{% url 'accounts:profile' %}" class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200 hover:border-[#c49a45] transition flex items-center gap-3">
-        <i data-lucide="user" class="w-5 h-5 text-[#c49a45]"></i>
-        <div>
-          <span class="font-bold text-[#1f2925] block">ข้อมูลโปรไฟล์ร้านค้า</span>
-          <span class="text-[10px] text-slate-400">เบอร์โทรศัพท์และข้อมูลติดต่อ</span>
-        </div>
-      </a>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      
+      <!-- Homestay Studio Link -->
+      {% if user.role == "HOMESTAY_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+        <a href="{% url 'accommodations:homestay_studio' %}" class="p-5 rounded-2xl border border-slate-200 hover:border-[#1B2A24] hover:shadow-sm transition bg-[#FAF8F5]/50 group space-y-3 block">
+          <div class="w-10 h-10 rounded-xl bg-[#1B2A24] text-[#D97706] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+            <i data-lucide="hotel" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-[#1B2A24] group-hover:text-[#c49a45] transition-colors">จัดการที่พักและห้องพัก</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">แก้ไขชื่อโฮมสเตย์ สิ่งอำนวยความสะดวก ที่อยู่ และเพิ่ม/ลบห้องพัก</p>
+          </div>
+          <span class="text-xs font-bold text-[#1B2A24] inline-flex items-center gap-1">
+            <span>เข้าสู่สตูดิโอที่พัก</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#D97706]"></i>
+          </span>
+        </a>
+
+        <a href="{% url 'accommodations:calendar' %}" class="p-5 rounded-2xl border border-slate-200 hover:border-[#1B2A24] hover:shadow-sm transition bg-[#FAF8F5]/50 group space-y-3 block">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-[#D97706] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+            <i data-lucide="calendar-days" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-[#1B2A24] group-hover:text-[#c49a45] transition-colors">ปฏิทินราคาและห้องว่าง (PMS)</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">ปรับราคาพิเศษรายวัน และระบุจำนวนห้องว่างที่เปิดรับจอง</p>
+          </div>
+          <span class="text-xs font-bold text-[#1B2A24] inline-flex items-center gap-1">
+            <span>เปิดปฏิทินราคา</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#D97706]"></i>
+          </span>
+        </a>
+      {% endif %}
+
+      <!-- Restaurant Studio Link -->
+      {% if user.role == "RESTAURANT_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+        <a href="{% url 'services:restaurant_studio' %}" class="p-5 rounded-2xl border border-slate-200 hover:border-[#1B2A24] hover:shadow-sm transition bg-[#FAF8F5]/50 group space-y-3 block">
+          <div class="w-10 h-10 rounded-xl bg-[#1B2A24] text-emerald-400 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+            <i data-lucide="utensils" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-[#1B2A24] group-hover:text-[#c49a45] transition-colors">จัดการเมนูอาหารสุขภาพ</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">เพิ่มเมนูอาหารคลีน วัตถุดิบอินทรีย์ท้องถิ่น และกำหนดราคา</p>
+          </div>
+          <span class="text-xs font-bold text-[#1B2A24] inline-flex items-center gap-1">
+            <span>เข้าสตูดิโออาหาร</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#D97706]"></i>
+          </span>
+        </a>
+      {% endif %}
+
+      <!-- Wellness Studio Link -->
+      {% if user.role == "WELLNESS_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+        <a href="{% url 'services:wellness_studio' %}" class="p-5 rounded-2xl border border-slate-200 hover:border-[#1B2A24] hover:shadow-sm transition bg-[#FAF8F5]/50 group space-y-3 block">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-[#D97706] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-[#1B2A24] group-hover:text-[#c49a45] transition-colors">บริการสปา & รอบเวลาจอง</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">เพิ่มบริการนวดสมุนไพรสด และเปิดรอบเวลา (Time Slots) รับลูกค้า</p>
+          </div>
+          <span class="text-xs font-bold text-[#1B2A24] inline-flex items-center gap-1">
+            <span>เข้าสตูดิโอสปา</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#D97706]"></i>
+          </span>
+        </a>
+      {% endif %}
+
+      <!-- OTOP Studio Link -->
+      {% if user.role == "OTOP_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+        <a href="{% url 'otop:otop_studio' %}" class="p-5 rounded-2xl border border-slate-200 hover:border-[#1B2A24] hover:shadow-sm transition bg-[#FAF8F5]/50 group space-y-3 block">
+          <div class="w-10 h-10 rounded-xl bg-[#1B2A24] text-[#D97706] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+            <i data-lucide="package" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-[#1B2A24] group-hover:text-[#c49a45] transition-colors">สินค้าชุมชน OTOP & สต็อก</h3>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">จัดการแคตตาล็อกสินค้าภูมิปัญญา OTOP ราคา และสต็อกสินค้า</p>
+          </div>
+          <span class="text-xs font-bold text-[#1B2A24] inline-flex items-center gap-1">
+            <span>เข้าสตูดิโอสินค้า OTOP</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#D97706]"></i>
+          </span>
+        </a>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- Guidelines & Community Standards -->
+  <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-3">
+    <div class="flex items-center gap-2">
+      <i data-lucide="book-open" class="w-4 h-4 text-[#c49a45]"></i>
+      <h3 class="text-sm font-bold text-[#1B2A24]">แนวทางและข้อตกลงวิสาหกิจชุมชน WellTrip ศรีสะเกษ</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-600 pt-2">
+      <div class="p-4 rounded-2xl bg-[#FAF8F5] border border-slate-200 space-y-1">
+        <div class="font-bold text-[#1B2A24]">1. ความปลอดภัยและสุขอนามัย</div>
+        <p class="text-slate-500">รักษาความสะอาดของที่พักและวัตถุดิบอาหารอินทรีย์ตามมาตรฐานสุขภาวะชุมชน</p>
+      </div>
+      <div class="p-4 rounded-2xl bg-[#FAF8F5] border border-slate-200 space-y-1">
+        <div class="font-bold text-[#1B2A24]">2. อัตลักษณ์ 4 ชนเผ่า</div>
+        <p class="text-slate-500">สื่อสารเรื่องราวและภูมิปัญญาชนเผ่า (กูย ลาว เขมร เยอ) เพื่อสร้างความประทับใจ</p>
+      </div>
+      <div class="p-4 rounded-2xl bg-[#FAF8F5] border border-slate-200 space-y-1">
+        <div class="font-bold text-[#1B2A24]">3. ราคาเป็นธรรมและโปร่งใส</div>
+        <p class="text-slate-500">จำหน่ายสินค้าและบริการตามราคาจริงที่กำหนดไว้ในระบบโดยไม่มีค่าบริการแอบแฝง</p>
+      </div>
     </div>
   </div>
 

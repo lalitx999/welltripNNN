@@ -1,168 +1,275 @@
 {% extends "layouts/merchant.html" %}
+{% load static %}
 
-{% block page_heading %}สตูดิโอจัดการโฮมสเตย์และห้องพัก{% endblock %}
+{% block page_heading %}สตูดิโอจัดการที่พักและห้องพัก (Homestay Studio){% endblock %}
 
 {% block content %}
-<div class="space-y-8 max-w-5xl pb-12">
+<div class="space-y-6 max-w-7xl pb-16">
   
-  <!-- Section 1: Homestay Details Form -->
-  <div class="bg-white rounded-3xl border border-stone-200/80 p-6 sm:p-8 space-y-6 shadow-xs">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-5">
-      <div class="flex items-start space-x-3.5">
-        <div class="w-10 h-10 rounded-2xl bg-forest/5 flex items-center justify-center text-forest shrink-0">
-          <i data-lucide="hotel" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <h2 class="text-base font-bold text-forest">ข้อมูลทั่วไปของโฮมสเตย์</h2>
-          <p class="text-xs text-earth/60 mt-0.5">ข้อมูลนี้จะนำไปแสดงบนหน้าเว็บหลักและระบบค้นหาสำหรับนักท่องเที่ยว</p>
-        </div>
+  <!-- Multiple Accommodations Switcher (if owner has > 1) -->
+  {% if owner_accommodations|length > 1 %}
+    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-xs font-bold text-[#1B2A24]">
+        <i data-lucide="layers" class="w-4 h-4 text-[#c49a45]"></i>
+        <span>เลือกที่พักที่คุณต้องการจัดการ:</span>
       </div>
-      <div>
-        <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold 
-                     {% if accommodation.status == 'ACTIVE' %} bg-emerald-50 text-emerald-800 border border-emerald-200
-                     {% elif accommodation.status == 'PENDING_VERIFICATION' %} bg-amber-50 text-amber-800 border border-amber-200
-                     {% else %} bg-rose-50 text-rose-800 border border-rose-200 {% endif %}">
-          <span class="w-1.5 h-1.5 rounded-full {% if accommodation.status == 'ACTIVE' %}bg-emerald-500{% elif accommodation.status == 'PENDING_VERIFICATION' %}bg-amber-500{% else %}bg-rose-500{% endif %}"></span>
-          <span>{{ accommodation.get_status_display }}</span>
-        </span>
+      <div class="flex flex-wrap gap-2">
+        {% for acc in owner_accommodations %}
+          <a 
+            href="{% url 'accommodations:homestay_studio' %}?acc_id={{ acc.id }}" 
+            class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition {% if acc.id == accommodation.id %}bg-[#1B2A24] text-white shadow-xs{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}"
+          >
+            {{ acc.name|truncatechars:25 }}
+          </a>
+        {% endfor %}
       </div>
     </div>
+  {% endif %}
 
-    <form method="POST" action="{% url 'accommodations:homestay_studio' %}" class="space-y-5">
-      {% csrf_token %}
-      
-      <div>
-        <label class="block text-xs font-semibold text-earth mb-1.5">ชื่อโฮมสเตย์ <span class="text-rose-500">*</span></label>
-        <div class="relative">
-          {{ form.name }}
-        </div>
+  <!-- Top Hero Banner (AdminCN Style) -->
+  <div class="bg-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-slate-200/90 shadow-xs">
+    <div class="space-y-2 max-w-2xl">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold
+          {% if accommodation.status == 'ACTIVE' %}bg-emerald-50 text-emerald-800 border border-emerald-200
+          {% elif accommodation.status == 'PENDING_VERIFICATION' %}bg-amber-50 text-amber-800 border border-amber-200
+          {% else %}bg-rose-50 text-rose-800 border border-rose-200{% endif %}">
+          <span class="w-1.5 h-1.5 rounded-full {% if accommodation.status == 'ACTIVE' %}bg-emerald-500{% elif accommodation.status == 'PENDING_VERIFICATION' %}bg-amber-500{% else %}bg-rose-500{% endif %}"></span>
+          <span>สถานะ: {{ accommodation.get_status_display }}</span>
+        </span>
+        <span class="text-xs text-slate-400">อัปเดตล่าสุด: {{ accommodation.updated_at|date:"d/m/Y H:i" }}</span>
       </div>
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#1B2A24] font-serif">
+        {{ accommodation.name }}
+      </h1>
+      <p class="text-xs text-slate-500 font-light leading-relaxed">
+        {{ accommodation.district }} {{ accommodation.province }} · มีห้องพักทั้งหมด {{ rooms.count }} รูปแบบ
+      </p>
+    </div>
 
-      <div>
-        <label class="block text-xs font-semibold text-earth mb-1.5">คำอธิบายและจุดเด่นวิถีชุมชน</label>
-        {{ form.description }}
-      </div>
+    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+      <a 
+        href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}" 
+        class="px-4 py-2 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 text-[#1B2A24] text-xs font-semibold transition shadow-xs inline-flex items-center gap-1.5"
+      >
+        <i data-lucide="calendar" class="w-4 h-4 text-[#D97706]"></i>
+        <span>เปิดปฏิทินราคา (PMS)</span>
+      </a>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-earth mb-1.5">ที่อยู่ / พิกัดสถานที่</label>
-          {{ form.address }}
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-earth mb-1.5">ตำบล / แขวง</label>
-          {{ form.subdistrict }}
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-earth mb-1.5">อำเภอ / เขต</label>
-          {{ form.district }}
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-earth mb-1.5">จังหวัด</label>
-          {{ form.province }}
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-earth mb-1.5">รหัสไปรษณีย์</label>
-          {{ form.postal_code }}
-        </div>
-      </div>
-
-      <div class="pt-3 flex justify-end">
-        <button type="submit" class="inline-flex items-center space-x-2 px-6 py-2.5 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md">
-          <i data-lucide="save" class="w-4 h-4 text-gold"></i>
-          <span>บันทึกการเปลี่ยนแปลง</span>
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Section 2: Rooms List & Room Creator -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- Left: Rooms List -->
-    <div class="lg:col-span-2 space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <i data-lucide="bed-double" class="w-4 h-4 text-forest"></i>
-          <h2 class="text-sm font-bold text-forest">รายการห้องพัก ({{ rooms.count }} ห้อง)</h2>
-        </div>
-        <a href="{% url 'accommodations:calendar' %}" class="inline-flex items-center space-x-1.5 text-xs font-bold text-gold hover:underline">
-          <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-          <span>จัดการปฏิทินราคา (PMS) &rarr;</span>
+      {% if accommodation.status == 'ACTIVE' %}
+        <a 
+          href="{% url 'accommodations:detail' accommodation.slug|default:accommodation.id %}" 
+          target="_blank"
+          class="px-4 py-2 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-semibold transition shadow-xs inline-flex items-center gap-1.5"
+        >
+          <i data-lucide="eye" class="w-3.5 h-3.5 text-[#D97706]"></i>
+          <span>ดูหน้านักท่องเที่ยว</span>
         </a>
-      </div>
-
-      {% if rooms %}
-        <div class="space-y-3">
-          {% for room in rooms %}
-            <div class="bg-white rounded-2xl border border-stone-200/80 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-gold/40 transition-colors shadow-xs">
-              <div class="space-y-1">
-                <div class="flex items-center space-x-2">
-                  <h3 class="text-sm font-bold text-forest">{{ room.name }}</h3>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-100 text-stone-700">{{ room.room_type }}</span>
-                </div>
-                <div class="flex items-center space-x-3 text-xs text-earth/60">
-                  <span class="inline-flex items-center space-x-1">
-                    <i data-lucide="users" class="w-3.5 h-3.5 text-stone-400"></i>
-                    <span>ความจุ {{ room.capacity_people }} ท่าน</span>
-                  </span>
-                  <span>•</span>
-                  <span>มีทั้งหมด {{ room.total_rooms_count }} ห้อง</span>
-                </div>
-              </div>
-              <div class="text-left sm:text-right shrink-0 border-t sm:border-t-0 pt-2 sm:pt-0 border-stone-100">
-                <div class="text-base font-bold text-forest">฿{{ room.base_price_per_night }}</div>
-                <span class="text-[10px] text-earth/50">ราคาเริ่มต้นต่อคืน</span>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="bg-white rounded-3xl border border-stone-200/80 p-8 text-center text-xs text-earth/50 space-y-2">
-          <i data-lucide="inbox" class="w-8 h-8 text-stone-300 mx-auto"></i>
-          <p>ยังไม่มีห้องพัก กรุณาเพิ่มห้องพักใหม่ทางแบบฟอร์มด้านขวา</p>
-        </div>
       {% endif %}
     </div>
+  </div>
 
-    <!-- Right: Add Room Form -->
-    <div class="bg-white rounded-3xl border border-stone-200/80 p-6 space-y-4 h-fit shadow-xs">
-      <div class="flex items-center space-x-2 border-b border-stone-100 pb-3">
-        <i data-lucide="plus-circle" class="w-4 h-4 text-gold"></i>
-        <h3 class="text-sm font-bold text-forest">เพิ่มห้องพักใหม่</h3>
+  <!-- Main Grid: 2 Columns (General Info Form & Rooms List) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Left: Homestay Details Form (5 cols) -->
+    <div class="lg:col-span-5 bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 space-y-5 shadow-xs">
+      <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+        <div class="w-9 h-9 rounded-xl bg-[#1B2A24] text-[#D97706] flex items-center justify-center shrink-0">
+          <i data-lucide="edit-3" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h2 class="text-sm font-bold text-[#1B2A24]">ข้อมูลทั่วไปของที่พัก</h2>
+          <p class="text-xs text-slate-400 mt-0.5">ระบุรายละเอียด ที่อยู่ และจุดเด่นชุมชน</p>
+        </div>
       </div>
 
-      <form method="POST" action="{% url 'accommodations:room_create' %}" class="space-y-3.5">
+      <form method="POST" action="{% url 'accommodations:homestay_studio' %}" class="space-y-4">
         {% csrf_token %}
+        <input type="hidden" name="accommodation_id" value="{{ accommodation.id }}">
+
         <div>
-          <label class="block text-xs font-semibold text-earth mb-1">ชื่อห้องพัก <span class="text-rose-500">*</span></label>
-          {{ room_form.name }}
+          <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อที่พัก / โฮมสเตย์ <span class="text-rose-500">*</span></label>
+          {{ form.name }}
         </div>
+
         <div>
-          <label class="block text-xs font-semibold text-earth mb-1">ประเภท</label>
-          {{ room_form.room_type }}
+          <label class="block text-xs font-bold text-slate-700 mb-1">คำอธิบายและจุดเด่นวิถีชุมชน</label>
+          {{ form.description }}
         </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">ที่อยู่สถานที่</label>
+          {{ form.address }}
+        </div>
+
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-earth mb-1">ความจุ (คน)</label>
-            {{ room_form.capacity_people }}
+            <label class="block text-xs font-bold text-slate-700 mb-1">ตำบล / แขวง</label>
+            {{ form.subdistrict }}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-earth mb-1">จำนวนห้อง</label>
-            {{ room_form.total_rooms_count }}
+            <label class="block text-xs font-bold text-slate-700 mb-1">อำเภอ / เขต</label>
+            {{ form.district }}
           </div>
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-earth mb-1">ราคาเริ่มต้น (บาท/คืน)</label>
-          {{ room_form.base_price_per_night }}
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">จังหวัด</label>
+            {{ form.province }}
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">รหัสไปรษณีย์</label>
+            {{ form.postal_code }}
+          </div>
         </div>
-        <button type="submit" class="w-full inline-flex items-center justify-center space-x-2 py-3 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md mt-2">
-          <i data-lucide="plus" class="w-4 h-4 text-gold"></i>
-          <span>เพิ่มห้องพักในโฮมสเตย์</span>
-        </button>
+
+        <div class="pt-2">
+          <button 
+            type="submit" 
+            class="w-full min-h-[46px] rounded-2xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <i data-lucide="save" class="w-4 h-4 text-[#D97706]"></i>
+            <span>บันทึกข้อมูลที่พัก</span>
+          </button>
+        </div>
       </form>
+    </div>
+
+    <!-- Right: Rooms Management & Add Room Form (7 cols) -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- Rooms List Table Card -->
+      <div class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-xs space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#D97706] flex items-center justify-center shrink-0">
+              <i data-lucide="bed-double" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-[#1B2A24]">รายการห้องพักในระบบ ({{ rooms.count }} รูปแบบ)</h2>
+              <p class="text-xs text-slate-400 mt-0.5">ราคาเริ่มต้นและจำนวนห้องพักที่เปิดให้บริการ</p>
+            </div>
+          </div>
+        </div>
+
+        {% if rooms %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-100">
+                <tr>
+                  <th class="p-3">ชื่อห้องพัก</th>
+                  <th class="p-3">ความจุ</th>
+                  <th class="p-3">ราคาเริ่มต้น</th>
+                  <th class="p-3">จำนวนห้อง</th>
+                  <th class="p-3 text-right">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for r in rooms %}
+                  <tr class="hover:bg-slate-50/70 transition">
+                    <td class="p-3 font-bold text-[#1B2A24]">
+                      <div>{{ r.name }}</div>
+                      <div class="text-[10px] text-slate-400 font-normal">{{ r.room_type|default:"ห้องพักมาตรฐาน" }}</div>
+                    </td>
+                    <td class="p-3 text-slate-600">
+                      <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md font-medium text-[11px]">
+                        <i data-lucide="users" class="w-3 h-3 text-slate-400"></i>
+                        <span>{{ r.capacity_people }} คน</span>
+                      </span>
+                    </td>
+                    <td class="p-3 font-serif font-bold text-[#c49a45] text-sm">
+                      ฿{{ r.base_price_per_night|floatformat:0 }}
+                      <span class="text-[10px] text-slate-400 font-sans font-normal">/คืน</span>
+                    </td>
+                    <td class="p-3 text-slate-600 font-medium">
+                      {{ r.total_rooms_count }} ห้อง
+                    </td>
+                    <td class="p-3 text-right">
+                      <div class="flex items-center justify-end gap-2">
+                        <a 
+                          href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ r.id }}" 
+                          class="p-1.5 rounded-lg text-slate-600 hover:text-[#D97706] hover:bg-amber-50 transition" 
+                          title="จัดการปฏิทินราคา"
+                        >
+                          <i data-lucide="calendar" class="w-4 h-4"></i>
+                        </a>
+                        <form method="POST" action="{% url 'accommodations:room_delete' r.id %}" onsubmit="return confirm('ต้องการลบห้องพัก {{ r.name }} หรือไม่?');">
+                          {% csrf_token %}
+                          <button 
+                            type="submit" 
+                            class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer" 
+                            title="ลบห้องพัก"
+                          >
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="p-8 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+            <i data-lucide="bed" class="w-8 h-8 text-slate-300 mx-auto"></i>
+            <p class="text-xs font-bold text-slate-700">ยังไม่มีข้อมูลห้องพัก</p>
+            <p class="text-[11px] text-slate-400">กรุณากรอกแบบฟอร์มด้านล่างเพื่อเพิ่มห้องพักเข้าสู่ระบบ</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Add Room Form Card -->
+      <div class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-xs space-y-4">
+        <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-[#D97706]"></i>
+          <h3 class="text-sm font-bold text-[#1B2A24]">เพิ่มห้องพักใหม่ (Add New Room)</h3>
+        </div>
+
+        <form method="POST" action="{% url 'accommodations:room_create' %}" class="space-y-4">
+          {% csrf_token %}
+          <input type="hidden" name="accommodation_id" value="{{ accommodation.id }}">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อห้องพัก <span class="text-rose-500">*</span></label>
+              {{ room_form.name }}
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ประเภทห้อง (เช่น ห้องแอร์, พัดลม, บ้านเดี่ยว)</label>
+              {{ room_form.room_type }}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ความจุ (คน) <span class="text-rose-500">*</span></label>
+              {{ room_form.capacity_people }}
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ราคาต่อคืน (บาท) <span class="text-rose-500">*</span></label>
+              {{ room_form.base_price_per_night }}
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">จำนวนห้องทั้งหมด <span class="text-rose-500">*</span></label>
+              {{ room_form.total_rooms_count }}
+            </div>
+          </div>
+
+          <div class="pt-2 flex justify-end">
+            <button 
+              type="submit" 
+              class="px-6 py-2.5 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer"
+            >
+              <i data-lucide="plus" class="w-4 h-4 text-[#D97706]"></i>
+              <span>เพิ่มห้องพักนี้</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
     </div>
 
   </div>

@@ -2,107 +2,224 @@
 {% load static %}
 
 {% block layout %}
-<div class="min-h-screen bg-[#faf9f6] flex text-earth antialiased">
+<div class="min-h-screen bg-[#FAF8F5] text-[#1B2A24] flex antialiased font-sans" x-data="{ mobileSidebarOpen: false }">
   
-  <!-- Sidebar for Partner Studio -->
-  <aside class="w-64 bg-[#14231d] text-white flex flex-col border-r border-emerald-950/40 hidden md:flex shrink-0 select-none shadow-xl">
-    <!-- Studio Header -->
-    <div class="h-20 px-6 flex items-center space-x-3.5 border-b border-emerald-900/40 bg-[#0f1b16]">
-      <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip Logo" class="w-10 h-10 rounded-xl object-cover shadow-md ring-1 ring-gold/40">
-      <div class="min-w-0 flex-1">
-        <span class="text-sm font-bold text-white tracking-wide block truncate">Partner Studio</span>
-        <span class="text-[11px] text-gold/90 font-medium truncate block flex items-center gap-1.5 mt-0.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          {{ user.get_role_display|default:"ผู้ประกอบการ" }}
-        </span>
-      </div>
-    </div>
+  <!-- Mobile Sidebar Backdrop -->
+  <div 
+    x-show="mobileSidebarOpen" 
+    style="display: none;"
+    @click="mobileSidebarOpen = false"
+    class="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs lg:hidden transition-opacity"
+  ></div>
 
-    <!-- Navigation links with active domain highlights -->
-    <nav class="flex-grow px-3.5 py-6 space-y-1.5 text-xs font-medium overflow-y-auto">
-      <div class="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-emerald-400/60">เมนูหลัก</div>
+  <!-- PERSISTENT LEFT SIDEBAR (AdminCN Light Theme) -->
+  <aside 
+    :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+    class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200/90 flex flex-col justify-between transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:z-30 shrink-0 shadow-xs select-none"
+  >
+    <div class="flex flex-col flex-1 overflow-y-auto">
       
-      <a href="{% url 'accounts:portal_dashboard' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-cream/80 hover:bg-emerald-900/40 hover:text-white transition-all group">
-        <i data-lucide="layout-dashboard" class="w-4 h-4 text-gold group-hover:scale-110 transition-transform"></i>
-        <span>แดชบอร์ดภาพรวม</span>
-      </a>
+      <!-- Brand & Operations Header -->
+      <div class="h-20 px-6 border-b border-slate-100 flex items-center justify-between bg-white">
+        <a href="{% url 'accounts:portal_dashboard' %}" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-[#1B2A24] text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform overflow-hidden">
+            <img src="{% static 'images/logoWelltrip.jpg' %}" alt="Logo" class="w-full h-full object-cover">
+          </div>
+          <div class="min-w-0">
+            <span class="font-serif font-bold text-base text-[#1B2A24] block leading-tight">
+              Partner Studio
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-[#D97706]/30 text-[10px] font-bold text-[#D97706]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#D97706] animate-pulse"></span>
+              <span>{{ user.get_role_display|default:"ผู้ประกอบการชุมชน" }}</span>
+            </span>
+          </div>
+        </a>
+        <button
+          type="button"
+          @click="mobileSidebarOpen = false"
+          class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 transition"
+        >
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-      {% if user.role == "HOMESTAY_OWNER" or user.is_superuser %}
-        <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400/60">ที่พัก & ห้องพัก</div>
-        <a href="{% url 'accommodations:homestay_studio' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-cream/80 hover:bg-emerald-900/40 hover:text-white transition-all group">
-          <i data-lucide="hotel" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
-          <span>จัดการโฮมสเตย์ & ห้องพัก</span>
+      <!-- Navigation Items -->
+      <nav class="p-4 space-y-1.5 flex-1 text-xs">
+        <span class="block px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          ศูนย์จัดการธุรกิจชุมชน
+        </span>
+
+        <!-- 1. Overview Dashboard -->
+        <a 
+          href="{% url 'accounts:portal_dashboard' %}" 
+          class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold transition-all group {% if request.resolver_match.url_name == 'portal_dashboard' %}bg-[#1B2A24] text-white shadow-xs{% else %}text-slate-600 hover:bg-[#FAF8F5] hover:text-[#1B2A24]{% endif %}"
+        >
+          <div class="flex items-center gap-3">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 {% if request.resolver_match.url_name == 'portal_dashboard' %}text-[#D97706]{% else %}text-slate-400 group-hover:text-[#1B2A24]{% endif %}"></i>
+            <span>แดชบอร์ดภาพรวม</span>
+          </div>
         </a>
 
-        <a href="{% url 'accommodations:calendar' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-cream/80 hover:bg-emerald-900/40 hover:text-white transition-all group">
-          <i data-lucide="calendar-days" class="w-4 h-4 text-amber-300 group-hover:scale-110 transition-transform"></i>
-          <span>ปฏิทินราคา & ห้องว่าง (PMS)</span>
-        </a>
-      {% endif %}
+        <!-- Homestay Owner Modules -->
+        {% if user.role == "HOMESTAY_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+          <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            โฮมสเตย์ & ห้องพัก
+          </div>
+          
+          <a 
+            href="{% url 'accommodations:homestay_studio' %}" 
+            class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold transition-all group {% if request.resolver_match.url_name == 'homestay_studio' %}bg-[#1B2A24] text-white shadow-xs{% else %}text-slate-600 hover:bg-[#FAF8F5] hover:text-[#1B2A24]{% endif %}"
+          >
+            <div class="flex items-center gap-3">
+              <i data-lucide="hotel" class="w-4 h-4 {% if request.resolver_match.url_name == 'homestay_studio' %}text-[#D97706]{% else %}text-slate-400 group-hover:text-[#1B2A24]{% endif %}"></i>
+              <span>จัดการที่พัก & ห้องพัก</span>
+            </div>
+          </a>
 
-      {% if user.role == "RESTAURANT_OWNER" or user.is_superuser %}
-        <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400/60">อาหาร & เครื่องดื่ม</div>
-        <a href="{% url 'services:restaurant_studio' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-cream/80 hover:bg-emerald-900/40 hover:text-white transition-all group">
-          <i data-lucide="utensils" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
-          <span>เมนูอาหารสุขภาพ 5 นิเวศน์</span>
-        </a>
-      {% endif %}
+          <a 
+            href="{% url 'accommodations:calendar' %}" 
+            class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold transition-all group {% if request.resolver_match.url_name == 'calendar' %}bg-[#1B2A24] text-white shadow-xs{% else %}text-slate-600 hover:bg-[#FAF8F5] hover:text-[#1B2A24]{% endif %}"
+          >
+            <div class="flex items-center gap-3">
+              <i data-lucide="calendar-days" class="w-4 h-4 {% if request.resolver_match.url_name == 'calendar' %}text-[#D97706]{% else %}text-slate-400 group-hover:text-[#1B2A24]{% endif %}"></i>
+              <span>ปฏิทินราคา & ห้องว่าง (PMS)</span>
+            </div>
+          </a>
+        {% endif %}
 
-      {% if user.role == "WELLNESS_OWNER" or user.is_superuser %}
-        <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400/60">สุขภาพ & สปา</div>
-        <a href="{% url 'services:wellness_studio' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-cream/80 hover:bg-emerald-900/40 hover:text-white transition-all group">
-          <i data-lucide="sparkles" class="w-4 h-4 text-amber-300 group-hover:scale-110 transition-transform"></i>
-          <span>บริการนวด & รอบเวลา (Slots)</span>
-        </a>
-      {% endif %}
+        <!-- Restaurant Owner Modules -->
+        {% if user.role == "RESTAURANT_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+          <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            อาหาร & เครื่องดื่มสุขภาพ
+          </div>
+          
+          <a 
+            href="{% url 'services:restaurant_studio' %}" 
+            class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold transition-all group {% if request.resolver_match.url_name == 'restaurant_studio' %}bg-[#1B2A24] text-white shadow-xs{% else %}text-slate-600 hover:bg-[#FAF8F5] hover:text-[#1B2A24]{% endif %}"
+          >
+            <div class="flex items-center gap-3">
+              <i data-lucide="utensils" class="w-4 h-4 {% if request.resolver_match.url_name == 'restaurant_studio' %}text-[#D97706]{% else %}text-slate-400 group-hover:text-[#1B2A24]{% endif %}"></i>
+              <span>เมนูอาหารสุขภาพ 5 นิเวศน์</span>
+            </div>
+          </a>
+        {% endif %}
 
-      {% if user.role == "OTOP_OWNER" or user.is_superuser %}
-        <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400/60">สินค้าชุมชน</div>
-        <a href="{% url 'otop:otop_studio' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-cream/80 hover:bg-emerald-900/40 hover:text-white transition-all group">
-          <i data-lucide="package" class="w-4 h-4 text-gold group-hover:scale-110 transition-transform"></i>
-          <span>สินค้าชุมชน OTOP & สต็อก</span>
-        </a>
-      {% endif %}
-    </nav>
+        <!-- Wellness Owner Modules -->
+        {% if user.role == "WELLNESS_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+          <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            สปา & นวดแผนไทย
+          </div>
+          
+          <a 
+            href="{% url 'services:wellness_studio' %}" 
+            class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold transition-all group {% if request.resolver_match.url_name == 'wellness_studio' %}bg-[#1B2A24] text-white shadow-xs{% else %}text-slate-600 hover:bg-[#FAF8F5] hover:text-[#1B2A24]{% endif %}"
+          >
+            <div class="flex items-center gap-3">
+              <i data-lucide="sparkles" class="w-4 h-4 {% if request.resolver_match.url_name == 'wellness_studio' %}text-[#D97706]{% else %}text-slate-400 group-hover:text-[#1B2A24]{% endif %}"></i>
+              <span>บริการนวด & รอบเวลา (Slots)</span>
+            </div>
+          </a>
+        {% endif %}
 
-    <!-- Bottom user action -->
-    <div class="p-4 border-t border-emerald-900/40 bg-[#0f1b16] text-xs">
-      <div class="flex items-center justify-between mb-2">
-        <div class="min-w-0">
-          <span class="text-white font-medium block truncate">{{ user.first_name|default:user.email }}</span>
-          <span class="text-[10px] text-cream/60 truncate block">{{ user.email }}</span>
+        <!-- OTOP Owner Modules -->
+        {% if user.role == "OTOP_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+          <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            สินค้าชุมชน OTOP
+          </div>
+          
+          <a 
+            href="{% url 'otop:otop_studio' %}" 
+            class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold transition-all group {% if request.resolver_match.url_name == 'otop_studio' %}bg-[#1B2A24] text-white shadow-xs{% else %}text-slate-600 hover:bg-[#FAF8F5] hover:text-[#1B2A24]{% endif %}"
+          >
+            <div class="flex items-center gap-3">
+              <i data-lucide="package" class="w-4 h-4 {% if request.resolver_match.url_name == 'otop_studio' %}text-[#D97706]{% else %}text-slate-400 group-hover:text-[#1B2A24]{% endif %}"></i>
+              <span>สินค้าชุมชน OTOP & สต็อก</span>
+            </div>
+          </a>
+        {% endif %}
+
+        <!-- Switch to Admin Console if Super Admin -->
+        {% if user.is_superuser or user.role == "COMMUNITY_ADMIN" %}
+          <div class="pt-4 px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-[#D97706]">
+            สำหรับผู้ดูแลระบบ
+          </div>
+          <a 
+            href="{% url 'accounts:admin_dashboard' %}" 
+            class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold transition-all text-[#1B2A24] bg-amber-50 hover:bg-amber-100 border border-amber-200"
+          >
+            <div class="flex items-center gap-3">
+              <i data-lucide="shield-alert" class="w-4 h-4 text-[#D97706]"></i>
+              <span>สลับไป Admin Command</span>
+            </div>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#D97706]"></i>
+          </a>
+        {% endif %}
+      </nav>
+
+      <!-- Bottom User Profile Card -->
+      <div class="p-4 border-t border-slate-100 bg-slate-50/70">
+        <div class="flex items-center justify-between">
+          <div class="min-w-0 pr-2">
+            <span class="text-xs font-bold text-[#1B2A24] block truncate">
+              {{ user.first_name|default:user.email }}
+            </span>
+            <span class="text-[10px] font-mono text-slate-500 block truncate">
+              {{ user.email }}
+            </span>
+          </div>
+          <form method="POST" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button 
+              type="submit" 
+              class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer" 
+              title="ออกจากระบบ"
+            >
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
+          </form>
         </div>
       </div>
-      <a href="{% url 'accounts:logout' %}" class="flex items-center space-x-2 text-rose-400 hover:text-rose-300 font-medium transition-colors pt-2 border-t border-emerald-900/30">
-        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-        <span>ออกจากระบบ</span>
-      </a>
     </div>
   </aside>
 
-  <!-- Main Content View -->
+  <!-- MAIN VIEWPORT CONTAINER -->
   <div class="flex-1 flex flex-col min-w-0">
-    <header class="h-20 bg-white/90 backdrop-blur-md border-b border-stone-200/80 px-6 sm:px-8 flex items-center justify-between shadow-xs sticky top-0 z-20">
-      <div class="flex items-center space-x-3">
-        <div class="w-8 h-8 rounded-lg bg-forest/5 flex items-center justify-center text-forest md:hidden">
+    
+    <!-- Topbar (AdminCN style) -->
+    <header class="h-20 bg-white border-b border-slate-200/90 px-6 sm:px-8 flex items-center justify-between sticky top-0 z-20 shadow-xs">
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          @click="mobileSidebarOpen = true"
+          class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition"
+        >
           <i data-lucide="menu" class="w-5 h-5"></i>
-        </div>
+        </button>
         <div>
-          <h1 class="text-base sm:text-lg font-bold text-forest">{% block page_heading %}Partner Studio{% endblock %}</h1>
-          <p class="text-[11px] text-earth/60 hidden sm:block">ระบบบริหารจัดการผู้ประกอบการท่องเที่ยวเชิงสุขภาพและวิถีชุมชน</p>
+          <h1 class="text-base sm:text-lg font-bold text-[#1B2A24] flex items-center gap-2">
+            {% block page_heading %}Partner Studio — ศูนย์จัดการธุรกิจชุมชน{% endblock %}
+          </h1>
+          <p class="text-[11px] text-slate-400 hidden sm:block">ระบบควบคุมและบริหารจัดการร้านค้าชุมชน WellTrip Sisaket</p>
         </div>
       </div>
-      <div class="flex items-center space-x-3">
-        <a href="{% url 'core:home' %}" class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-medium text-earth transition-colors">
+
+      <div class="flex items-center gap-3">
+        <a 
+          href="{% url 'core:home' %}" 
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition"
+        >
           <span>ไปหน้าเว็บท่องเที่ยว</span>
-          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-stone-500"></i>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400"></i>
         </a>
       </div>
     </header>
 
+    <!-- Main Content Body -->
     <main class="flex-1 p-6 md:p-8 overflow-y-auto">
       {% block content %}{% endblock %}
     </main>
+
   </div>
 
 </div>
