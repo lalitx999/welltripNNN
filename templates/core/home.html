@@ -10,7 +10,8 @@
   <!-- 1. Hero Section (Cycling Banner Background + Tabbed Search)               -->
   <!-- ========================================================================= -->
   <section 
-    class="relative min-h-[580px] lg:min-h-[660px] flex items-center justify-center overflow-hidden py-20 px-4 sm:px-8 text-white text-center"
+    class="relative min-h-[580px] lg:min-h-[660px] bg-[#1F2925] flex items-center justify-center overflow-hidden py-20 px-4 sm:px-8 text-white text-center"
+    style="background-color: #1F2925; background-image: url('{% static 'images/banner1.jpeg' %}'); background-size: cover; background-position: center;"
     x-data="{
       banners: ['{% static 'images/banner1.jpeg' %}', '{% static 'images/banner2.jpeg' %}'],
       currentIdx: 0,
@@ -33,7 +34,10 @@
       }
     }"
   >
-    <!-- Background Rotating Images -->
+    <!-- Fallback Static Background Image -->
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{% static 'images/banner1.jpeg' %}');"></div>
+
+    <!-- Background Rotating Images (Alpine) -->
     <template x-for="(b, idx) in banners" :key="idx">
       <div 
         class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out"
@@ -42,8 +46,8 @@
       ></div>
     </template>
     
-    <!-- Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-[#1F2925]/85 via-[#1F2925]/75 to-[#1F2925]/90"></div>
+    <!-- Gradient Overlay with Dark Fallback -->
+    <div class="absolute inset-0 bg-[#1F2925]/80 bg-gradient-to-b from-[#1F2925]/90 via-[#1F2925]/75 to-[#1F2925]/95"></div>
 
     <!-- Hero Content Container -->
     <div class="relative z-10 max-w-4xl mx-auto space-y-6">

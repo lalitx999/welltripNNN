@@ -16,6 +16,16 @@
     background-color: var(--travel-paper);
     color: var(--travel-ink);
   }
+  @media (min-width: 1024px) {
+    .wt-bottom-nav { display: none !important; }
+    .wt-desktop-nav { display: flex !important; }
+    .wt-mobile-toggle { display: none !important; }
+  }
+  @media (max-width: 1023px) {
+    .wt-bottom-nav { display: grid !important; }
+    .wt-desktop-nav { display: none !important; }
+    .wt-mobile-toggle { display: flex !important; }
+  }
 </style>
 {% endblock %}
 
@@ -47,7 +57,7 @@
       </a>
 
       <!-- Desktop Navigation Links -->
-      <nav class="hidden lg:flex items-center gap-2 text-[13.5px] font-semibold" aria-label="เมนูหลัก">
+      <nav class="hidden lg:flex wt-desktop-nav items-center gap-2 text-[13.5px] font-semibold" aria-label="เมนูหลัก">
         
         <!-- Explore Sisaket Mega Menu Trigger -->
         <div class="relative">
@@ -204,7 +214,7 @@
         <button 
           type="button"
           @click="mobileMenuOpen = !mobileMenuOpen; megaMenuOpen = false; accountMenuOpen = false;"
-          class="lg:hidden w-10 h-10 rounded-full bg-white border border-[#C49A45]/35 flex items-center justify-center text-[#1F2925]"
+          class="lg:hidden wt-mobile-toggle w-10 h-10 rounded-full bg-white border border-[#C49A45]/35 flex items-center justify-center text-[#1F2925]"
           aria-label="เปิดเมนูมือถือ"
         >
           <svg class="w-5 h-5" x-show="!mobileMenuOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -489,7 +499,7 @@
   </footer>
 
   <!-- Mobile Fixed Bottom Navigation Bar (5 Items) -->
-  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF9F6]/95 backdrop-blur-md border-t border-stone-200 grid grid-cols-5 py-2 px-1 shadow-lg" aria-label="แถบนำทางมือถือ">
+  <nav class="wt-bottom-nav lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF9F6]/95 backdrop-blur-md border-t border-stone-200 grid grid-cols-5 py-2 px-1 shadow-lg" aria-label="แถบนำทางมือถือ">
     
     <!-- 1. Home -->
     <a href="{% url 'core:home' %}" class="flex flex-col items-center justify-center gap-1 text-[10px] font-bold text-[#1F2925]">
