@@ -1,158 +1,293 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}ติดต่อเรา — WellTrip ศูนย์ประสานงานและบริการนักท่องเที่ยว จ.ศรีสะเกษ{% endblock %}
+{% block title %}ศูนย์ช่วยเหลือและติดต่อเรา — WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="space-y-10 sm:space-y-12 pb-16">
+<div class="space-y-10 sm:space-y-12 pb-16" x-data="{ activeCategory: 'all', searchQuery: '', openFaq: 'faq-1' }">
 
   <!-- ============================================================================== -->
-  <!-- 1. COMPACT HERO SECTION                                                        -->
+  <!-- 1. COMPACT HERO SECTION (ตามต้นฉบับ Documents/welltrip)                         -->
   <!-- ============================================================================== -->
-  <section class="mx-auto max-w-6xl px-3 sm:px-6 mt-3 sm:mt-6">
-    <div class="text-center space-y-2 max-w-2xl mx-auto pt-4 sm:pt-6">
-      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-        <i data-lucide="headphones" class="w-3.5 h-3.5 text-emerald-700"></i>
-        <span>ศูนย์ประสานงานและบริการข้อมูลชุมชน</span>
+  <section class="mx-auto max-w-4xl px-3 sm:px-6 mt-4 sm:mt-6 text-center space-y-3">
+    <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-[#d97706] text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#d97706]"></i>
+      <span>HELP & SUPPORT CENTER</span>
+    </div>
+
+    <h1 class="text-2xl sm:text-4xl font-extrabold text-[#1f2925] tracking-tight font-serif">
+      ศูนย์ช่วยเหลือและติดต่อเรา
+    </h1>
+
+    <p class="text-xs sm:text-sm text-stone-500 max-w-md mx-auto leading-relaxed">
+      ค้นหาคำตอบหรือติดต่อทีมงานดูแลนักท่องเที่ยว WellTrip จ.ศรีสะเกษ
+    </p>
+
+    <!-- Search Input -->
+    <div class="max-w-xl mx-auto pt-2">
+      <div class="relative rounded-full border border-stone-300 bg-white px-5 py-3 shadow-xs flex items-center gap-3 focus-within:ring-2 focus-within:ring-[#1f2925] focus-within:border-transparent transition-all">
+        <i data-lucide="search" class="w-4 h-4 text-stone-400 shrink-0"></i>
+        <input
+          type="text"
+          x-model="searchQuery"
+          placeholder="ค้นหาวิธีจอง, การแนบสลิป, หรือนโยบายการยกเลิก..."
+          class="w-full text-xs sm:text-sm text-stone-900 bg-transparent focus:outline-none placeholder:text-stone-400"
+        >
+        <button
+          type="button"
+          x-show="searchQuery.length > 0"
+          @click="searchQuery = ''"
+          class="text-xs text-stone-400 hover:text-stone-700 font-bold"
+        >
+          ล้าง
+        </button>
       </div>
-
-      <h1 class="text-2xl sm:text-4xl font-extrabold text-[#1f2925] tracking-tight">
-        พร้อมดูแลและตอบทุกคำถามเรื่อง<span class="text-[#c49a45]">การท่องเที่ยวศรีสะเกษ</span>
-      </h1>
-
-      <p class="text-xs sm:text-sm text-stone-500 leading-relaxed font-light">
-        ไม่ว่าคุณต้องการสอบถามเส้นทางท่องเที่ยว การจองโฮมสเตย์ หรือผู้ประกอบการต้องการเข้าร่วมเครือข่ายชุมชน ทีมงานพร้อมให้บริการทุกวัน
-      </p>
     </div>
   </section>
 
   <!-- ============================================================================== -->
-  <!-- 2. CONTACT CHANNELS & FORM (สไตล์การ์ด 2 คอลัมน์แบบเซ้งร้านด่วน)              -->
+  <!-- 2. DIRECT CONTACT CHANNELS (ตามต้นฉบับ Documents/welltrip: ตัด LINE 100%)       -->
   <!-- ============================================================================== -->
-  <section class="mx-auto max-w-6xl px-3 sm:px-6">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+  <section class="mx-auto max-w-4xl px-3 sm:px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       
-      <!-- Left Column: Contact Cards (5 cols) -->
-      <div class="lg:col-span-5 space-y-4">
-        
-        <!-- LINE Official Card -->
-        <div class="rounded-3xl border border-emerald-200 bg-emerald-50/70 p-6 space-y-3 shadow-2xs">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-[#06c755] text-white flex items-center justify-center font-bold shadow-xs">
-              <i data-lucide="message-circle" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-emerald-800">ติดต่อผ่าน LINE Official (รวดเร็วที่สุด)</div>
-              <div class="text-base font-black text-stone-900 font-mono">@welltripsisaket</div>
-            </div>
-          </div>
-          <p class="text-xs text-stone-600 leading-relaxed">
-            แอดไลน์พูดคุยกับทีมงานท่องเที่ยวชุมชนได้โดยตรง สอบถามที่พักว่าง หรือปรึกษาจัดแพ็กเกจสุขภาพกลุ่มคณะ
-          </p>
-          <a href="https://line.me" target="_blank" rel="noopener noreferrer"
-             class="inline-flex items-center justify-center gap-2 w-full rounded-2xl bg-[#06c755] hover:bg-[#05b34c] text-white py-2.5 text-xs font-bold transition shadow-xs">
-            <span>เพิ่มเพื่อนบน LINE: @welltripsisaket</span>
+      <!-- Hotline -->
+      <div class="rounded-3xl bg-white p-6 border border-stone-200/90 shadow-xs space-y-3 text-center hover:border-amber-400 transition-all">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-[#d97706] mx-auto flex items-center justify-center">
+          <i data-lucide="phone-call" class="w-6 h-6 text-[#d97706]"></i>
+        </div>
+        <div>
+          <h3 class="font-serif font-bold text-sm text-[#1f2925]">
+            สายด่วนท่องเที่ยวศรีสะเกษ
+          </h3>
+          <a href="tel:045962455" class="text-lg font-black text-[#d97706] font-mono hover:underline block mt-1">
+            045-962-455
           </a>
+          <p class="text-[11px] text-stone-400 mt-1">
+            บริการสอบถามเส้นทางและฉุกเฉิน 24 ชั่วโมง
+          </p>
         </div>
-
-        <!-- Hotline & Office Address -->
-        <div class="rounded-3xl border border-stone-200/90 bg-white p-6 space-y-4 shadow-xs">
-          <h3 class="text-sm font-bold text-[#1f2925] border-b border-stone-100 pb-2">ช่องทางการติดต่อและที่ตั้งสำนักงาน</h3>
-          
-          <div class="space-y-3.5 text-xs text-stone-600">
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#c49a45] flex items-center justify-center shrink-0">
-                <i data-lucide="phone" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <div class="font-bold text-[#1f2925]">โทรศัพท์สายด่วน</div>
-                <a href="tel:045617999" class="font-mono text-sm font-bold text-[#c49a45] hover:underline">045-617-999</a>
-                <div class="text-[11px] text-stone-400">เปิดให้บริการทุกวัน 08:30 - 17:30 น.</div>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
-                <i data-lucide="mail" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <div class="font-bold text-[#1f2925]">อีเมลประสานงานโครงการ</div>
-                <a href="mailto:info@welltrip-sisaket.com" class="font-mono text-xs font-bold text-stone-800 hover:underline">info@welltrip-sisaket.com</a>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-xl bg-stone-100 text-stone-700 flex items-center justify-center shrink-0">
-                <i data-lucide="map-pin" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <div class="font-bold text-[#1f2925]">ที่ตั้งศูนย์ประสานงาน</div>
-                <div class="text-[11px] text-stone-500 leading-relaxed mt-0.5">
-                  อาคารศูนย์วิจัยนวัตกรรมการท่องเที่ยว มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)<br>
-                  เลขที่ 319 ถนนไทยพันทา ตำบลโพธิ์ อำเภอเมือง จังหวัดศรีสะเกษ 33000
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <!-- Right Column: Quick Contact Inquiry Form (7 cols) -->
-      <div class="lg:col-span-7">
-        <div class="rounded-3xl border border-stone-200/90 bg-white p-6 sm:p-8 space-y-5 shadow-xs">
-          
-          <div class="space-y-1 border-b border-stone-100 pb-3">
-            <h3 class="text-base font-bold text-[#1f2925]">ส่งข้อความถึงทีมงาน</h3>
-            <p class="text-xs text-stone-500">กรอกข้อมูลเพื่อให้เจ้าหน้าที่ติดต่อกลับภายใน 24 ชั่วโมง</p>
-          </div>
+      <!-- Email Support -->
+      <div class="rounded-3xl bg-white p-6 border border-stone-200/90 shadow-xs space-y-3 text-center hover:border-stone-400 transition-all">
+        <div class="w-12 h-12 rounded-2xl bg-stone-100 text-stone-700 mx-auto flex items-center justify-center">
+          <i data-lucide="mail" class="w-6 h-6 text-stone-700"></i>
+        </div>
+        <div>
+          <h3 class="font-serif font-bold text-sm text-[#1f2925]">
+            อีเมลประสานงานและบริการนักท่องเที่ยว
+          </h3>
+          <a href="mailto:support@welltripthailand.com" class="text-sm font-bold text-stone-800 font-mono hover:underline block mt-1 truncate">
+            support@welltripthailand.com
+          </a>
+          <p class="text-[11px] text-stone-400 mt-1">
+            ส่งข้อเสนอแนะและแจ้งปัญหาขัดข้อง (ตอบกลับใน 1 วันทำการ)
+          </p>
+        </div>
+      </div>
 
-          <form action="#" method="POST" onsubmit="event.preventDefault(); alert('ขอบคุณสำหรับข้อความ ทีมงานจะติดต่อกลับโดยเร็วที่สุดครับ'); this.reset();" class="space-y-4 text-xs">
-            {% csrf_token %}
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block font-semibold text-stone-700 mb-1.5">ชื่อ - นามสกุล <span class="text-rose-500">*</span></label>
-                <input type="text" required placeholder="สมชาย ใจดี"
-                       class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 bg-stone-50 text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#1f2925]">
-              </div>
-              <div>
-                <label class="block font-semibold text-stone-700 mb-1.5">เบอร์โทรศัพท์ <span class="text-rose-500">*</span></label>
-                <input type="tel" required placeholder="0812345678"
-                       class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 bg-stone-50 text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#1f2925]">
-              </div>
-            </div>
+    </div>
 
-            <div>
-              <label class="block font-semibold text-stone-700 mb-1.5">อีเมล</label>
-              <input type="email" placeholder="name@example.com"
-                     class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 bg-stone-50 text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#1f2925]">
-            </div>
+    <!-- Office Address Card -->
+    <div class="mt-4 rounded-3xl border border-stone-200/90 bg-white p-6 shadow-xs flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+      <div class="w-12 h-12 rounded-2xl bg-[#1f2925] text-white flex items-center justify-center shrink-0">
+        <i data-lucide="map-pin" class="w-6 h-6 text-[#c49a45]"></i>
+      </div>
+      <div class="space-y-1">
+        <div class="text-xs font-bold text-[#1f2925]">ศูนย์ปฏิบัติการและวิจัยการท่องเที่ยวเชิงสุขภาวะ (WellTrip)</div>
+        <div class="text-xs text-stone-600">
+          คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏศรีสะเกษ เลขที่ 319 ถนนไทยพันทา ต.โพธิ์ อ.เมือง จ.ศรีสะเกษ 33000
+        </div>
+        <div class="text-[11px] text-stone-400">
+          วันและเวลาทำการ: วันจันทร์ – วันศุกร์ เวลา 08:30 – 16:30 น.
+        </div>
+      </div>
+    </div>
+  </section>
 
-            <div>
-              <label class="block font-semibold text-stone-700 mb-1.5">หัวข้อติดต่อ</label>
-              <select class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 bg-stone-50 text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#1f2925]">
-                <option>สอบถามข้อมูลที่พักและการเดินทาง</option>
-                <option>สมัครเข้าร่วมเครือข่ายผู้ประกอบการชุมชน</option>
-                <option>จัดทริปสุขภาพดูงานกลุ่มคณะ</option>
-                <option>แจ้งปัญหาการใช้งานเว็บไซต์</option>
-                <option>อื่นๆ</option>
-              </select>
-            </div>
+  <!-- ============================================================================== -->
+  <!-- 3. FREQUENTLY ASKED QUESTIONS (FAQS จากต้นฉบับ)                                 -->
+  <!-- ============================================================================== -->
+  <section class="mx-auto max-w-4xl px-3 sm:px-6 space-y-6">
+    <div class="text-center space-y-1">
+      <h2 class="text-xl font-bold text-[#1f2925] font-serif">
+        คำถามที่พบบ่อย (FAQ)
+      </h2>
+      <p class="text-xs text-stone-500">
+        รวมข้อสงสัยเกี่ยวกับการจองที่พัก การชำระเงิน และสินค้าชุมชน
+      </p>
+    </div>
 
-            <div>
-              <label class="block font-semibold text-stone-700 mb-1.5">ข้อความรายละเอียด <span class="text-rose-500">*</span></label>
-              <textarea rows="4" required placeholder="พิมพ์ข้อความที่ต้องการสอบถามที่นี่..."
-                        class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 bg-stone-50 text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#1f2925]"></textarea>
-            </div>
+    <!-- Category Filters -->
+    <div class="flex items-center justify-center gap-2 overflow-x-auto pb-2">
+      <button
+        type="button"
+        @click="activeCategory = 'all'"
+        :class="activeCategory === 'all' ? 'bg-[#1f2925] text-white border-[#1f2925]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'"
+        class="px-4 py-2 rounded-full text-xs font-semibold transition border shrink-0 inline-flex items-center gap-1.5"
+      >
+        <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+        <span>ทั้งหมด</span>
+      </button>
 
-            <button type="submit"
-                    class="w-full py-3 rounded-full bg-[#1f2925] hover:bg-[#2b3832] text-white font-bold text-xs transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
-              <i data-lucide="send" class="w-4 h-4 text-[#c49a45]"></i>
-              <span>ส่งข้อความ</span>
-            </button>
-          </form>
+      <button
+        type="button"
+        @click="activeCategory = 'booking'"
+        :class="activeCategory === 'booking' ? 'bg-[#1f2925] text-white border-[#1f2925]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'"
+        class="px-4 py-2 rounded-full text-xs font-semibold transition border shrink-0 inline-flex items-center gap-1.5"
+      >
+        <i data-lucide="hotel" class="w-3.5 h-3.5"></i>
+        <span>การจอง & ที่พัก</span>
+      </button>
 
+      <button
+        type="button"
+        @click="activeCategory = 'payment'"
+        :class="activeCategory === 'payment' ? 'bg-[#1f2925] text-white border-[#1f2925]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'"
+        class="px-4 py-2 rounded-full text-xs font-semibold transition border shrink-0 inline-flex items-center gap-1.5"
+      >
+        <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+        <span>การชำระเงิน & สลิป</span>
+      </button>
+
+      <button
+        type="button"
+        @click="activeCategory = 'otop'"
+        :class="activeCategory === 'otop' ? 'bg-[#1f2925] text-white border-[#1f2925]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'"
+        class="px-4 py-2 rounded-full text-xs font-semibold transition border shrink-0 inline-flex items-center gap-1.5"
+      >
+        <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+        <span>สินค้า OTOP & จัดส่ง</span>
+      </button>
+    </div>
+
+    <!-- FAQ Accordion List -->
+    <div class="space-y-3">
+      
+      <!-- FAQ 1: payment -->
+      <div
+        x-show="(activeCategory === 'all' || activeCategory === 'payment') && (searchQuery === '' || 'วิธีการแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
+        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
+      >
+        <button
+          type="button"
+          @click="openFaq = (openFaq === 'faq-1' ? null : 'faq-1')"
+          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
+        >
+          <span class="flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
+            <span>วิธีการแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?</span>
+          </span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-1' ? 'rotate-180 text-[#1f2925]' : ''"></i>
+        </button>
+        <div x-show="openFaq === 'faq-1'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
+          เมื่อโอนเงินผ่าน PromptPay แล้ว สามารถกดแนบไฟล์สลิปรูปภาพผ่านหน้าชำระเงิน ระบบจะตรวจสอบความถูกต้องของยอดเงินและเวลาอัตโนมัติภายใน 5-15 นาที
+        </div>
+      </div>
+
+      <!-- FAQ 2: booking -->
+      <div
+        x-show="(activeCategory === 'all' || activeCategory === 'booking') && (searchQuery === '' || 'หากต้องการเลื่อนวันเข้าพักโฮมสเตย์ต้องทำอย่างไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
+        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
+      >
+        <button
+          type="button"
+          @click="openFaq = (openFaq === 'faq-2' ? null : 'faq-2')"
+          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
+        >
+          <span class="flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
+            <span>หากต้องการเลื่อนวันเข้าพักโฮมสเตย์ต้องทำอย่างไร?</span>
+          </span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-2' ? 'rotate-180 text-[#1f2925]' : ''"></i>
+        </button>
+        <div x-show="openFaq === 'faq-2'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
+          ท่านสามารถติดต่อโฮมสเตย์โดยตรงผ่านเบอร์โทรศัพท์ที่แสดงในใบยืนยันการจอง (My Bookings) ล่วงหน้าอย่างน้อย 3 วันก่อนวันเข้าพัก
+        </div>
+      </div>
+
+      <!-- FAQ 3: otop -->
+      <div
+        x-show="(activeCategory === 'all' || activeCategory === 'otop') && (searchQuery === '' || 'สินค้า OTOP จัดส่งตรงจากชุมชนอย่างไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
+        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
+      >
+        <button
+          type="button"
+          @click="openFaq = (openFaq === 'faq-3' ? null : 'faq-3')"
+          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
+        >
+          <span class="flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
+            <span>สินค้า OTOP จัดส่งตรงจากชุมชนอย่างไร?</span>
+          </span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-3' ? 'rotate-180 text-[#1f2925]' : ''"></i>
+        </button>
+        <div x-show="openFaq === 'faq-3'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
+          กลุ่มวิสาหกิจชุมชนผู้ผลิตสินค้า OTOP จะจัดส่งพัสดุตรงจากหมู่บ้านชุมชนศรีสะเกษ ภายใน 1-2 วันทำการหลังได้รับการยืนยันคำสั่งซื้อ
+        </div>
+      </div>
+
+      <!-- FAQ 4: booking -->
+      <div
+        x-show="(activeCategory === 'all' || activeCategory === 'booking') && (searchQuery === '' || 'นโยบายการยกเลิกการจองโฮมสเตย์และรับเงินคืนเป็นอย่างไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
+        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
+      >
+        <button
+          type="button"
+          @click="openFaq = (openFaq === 'faq-4' ? null : 'faq-4')"
+          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
+        >
+          <span class="flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
+            <span>นโยบายการยกเลิกการจองโฮมสเตย์และรับเงินคืนเป็นอย่างไร?</span>
+          </span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-4' ? 'rotate-180 text-[#1f2925]' : ''"></i>
+        </button>
+        <div x-show="openFaq === 'faq-4'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
+          ท่านสามารถยกเลิกการจองและขอรับเงินคืนเต็มจำนวนได้ หากทำการยกเลิกก่อนวันเข้าพักอย่างน้อย 7 วัน โดยติดต่อทีมงานทางสายด่วน 045-962-455 หรืออีเมล support@welltripthailand.com
+        </div>
+      </div>
+
+      <!-- FAQ 5: payment -->
+      <div
+        x-show="(activeCategory === 'all' || activeCategory === 'payment') && (searchQuery === '' || 'หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
+        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
+      >
+        <button
+          type="button"
+          @click="openFaq = (openFaq === 'faq-5' ? null : 'faq-5')"
+          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
+        >
+          <span class="flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
+            <span>หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?</span>
+          </span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-5' ? 'rotate-180 text-[#1f2925]' : ''"></i>
+        </button>
+        <div x-show="openFaq === 'faq-5'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
+          หากสลิปถูกปฏิเสธ (เช่น ภาพถ่ายไม่ชัดเจน หรือยอดเงินไม่ตรง) ท่านสามารถกดปุ่ม "แนบสลิปโอนเงิน" เพื่ออัปโหลดสลิปใบใหม่อีกครั้งได้ที่หน้ารายละเอียดการจองของฉัน
+        </div>
+      </div>
+
+      <!-- FAQ 6: otop -->
+      <div
+        x-show="(activeCategory === 'all' || activeCategory === 'otop') && (searchQuery === '' || 'สามารถสั่งซื้อสินค้า OTOP ร่วมกับจองที่พักในครั้งเดียวได้หรือไม่?'.toLowerCase().includes(searchQuery.toLowerCase()))"
+        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
+      >
+        <button
+          type="button"
+          @click="openFaq = (openFaq === 'faq-6' ? null : 'faq-6')"
+          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
+        >
+          <span class="flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
+            <span>สามารถสั่งซื้อสินค้า OTOP ร่วมกับจองที่พักในครั้งเดียวได้หรือไม่?</span>
+          </span>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-6' ? 'rotate-180 text-[#1f2925]' : ''"></i>
+        </button>
+        <div x-show="openFaq === 'faq-6'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
+          ได้ครับ ตะกร้าสินค้าของ WellTrip รองรับระบบ Multi-Vendor Bundle สามารถรวมรายการโฮมสเตย์ สปานวด และสินค้า OTOP เพื่อชำระเงินในครั้งเดียวได้เลย
         </div>
       </div>
 
