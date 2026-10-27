@@ -50,6 +50,7 @@ urlpatterns = [
 
     # Payments & Slips Actions
     path('admin/payments/<uuid:payment_id>/edit/', admin_views.admin_payment_edit_view, name='admin_payment_edit'),
+    path('admin/payments/<uuid:payment_id>/delete/', admin_views.admin_payment_delete_view, name='admin_payment_delete'),
     path('admin/slips/<uuid:slip_id>/delete/', admin_views.admin_slip_delete_view, name='admin_slip_delete'),
 
     # Security Audits

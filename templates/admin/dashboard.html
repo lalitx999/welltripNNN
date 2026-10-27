@@ -448,6 +448,16 @@
                       >
                         <i data-lucide="edit" class="w-3.5 h-3.5"></i>
                       </button>
+                      <form method="POST" action="{% url 'accounts:admin_payment_delete' pay.id %}" onsubmit="return confirm('ยืนยันลบรายการชำระเงินและคำสั่งจองรหัส {{ pay.booking.booking_code }} หรือไม่? ข้อมูลจะถูกลบถาวร')" class="inline">
+                        {% csrf_token %}
+                        <button 
+                          type="submit" 
+                          class="p-1.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 transition"
+                          title="ลบรายการนี้"
+                        >
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </form>
                     </div>
                   </td>
                 </tr>

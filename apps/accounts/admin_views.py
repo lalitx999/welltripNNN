@@ -1189,3 +1189,34 @@ def admin_slip_delete_view(request, slip_id):
     messages.success(request, f"ลบหลักฐานสลิป ({slip_ref}) ของรายการ {booking_code} เรียบร้อยแล้ว")
     return redirect('/accounts/admin-center/?tab=payments')
 
+
+@role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
+@require_http_methods(["POST"])
+def admin_payment_delete_view(request, payment_id):
+    """Admin permanently deletes a payment and its associated booking transaction."""
+    payment = get_object_or_404(Payment, id=payment_id)
+    booking = payment.booking
+    booking_code = booking.booking_code
+    customer_email = booking.customer.email
+
+    try:
+        with transaction.atomic():
+            payment.slips.all().delete()
+            payment.delete()
+            booking.delete()
+
+            record_audit_log(
+                request=request,
+                action="DELETE",
+                model_name="PaymentBooking",
+                object_id=str(payment_id),
+                changes={"booking_code": booking_code, "customer_email": customer_email},
+                user=request.user,
+            )
+            messages.success(request, f"ลบรายการชำระเงินและคำสั่งจองรหัส {booking_code} ({customer_email}) เรียบร้อยแล้ว")
+    except Exception as exc:
+        messages.error(request, f"เกิดข้อผิดพลาดในการลบรายการ: {str(exc)}")
+
+    return redirect('/accounts/admin-center/?tab=payments')
+
+
