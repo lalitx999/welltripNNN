@@ -1,12 +1,34 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ชำระเงิน - WellTrip{% endblock %}
+{% block title %}การชำระเงินและการจอง - WellTrip{% endblock %}
 
 {% block content %}
-<div class="max-w-xl mx-auto px-4 py-12 space-y-6">
-  <h1 class="text-2xl font-bold text-forest">การชำระเงินและยืนยันการจอง</h1>
-  <div class="card-luxury p-8 text-center">
-    <p class="text-xs text-earth/70">รองรับการโอนผ่านบัญชีกสิกรไทย และอัปโหลดสลิปตรวจสอบ (จะลงรายละเอียดใน EP 6)</p>
+<div class="min-h-[60vh] flex items-center justify-center py-16 px-4">
+  <div class="bg-white rounded-3xl border border-stone-200/90 max-w-md w-full p-8 sm:p-10 text-center space-y-6 shadow-xl relative overflow-hidden">
+    <!-- Subtle glow -->
+    <div class="absolute -right-12 -top-12 w-40 h-40 bg-gold/10 rounded-full blur-2xl pointer-events-none"></div>
+
+    <div class="w-20 h-20 rounded-3xl bg-forest/5 text-forest mx-auto flex items-center justify-center ring-1 ring-gold/20 shadow-inner">
+      <i data-lucide="credit-card" class="w-10 h-10 text-gold"></i>
+    </div>
+
+    <div class="space-y-2">
+      <h1 class="text-xl sm:text-2xl font-bold text-forest">การชำระเงินและการจอง</h1>
+      <p class="text-xs text-earth/70 leading-relaxed max-w-xs mx-auto">
+        ระบบชำระเงินรองรับการโอนผ่านบัญชีธนาคารชุมชนพร้อมเพย์ (PromptPay QR) พร้อมระบบตรวจสอบสลิปอัตโนมัติ
+      </p>
+    </div>
+
+    <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a href="{% url 'bookings:checkout' %}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md">
+        <i data-lucide="arrow-right" class="w-4 h-4 text-gold"></i>
+        <span>ดำเนินการสั่งซื้อและชำระเงิน</span>
+      </a>
+      <a href="{% url 'bookings:cart' %}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-full border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-bold text-forest transition-colors">
+        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+        <span>ดูตะกร้าสินค้า</span>
+      </a>
+    </div>
   </div>
 </div>
 {% endblock %}

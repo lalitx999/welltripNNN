@@ -1,20 +1,49 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ออฟไลน์ - WellTrip{% endblock %}
+{% block title %}ออฟไลน์ - WellTrip Slow Days{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto py-20 px-4 text-center">
-  <div class="w-16 h-16 rounded-full bg-forest-50 text-forest mx-auto flex items-center justify-center mb-4">
-    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 4.243a9 9 0 01-12.728 0m0 0l2.829-2.829m-2.829 2.829L3 21m2.828-15.364a9 9 0 0112.728 0" />
-    </svg>
+<div class="min-h-[70vh] flex items-center justify-center py-16 px-4">
+  <div class="bg-white rounded-3xl border border-stone-200/90 max-w-md w-full p-8 sm:p-10 text-center space-y-6 shadow-xl relative overflow-hidden"
+       x-data="{ isChecking: false }">
+    
+    <!-- Subtle glow -->
+    <div class="absolute -right-12 -top-12 w-40 h-40 bg-forest/5 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="absolute -left-12 -bottom-12 w-40 h-40 bg-gold/5 rounded-full blur-2xl pointer-events-none"></div>
+
+    <!-- Wifi Off Icon -->
+    <div class="w-20 h-20 rounded-3xl bg-forest/5 text-forest mx-auto flex items-center justify-center ring-1 ring-gold/20 shadow-inner">
+      <i data-lucide="wifi-off" class="w-10 h-10 text-gold"></i>
+    </div>
+
+    <!-- Header Text -->
+    <div class="space-y-2">
+      <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 rounded-full bg-stone-400"></span>
+        <span>โหมดการทำงานออฟไลน์ (Offline Mode)</span>
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold text-forest">ไม่พบสัญญาณการเชื่อมต่ออินเทอร์เน็ต</h1>
+      <p class="text-xs text-earth/70 leading-relaxed max-w-xs mx-auto">
+        คุณกำลังอยู่ในโหมดออฟไลน์ ข้อมูลที่พัก แผนที่ท่องเที่ยว และจุดสแตมป์พาสปอร์ตที่เคยเปิดไว้ยังคงแสดงผลได้ผ่าน Service Worker Cache
+      </p>
+    </div>
+
+    <!-- Connection Retry Button -->
+    <div class="pt-2">
+      <button 
+        type="button"
+        @click="isChecking = true; setTimeout(() => window.location.reload(), 600)"
+        class="w-full inline-flex items-center justify-center space-x-2 py-3 px-6 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+      >
+        <i data-lucide="refresh-cw" class="w-4 h-4 text-gold" :class="isChecking ? 'animate-spin' : ''"></i>
+        <span x-text="isChecking ? 'กำลังตรวจสอบการเชื่อมต่อ...' : 'ลองเชื่อมต่อใหม่อีกครั้ง'"></span>
+      </button>
+    </div>
+
+    <div class="text-[11px] text-earth/50">
+      เมื่อสัญญาณกลับมา ระบบจะทำการซิงค์ข้อมูลการจองของคุณโดยอัตโนมัติ
+    </div>
+
   </div>
-  <h2 class="text-xl font-bold text-forest mb-2">ไม่พบสัญญาณอินเทอร์เน็ต</h2>
-  <p class="text-xs text-earth/70 leading-relaxed mb-6">
-    คุณกำลังใช้งานในโหมดออฟไลน์ ข้อมูลที่พักหรือจุดเช็คอินที่เคยเปิดไว้ยังคงแสดงผลได้ตามปกติ
-  </p>
-  <button onclick="window.location.reload()" class="btn-primary text-xs px-6 py-2.5">
-    ลองเชื่อมต่อใหม่อีกครั้ง
-  </button>
 </div>
 {% endblock %}
