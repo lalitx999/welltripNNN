@@ -14,6 +14,10 @@ urlpatterns = [
     # Admin Operations Center
     path('admin/approvals/', admin_views.admin_approvals_view, name='admin_approvals'),
     path('admin/approvals/merchant/<uuid:user_id>/', admin_views.admin_approve_merchant_view, name='admin_approve_merchant'),
+    path('admin/approvals/merchant/<uuid:user_id>/reject/', admin_views.admin_reject_merchant_view, name='admin_reject_merchant'),
+    path('admin/users/', admin_views.admin_users_view, name='admin_users'),
+    path('admin/users/<uuid:user_id>/delete/', admin_views.admin_delete_user_view, name='admin_delete_user'),
     path('admin/catalog/', admin_views.admin_catalog_view, name='admin_catalog'),
     path('admin/audit/', admin_views.admin_audit_log_view, name='admin_audit'),
 ]
+
