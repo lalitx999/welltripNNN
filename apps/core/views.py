@@ -200,3 +200,19 @@ def service_worker_view(request):
 def offline_view(request):
     """Fallback offline page for PWA."""
     return render(request, 'core/offline.html')
+
+
+@require_GET
+def about_view(request):
+    """About Us page: Mission, cultural heritage of Sisaket's 4 tribes, and wellness ecosystem."""
+    return render(request, 'core/about.html', {
+        'page_title': 'เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ',
+    })
+
+
+@require_GET
+def contact_view(request):
+    """Contact Us page: Official support channels, office address, and contact forms."""
+    return render(request, 'core/contact.html', {
+        'page_title': 'ติดต่อเรา — WellTrip ช่องทางติดต่อและศูนย์ประสานงานชุมชน',
+    })

@@ -89,6 +89,14 @@
           <span x-text="currentLang === 'en' ? 'OTOP Crafts' : 'ของดีชุมชน OTOP'">ของดีชุมชน OTOP</span>
         </a>
 
+        <a href="{% url 'core:about' %}" class="flex items-center gap-1.5 h-10 px-4 rounded-full text-[#2B3832] hover:text-[#C49A45] hover:bg-[#C49A45]/10 transition-all">
+          <span x-text="currentLang === 'en' ? 'About Us' : 'เกี่ยวกับเรา'">เกี่ยวกับเรา</span>
+        </a>
+
+        <a href="{% url 'core:contact' %}" class="flex items-center gap-1.5 h-10 px-4 rounded-full text-[#2B3832] hover:text-[#C49A45] hover:bg-[#C49A45]/10 transition-all">
+          <span x-text="currentLang === 'en' ? 'Contact' : 'ติดต่อเรา'">ติดต่อเรา</span>
+        </a>
+
       </nav>
 
       <!-- Right Action Group -->
@@ -400,6 +408,8 @@
         <a href="{% url 'ai_recommendations:assessment' %}" @click="closeAll()" class="block py-2 text-sm font-bold text-[#D97706]">ประเมินสุขภาพ AI Wellness</a>
         <a href="{% url 'community:map' %}" @click="closeAll()" class="block py-2 text-sm font-bold text-[#1F2925]">แผนที่ชุมชน & พาสปอร์ต</a>
         <a href="{% url 'community:stories_list' %}" @click="closeAll()" class="block py-2 text-sm font-bold text-[#1F2925]">เรื่องเล่าภูมิปัญญา & ข่าวสาร</a>
+        <a href="{% url 'core:about' %}" @click="closeAll()" class="block py-2 text-sm font-bold text-[#1F2925]">เกี่ยวกับเรา (About Us)</a>
+        <a href="{% url 'core:contact' %}" @click="closeAll()" class="block py-2 text-sm font-bold text-[#1F2925]">ติดต่อเรา (Contact Us)</a>
       </div>
 
       <div class="pt-4 border-t border-stone-100 flex flex-col gap-2">
@@ -471,6 +481,8 @@
         <div class="space-y-3">
           <h4 class="text-xs font-bold uppercase tracking-widest text-[#C49A45]">เรื่องราวและชุมชน</h4>
           <ul class="space-y-2 text-xs text-stone-300">
+            <li><a href="{% url 'core:about' %}" class="hover:text-white transition-colors">เกี่ยวกับเรา (About WellTrip)</a></li>
+            <li><a href="{% url 'core:contact' %}" class="hover:text-white transition-colors">ติดต่อเรา (Contact Us)</a></li>
             <li><a href="{% url 'community:map' %}" class="hover:text-white transition-colors">แผนที่ท่องเที่ยว 13 ชุมชน</a></li>
             <li><a href="{% url 'community:stories_list' %}" class="hover:text-white transition-colors">เรื่องเล่าภูมิปัญญา 4 ชนเผ่า</a></li>
             <li><a href="{% url 'accounts:portal_dashboard' %}" class="hover:text-white transition-colors">พอร์ทัลร้านค้าชุมชน (Partner Studio)</a></li>

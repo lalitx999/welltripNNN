@@ -88,8 +88,8 @@ def register_view(request):
                 user=user,
             )
 
-            # Auto-login after successful registration
-            login(request, user)
+            # Auto-login after successful registration with explicit backend
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             request.session.cycle_key()
 
             messages.success(request, "สร้างบัญชีผู้ใช้งานสำเร็จ")
