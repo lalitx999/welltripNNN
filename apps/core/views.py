@@ -279,3 +279,24 @@ def terms_view(request):
     return render(request, 'core/terms.html', {
         'page_title': 'ข้อตกลงการใช้งานและนโยบายคุ้มครองข้อมูลส่วนบุคคล — WellTrip',
     })
+
+
+@require_GET
+def llms_txt_view(request):
+    """
+    Serves /llms.txt and /llm.txt for AI agents and LLMs.
+    """
+    from django.template.loader import render_to_string
+    content = render_to_string('llms.txt')
+    return HttpResponse(content, content_type='text/plain; charset=utf-8')
+
+
+@require_GET
+def llms_full_txt_view(request):
+    """
+    Serves /llms-full.txt and /llm-full.txt for comprehensive AI knowledge referencing.
+    """
+    from django.template.loader import render_to_string
+    content = render_to_string('llms-full.txt')
+    return HttpResponse(content, content_type='text/plain; charset=utf-8')
+

@@ -13,4 +13,9 @@ urlpatterns = [
     path('manifest.json', views.manifest_view, name='manifest'),
     path('sw.js', views.service_worker_view, name='service_worker'),
     path('offline/', views.offline_view, name='offline'),
+    path('llms.txt', views.llms_txt_view, name='llms_txt'),
+    path('llm.txt', views.llms_txt_view, name='llm_txt'),
+    path('llms-full.txt', views.llms_full_txt_view, name='llms_full_txt'),
+    path('llm-full.txt', views.llms_full_txt_view, name='llm_full_txt'),
 ]
+

@@ -1,16 +1,54 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}ตะกร้าบริการชุมชน - WellTrip Sisaket{% endblock %}
+{% block title %}ตะกร้าบริการและการสั่งซื้อ - WellTrip Sisaket{% endblock %}
 
 {% block content %}
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
   
-  <!-- Breadcrumbs & Heading -->
+  <!-- 3-Step Checkout Stepper Header -->
+  <div class="bg-white p-4 sm:p-6 rounded-3xl border border-slate-200/90 shadow-xs">
+    <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+      <!-- Step 1 (Active) -->
+      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-xs">
+          1
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-bold text-[#c49a45] uppercase tracking-wider">ขั้นตอนที่ 1</div>
+          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ตะกร้า & ที่อยู่จัดส่ง</div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left opacity-60">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
+          2
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">ขั้นตอนที่ 2</div>
+          <div class="text-xs sm:text-sm font-semibold text-slate-600 truncate">ทวนรายละเอียด</div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left opacity-60">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
+          3
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">ขั้นตอนที่ 3</div>
+          <div class="text-xs sm:text-sm font-semibold text-slate-600 truncate">ยืนยัน & ชำระเงิน</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Title & Overview -->
   <div class="space-y-2 border-b border-slate-200 pb-4">
     <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
       <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
-      <span>TRIP CART & SUMMARY</span>
+      <span>STEP 1 / 3: CART & SHIPPING ADDRESS</span>
     </div>
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
       <h1 class="font-serif text-2xl sm:text-4xl font-bold text-[#1f2925]">ตะกร้าบริการและการสั่งซื้อ</h1>
@@ -19,47 +57,254 @@
       </span>
     </div>
     <p class="text-xs sm:text-sm text-slate-500">
-      รวมรายการที่พัก อาหาร สปา และสินค้า OTOP เพื่อจัดการและชำระเงินในครั้งเดียว
+      ตรวจสอบรายการสินค้า/บริการ และจัดการข้อมูลที่อยู่สำหรับการจัดส่งสินค้า (บันทึกได้สูงสุด 3 ที่อยู่)
     </p>
   </div>
 
   {% if cart %}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
-      <!-- Items List (8 cols) -->
-      <div class="lg:col-span-8 space-y-4">
-        {% for item in cart %}
-          <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex items-center justify-between gap-4 transition hover:border-[#c49a45]/40">
-            <div class="space-y-1.5 min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2925] text-[#faf9f6]">
-                  {{ item.item_type|default:"บริการชุมชน" }}
-                </span>
-                {% if item.date %}
-                  <span class="text-[11px] text-slate-400 font-medium">วันที่: {{ item.date }}</span>
-                {% endif %}
-              </div>
-              <h3 class="text-sm sm:text-base font-bold text-[#1f2925] truncate">{{ item.title }}</h3>
-              <div class="text-xs text-slate-500 font-medium">
-                ฿{{ item.price|floatformat:0 }} x {{ item.quantity|default:"1" }}
-              </div>
-            </div>
+      <!-- Items List & Shipping Addresses (8 cols) -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Cart Items Section -->
+        <div class="space-y-3">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <i data-lucide="package-check" class="w-4 h-4 text-[#c49a45]"></i>
+            <span>รายการสินค้าและบริการที่คุณเลือก</span>
+          </h2>
 
-            <div class="flex items-center gap-4 shrink-0">
-              <span class="text-base font-serif font-bold text-[#c49a45]">฿{{ item.price|floatformat:0 }}</span>
-              <form method="POST" action="{% url 'bookings:cart_remove' forloop.counter0 %}">
-                {% csrf_token %}
+          <div class="space-y-3">
+            {% for item in cart %}
+              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-[#c49a45]/40">
+                <div class="space-y-1.5 min-w-0 flex-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2925] text-[#faf9f6]">
+                      {{ item.item_type|default:"บริการชุมชน" }}
+                    </span>
+                    {% if item.date %}
+                      <span class="text-[11px] text-slate-400 font-medium">
+                        <i data-lucide="calendar" class="w-3 h-3 inline"></i> {{ item.date }}
+                      </span>
+                    {% endif %}
+                  </div>
+                  <h3 class="text-sm sm:text-base font-bold text-[#1f2925]">{{ item.title }}</h3>
+                  <div class="text-xs text-slate-500 font-medium">
+                    ราคาต่อหน่วย: ฿{{ item.price|floatformat:0 }}
+                  </div>
+                </div>
+
+                <!-- Quantity Controls & Subtotal -->
+                <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                  <!-- +/- Buttons -->
+                  <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200/80">
+                    <form method="POST" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="decrease">
+                      <button 
+                        type="submit" 
+                        class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm shadow-xs transition cursor-pointer"
+                        title="ลดจำนวน"
+                      >
+                        -
+                      </button>
+                    </form>
+                    <span class="w-8 text-center text-xs font-bold font-mono text-[#1f2925]">
+                      {{ item.quantity|default:"1" }}
+                    </span>
+                    <form method="POST" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="increase">
+                      <button 
+                        type="submit" 
+                        class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm shadow-xs transition cursor-pointer"
+                        title="เพิ่มจำนวน"
+                      >
+                        +
+                      </button>
+                    </form>
+                  </div>
+
+                  <!-- Item Total -->
+                  <div class="text-right min-w-[70px]">
+                    <span class="text-base font-serif font-bold text-[#c49a45]">
+                      ฿{% widthratio item.price 1 item.quantity %}
+                    </span>
+                  </div>
+
+                  <!-- Remove Button -->
+                  <form method="POST" action="{% url 'bookings:cart_remove' forloop.counter0 %}">
+                    {% csrf_token %}
+                    <button 
+                      type="submit" 
+                      class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition cursor-pointer" 
+                      title="ลบออกจากตะกร้า"
+                    >
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Section: Shipping Address (Max 3 Addresses) -->
+        <div class="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-sm space-y-5" x-data="{ showAddForm: false }">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <h2 class="text-sm font-bold text-[#1f2925] flex items-center gap-2">
+                <i data-lucide="map-pin" class="w-4 h-4 text-[#c49a45]"></i>
+                <span>ข้อมูลที่อยู่ในการจัดส่งสินค้า (สำหรับสินค้า OTOP & ของที่ระลึก)</span>
+              </h2>
+              <p class="text-xs text-slate-400 mt-0.5">เลือกที่อยู่จัดส่งที่ต้องการ หรือเพิ่มที่อยู่ใหม่ (บันทึกได้สูงสุด 3 ที่อยู่)</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                {{ shipping_addresses|length }}/3 ที่อยู่
+              </span>
+              {% if can_add_address %}
                 <button 
-                  type="submit" 
-                  class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition cursor-pointer" 
-                  title="ลบออกจากตะกร้า"
+                  type="button" 
+                  @click="showAddForm = !showAddForm"
+                  class="px-3 py-1 rounded-xl text-xs font-bold bg-[#1f2925] text-[#faf9f6] hover:bg-[#2b3832] transition cursor-pointer flex items-center gap-1 shadow-xs"
                 >
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  <i data-lucide="plus" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+                  <span x-text="showAddForm ? 'ปิดแบบฟอร์ม' : 'เพิ่มที่อยู่ใหม่'">เพิ่มที่อยู่ใหม่</span>
                 </button>
-              </form>
+              {% endif %}
             </div>
           </div>
-        {% endfor %}
+
+          <!-- Address List -->
+          {% if shipping_addresses %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {% for addr in shipping_addresses %}
+                <div class="p-4 rounded-2xl border transition relative flex flex-col justify-between {% if forloop.counter0 == selected_idx %}border-[#1f2925] bg-[#faf9f6] ring-2 ring-[#1f2925]/10 shadow-sm{% else %}border-slate-200 bg-white hover:border-slate-300{% endif %}">
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {% if forloop.counter0 == selected_idx %}bg-[#1f2925] text-[#faf9f6]{% else %}bg-slate-100 text-slate-600{% endif %}">
+                        {{ addr.label|default:"ที่อยู่จัดส่ง" }}
+                      </span>
+                      {% if forloop.counter0 == selected_idx %}
+                        <span class="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
+                          <i data-lucide="check-circle" class="w-3 h-3"></i> ใช้งานอยู่
+                        </span>
+                      {% endif %}
+                    </div>
+
+                    <div>
+                      <div class="text-xs font-bold text-[#1f2925]">{{ addr.recipient_name }}</div>
+                      <div class="text-[11px] font-mono text-slate-500">{{ addr.phone_number }}</div>
+                    </div>
+
+                    <p class="text-[11px] text-slate-600 leading-relaxed line-clamp-3">
+                      {{ addr.address_line }} อ.{{ addr.district }} จ.{{ addr.province }} {{ addr.postal_code }}
+                    </p>
+                  </div>
+
+                  <div class="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between gap-2">
+                    {% if forloop.counter0 != selected_idx %}
+                      <form method="POST" action="{% url 'bookings:address_select' forloop.counter0 %}">
+                        {% csrf_token %}
+                        <button type="submit" class="text-xs font-semibold text-[#1f2925] hover:text-[#c49a45] transition cursor-pointer">
+                          เลือกที่อยู่นี้
+                        </button>
+                      </form>
+                    {% else %}
+                      <span class="text-[11px] font-bold text-[#c49a45]">กำลังเลือกใช้อยู่</span>
+                    {% endif %}
+
+                    {% if shipping_addresses|length > 1 %}
+                      <form method="POST" action="{% url 'bookings:address_delete' forloop.counter0 %}" onsubmit="return confirm('ต้องการลบที่อยู่จัดส่งนี้หรือไม่?')">
+                        {% csrf_token %}
+                        <button type="submit" class="text-slate-400 hover:text-rose-600 transition p-1 cursor-pointer" title="ลบที่อยู่นี้">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </form>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="p-6 rounded-2xl bg-amber-50/70 border border-amber-200 text-center space-y-2">
+              <i data-lucide="info" class="w-6 h-6 text-amber-600 mx-auto"></i>
+              <p class="text-xs font-bold text-amber-900">ยังไม่มีข้อมูลที่อยู่สำหรับจัดส่งสินค้า</p>
+              <p class="text-[11px] text-amber-700">กรุณากรอกข้อมูลที่อยู่จัดส่งด้านล่างเพื่อความสะดวกในการรับสินค้า OTOP</p>
+            </div>
+          {% endif %}
+
+          <!-- Add Address Form (Collapsible or if no addresses) -->
+          {% if can_add_address %}
+            <div x-show="showAddForm || {{ shipping_addresses|length }} === 0" class="pt-4 border-t border-slate-100 space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#c49a45]"></span>
+                <h3 class="text-xs font-bold text-[#1f2925]">กรอกข้อมูลที่อยู่จัดส่งใหม่ (เพิ่มได้อีก {{ 3|add:"-"|add:shipping_addresses|length }} ที่อยู่)</h3>
+              </div>
+
+              <form method="POST" action="{% url 'bookings:address_add' %}" class="space-y-3 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">ป้ายกำกับที่อยู่ (เช่น บ้าน, คอนโด, สำนักงาน)</label>
+                    <input type="text" name="label" placeholder="เช่น ที่อยู่บ้าน" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:ring-2 focus:ring-[#1f2925]">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล ผู้รับ</label>
+                    <input type="text" name="recipient_name" placeholder="ชื่อ-นามสกุล" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:ring-2 focus:ring-[#1f2925]">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์ติดต่อ</label>
+                    <input type="tel" name="phone_number" placeholder="08X-XXX-XXXX" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono focus:ring-2 focus:ring-[#1f2925]">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-700 mb-1">ที่อยู่ (เลขที่, หมู่, ซอย, ถนน, ตำบล)</label>
+                  <input type="text" name="address_line" placeholder="123 หมู่ 4 ต.เมืองใต้" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:ring-2 focus:ring-[#1f2925]">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">อำเภอ</label>
+                    <input type="text" name="district" value="เมืองศรีสะเกษ" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:ring-2 focus:ring-[#1f2925]">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">จังหวัด</label>
+                    <input type="text" name="province" value="ศรีสะเกษ" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:ring-2 focus:ring-[#1f2925]">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">รหัสไปรษณีย์</label>
+                    <input type="text" name="postal_code" value="33000" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono focus:ring-2 focus:ring-[#1f2925]">
+                  </div>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                  <button 
+                    type="button" 
+                    @click="showAddForm = false"
+                    class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 text-xs font-semibold transition cursor-pointer"
+                  >
+                    ยกเลิก
+                  </button>
+                  <button 
+                    type="submit" 
+                    class="px-5 py-2 rounded-xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+                  >
+                    <i data-lucide="save" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+                    <span>บันทึกที่อยู่นี้</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          {% else %}
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center text-xs text-slate-500">
+              <i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600 mr-1"></i>
+              บันทึกที่อยู่จัดส่งครบตามโควตาสูงสุด 3 ข้อมูลแล้ว (หากต้องการเพิ่มที่อยู่ใหม่ กรุณาลบที่อยู่อันใดอันหนึ่งออกก่อน)
+            </div>
+          {% endif %}
+        </div>
 
         <div class="pt-2">
           <a 
@@ -73,7 +318,7 @@
       </div>
 
       <!-- Order Summary Card (4 cols) -->
-      <div class="lg:col-span-4 bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-md space-y-5">
+      <div class="lg:col-span-4 bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-md space-y-5 sticky top-24">
         <h3 class="text-sm font-bold text-[#1f2925] border-b border-slate-100 pb-3 flex items-center gap-2">
           <i data-lucide="receipt" class="w-4 h-4 text-[#c49a45]"></i>
           <span>สรุปรายการสั่งซื้อ</span>
@@ -88,11 +333,31 @@
             <span>ค่าธรรมเนียมแพลตฟอร์ม</span>
             <span>ฟรี (สนับสนุนชุมชน)</span>
           </div>
+          <div class="flex justify-between text-emerald-700 font-semibold">
+            <span>ค่าจัดส่งสินค้า OTOP</span>
+            <span>ส่งฟรีทุกรายการ</span>
+          </div>
           <div class="flex justify-between text-slate-400 text-[11px]">
             <span>ภาษีและค่าบำรุงท้องถิ่น</span>
             <span>รวมในราคาแล้ว</span>
           </div>
         </div>
+
+        <!-- Selected Address Preview -->
+        {% if selected_address %}
+          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="truck" class="w-3 h-3 text-[#c49a45]"></i>
+              <span>จัดส่งสินค้าไปที่:</span>
+            </div>
+            <div class="font-bold text-[#1f2925] truncate">
+              {{ selected_address.recipient_name }} ({{ selected_address.label }})
+            </div>
+            <div class="text-[11px] text-slate-500 truncate">
+              {{ selected_address.address_line }} อ.{{ selected_address.district }}
+            </div>
+          </div>
+        {% endif %}
 
         <div class="pt-3 border-t border-slate-100 flex justify-between items-baseline">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-500">ยอดชำระสุทธิ</span>
@@ -102,10 +367,10 @@
         <div class="pt-2">
           {% if user.is_authenticated %}
             <a 
-              href="{% url 'bookings:checkout' %}" 
+              href="{% url 'bookings:review' %}" 
               class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>ดำเนินการสั่งซื้อ</span>
+              <span>ไปขั้นตอนที่ 2: ทวนรายละเอียดคำสั่งซื้อ</span>
               <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45]"></i>
             </a>
           {% else %}
@@ -121,7 +386,7 @@
 
         <div class="flex items-center justify-center gap-1.5 text-[11px] text-slate-400 pt-2 border-t border-slate-100">
           <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-          <span>รับประกันความปลอดภัย 100%</span>
+          <span>รับประกันความปลอดภัย ชุมชนดูแล 100%</span>
         </div>
       </div>
 

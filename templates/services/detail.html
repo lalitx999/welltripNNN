@@ -130,7 +130,29 @@
 
     </div>
 
-  </div>
-
 </div>
+
+<!-- Schema.org Structured Data for Service (Restaurant or DaySpa) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "{% if service_type == 'food' %}Restaurant{% else %}DaySpa{% endif %}",
+  "name": "{{ item.name|escapejs }}",
+  "description": "{{ item.description|default:item.name|truncatewords:30|escapejs }}",
+  "image": "{% if item.image %}{{ request.scheme }}://{{ request.get_host }}{{ item.image.url }}{% endif %}",
+  "priceRange": "฿฿",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "เมืองศรีสะเกษ",
+    "addressRegion": "ศรีสะเกษ",
+    "addressCountry": "TH"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ item.price|floatformat:2 }}",
+    "priceCurrency": "THB",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
 {% endblock %}

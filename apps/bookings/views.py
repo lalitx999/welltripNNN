@@ -22,17 +22,144 @@ def save_cart(request, cart):
     request.session.modified = True
 
 
+def get_shipping_addresses(request):
+    """Retrieves list of user shipping addresses from session (max 3)."""
+    addresses = request.session.get('shipping_addresses', None)
+    if addresses is None:
+        if request.user.is_authenticated:
+            # Prepopulate with user default info if available
+            default_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.email.split('@')[0]
+            addresses = [{
+                'recipient_name': default_name,
+                'phone_number': request.user.phone_number or "081-234-5678",
+                'address_line': "123 หมู่ 4 ต.เมืองใต้",
+                'district': "เมืองศรีสะเกษ",
+                'province': "ศรีสะเกษ",
+                'postal_code': "33000",
+                'label': "ที่อยู่หลัก (Default)",
+            }]
+        else:
+            addresses = []
+        request.session['shipping_addresses'] = addresses
+        request.session['selected_address_idx'] = 0
+        request.session.modified = True
+    return addresses
+
+
+def get_selected_address(request):
+    addresses = get_shipping_addresses(request)
+    if not addresses:
+        return None
+    idx = request.session.get('selected_address_idx', 0)
+    if 0 <= idx < len(addresses):
+        return addresses[idx]
+    return addresses[0]
+
+
 @require_http_methods(["GET"])
 def cart_view(request):
-    """Displays cart items and checkout preview."""
+    """
+    Step 1: Displays cart items, +/- quantity controls, and shipping address manager (max 3).
+    """
     cart = get_cart(request)
     total_amount = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+    shipping_addresses = get_shipping_addresses(request)
+    selected_idx = request.session.get('selected_address_idx', 0)
 
     return render(request, 'bookings/cart.html', {
         'cart': cart,
         'total_amount': total_amount,
         'item_count': len(cart),
+        'shipping_addresses': shipping_addresses,
+        'selected_idx': selected_idx,
+        'selected_address': get_selected_address(request),
+        'can_add_address': len(shipping_addresses) < 3,
     })
+
+
+@require_http_methods(["POST"])
+def cart_update_quantity_view(request, index):
+    """Increases or decreases item quantity in the cart."""
+    cart = get_cart(request)
+    if 0 <= index < len(cart):
+        action = request.POST.get('action')
+        qty = request.POST.get('quantity')
+        if action == 'increase':
+            cart[index]['quantity'] = int(cart[index].get('quantity', 1)) + 1
+        elif action == 'decrease':
+            new_qty = int(cart[index].get('quantity', 1)) - 1
+            if new_qty > 0:
+                cart[index]['quantity'] = new_qty
+            else:
+                cart.pop(index)
+        elif qty and qty.isdigit():
+            val = int(qty)
+            if val > 0:
+                cart[index]['quantity'] = val
+            else:
+                cart.pop(index)
+        save_cart(request, cart)
+    return redirect('bookings:cart')
+
+
+@require_http_methods(["POST"])
+def shipping_address_add_view(request):
+    """Adds a new shipping address (strictly max 3)."""
+    addresses = list(get_shipping_addresses(request))
+    if len(addresses) >= 3:
+        messages.error(request, "สามารถบันทึกที่อยู่จัดส่งได้สูงสุด 3 รายการเท่านั้น")
+        return redirect('bookings:cart')
+
+    recipient_name = request.POST.get('recipient_name', '').strip()
+    phone_number = request.POST.get('phone_number', '').strip()
+    address_line = request.POST.get('address_line', '').strip()
+    district = request.POST.get('district', 'เมืองศรีสะเกษ').strip()
+    province = request.POST.get('province', 'ศรีสะเกษ').strip()
+    postal_code = request.POST.get('postal_code', '33000').strip()
+    label = request.POST.get('label', f'ที่อยู่จัดส่ง {len(addresses)+1}').strip()
+
+    if not recipient_name or not address_line or not phone_number:
+        messages.error(request, "กรุณากรอกข้อมูลชื่อผู้รับ เบอร์โทรศัพท์ และที่อยู่ให้ครบถ้วน")
+        return redirect('bookings:cart')
+
+    addresses.append({
+        'recipient_name': recipient_name,
+        'phone_number': phone_number,
+        'address_line': address_line,
+        'district': district,
+        'province': province,
+        'postal_code': postal_code,
+        'label': label,
+    })
+    request.session['shipping_addresses'] = addresses
+    request.session['selected_address_idx'] = len(addresses) - 1
+    request.session.modified = True
+    messages.success(request, f"เพิ่มที่อยู่จัดส่ง '{label}' สำเร็จ")
+    return redirect('bookings:cart')
+
+
+@require_http_methods(["POST"])
+def shipping_address_delete_view(request, index):
+    """Deletes a shipping address by index."""
+    addresses = list(get_shipping_addresses(request))
+    if 0 <= index < len(addresses):
+        removed = addresses.pop(index)
+        request.session['shipping_addresses'] = addresses
+        request.session['selected_address_idx'] = max(0, min(request.session.get('selected_address_idx', 0), len(addresses) - 1))
+        request.session.modified = True
+        messages.success(request, f"ลบที่อยู่จัดส่ง '{removed.get('label', 'ที่อยู่')}' เรียบร้อยแล้ว")
+    return redirect('bookings:cart')
+
+
+@require_http_methods(["POST"])
+def shipping_address_select_view(request, index):
+    """Sets active selected shipping address."""
+    addresses = get_shipping_addresses(request)
+    if 0 <= index < len(addresses):
+        request.session['selected_address_idx'] = index
+        request.session.modified = True
+        messages.success(request, f"เลือกที่อยู่จัดส่ง: {addresses[index].get('recipient_name')}")
+    return redirect('bookings:cart')
 
 
 @require_http_methods(["POST"])
@@ -91,11 +218,10 @@ def cart_remove_view(request, index):
 
 
 @login_required
-@require_http_methods(["GET", "POST"])
-def checkout_view(request):
+@require_http_methods(["GET"])
+def review_view(request):
     """
-    Checkout View:
-    Locks inventories and creates booking. Redirects to payment instructions.
+    Step 2: Order Review & Summary (หน้าทวนรายละเอียดคำสั่งซื้อก่อนสั่ง).
     """
     cart = get_cart(request)
     if not cart:
@@ -103,9 +229,36 @@ def checkout_view(request):
         return redirect('accommodations:list')
 
     total_amount = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+    shipping_address = get_selected_address(request)
+
+    return render(request, 'bookings/review.html', {
+        'cart': cart,
+        'total_amount': total_amount,
+        'item_count': len(cart),
+        'shipping_address': shipping_address,
+    })
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def checkout_view(request):
+    """
+    Step 3: Locks inventories, attaches shipping address, creates booking, and redirects to payment instructions.
+    """
+    cart = get_cart(request)
+    if not cart:
+        messages.warning(request, "ตะกร้าสินค้าว่างเปล่า กรุณาเลือกบริการก่อนดำเนินการสั่งซื้อ")
+        return redirect('accommodations:list')
+
+    total_amount = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+    shipping_address = get_selected_address(request)
 
     if request.method == "POST":
         customer_notes = request.POST.get('customer_notes', '').strip()
+        if shipping_address:
+            addr_str = f"ที่อยู่จัดส่ง: {shipping_address.get('recipient_name')} ({shipping_address.get('phone_number')}) {shipping_address.get('address_line')} อ.{shipping_address.get('district')} จ.{shipping_address.get('province')} {shipping_address.get('postal_code')}"
+            customer_notes = f"{customer_notes}\n{addr_str}".strip() if customer_notes else addr_str
+
         try:
             booking = process_checkout(
                 user=request.user,
@@ -115,6 +268,8 @@ def checkout_view(request):
             )
             # Empty cart after successful order placement
             save_cart(request, [])
+            request.session['last_order_shipping_address'] = shipping_address
+            request.session.modified = True
             messages.success(request, f"สร้างคำสั่งซื้อสำเร็จ รหัส: {booking.booking_code}")
             return redirect('payments:payment_instruction', booking_id=booking.id)
         except StockUnavailableError as e:
@@ -124,10 +279,7 @@ def checkout_view(request):
             messages.error(request, f"เกิดข้อผิดพลาดในระบบ: {str(e)}")
             return redirect('bookings:cart')
 
-    return render(request, 'bookings/checkout.html', {
-        'cart': cart,
-        'total_amount': total_amount,
-    })
+    return redirect('bookings:review')
 
 
 @login_required

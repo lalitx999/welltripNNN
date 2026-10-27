@@ -13,6 +13,11 @@
   <link rel="manifest" href="{% url 'core:manifest' %}">
   
   <title>{% block title %}WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน{% endblock %}</title>
+  <meta name="description" content="WellTrip Sisaket (เวลทริป ศรีสะเกษ) แพลตฟอร์มท่องเที่ยวเชิงสุขภาวะและวิถีชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟ จองโฮมสเตย์ อาหารสุขภาพ สปาสมุนไพร และสินค้า OTOP">
+  <meta property="og:site_name" content="WellTrip Sisaket">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน">
+  <meta property="og:description" content="สัมผัสเสน่ห์วิถีชีวิต 4 ชนเผ่า วัฒนธรรมสุขภาวะ และอัตลักษณ์ดินภูเขาไฟศรีสะเกษ">
   
   <!-- Favicon & Brand Icons -->
   <link rel="icon" type="image/x-icon" href="{% static 'images/logoWelltrip.ico' %}">
@@ -22,6 +27,40 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Schema.org Organization & WebSite JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://welltrip-sisaket.com/#organization",
+        "name": "WellTrip Sisaket",
+        "url": "https://welltrip-sisaket.com/",
+        "logo": "https://welltrip-sisaket.com{% static 'images/logoWelltrip.jpg' %}",
+        "description": "แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 ชนเผ่าศรีสะเกษ",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "เมืองศรีสะเกษ",
+          "addressRegion": "ศรีสะเกษ",
+          "postalCode": "33000",
+          "addressCountry": "TH"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://welltrip-sisaket.com/#website",
+        "url": "https://welltrip-sisaket.com/",
+        "name": "WellTrip Sisaket",
+        "description": "Slow Days Sisaket - นวัตกรรมการท่องเที่ยวเชิงสุขภาวะและมรดกวัฒนธรรม",
+        "publisher": {
+          "@id": "https://welltrip-sisaket.com/#organization"
+        }
+      }
+    ]
+  }
+  </script>
   
   <!-- Tailwind CSS Play CDN with In-Memory JIT Engine -->
   <script src="https://cdn.tailwindcss.com"></script>

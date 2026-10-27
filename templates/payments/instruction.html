@@ -29,11 +29,49 @@
        }
      }">
   
+  <!-- 3-Step Checkout Stepper Header -->
+  <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-xs">
+    <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+      <!-- Step 1 (Completed) -->
+      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
+          <i data-lucide="check" class="w-4 h-4"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-semibold text-emerald-700 uppercase tracking-wider">ขั้นตอนที่ 1</div>
+          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ตะกร้า & ที่อยู่</div>
+        </div>
+      </div>
+
+      <!-- Step 2 (Completed) -->
+      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
+          <i data-lucide="check" class="w-4 h-4"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-semibold text-emerald-700 uppercase tracking-wider">ขั้นตอนที่ 2</div>
+          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ทวนรายละเอียด</div>
+        </div>
+      </div>
+
+      <!-- Step 3 (Active) -->
+      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-xs">
+          3
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-bold text-[#c49a45] uppercase tracking-wider">ขั้นตอนที่ 3</div>
+          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ยืนยัน & ชำระเงิน</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Header -->
   <div class="space-y-1.5 text-center sm:text-left">
     <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
       <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-      <span>PROMPTPAY QR PAYMENT</span>
+      <span>STEP 3 / 3: PROMPTPAY QR PAYMENT</span>
     </div>
     <h1 class="font-serif text-2xl sm:text-3xl font-bold text-[#1f2925]">
       ชำระเงินสำหรับการจอง {{ booking.booking_code }}
@@ -42,6 +80,17 @@
       สแกนโอนเงินเข้าบัญชีทางการของวิสาหกิจชุมชนศรีสะเกษ และแนบหลักฐานสลิปด้านล่าง
     </p>
   </div>
+
+  <!-- Shipping / Order Note Preview (If available) -->
+  {% if booking.customer_notes %}
+    <div class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200 text-xs space-y-1">
+      <div class="font-bold text-[#1f2925] flex items-center gap-1.5">
+        <i data-lucide="truck" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+        <span>ข้อมูลการจัดส่งและข้อความถึงชุมชน:</span>
+      </div>
+      <p class="text-slate-600 whitespace-pre-line leading-relaxed">{{ booking.customer_notes }}</p>
+    </div>
+  {% endif %}
 
   <!-- 15-Minute Countdown Alert -->
   {% if booking.status == 'AWAITING_PAYMENT' %}

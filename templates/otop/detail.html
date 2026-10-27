@@ -136,7 +136,32 @@
 
     </div>
 
-  </div>
-
 </div>
+
+<!-- Schema.org Structured Data for OTOP Product -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ product.name|escapejs }}",
+  "description": "{{ product.description|default:product.name|truncatewords:30|escapejs }}",
+  "image": "{% if product.image %}{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}{% endif %}",
+  "sku": "OTOP-{{ product.id }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "WellTrip Sisaket Community OTOP"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ request.build_absolute_uri }}",
+    "priceCurrency": "THB",
+    "price": "{{ product.price|floatformat:2 }}",
+    "availability": "{% if product.stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+    "seller": {
+      "@type": "Organization",
+      "name": "วิสาหกิจชุมชนศรีสะเกษ"
+    }
+  }
+}
+</script>
 {% endblock %}

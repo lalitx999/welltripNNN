@@ -170,7 +170,26 @@
 
     <!-- Right: Sticky Reservation Box (4 cols) -->
     <div class="lg:col-span-4 sticky top-24 space-y-4">
-      <div class="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-5">
+      <div 
+        x-data="{
+          pricePerNight: {{ accommodation.min_price_per_night|default:650 }},
+          rooms: 1,
+          guests: 2,
+          checkIn: '',
+          checkOut: '',
+          get nights() {
+            if (!this.checkIn || !this.checkOut) return 1;
+            const d1 = new Date(this.checkIn);
+            const d2 = new Date(this.checkOut);
+            const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+            return diff > 0 ? diff : 1;
+          },
+          get total() {
+            return this.pricePerNight * this.nights * this.rooms;
+          }
+        }"
+        class="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-5"
+      >
         <div class="space-y-1">
           <span class="text-[10px] font-bold uppercase tracking-wider text-[#c49a45]">จองที่พักออนไลน์</span>
           <div class="flex items-baseline gap-1">
@@ -186,46 +205,116 @@
           <input type="hidden" name="item_type" value="ROOM">
           <input type="hidden" name="entity_id" value="{% if rooms.first %}{{ rooms.first.id }}{% else %}{{ accommodation.id }}{% endif %}">
           <input type="hidden" name="title" value="{{ accommodation.name }}">
-          <input type="hidden" name="price" value="{{ accommodation.min_price_per_night }}">
-          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="price" :value="total">
+          <input type="hidden" name="quantity" :value="rooms">
+          <input type="hidden" name="guests" :value="guests">
+          <input type="hidden" name="nights" :value="nights">
 
           <div class="space-y-1.5">
-            <label class="block text-xs font-semibold text-[#1f2925]">วันที่เข้าพัก</label>
+            <label class="block text-xs font-semibold text-[#1f2925]">วันที่เข้าพัก - วันที่ออก</label>
             <div class="grid grid-cols-2 gap-2">
-              <input 
-                type="date" 
-                name="check_in" 
-                required 
-                class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-[#1f2925]"
-              >
-              <input 
-                type="date" 
-                name="check_out" 
-                required 
-                class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-[#1f2925]"
-              >
+              <div>
+                <span class="text-[10px] text-slate-400 block mb-0.5">เช็คอิน</span>
+                <input 
+                  type="date" 
+                  name="check_in" 
+                  x-model="checkIn"
+                  required 
+                  class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-[#1f2925]"
+                >
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 block mb-0.5">เช็คเอาท์</span>
+                <input 
+                  type="date" 
+                  name="check_out" 
+                  x-model="checkOut"
+                  required 
+                  class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-[#1f2925]"
+                >
+              </div>
             </div>
           </div>
 
+          <!-- Room Counter with +/- buttons -->
           <div class="space-y-1.5">
-            <label class="block text-xs font-semibold text-[#1f2925]">จำนวนผู้เข้าพัก</label>
-            <select 
-              name="guests" 
-              class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-[#1f2925] cursor-pointer"
-            >
-              <option value="1">1 ท่าน</option>
-              <option value="2" selected>2 ท่าน</option>
-              <option value="3">3 ท่าน</option>
-              <option value="4">4 ท่าน</option>
-              <option value="5">5+ ท่าน (กลุ่มครอบครัว)</option>
-            </select>
+            <div class="flex items-center justify-between text-xs font-semibold text-[#1f2925]">
+              <span>จำนวนห้องพัก</span>
+              <span class="text-slate-500 font-mono" x-text="rooms + ' ห้อง'"></span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-2xl border border-slate-200 bg-slate-50/50">
+              <span class="text-xs text-slate-600 pl-2">เลือกจำนวนห้อง</span>
+              <div class="flex items-center gap-3">
+                <button 
+                  type="button" 
+                  @click="if (rooms > 1) rooms--" 
+                  class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 flex items-center justify-center transition disabled:opacity-40 cursor-pointer"
+                  :disabled="rooms <= 1"
+                >
+                  -
+                </button>
+                <span class="font-bold text-sm text-[#1B2A24] w-6 text-center" x-text="rooms"></span>
+                <button 
+                  type="button" 
+                  @click="if (rooms < 10) rooms++" 
+                  class="w-8 h-8 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] flex items-center justify-center transition cursor-pointer"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guests Counter with +/- buttons -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs font-semibold text-[#1f2925]">
+              <span>จำนวนผู้เข้าพัก</span>
+              <span class="text-slate-500 font-mono" x-text="guests + ' ท่าน'"></span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-2xl border border-slate-200 bg-slate-50/50">
+              <span class="text-xs text-slate-600 pl-2">ผู้ใหญ่ / ผู้เข้าพัก</span>
+              <div class="flex items-center gap-3">
+                <button 
+                  type="button" 
+                  @click="if (guests > 1) guests--" 
+                  class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 flex items-center justify-center transition disabled:opacity-40 cursor-pointer"
+                  :disabled="guests <= 1"
+                >
+                  -
+                </button>
+                <span class="font-bold text-sm text-[#1B2A24] w-6 text-center" x-text="guests"></span>
+                <button 
+                  type="button" 
+                  @click="if (guests < 30) guests++" 
+                  class="w-8 h-8 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] flex items-center justify-center transition cursor-pointer"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Price Breakdown -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 text-xs">
+            <div class="flex justify-between text-slate-600">
+              <span x-text="'฿' + pricePerNight.toLocaleString() + ' x ' + nights + ' คืน x ' + rooms + ' ห้อง'"></span>
+              <span class="font-bold text-[#1B2A24]" x-text="'฿' + total.toLocaleString()"></span>
+            </div>
+            <div class="flex justify-between text-emerald-700 font-medium text-[11px]">
+              <span>รวมอาหารเช้าสุขภาพ</span>
+              <span>ฟรี</span>
+            </div>
+            <div class="pt-2 border-t border-slate-200 flex justify-between items-baseline">
+              <span class="font-bold text-slate-700">ยอดรวมคำนวณสุทธิ</span>
+              <span class="font-serif font-bold text-xl text-[#c49a45]" x-text="'฿' + total.toLocaleString()"></span>
+            </div>
           </div>
 
           <button 
             type="submit" 
             class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>ดำเนินการจองที่พัก</span>
+            <span>เพิ่มลงตะกร้าและดำเนินการ</span>
             <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45]"></i>
           </button>
         </form>
@@ -242,6 +331,25 @@
         </div>
       </div>
     </div>
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LodgingBusiness",
+      "name": "{{ accommodation.name|escapejs }}",
+      "description": "{{ accommodation.description|default:accommodation.name|striptags|escapejs }}",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "{{ accommodation.district|default:'Sisaket'|escapejs }}",
+        "addressRegion": "Sisaket",
+        "addressCountry": "TH"
+      },
+      "priceRange": "฿{{ accommodation.min_price_per_night }}",
+      "checkinTime": "14:00",
+      "checkoutTime": "12:00"
+    }
+    </script>
 
   </div>
 

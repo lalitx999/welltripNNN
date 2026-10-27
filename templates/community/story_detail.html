@@ -79,4 +79,33 @@
   </div>
 
 </article>
+
+<!-- Schema.org Structured Data for Heritage Story Article -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ story.title|escapejs }}",
+  "description": "{{ story.summary|default:story.title|escapejs }}",
+  "image": "{% if story.image_file %}{{ request.scheme }}://{{ request.get_host }}{{ story.image_file.url }}{% elif story.image_url %}{{ story.image_url }}{% endif %}",
+  "datePublished": "{{ story.created_at|date:'c' }}",
+  "dateModified": "{{ story.updated_at|date:'c' }}",
+  "author": {
+    "@type": "Organization",
+    "name": "WellTrip Sisaket Community Heritage"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "WellTrip Sisaket",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logoWelltrip.jpg' %}"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ request.build_absolute_uri }}"
+  }
+}
+</script>
 {% endblock %}

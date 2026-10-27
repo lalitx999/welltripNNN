@@ -1,0 +1,220 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}ทวนรายละเอียดคำสั่งซื้อ - WellTrip Sisaket{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  
+  <!-- 3-Step Checkout Stepper Header -->
+  <div class="bg-white p-4 sm:p-6 rounded-3xl border border-slate-200/90 shadow-xs">
+    <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+      <!-- Step 1 (Completed) -->
+      <a href="{% url 'bookings:cart' %}" class="flex items-center gap-2 sm:gap-3 justify-center text-left group">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 group-hover:bg-emerald-200 transition">
+          <i data-lucide="check" class="w-4 h-4"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-semibold text-emerald-700 uppercase tracking-wider">ขั้นตอนที่ 1</div>
+          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate group-hover:text-[#c49a45] transition">ตะกร้า & ที่อยู่</div>
+        </div>
+      </a>
+
+      <!-- Step 2 (Active) -->
+      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-xs">
+          2
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-bold text-[#c49a45] uppercase tracking-wider">ขั้นตอนที่ 2</div>
+          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ทวนรายละเอียด</div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left opacity-60">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
+          3
+        </div>
+        <div class="min-w-0">
+          <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">ขั้นตอนที่ 3</div>
+          <div class="text-xs sm:text-sm font-semibold text-slate-600 truncate">ยืนยัน & ชำระเงิน</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Title & Overview -->
+  <div class="space-y-2 border-b border-slate-200 pb-4">
+    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
+      <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
+      <span>STEP 2 / 3: ORDER REVIEW</span>
+    </div>
+    <h1 class="font-serif text-2xl sm:text-4xl font-bold text-[#1f2925]">ทวนรายละเอียดคำสั่งซื้อ</h1>
+    <p class="text-xs sm:text-sm text-slate-500">
+      โปรดตรวจสอบข้อมูลบริการ ที่อยู่จัดส่ง และสรุปยอดเงิน ก่อนกดยืนยันการสั่งซื้อ
+    </p>
+  </div>
+
+  <form method="POST" action="{% url 'bookings:checkout' %}" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    {% csrf_token %}
+
+    <!-- Left Details (8 cols) -->
+    <div class="lg:col-span-8 space-y-6">
+
+      <!-- Shipping Address Box -->
+      <div class="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="text-sm font-bold text-[#1f2925] flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-[#c49a45]"></i>
+            <span>ที่อยู่ในการจัดส่งสินค้า (Shipping Address)</span>
+          </h2>
+          <a href="{% url 'bookings:cart' %}" class="text-xs font-bold text-[#c49a45] hover:text-[#a88034] transition flex items-center gap-1">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            <span>เปลี่ยนที่อยู่</span>
+          </a>
+        </div>
+
+        {% if shipping_address %}
+          <div class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-[#1f2925]">{{ shipping_address.recipient_name }}</span>
+                <span class="text-[10px] font-mono font-semibold text-slate-500 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                  {{ shipping_address.phone_number }}
+                </span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1f2925] text-[#faf9f6]">
+                  {{ shipping_address.label|default:"ที่อยู่จัดส่ง" }}
+                </span>
+              </div>
+              <p class="text-xs text-slate-600">
+                {{ shipping_address.address_line }} อำเภอ{{ shipping_address.district }} จังหวัด{{ shipping_address.province }} {{ shipping_address.postal_code }}
+              </p>
+            </div>
+            <div class="shrink-0 text-right">
+              <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
+                <i data-lucide="truck" class="w-3.5 h-3.5"></i> จัดส่งฟรี
+              </span>
+            </div>
+          </div>
+        {% else %}
+          <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs text-amber-900">
+            <span>ยังไม่ได้เลือกที่อยู่จัดส่ง</span>
+            <a href="{% url 'bookings:cart' %}" class="font-bold underline text-amber-900">กลับไปเลือกที่อยู่</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Items List Review -->
+      <div class="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="text-sm font-bold text-[#1f2925] flex items-center gap-2">
+            <i data-lucide="package" class="w-4 h-4 text-[#c49a45]"></i>
+            <span>รายการคำสั่งซื้อ ({{ item_count }} รายการ)</span>
+          </h2>
+          <a href="{% url 'bookings:cart' %}" class="text-xs font-bold text-[#c49a45] hover:text-[#a88034] transition flex items-center gap-1">
+            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            <span>แก้ไขตะกร้า</span>
+          </a>
+        </div>
+
+        <div class="divide-y divide-slate-100">
+          {% for item in cart %}
+            <div class="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+              <div class="space-y-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2925] text-[#faf9f6]">
+                    {{ item.item_type|default:"บริการชุมชน" }}
+                  </span>
+                  {% if item.date %}
+                    <span class="text-[11px] text-slate-400">วันที่: {{ item.date }}</span>
+                  {% endif %}
+                </div>
+                <h4 class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">{{ item.title }}</h4>
+                <div class="text-[11px] text-slate-500">
+                  ฿{{ item.price|floatformat:0 }} x {{ item.quantity|default:"1" }} รายการ
+                </div>
+              </div>
+
+              <div class="text-right shrink-0">
+                <div class="text-sm font-serif font-bold text-[#c49a45]">
+                  ฿{% widthratio item.price 1 item.quantity %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Special Notes -->
+      <div class="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+        <label for="id_customer_notes" class="block text-xs font-bold text-[#1f2925] flex items-center gap-2">
+          <i data-lucide="message-square" class="w-4 h-4 text-[#c49a45]"></i>
+          <span>ข้อความเพิ่มเติมถึงผู้ดูแลชุมชน / หมายเหตุการจัดส่ง (ถ้ามี)</span>
+        </label>
+        <textarea 
+          name="customer_notes" 
+          id="id_customer_notes" 
+          rows="3" 
+          placeholder="เช่น ฝากที่พักเช็คอินช้ากว่าปกติ, ระบุจุดสังเกตของบ้านจัดส่ง, หรือข้อจำกัดด้านอาหาร"
+          class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#1f2925] bg-[#faf9f6] focus:bg-white transition"
+        ></textarea>
+        <p class="text-[11px] text-slate-400">ข้อความนี้จะถูกส่งไปยังผู้ดูแลที่พักหรือร้านค้าชุมชนโดยตรง</p>
+      </div>
+
+    </div>
+
+    <!-- Right Summary & Confirmation (4 cols) -->
+    <div class="lg:col-span-4 bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-md space-y-5 sticky top-24">
+      <h3 class="text-sm font-bold text-[#1f2925] border-b border-slate-100 pb-3 flex items-center gap-2">
+        <i data-lucide="receipt" class="w-4 h-4 text-[#c49a45]"></i>
+        <span>สรุปยอดเงินที่ต้องชำระ</span>
+      </h3>
+      
+      <div class="space-y-2.5 text-xs">
+        <div class="flex justify-between text-slate-600">
+          <span>ยอดรวมสินค้าและบริการ</span>
+          <span class="font-bold text-[#1f2925]">฿{{ total_amount|floatformat:0 }}</span>
+        </div>
+        <div class="flex justify-between text-emerald-700 font-semibold">
+          <span>ค่าธรรมเนียมระบบ</span>
+          <span>ฟรี</span>
+        </div>
+        <div class="flex justify-between text-emerald-700 font-semibold">
+          <span>ค่าจัดส่งสินค้า OTOP</span>
+          <span>ส่งฟรีทั่วไทย</span>
+        </div>
+        <div class="flex justify-between text-slate-400 text-[11px]">
+          <span>ภาษีมูลค่าเพิ่ม</span>
+          <span>รวมในราคาแล้ว</span>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex justify-between items-baseline">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">ยอดชำระสุทธิ</span>
+        <span class="text-2xl font-serif font-bold text-[#c49a45]">฿{{ total_amount|floatformat:0 }}</span>
+      </div>
+
+      <div class="pt-3">
+        <button 
+          type="submit" 
+          class="w-full min-h-[50px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>ยืนยันและดำเนินการสั่งซื้อ</span>
+          <i data-lucide="check-circle" class="w-4 h-4 text-[#c49a45]"></i>
+        </button>
+      </div>
+
+      <div class="text-[11px] text-slate-400 leading-relaxed text-center pt-2 border-t border-slate-100 space-y-2">
+        <p>เมื่อกดยืนยัน ระบบจะล็อคสต็อกสินค้า/ห้องพักให้ท่านเป็นเวลา 15 นาที เพื่อทำการชำระเงินและแนบสลิป</p>
+        <div class="flex items-center justify-center gap-1.5 text-emerald-700 font-medium">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          <span>การทำธุรกรรมปลอดภัย 100%</span>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+</div>
+{% endblock %}
