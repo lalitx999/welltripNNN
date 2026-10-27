@@ -111,11 +111,12 @@
           </div>
 
           <!-- Input Bar & Search CTA -->
-          <form @submit.prevent="submitSearch()" class="flex items-center gap-2 pt-2 px-1">
+          <form @submit.prevent="submitSearch()" action="/accommodations/" method="get" class="flex items-center gap-2 pt-2 px-1">
             <div class="flex-1 flex items-center gap-2 pl-3">
               <i data-lucide="search" class="w-4 h-4 text-stone-400 shrink-0"></i>
               <input 
                 type="text" 
+                name="q"
                 x-model="query" 
                 placeholder="ค้นหาชื่อที่พัก, เมนูสุขภาพ, บริการสปา หรือสินค้า OTOP..." 
                 class="w-full text-xs sm:text-sm text-[#1F2925] placeholder-stone-400 focus:outline-none bg-transparent"

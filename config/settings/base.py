@@ -168,7 +168,8 @@ CONTENT_SECURITY_POLICY = {
         'default-src': ("'self'",),
         'script-src': (
             "'self'",
-            "'unsafe-inline'",  # Needed for Alpine.js dynamic reactivity
+            "'unsafe-inline'",  # Needed for dynamic script reactivity
+            "'unsafe-eval'",    # Required for Alpine.js dynamic expression evaluation
             "https://cdn.jsdelivr.net",
             "https://unpkg.com",
             "https://cdn.tailwindcss.com",
