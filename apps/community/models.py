@@ -159,6 +159,21 @@ class EditorialEntry(models.Model):
     def __str__(self):
         return f"[{self.kind}] {self.title}"
 
+    @property
+    def content(self):
+        """Backward-compatible alias for body."""
+        return self.body
+
+    @property
+    def excerpt(self):
+        """Backward-compatible alias for summary."""
+        return self.summary or (self.body[:200] if self.body else "")
+
+    @property
+    def slug(self):
+        """Backward-compatible alias returning str(self.id)."""
+        return str(self.id)
+
 
 class LocationEvent(models.Model):
     """

@@ -67,7 +67,7 @@
                 {{ story.title }}
               </h3>
               <p class="text-xs text-slate-500 line-clamp-2 font-normal">
-                {{ story.excerpt|default:story.content|striptags|truncatewords:20 }}
+                {{ story.summary|default:story.body|striptags|truncatewords:20 }}
               </p>
             </div>
           </div>
@@ -75,7 +75,7 @@
           <div class="pt-4 border-t border-slate-100 flex items-center justify-between mt-3 text-xs">
             <span class="text-[11px] text-slate-400 font-medium">อ่าน 3 นาที</span>
             <a 
-              href="{% url 'community:story_detail' story.slug|default:story.id %}" 
+              href="{% url 'community:story_detail' story.id %}" 
               class="inline-flex items-center gap-1 font-bold text-[#1f2925] hover:text-[#c49a45] transition"
             >
               <span>อ่านต่อ</span>
