@@ -1,3 +1,4 @@
+import re
 import uuid
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
@@ -933,6 +934,46 @@ def admin_user_reset_password_view(request, user_id):
     return redirect('/accounts/admin-center/?tab=users')
 
 
+def _parse_coords_from_google_maps(url_or_coords):
+    """
+    Parses latitude and longitude from Google Maps URL or raw coordinate text.
+    Handles:
+    - @15.1186000,104.3225000
+    - q=15.1186,104.3225 or ll=15.1186,104.3225
+    - Raw coords: 15.1186, 104.3225
+    Returns (Decimal(lat), Decimal(lng)) or (None, None).
+    """
+    if not url_or_coords:
+        return None, None
+    s = str(url_or_coords).strip()
+    
+    # 1. @lat,lng
+    m = re.search(r'@(-?\d+\.\d+),(-?\d+\.\d+)', s)
+    if m:
+        try:
+            return Decimal(m.group(1)), Decimal(m.group(2))
+        except Exception:
+            pass
+
+    # 2. q=lat,lng or ll=lat,lng
+    m = re.search(r'[?&](?:q|ll)=(-?\d+\.\d+),(-?\d+\.\d+)', s)
+    if m:
+        try:
+            return Decimal(m.group(1)), Decimal(m.group(2))
+        except Exception:
+            pass
+
+    # 3. Raw lat, lng
+    m = re.search(r'^(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)$', s)
+    if m:
+        try:
+            return Decimal(m.group(1)), Decimal(m.group(2))
+        except Exception:
+            pass
+
+    return None, None
+
+
 # ==============================================================================
 # FULL ADMIN CRUD: 4. LOCATIONS & CHECK-INS
 # ==============================================================================
@@ -940,23 +981,28 @@ def admin_user_reset_password_view(request, user_id):
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 @require_http_methods(["POST"])
 def admin_location_add_view(request):
-    """Admin creates a new community map location / passport check-in point."""
+    """Admin creates a new community map location using Google Maps link."""
     title = request.POST.get('title', '').strip()
     category = request.POST.get('category', MapLocationCategory.PHOTO_SPOT).strip()
-    lat_val = request.POST.get('latitude', '15.1186').strip()
-    lng_val = request.POST.get('longitude', '104.3225').strip()
+    google_maps_url = request.POST.get('google_maps_url', '').strip()
     address = request.POST.get('address', '').strip()
 
     if not title:
         messages.error(request, "กรุณาระบุชื่อจุดเช็คอิน")
         return redirect('/accounts/admin-center/?tab=locations')
 
+    lat, lng = _parse_coords_from_google_maps(google_maps_url)
+    if lat is None or lng is None:
+        lat = Decimal("15.1186000")
+        lng = Decimal("104.3225000")
+
     try:
         loc = MapLocation.objects.create(
             title=title,
             category=category,
-            latitude=Decimal(lat_val),
-            longitude=Decimal(lng_val),
+            google_maps_url=google_maps_url,
+            latitude=lat,
+            longitude=lng,
             address=address,
             is_active=True,
         )
@@ -965,7 +1011,7 @@ def admin_location_add_view(request):
             action="CREATE",
             model_name="MapLocation",
             object_id=str(loc.id),
-            changes={"title": title, "category": category},
+            changes={"title": title, "category": category, "google_maps_url": google_maps_url},
             user=request.user,
         )
         messages.success(request, f"เพิ่มจุดเช็คอิน '{title}' เรียบร้อยแล้ว (QR Secret: {loc.qr_secret[:8]}...)")
@@ -978,12 +1024,11 @@ def admin_location_add_view(request):
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 @require_http_methods(["POST"])
 def admin_location_edit_view(request, location_id):
-    """Admin updates location coordinates and details."""
+    """Admin updates location details and Google Maps link."""
     loc = get_object_or_404(MapLocation, id=location_id)
     title = request.POST.get('title', '').strip()
     category = request.POST.get('category', '').strip()
-    lat_val = request.POST.get('latitude', '').strip()
-    lng_val = request.POST.get('longitude', '').strip()
+    google_maps_url = request.POST.get('google_maps_url', '').strip()
     address = request.POST.get('address', '').strip()
     is_active = request.POST.get('is_active') == '1'
 
@@ -991,10 +1036,12 @@ def admin_location_edit_view(request, location_id):
         loc.title = title
     if category:
         loc.category = category
-    if lat_val:
-        loc.latitude = Decimal(lat_val)
-    if lng_val:
-        loc.longitude = Decimal(lng_val)
+    if google_maps_url:
+        loc.google_maps_url = google_maps_url
+        lat, lng = _parse_coords_from_google_maps(google_maps_url)
+        if lat and lng:
+            loc.latitude = lat
+            loc.longitude = lng
     loc.address = address
     loc.is_active = is_active
     loc.save()
@@ -1004,7 +1051,7 @@ def admin_location_edit_view(request, location_id):
         action="UPDATE",
         model_name="MapLocation",
         object_id=str(loc.id),
-        changes={"title": title, "is_active": is_active},
+        changes={"title": title, "is_active": is_active, "google_maps_url": google_maps_url},
         user=request.user,
     )
     messages.success(request, f"แก้ไขจุดเช็คอิน '{loc.title}' สำเร็จ")
@@ -1038,18 +1085,21 @@ def admin_location_delete_view(request, location_id):
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 @require_http_methods(["POST"])
 def admin_content_add_view(request):
-    """Admin writes and publishes a new community story / article."""
+    """Admin writes and publishes a new community story with image upload and Google Maps."""
     title = request.POST.get('title', '').strip()
     kind = request.POST.get('kind', EditorialEntry.Kind.STORY).strip()
     summary = request.POST.get('summary', '').strip()
     body = request.POST.get('body', '').strip()
-    image_url = request.POST.get('image_url', '').strip()
     location = request.POST.get('location', '').strip()
+    google_maps_url = request.POST.get('google_maps_url', '').strip()
+    image_file = request.FILES.get('image')
     is_published = request.POST.get('is_published') == '1'
 
     if not title:
         messages.error(request, "กรุณาระบุหัวข้อเรื่องเล่า/บทความ")
         return redirect('/accounts/admin-center/?tab=content')
+
+    lat, lng = _parse_coords_from_google_maps(google_maps_url)
 
     try:
         story = EditorialEntry.objects.create(
@@ -1057,8 +1107,11 @@ def admin_content_add_view(request):
             kind=kind,
             summary=summary,
             body=body,
-            image_url=image_url,
             location=location,
+            google_maps_url=google_maps_url,
+            latitude=lat,
+            longitude=lng,
+            image=image_file,
             is_published=is_published,
         )
         record_audit_log(
@@ -1066,7 +1119,7 @@ def admin_content_add_view(request):
             action="CREATE",
             model_name="EditorialEntry",
             object_id=str(story.id),
-            changes={"title": title, "kind": kind, "is_published": is_published},
+            changes={"title": title, "kind": kind, "is_published": is_published, "google_maps_url": google_maps_url},
             user=request.user,
         )
         messages.success(request, f"สร้างบทความ/เรื่องเล่า '{title}' สำเร็จ")
@@ -1079,14 +1132,15 @@ def admin_content_add_view(request):
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 @require_http_methods(["POST"])
 def admin_content_edit_view(request, entry_id):
-    """Admin updates an editorial story."""
+    """Admin updates an editorial story with image upload and Google Maps."""
     story = get_object_or_404(EditorialEntry, id=entry_id)
     title = request.POST.get('title', '').strip()
     kind = request.POST.get('kind', '').strip()
     summary = request.POST.get('summary', '').strip()
     body = request.POST.get('body', '').strip()
-    image_url = request.POST.get('image_url', '').strip()
     location = request.POST.get('location', '').strip()
+    google_maps_url = request.POST.get('google_maps_url', '').strip()
+    image_file = request.FILES.get('image')
     is_published = request.POST.get('is_published') == '1'
 
     if title:
@@ -1095,9 +1149,15 @@ def admin_content_edit_view(request, entry_id):
         story.kind = kind
     story.summary = summary
     story.body = body
-    if image_url:
-        story.image_url = image_url
     story.location = location
+    if google_maps_url:
+        story.google_maps_url = google_maps_url
+        lat, lng = _parse_coords_from_google_maps(google_maps_url)
+        if lat and lng:
+            story.latitude = lat
+            story.longitude = lng
+    if image_file:
+        story.image = image_file
     story.is_published = is_published
     story.save()
 
@@ -1106,10 +1166,11 @@ def admin_content_edit_view(request, entry_id):
         action="UPDATE",
         model_name="EditorialEntry",
         object_id=str(story.id),
-        changes={"title": title, "is_published": is_published},
+        changes={"title": title, "is_published": is_published, "google_maps_url": google_maps_url},
         user=request.user,
     )
     messages.success(request, f"แก้ไขบทความ '{story.title}' สำเร็จ")
+    return redirect('/accounts/admin-center/?tab=content')
     return redirect('/accounts/admin-center/?tab=content')
 
 

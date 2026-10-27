@@ -2,6 +2,11 @@ import uuid
 from decimal import Decimal
 from django.conf import settings
 from django.db import models
+from apps.core.services.media import secure_upload_path
+
+
+def story_image_path(instance, filename):
+    return secure_upload_path(instance, filename, model_subdir="stories")
 
 
 class MapLocationCategory(models.TextChoices):
@@ -25,8 +30,9 @@ class MapLocation(models.Model):
         default=MapLocationCategory.PHOTO_SPOT,
         db_index=True,
     )
-    latitude = models.DecimalField(max_digits=10, decimal_places=7)
-    longitude = models.DecimalField(max_digits=10, decimal_places=7)
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, default=Decimal("15.1186000"))
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, default=Decimal("104.3225000"))
+    google_maps_url = models.URLField(max_length=500, blank=True, default="")
     address = models.TextField(blank=True, default="")
     related_entity_id = models.CharField(max_length=36, blank=True, null=True)
     qr_secret = models.CharField(
@@ -145,9 +151,13 @@ class EditorialEntry(models.Model):
     summary_en = models.TextField(blank=True)
     body = models.TextField(blank=True)
     body_en = models.TextField(blank=True)
+    image = models.ImageField(upload_to=story_image_path, null=True, blank=True)
     image_url = models.TextField(blank=True, default="")
     image_alt = models.CharField(max_length=200, blank=True)
     location = models.CharField(max_length=200, blank=True)
+    google_maps_url = models.URLField(max_length=500, blank=True, default="")
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
     is_published = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -173,6 +183,14 @@ class EditorialEntry(models.Model):
     def slug(self):
         """Backward-compatible alias returning str(self.id)."""
         return str(self.id)
+
+    @property
+    def display_image_url(self):
+        if self.image:
+            return self.image.url
+        if self.image_url:
+            return self.image_url
+        return "/static/images/hero-default.jpg"
 
 
 class LocationEvent(models.Model):

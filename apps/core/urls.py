@@ -9,6 +9,7 @@ urlpatterns = [
     path('about/', views.about_view, name='about'),
     path('contact/', views.contact_view, name='contact'),
     path('terms/', views.terms_view, name='terms'),
+    path('privacy/', views.terms_view, name='privacy'),
     path('manifest.json', views.manifest_view, name='manifest'),
     path('sw.js', views.service_worker_view, name='service_worker'),
     path('offline/', views.offline_view, name='offline'),

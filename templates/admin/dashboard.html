@@ -1065,7 +1065,14 @@
                 <tr class="hover:bg-slate-50/80 transition">
                   <td class="p-4">
                     <span class="font-bold text-[#1B2A24] block">{{ loc.title }}</span>
-                    <span class="text-[11px] text-slate-400 font-mono">{{ loc.latitude }}, {{ loc.longitude }}</span>
+                    {% if loc.google_maps_url %}
+                      <a href="{{ loc.google_maps_url }}" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-teal-600 hover:underline">
+                        <i data-lucide="map-pin" class="w-3 h-3"></i>
+                        <span>เปิดดูใน Google Maps</span>
+                      </a>
+                    {% else %}
+                      <span class="text-[11px] text-slate-400 font-mono">{{ loc.latitude }}, {{ loc.longitude }}</span>
+                    {% endif %}
                   </td>
                   <td class="p-4">
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
@@ -1082,8 +1089,7 @@
                           id: '{{ loc.id }}',
                           title: '{{ loc.title|escapejs }}',
                           category: '{{ loc.category }}',
-                          latitude: '{{ loc.latitude }}',
-                          longitude: '{{ loc.longitude }}',
+                          google_maps_url: '{{ loc.google_maps_url|default:''|escapejs }}',
                           address: '{{ loc.address|escapejs }}',
                           is_active: {% if loc.is_active %}true{% else %}false{% endif %}
                         })"
@@ -1155,8 +1161,23 @@
               {% for story in stories %}
                 <tr class="hover:bg-slate-50/80 transition">
                   <td class="p-4">
-                    <span class="font-bold text-[#1B2A24] block">{{ story.title }}</span>
-                    <span class="text-[11px] text-slate-400 block truncate max-w-sm">{{ story.summary|default:story.body|truncatechars:60 }}</span>
+                    <div class="flex items-center gap-3">
+                      {% if story.image %}
+                        <img src="{{ story.image.url }}" alt="{{ story.title }}" class="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0">
+                      {% elif story.image_url %}
+                        <img src="{{ story.image_url }}" alt="{{ story.title }}" class="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0">
+                      {% endif %}
+                      <div class="min-w-0">
+                        <span class="font-bold text-[#1B2A24] block truncate max-w-xs">{{ story.title }}</span>
+                        <span class="text-[11px] text-slate-400 block truncate max-w-sm">{{ story.summary|default:story.body|truncatechars:60 }}</span>
+                        {% if story.google_maps_url %}
+                          <a href="{{ story.google_maps_url }}" target="_blank" class="inline-flex items-center gap-1 text-[10px] text-purple-600 hover:underline mt-0.5">
+                            <i data-lucide="map-pin" class="w-2.5 h-2.5"></i>
+                            <span>พิกัดแผนที่</span>
+                          </a>
+                        {% endif %}
+                      </div>
+                    </div>
                   </td>
                   <td class="p-4">
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-200">
@@ -1181,7 +1202,7 @@
                           kind: '{{ story.kind }}',
                           summary: '{{ story.summary|escapejs }}',
                           body: '{{ story.body|escapejs }}',
-                          image_url: '{{ story.image_url|escapejs }}',
+                          google_maps_url: '{{ story.google_maps_url|default:''|escapejs }}',
                           location: '{{ story.location|escapejs }}',
                           is_published: {% if story.is_published %}true{% else %}false{% endif %}
                         })"
@@ -1629,20 +1650,70 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">ละติจูด (Latitude) *</label>
-            <input type="text" name="latitude" required value="15.1186" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-700 mb-1">ลองจิจูด (Longitude) *</label>
-            <input type="text" name="longitude" required value="104.3225" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono">
-          </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ลิงก์ Google Maps (หรือพิกัดสถานที่) *</label>
+          <input type="text" name="google_maps_url" required placeholder="เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          <p class="text-[11px] text-slate-400 mt-1">คัดลอกลิงก์จาก Google Maps มาวางได้ทันที ระบบจะสกัดพิกัดลงแผนที่ให้อัตโนมัติ</p>
         </div>
 
         <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
           <button type="button" @click="showAddLocationModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
           <button type="submit" class="px-5 py-2 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-xs">บันทึกจุดเช็คอิน</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 8.1 EDIT LOCATION MODAL -->
+  <div x-show="showEditLocationModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="map-pin" class="w-5 h-5 text-teal-600"></i>
+          <span>แก้ไขจุดเช็คอิน (Edit Location)</span>
+        </h3>
+        <button type="button" @click="showEditLocationModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" :action="'/accounts/admin/locations/' + editLocationData.id + '/edit/'" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อจุดเช็คอิน *</label>
+          <input type="text" name="title" x-model="editLocationData.title" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่</label>
+            <select name="category" x-model="editLocationData.category" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+              <option value="PHOTO_SPOT">จุดถ่ายรูป / จุดเช็คอินธรรมชาติ</option>
+              <option value="HOMESTAY">โฮมสเตย์ / ที่พักชุมชน</option>
+              <option value="FOOD">ร้านอาหารสุขภาพ</option>
+              <option value="WELLNESS">ศูนย์นวดแผนไทยและสปา</option>
+              <option value="OTOP">ศูนย์จำหน่ายสินค้า OTOP</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ที่อยู่ / อำเภอ</label>
+            <input type="text" name="address" x-model="editLocationData.address" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ลิงก์ Google Maps (หรือพิกัดสถานที่)</label>
+          <input type="text" name="google_maps_url" x-model="editLocationData.google_maps_url" placeholder="เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" name="is_active" id="edit_loc_is_active" value="1" :checked="editLocationData.is_active" class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500">
+          <label for="edit_loc_is_active" class="font-semibold text-slate-700">เปิดใช้งานจุดเช็คอินนี้</label>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showEditLocationModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-xs">บันทึกการแก้ไข</button>
         </div>
       </form>
     </div>
@@ -1661,7 +1732,7 @@
         </button>
       </div>
 
-      <form method="POST" action="{% url 'accounts:admin_content_add' %}" class="space-y-3.5 text-xs">
+      <form method="POST" action="{% url 'accounts:admin_content_add' %}" enctype="multipart/form-data" class="space-y-3.5 text-xs">
         {% csrf_token %}
         <div>
           <label class="block font-semibold text-slate-700 mb-1">หัวข้อเรื่องเล่า / บทความ *</label>
@@ -1684,6 +1755,17 @@
         </div>
 
         <div>
+          <label class="block font-semibold text-slate-700 mb-1">รูปภาพประกอบบทความ (Insert Image)</label>
+          <input type="file" name="image" accept="image/*" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+          <p class="text-[11px] text-slate-400 mt-1">อัปโหลดภาพถ่ายประกอบบทความโดยตรง (JPG, PNG, WebP)</p>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ลิงก์ Google Maps (เพื่อแสดงพิกัดบนแผนที่)</label>
+          <input type="text" name="google_maps_url" placeholder="เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div>
           <label class="block font-semibold text-slate-700 mb-1">สรุปย่อ (Excerpt / Summary)</label>
           <textarea name="summary" rows="2" placeholder="บทคัดย่อสั้นๆ สำหรับแสดงบนการ์ด..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
         </div>
@@ -1691,11 +1773,6 @@
         <div>
           <label class="block font-semibold text-slate-700 mb-1">เนื้อหาบทความฉบับเต็ม</label>
           <textarea name="body" rows="5" placeholder="เนื้อหาเรื่องเล่า ภูมิปัญญาสุขภาวะ..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">URL รูปภาพหน้าปก</label>
-          <input type="url" name="image_url" placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
         </div>
 
         <div>
@@ -1709,6 +1786,77 @@
         <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
           <button type="button" @click="showAddContentModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
           <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-700 shadow-xs">บันทึกบทความ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 9.1 EDIT CONTENT/STORY MODAL -->
+  <div x-show="showEditContentModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-xl bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="book-open" class="w-5 h-5 text-purple-600"></i>
+          <span>แก้ไขบทความมรดกชุมชน (Edit Story)</span>
+        </h3>
+        <button type="button" @click="showEditContentModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" :action="'/accounts/admin/content/' + editContentData.id + '/edit/'" enctype="multipart/form-data" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">หัวข้อเรื่องเล่า / บทความ *</label>
+          <input type="text" name="title" x-model="editContentData.title" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ประเภทเนื้อหา</label>
+            <select name="kind" x-model="editContentData.kind" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+              <option value="STORY">เรื่องเล่าชุมชน (Story)</option>
+              <option value="COMMUNITY">วิสาหกิจชุมชน (Community)</option>
+              <option value="ATTRACTION">แหล่งท่องเที่ยว (Attraction)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">สถานที่อ้างอิง</label>
+            <input type="text" name="location" x-model="editContentData.location" placeholder="เช่น อ.ขุนหาญ จ.ศรีสะเกษ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">เปลี่ยนรูปภาพประกอบบทความ (Insert New Image)</label>
+          <input type="file" name="image" accept="image/*" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ลิงก์ Google Maps (เพื่อแสดงพิกัดบนแผนที่)</label>
+          <input type="text" name="google_maps_url" x-model="editContentData.google_maps_url" placeholder="เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">สรุปย่อ (Excerpt / Summary)</label>
+          <textarea name="summary" x-model="editContentData.summary" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">เนื้อหาบทความฉบับเต็ม</label>
+          <textarea name="body" x-model="editContentData.body" rows="5" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">สถานะการเผยแพร่</label>
+          <select name="is_published" x-model="editContentData.is_published" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+            <option :value="true">เผยแพร่ทันที (Published)</option>
+            <option :value="false">บันทึกเป็นฉบับร่าง (Draft)</option>
+          </select>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showEditContentModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-700 shadow-xs">บันทึกการแก้ไข</button>
         </div>
       </form>
     </div>
