@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block layout %}
 <div class="min-h-screen bg-cream flex">
@@ -6,11 +7,7 @@
   <!-- Sidebar for Partner Studio -->
   <aside class="w-64 bg-forest-dark text-white flex flex-col border-r border-forest/30 hidden md:flex shrink-0">
     <div class="h-20 px-6 flex items-center space-x-3 border-b border-forest/20">
-      <div class="w-9 h-9 rounded-xl bg-forest flex items-center justify-center text-gold shadow-md">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-      </div>
+      <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip Logo" class="w-10 h-10 rounded-xl object-cover shadow-md border border-forest/30">
       <div>
         <span class="text-base font-bold text-white block">Partner Studio</span>
         <span class="text-[11px] text-gold font-medium truncate block max-w-[140px]">{{ user.get_role_display|default:"ผู้ประกอบการ" }}</span>

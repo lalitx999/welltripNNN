@@ -100,3 +100,25 @@ class AuditLog(models.Model):
     def __str__(self):
         actor = self.user.email if self.user else "Anonymous"
         return f"[{self.timestamp:%Y-%m-%d %H:%M}] {actor} - {self.action} on {self.model_name}:{self.object_id}"
+
+
+class EmailVerificationOTP(models.Model):
+    """Temporary 6-digit OTP code sent to user email for verification."""
+    id = models.BigAutoField(primary_key=True)
+    email = models.EmailField(db_index=True)
+    otp_code = models.CharField(max_length=6)
+    purpose = models.CharField(max_length=50, default="MERCHANT_REGISTER")
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(db_index=True)
+
+    class Meta:
+        db_table = "email_verification_otps"
+        ordering = ("-created_at",)
+
+    def is_valid(self):
+        return not self.is_used and self.expires_at > timezone.now()
+
+    def __str__(self):
+        return f"OTP for {self.email} ({self.otp_code}) - Used: {self.is_used}"
+
