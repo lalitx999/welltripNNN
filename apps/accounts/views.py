@@ -10,12 +10,12 @@ from apps.accounts.permissions import role_required
 from apps.accounts.services.audit import record_audit_log, get_client_ip
 
 
-@ratelimit(key='ip', rate='5/m', block=True)
+@ratelimit(key='ip', rate='20/m', method=['POST'], block=True)
 @require_http_methods(["GET", "POST"])
 def login_view(request):
     """
     Secure Login View:
-    1. Rate limited to 5 requests/minute per IP (django-ratelimit).
+    1. Rate limited on POST submissions (20/minute per IP).
     2. Axes throttles consecutive failures (lockout after 5).
     3. Session Key is rotated upon successful login (anti-session fixation).
     4. Successful login records an AuditLog entry.
@@ -61,7 +61,7 @@ def login_view(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 
-@ratelimit(key='ip', rate='3/h', block=True)
+@ratelimit(key='ip', rate='10/m', method=['POST'], block=True)
 @require_http_methods(["GET", "POST"])
 def register_view(request):
     """

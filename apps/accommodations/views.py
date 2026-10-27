@@ -19,7 +19,7 @@ def list_view(request):
     """
     query = request.GET.get('q', '').strip()
     district = request.GET.get('district', '').strip()
-    price_range = request.GET.get('priceRange', '').strip()
+    price_range = (request.GET.get('price') or request.GET.get('priceRange') or '').strip()
 
     qs = Accommodation.objects.filter(status=AccommodationStatus.ACTIVE).select_related('owner').prefetch_related('rooms')
 
@@ -35,9 +35,9 @@ def list_view(request):
     if district:
         qs = qs.filter(district__icontains=district)
 
-    if price_range == 'budget':
+    if price_range in ('budget', 'economy'):
         qs = qs.filter(min_price_per_night__lt=800)
-    elif price_range == 'mid':
+    elif price_range in ('mid', 'moderate'):
         qs = qs.filter(min_price_per_night__gte=800, min_price_per_night__lte=1500)
     elif price_range == 'luxury':
         qs = qs.filter(min_price_per_night__gt=1500)

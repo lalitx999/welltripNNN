@@ -66,17 +66,18 @@
 
       <div class="space-y-4 sm:space-y-6 mb-4 sm:mb-6">
         <!-- Role Switcher Tabs -->
+        {% with is_merchant_form=form.role.value %}
         <div class="grid grid-cols-2 p-1 bg-slate-200/70 rounded-2xl w-full sm:w-fit text-xs font-bold text-center">
           <a
             href="{% url 'accounts:register' %}"
-            class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl transition-all {% if request.GET.role != 'merchant' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}text-slate-600 hover:text-[#1f2925]{% endif %}"
+            class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl transition-all {% if request.GET.role != 'merchant' and is_merchant_form != 'HOMESTAY_OWNER' and is_merchant_form != 'WELLNESS_OWNER' and is_merchant_form != 'RESTAURANT_OWNER' and is_merchant_form != 'OTOP_OWNER' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}text-slate-600 hover:text-[#1f2925]{% endif %}"
           >
             <i data-lucide="user-round" class="w-3.5 h-3.5"></i>
             <span>นักท่องเที่ยว</span>
           </a>
           <a
             href="{% url 'accounts:register' %}?role=merchant"
-            class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl transition-all {% if request.GET.role == 'merchant' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}text-slate-600 hover:text-[#1f2925]{% endif %}"
+            class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl transition-all {% if request.GET.role == 'merchant' or is_merchant_form == 'HOMESTAY_OWNER' or is_merchant_form == 'WELLNESS_OWNER' or is_merchant_form == 'RESTAURANT_OWNER' or is_merchant_form == 'OTOP_OWNER' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}text-slate-600 hover:text-[#1f2925]{% endif %}"
           >
             <i data-lucide="store" class="w-3.5 h-3.5"></i>
             <span>ผู้ประกอบการ</span>
@@ -85,15 +86,16 @@
 
         <div>
           <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#c49a45]">
-            {% if request.GET.role == 'merchant' %}MERCHANT PORTAL AUTH{% else %}BEGIN YOUR JOURNEY{% endif %}
+            {% if request.GET.role == 'merchant' or is_merchant_form == 'HOMESTAY_OWNER' or is_merchant_form == 'WELLNESS_OWNER' or is_merchant_form == 'RESTAURANT_OWNER' or is_merchant_form == 'OTOP_OWNER' %}MERCHANT PORTAL AUTH{% else %}BEGIN YOUR JOURNEY{% endif %}
           </span>
           <h1 class="font-serif text-2xl sm:text-3xl font-bold text-[#1f2925] mt-0.5 sm:mt-1">
-            {% if request.GET.role == 'merchant' %}ลงทะเบียนผู้ประกอบการ{% else %}สร้างบัญชีนักท่องเที่ยวใหม่{% endif %}
+            {% if request.GET.role == 'merchant' or is_merchant_form == 'HOMESTAY_OWNER' or is_merchant_form == 'WELLNESS_OWNER' or is_merchant_form == 'RESTAURANT_OWNER' or is_merchant_form == 'OTOP_OWNER' %}ลงทะเบียนผู้ประกอบการ{% else %}สร้างบัญชีนักท่องเที่ยวใหม่{% endif %}
           </h1>
           <p class="text-xs text-slate-500 mt-1">
-            {% if request.GET.role == 'merchant' %}จัดการที่พัก ร้านอาหาร สปา และสินค้า OTOP ของคุณ{% else %}ลงทะเบียนเพื่อบันทึกทริปในดวงใจและติดตามสถานะการจอง{% endif %}
+            {% if request.GET.role == 'merchant' or is_merchant_form == 'HOMESTAY_OWNER' or is_merchant_form == 'WELLNESS_OWNER' or is_merchant_form == 'RESTAURANT_OWNER' or is_merchant_form == 'OTOP_OWNER' %}จัดการที่พัก ร้านอาหาร สปา และสินค้า OTOP ของคุณ{% else %}ลงทะเบียนเพื่อบันทึกทริปในดวงใจและติดตามสถานะการจอง{% endif %}
           </p>
         </div>
+        {% endwith %}
       </div>
 
       <!-- Registration Form -->
@@ -193,7 +195,7 @@
           </div>
 
           <!-- Role Selection (Default Tourist, or Merchant subcategory) -->
-          {% if request.GET.role == 'merchant' %}
+          {% if request.GET.role == 'merchant' or form.role.value == 'HOMESTAY_OWNER' or form.role.value == 'WELLNESS_OWNER' or form.role.value == 'RESTAURANT_OWNER' or form.role.value == 'OTOP_OWNER' %}
             <div class="space-y-1.5">
               <label for="role" class="text-xs font-semibold text-[#1f2925]">
                 ประเภทธุรกิจชุมชนของคุณ

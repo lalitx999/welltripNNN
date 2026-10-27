@@ -109,10 +109,12 @@ class UserRegistrationForm(forms.ModelForm):
 
     def clean_phone_number(self):
         phone = self.cleaned_data.get('phone_number', '').strip()
+        if not phone:
+            return ""
         # Clean non-digits
         digits = ''.join(c for c in phone if c.isdigit())
         if digits and len(digits) < 9:
-            raise ValidationError("หมายเลขโทรศัพท์ไม่ถูกต้อง")
+            raise ValidationError("หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9-10 หลัก")
         return digits
 
     def clean(self):
@@ -124,7 +126,10 @@ class UserRegistrationForm(forms.ModelForm):
             if password != confirm_password:
                 self.add_error('confirm_password', "รหัสผ่านทั้งสองช่องไม่ตรงกัน")
             else:
-                validate_password(password)
+                try:
+                    validate_password(password)
+                except ValidationError as e:
+                    self.add_error('password', e)
 
         return cleaned_data
 

@@ -32,6 +32,7 @@
 {% block layout %}
 <div class="min-h-screen flex flex-col bg-[#FAF9F6] text-[#1F2925]"
      x-data="{
+       currentLang: localStorage.getItem('wt_lang') || 'th',
        megaMenuOpen: false,
        accountMenuOpen: false,
        mobileMenuOpen: false,
@@ -67,25 +68,25 @@
             :class="megaMenuOpen ? 'bg-[#1F2925] text-[#FAF9F6] border-[#C49A45]' : 'hover:text-[#C49A45] hover:bg-[#C49A45]/10 text-[#2B3832]'"
             class="flex items-center gap-1.5 h-10 px-4 rounded-full border border-transparent transition-all cursor-pointer"
           >
-            <span>สำรวจศรีสะเกษ</span>
+            <span x-text="currentLang === 'en' ? 'Explore Sisaket' : 'สำรวจศรีสะเกษ'">สำรวจศรีสะเกษ</span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200" :class="megaMenuOpen ? 'rotate-180 text-[#C49A45]' : ''"></i>
           </button>
         </div>
 
         <a href="{% url 'accommodations:list' %}" class="flex items-center gap-1.5 h-10 px-4 rounded-full text-[#2B3832] hover:text-[#C49A45] hover:bg-[#C49A45]/10 transition-all">
-          <span>ที่พักชุมชน</span>
+          <span x-text="currentLang === 'en' ? 'Homestays' : 'ที่พักชุมชน'">ที่พักชุมชน</span>
         </a>
 
         <a href="/services/?category=FOOD" class="flex items-center gap-1.5 h-10 px-4 rounded-full text-[#2B3832] hover:text-[#C49A45] hover:bg-[#C49A45]/10 transition-all">
-          <span>อาหารสุขภาพ</span>
+          <span x-text="currentLang === 'en' ? 'Healthy Dining' : 'อาหารสุขภาพ'">อาหารสุขภาพ</span>
         </a>
 
         <a href="/services/?category=SPA" class="flex items-center gap-1.5 h-10 px-4 rounded-full text-[#2B3832] hover:text-[#C49A45] hover:bg-[#C49A45]/10 transition-all">
-          <span>นวดและสปา</span>
+          <span x-text="currentLang === 'en' ? 'Herbal Spa' : 'นวดและสปา'">นวดและสปา</span>
         </a>
 
         <a href="{% url 'otop:list' %}" class="flex items-center gap-1.5 h-10 px-4 rounded-full text-[#2B3832] hover:text-[#C49A45] hover:bg-[#C49A45]/10 transition-all">
-          <span>ของดีชุมชน OTOP</span>
+          <span x-text="currentLang === 'en' ? 'OTOP Crafts' : 'ของดีชุมชน OTOP'">ของดีชุมชน OTOP</span>
         </a>
 
       </nav>
@@ -93,10 +94,24 @@
       <!-- Right Action Group -->
       <div class="flex items-center gap-2.5 shrink-0">
         
-        <!-- Language Pill Toggle -->
-        <div class="hidden sm:inline-flex items-center p-0.5 rounded-full border border-stone-200 bg-white text-[11px] font-bold text-stone-600 shadow-2xs">
-          <span class="px-2.5 py-1 rounded-full bg-[#1F2925] text-white">TH</span>
-          <span class="px-2.5 py-1 rounded-full text-stone-400 hover:text-stone-700 cursor-pointer">EN</span>
+        <!-- Language Pill Toggle (Interactive TH / EN) -->
+        <div class="hidden sm:inline-flex items-center p-0.5 rounded-full border border-stone-200 bg-white text-[11px] font-bold text-stone-600 shadow-2xs select-none">
+          <button 
+            type="button" 
+            @click="currentLang = 'th'; localStorage.setItem('wt_lang', 'th')" 
+            :class="currentLang === 'th' ? 'bg-[#1F2925] text-white shadow-xs' : 'text-stone-400 hover:text-stone-700'"
+            class="px-2.5 py-1 rounded-full transition-all cursor-pointer"
+          >
+            TH
+          </button>
+          <button 
+            type="button" 
+            @click="currentLang = 'en'; localStorage.setItem('wt_lang', 'en')" 
+            :class="currentLang === 'en' ? 'bg-[#1F2925] text-white shadow-xs' : 'text-stone-400 hover:text-stone-700'"
+            class="px-2.5 py-1 rounded-full transition-all cursor-pointer"
+          >
+            EN
+          </button>
         </div>
 
         <!-- Desktop Account Button & Popover -->
