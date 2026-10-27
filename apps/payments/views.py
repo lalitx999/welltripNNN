@@ -63,7 +63,23 @@ def payment_instruction_view(request, booking_id):
                 user=request.user,
             )
 
-            messages.success(request, "แนบสลิปเรียบร้อยแล้ว เจ้าหน้าที่ชุมชนจะทำการตรวจสอบและยืนยันการจอง")
+            messages.success(request, "แนบสลิปเรียบร้อยแล้ว")
+
+            from django.conf import settings
+            from apps.payments.services import verify_slip_automatically
+
+            if getattr(settings, "EASYSLIP_API_KEY", ""):
+                try:
+                    is_verified, slip, verify_msg = verify_slip_automatically(slip.id)
+                    if is_verified:
+                        messages.success(request, f"ตรวจสอบสลิปอัตโนมัติสำเร็จ! {verify_msg}")
+                    else:
+                        messages.warning(request, f"ผลการตรวจสลิป: {verify_msg} (ส่งให้เจ้าหน้าที่ตรวจสอบมือ)")
+                except Exception as exc:
+                    messages.info(request, "ส่งสลิปให้เจ้าหน้าที่ตรวจสอบเรียบร้อยแล้ว")
+            else:
+                messages.info(request, "ส่งสลิปเข้าสู่ระบบรอเจ้าหน้าที่ตรวจสอบเรียบร้อยแล้ว")
+
             return redirect('bookings:detail', booking_id=booking.id)
         else:
             messages.error(request, "สลิปที่อัปโหลดไม่ถูกต้อง กรุณาตรวจสอบรูปภาพและรหัสอ้างอิง")
@@ -138,6 +154,12 @@ def admin_payment_review_view(request, payment_id):
                 user=request.user,
             )
 
+            from apps.core.services.notifications import (
+                send_booking_voucher_and_order_alert,
+                send_slip_rejected_alert,
+            )
+
+            send_booking_voucher_and_order_alert(payment)
             messages.success(request, f"อนุมัติการชำระเงินสำหรับรหัส {booking.booking_code} สำเร็จ")
             return redirect('payments:admin_list')
 
@@ -163,6 +185,8 @@ def admin_payment_review_view(request, payment_id):
                 user=request.user,
             )
 
+            from apps.core.services.notifications import send_slip_rejected_alert
+            send_slip_rejected_alert(payment, notes or "สลิปไม่ผ่านการตรวจสอบ")
             messages.warning(request, f"ปฏิเสธสลิปการโอนเงิน รหัส {payment.booking.booking_code}")
             return redirect('payments:admin_list')
 

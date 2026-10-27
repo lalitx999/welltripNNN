@@ -141,3 +141,122 @@ class PaymentSecurityTestCase(TestCase):
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
+
+
+class EasySlipAutomatedVerificationTestCase(TestCase):
+    """
+    Test suite for EasySlip Automated Slip Verification Service & Financial Money Rules.
+    """
+
+    def setUp(self):
+        from django.core import mail
+        mail.outbox = []
+        self.tourist = User.objects.create_user(
+            email="tourist.slip@example.com",
+            password="SecurePassword123!",
+            first_name="กานต์",
+            last_name="ใจดี",
+            role=UserRoles.TOURIST,
+        )
+        self.booking = Booking.objects.create(
+            customer=self.tourist,
+            total_amount=Decimal("1500.00"),
+            status=BookingStatus.AWAITING_PAYMENT,
+        )
+        self.payment = Payment.objects.create(
+            booking=self.booking,
+            amount=self.booking.total_amount,
+            status=PaymentStatus.PENDING,
+        )
+
+        img = Image.new("RGB", (60, 60), color="green")
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
+        buf.seek(0)
+        uploaded = SimpleUploadedFile("slip.jpg", buf.read(), content_type="image/jpeg")
+
+        self.slip = PaymentSlip.objects.create(
+            payment=self.payment,
+            image=uploaded,
+            verification_status=SlipVerificationStatus.PENDING_CHECK,
+        )
+
+    def test_easyslip_auto_verification_success(self):
+        from django.core import mail
+        from django.utils import timezone
+        from apps.payments.services import verify_slip_automatically
+
+        def mock_provider(image):
+            return {
+                "amount": Decimal("1500.00"),
+                "trans_ref": "KBANK-20261027-998877",
+                "trans_datetime": timezone.now(),
+                "sender_name": "นายกานต์ ใจดี",
+                "receiver": {"account": {"name": "วิสาหกิจชุมชน"}},
+                "is_duplicate": False,
+            }
+
+        is_verified, slip, msg = verify_slip_automatically(self.slip.id, provider_func=mock_provider)
+        self.assertTrue(is_verified)
+        self.assertEqual(slip.verification_status, SlipVerificationStatus.VERIFIED)
+        self.assertEqual(slip.provider_reference, "KBANK-20261027-998877")
+
+        self.payment.refresh_from_db()
+        self.assertEqual(self.payment.status, PaymentStatus.SUCCESS)
+
+        self.booking.refresh_from_db()
+        self.assertEqual(self.booking.status, BookingStatus.CONFIRMED)
+
+        # Confirm Voucher email was dispatched
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("ยืนยันการชำระเงินและเวาเชอร์การจอง", mail.outbox[0].subject)
+
+    def test_easyslip_amount_mismatch_rejection(self):
+        from django.core import mail
+        from django.utils import timezone
+        from apps.payments.services import verify_slip_automatically
+
+        def mock_underpaid_provider(image):
+            return {
+                "amount": Decimal("1000.00"),  # Expected 1500.00
+                "trans_ref": "KBANK-20261027-112233",
+                "trans_datetime": timezone.now(),
+                "sender_name": "นายกานต์ ใจดี",
+                "is_duplicate": False,
+            }
+
+        is_verified, slip, msg = verify_slip_automatically(self.slip.id, provider_func=mock_underpaid_provider)
+        self.assertFalse(is_verified)
+        self.assertEqual(slip.verification_status, SlipVerificationStatus.REJECTED)
+        self.assertIn("ยอดเงินในสลิปไม่ตรงกับยอดที่ต้องชำระ", msg)
+
+        # Confirm slip rejection email dispatched
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("สลิปการชำระเงินไม่ผ่านการตรวจสอบ", mail.outbox[0].subject)
+
+    def test_easyslip_duplicate_reference_rejection(self):
+        from django.utils import timezone
+        from apps.payments.services import verify_slip_automatically
+
+        # Pre-seed a verified slip with the same trans_ref
+        PaymentSlip.objects.create(
+            payment=self.payment,
+            image=self.slip.image,
+            provider_reference="DUPLICATE-REF-999",
+            verification_status=SlipVerificationStatus.VERIFIED,
+        )
+
+        def mock_duplicate_provider(image):
+            return {
+                "amount": Decimal("1500.00"),
+                "trans_ref": "DUPLICATE-REF-999",
+                "trans_datetime": timezone.now(),
+                "sender_name": "ผู้ไม่หวังดี",
+                "is_duplicate": True,
+            }
+
+        is_verified, slip, msg = verify_slip_automatically(self.slip.id, provider_func=mock_duplicate_provider)
+        self.assertFalse(is_verified)
+        self.assertEqual(slip.verification_status, SlipVerificationStatus.REJECTED)
+        self.assertIn("สลิปนี้เคยถูกใช้ยืนยันการชำระเงินในระบบแล้ว", msg)
+

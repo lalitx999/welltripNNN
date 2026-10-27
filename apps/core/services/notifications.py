@@ -193,7 +193,7 @@ def send_booking_voucher_and_order_alert(payment) -> bool:
     if not booking:
         return False
 
-    tourist = booking.user
+    tourist = getattr(booking, "customer", None) or getattr(booking, "user", None)
     tourist_email = tourist.email if tourist else None
 
     # Collect items summary
@@ -272,13 +272,17 @@ def send_slip_rejected_alert(payment, rejection_reason: str) -> bool:
     """Notify tourist when their uploaded slip failed verification."""
     from_email = _get_from_email()
     booking = payment.booking
-    if not booking or not booking.user or not booking.user.email:
+    if not booking:
         return False
 
-    tourist_email = booking.user.email
+    tourist = getattr(booking, "customer", None) or getattr(booking, "user", None)
+    if not tourist or not tourist.email:
+        return False
+
+    tourist_email = tourist.email
     subject = f"[WellTrip] สลิปการชำระเงินไม่ผ่านการตรวจสอบ (รหัสการจอง: #{str(booking.id)[:8].upper()})"
     message = (
-        f"เรียน คุณ {booking.user.full_name or 'นักท่องเที่ยว'},\n\n"
+        f"เรียน คุณ {tourist.full_name or 'นักท่องเที่ยว'},\n\n"
         f"ระบบได้ทำการตรวจสอบสลิปการโอนเงินสำหรับการจองรหัส #{str(booking.id)[:8].upper()} แล้วพบว่า:\n\n"
         f"สาเหตุ: {rejection_reason}\n\n"
         f"การจองของท่านยังคงอยู่ในสถานะรอชำระเงิน โปรดแนบหลักฐานการโอนเงินที่ถูกต้องใหม่อีกครั้งได้ที่:\n"

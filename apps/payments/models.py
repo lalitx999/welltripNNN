@@ -64,6 +64,7 @@ class Payment(models.Model):
     )
     payee_account_number = models.CharField(max_length=50, default="098-2-34567-8")
 
+    paid_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -86,6 +87,9 @@ class PaymentSlip(models.Model):
         Payment, on_delete=models.CASCADE, related_name="slips"
     )
     image = models.ImageField(upload_to=slip_image_path)
+    amount_seen = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True
+    )
     provider_reference = models.CharField(
         max_length=100,
         blank=True,
@@ -93,6 +97,7 @@ class PaymentSlip(models.Model):
         db_index=True,
         help_text="รหัสอ้างอิงธุรกรรมธนาคารจากสลิป (Bank Transfer Ref Number)",
     )
+    provider_response_log = models.JSONField(default=dict, blank=True)
     verification_status = models.CharField(
         max_length=30,
         choices=SlipVerificationStatus.choices,
