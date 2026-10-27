@@ -4,7 +4,30 @@
 {% block title %}คำแนะนำการชำระเงิน {{ booking.booking_code }} - WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6"
+     x-data="{
+       timeLeft: {{ remaining_seconds }},
+       timer: null,
+       isExpired: {% if remaining_seconds <= 0 %}true{% else %}false{% endif %},
+       get minutes() { return Math.max(0, Math.floor(this.timeLeft / 60)) },
+       get seconds() { return Math.max(0, this.timeLeft % 60).toString().padStart(2, '0') },
+       init() {
+         {% if booking.status == 'AWAITING_PAYMENT' %}
+           if (this.timeLeft <= 0) {
+             this.isExpired = true;
+             return;
+           }
+           this.timer = setInterval(() => {
+             if (this.timeLeft > 0) {
+               this.timeLeft--;
+             } else {
+               this.isExpired = true;
+               clearInterval(this.timer);
+             }
+           }, 1000);
+         {% endif %}
+       }
+     }">
   
   <!-- Header -->
   <div class="space-y-1.5 text-center sm:text-left">
@@ -22,20 +45,28 @@
 
   <!-- 15-Minute Countdown Alert -->
   {% if booking.status == 'AWAITING_PAYMENT' %}
-    <div x-data="{
-           timeLeft: {{ remaining_seconds }},
-           get minutes() { return Math.floor(this.timeLeft / 60) },
-           get seconds() { return (this.timeLeft % 60).toString().padStart(2, '0') }
-         }"
-         x-init="setInterval(() => { if (timeLeft > 0) timeLeft--; else window.location.reload(); }, 1000)"
-         class="p-4 sm:p-5 rounded-3xl bg-amber-50/90 border border-amber-200 flex items-center justify-between shadow-xs">
-      <div class="flex items-center gap-2.5 text-xs font-bold text-amber-900">
-        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-        <i data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
-        <span>เวลาที่เหลือในการชำระเงิน</span>
+    <div class="space-y-3">
+      <!-- Active Timer State -->
+      <div x-show="!isExpired" class="p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-200 flex items-center justify-between shadow-xs">
+        <div class="flex items-center gap-2.5 text-xs font-bold text-amber-900">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+          <i data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
+          <span>เวลาที่เหลือในการชำระเงิน</span>
+        </div>
+        <div class="font-mono text-base font-bold text-amber-900 bg-white px-4 py-1.5 rounded-xl border border-amber-200 shadow-xs">
+          <span x-text="minutes">0</span>:<span x-text="seconds">00</span> นาที
+        </div>
       </div>
-      <div class="font-mono text-base font-bold text-amber-900 bg-white px-4 py-1.5 rounded-2xl border border-amber-200 shadow-xs">
-        <span x-text="minutes">0</span>:<span x-text="seconds">00</span> นาที
+
+      <!-- Expired State (No infinite reload) -->
+      <div x-show="isExpired" style="display: none;" class="p-4 sm:p-5 rounded-2xl bg-rose-50 border border-rose-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+        <div class="flex items-center gap-2.5 text-xs font-bold text-rose-800">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+          <span>คำสั่งซื้อนี้หมดเวลาชำระเงินแล้ว ระบบได้ทำการปลดล็อกสต็อกคืนชุมชน</span>
+        </div>
+        <a href="{% url 'bookings:my_bookings' %}" class="px-3.5 py-1.5 rounded-xl bg-white border border-rose-300 text-rose-700 text-xs font-semibold hover:bg-rose-100 transition shrink-0">
+          ดูรายการจองของฉัน
+        </a>
       </div>
     </div>
   {% endif %}
@@ -168,9 +199,11 @@
 
       <button 
         type="submit" 
-        class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+        :disabled="isExpired"
+        class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        <span>ส่งหลักฐานการชำระเงิน</span>
+        <span x-show="!isExpired">ส่งหลักฐานการชำระเงิน</span>
+        <span x-show="isExpired" style="display: none;">หมดเวลาชำระเงินแล้ว (ไม่สามารถส่งสลิปได้)</span>
         <i data-lucide="check-circle" class="w-4 h-4 text-[#c49a45]"></i>
       </button>
     </form>

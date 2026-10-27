@@ -4,32 +4,100 @@
 {% block admin_heading %}ศูนย์ควบคุมระบบแอดมิน (Admin Command Center){% endblock %}
 
 {% block content %}
-<div class="space-y-6 max-w-7xl pb-16">
+<div class="space-y-6 max-w-7xl pb-16"
+     x-data="{
+       // Modal states
+       showAddCatalogModal: false,
+       showEditCatalogModal: false,
+       editCatalogData: { id: '', type: 'ACCOMMODATION', title: '', price: '', description: '', is_active: true, stock: 10 },
+       
+       showDeleteModal: false,
+       deleteActionUrl: '',
+       deleteItemTitle: '',
+
+       showAddPartnerModal: false,
+       showEditPartnerModal: false,
+       editPartnerData: { id: '', name: '', category: 'HOMESTAY', phone: '', description: '', maps_url: '', hours: '' },
+
+       showAddUserModal: false,
+       showEditUserModal: false,
+       editUserData: { id: '', email: '', first_name: '', last_name: '', phone: '', role: 'TOURIST' },
+
+       showResetPasswordModal: false,
+       resetPasswordUserId: '',
+       resetPasswordUserEmail: '',
+
+       showAddLocationModal: false,
+       showEditLocationModal: false,
+       editLocationData: { id: '', title: '', category: 'PHOTO_SPOT', latitude: '15.1186', longitude: '104.3225', address: '', is_active: true },
+
+       showAddContentModal: false,
+       showEditContentModal: false,
+       editContentData: { id: '', title: '', kind: 'STORY', summary: '', body: '', image_url: '', location: '', is_published: true },
+
+       showEditPaymentModal: false,
+       editPaymentData: { id: '', code: '', amount: '', status: 'PENDING' },
+
+       openEditCatalog(item) {
+         this.editCatalogData = { ...item };
+         this.showEditCatalogModal = true;
+       },
+       openDeleteConfirm(url, title) {
+         this.deleteActionUrl = url;
+         this.deleteItemTitle = title;
+         this.showDeleteModal = true;
+       },
+       openEditPartner(partner) {
+         this.editPartnerData = { ...partner };
+         this.showEditPartnerModal = true;
+       },
+       openEditUser(user) {
+         this.editUserData = { ...user };
+         this.showEditUserModal = true;
+       },
+       openResetPassword(id, email) {
+         this.resetPasswordUserId = id;
+         this.resetPasswordUserEmail = email;
+         this.showResetPasswordModal = true;
+       },
+       openEditLocation(loc) {
+         this.editLocationData = { ...loc };
+         this.showEditLocationModal = true;
+       },
+       openEditContent(content) {
+         this.editContentData = { ...content };
+         this.showEditContentModal = true;
+       },
+       openEditPayment(pay) {
+         this.editPaymentData = { ...pay };
+         this.showEditPaymentModal = true;
+       }
+     }">
 
   <!-- ============================================================================== -->
-  <!-- 1. TOP HEADER & OPERATIONAL STATUS                                            -->
+  <!-- 1. TOP HEADER HERO BANNER (AdminCN Light Style)                                -->
   <!-- ============================================================================== -->
-  <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl border border-slate-800">
-    <div class="space-y-2 max-w-xl">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs text-emerald-400">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="font-semibold tracking-wide">ระบบความปลอดภัย Active Defense · OWASP Top 10</span>
+  <div class="bg-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-slate-200/90 shadow-xs">
+    <div class="space-y-2 max-w-2xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-xs text-emerald-800 font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Active Enterprise Console · สิทธิ์ผู้ดูแลระบบสูงสุด</span>
       </div>
-      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white font-serif">
+      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#1B2A24] font-serif">
         WellTrip Community Operations Console
       </h1>
-      <p class="text-xs text-slate-400 font-light leading-relaxed">
-        ระบบควบคุมและบริหารจัดการวิสาหกิจชุมชนศรีสะเกษ 4 ชนเผ่า (ที่พัก อาหาร สปา และสินค้า OTOP)
+      <p class="text-xs text-slate-500 font-light leading-relaxed">
+        ระบบควบคุมและบริหารจัดการวิสาหกิจชุมชน 4 ชนเผ่า (ที่พัก อาหาร สปา และสินค้า OTOP) พร้อมระบบเพิ่ม ลบ แก้ไขข้อมูลครบวงจร
       </p>
     </div>
 
-    <div class="flex flex-wrap items-center gap-3 shrink-0">
-      <div class="px-3.5 py-2 rounded-2xl bg-slate-800/90 border border-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-2">
-        <i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i>
+    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+      <div class="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2">
+        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
         <span>{{ user.email }}</span>
       </div>
-      <a href="{% url 'core:home' %}" class="px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5">
-        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+      <a href="{% url 'core:home' %}" class="px-4 py-2 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-semibold transition shadow-xs inline-flex items-center gap-1.5">
+        <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#D97706]"></i>
         <span>เปิดหน้าเว็บหลัก</span>
       </a>
     </div>
@@ -37,28 +105,28 @@
 
 
   <!-- ============================================================================== -->
-  <!-- 2. SEVEN-TAB NAVIGATION BAR (Based on เซ้งร้านด่วน & Documents/welltrip)       -->
+  <!-- 2. SEVEN-TAB NAVIGATION BAR (AdminCN Style)                                    -->
   <!-- ============================================================================== -->
-  <div class="border-b border-slate-800 flex gap-2 sm:gap-4 text-xs font-semibold overflow-x-auto pb-1 scrollbar-none">
+  <div class="bg-white p-1.5 rounded-2xl border border-slate-200/80 shadow-2xs flex gap-1.5 text-xs font-semibold overflow-x-auto scrollbar-none">
     
     <!-- 1. Overview -->
     <a href="?tab=overview" 
-       class="px-4 py-2.5 rounded-2xl transition-all whitespace-nowrap flex items-center gap-2
-              {% if active_tab == 'overview' %} bg-slate-800 text-white font-bold border border-slate-700 shadow-sm
-              {% else %} text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 {% endif %}">
-      <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400"></i>
+       class="px-4 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-2
+              {% if active_tab == 'overview' %} bg-[#1B2A24] text-white shadow-xs
+              {% else %} text-slate-600 hover:text-[#1B2A24] hover:bg-slate-50 {% endif %}">
+      <i data-lucide="layout-dashboard" class="w-4 h-4 {% if active_tab == 'overview' %}text-[#D97706]{% else %}text-slate-400{% endif %}"></i>
       <span>1. ภาพรวมระบบ</span>
     </a>
 
     <!-- 2. Approvals -->
     <a href="?tab=approvals" 
-       class="px-4 py-2.5 rounded-2xl transition-all whitespace-nowrap flex items-center gap-2
-              {% if active_tab == 'approvals' %} bg-slate-800 text-white font-bold border border-slate-700 shadow-sm
-              {% else %} text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 {% endif %}">
-      <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+       class="px-4 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-2
+              {% if active_tab == 'approvals' %} bg-[#1B2A24] text-white shadow-xs
+              {% else %} text-slate-600 hover:text-[#1B2A24] hover:bg-slate-50 {% endif %}">
+      <i data-lucide="shield-check" class="w-4 h-4 {% if active_tab == 'approvals' %}text-[#D97706]{% else %}text-emerald-600{% endif %}"></i>
       <span>2. อนุมัติพาร์ทเนอร์</span>
       {% if total_pending_kyc > 0 %}
-        <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/40">
+        <span class="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.2 rounded-full shadow-2xs">
           {{ total_pending_kyc }}
         </span>
       {% endif %}
@@ -66,13 +134,13 @@
 
     <!-- 3. Payments -->
     <a href="?tab=payments" 
-       class="px-4 py-2.5 rounded-2xl transition-all whitespace-nowrap flex items-center gap-2
-              {% if active_tab == 'payments' %} bg-slate-800 text-white font-bold border border-slate-700 shadow-sm
-              {% else %} text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 {% endif %}">
-      <i data-lucide="receipt" class="w-4 h-4 text-amber-300"></i>
+       class="px-4 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-2
+              {% if active_tab == 'payments' %} bg-[#1B2A24] text-white shadow-xs
+              {% else %} text-slate-600 hover:text-[#1B2A24] hover:bg-slate-50 {% endif %}">
+      <i data-lucide="receipt" class="w-4 h-4 {% if active_tab == 'payments' %}text-[#D97706]{% else %}text-amber-500{% endif %}"></i>
       <span>3. ตรวจสลิปโอนเงิน</span>
       {% if pending_slips_count > 0 %}
-        <span class="bg-amber-500/20 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/40 animate-pulse">
+        <span class="bg-[#D97706] text-white text-[10px] font-bold px-2 py-0.2 rounded-full shadow-2xs animate-pulse">
           {{ pending_slips_count }}
         </span>
       {% endif %}
@@ -80,39 +148,39 @@
 
     <!-- 4. Catalog -->
     <a href="?tab=catalog" 
-       class="px-4 py-2.5 rounded-2xl transition-all whitespace-nowrap flex items-center gap-2
-              {% if active_tab == 'catalog' %} bg-slate-800 text-white font-bold border border-slate-700 shadow-sm
-              {% else %} text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 {% endif %}">
-      <i data-lucide="grid-2x2" class="w-4 h-4 text-cyan-400"></i>
+       class="px-4 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-2
+              {% if active_tab == 'catalog' %} bg-[#1B2A24] text-white shadow-xs
+              {% else %} text-slate-600 hover:text-[#1B2A24] hover:bg-slate-50 {% endif %}">
+      <i data-lucide="grid-2x2" class="w-4 h-4 {% if active_tab == 'catalog' %}text-[#D97706]{% else %}text-cyan-600{% endif %}"></i>
       <span>4. แคตตาล็อกชุมชน</span>
-      <span class="text-slate-500 text-[10px]">({{ total_catalog_count }})</span>
+      <span class="{% if active_tab == 'catalog' %}text-white/70{% else %}text-slate-400{% endif %} text-[10px]">({{ total_catalog_count }})</span>
     </a>
 
     <!-- 5. Users -->
     <a href="?tab=users" 
-       class="px-4 py-2.5 rounded-2xl transition-all whitespace-nowrap flex items-center gap-2
-              {% if active_tab == 'users' %} bg-slate-800 text-white font-bold border border-slate-700 shadow-sm
-              {% else %} text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 {% endif %}">
-      <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i>
+       class="px-4 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-2
+              {% if active_tab == 'users' %} bg-[#1B2A24] text-white shadow-xs
+              {% else %} text-slate-600 hover:text-[#1B2A24] hover:bg-slate-50 {% endif %}">
+      <i data-lucide="users" class="w-4 h-4 {% if active_tab == 'users' %}text-[#D97706]{% else %}text-indigo-600{% endif %}"></i>
       <span>5. จัดการผู้ใช้</span>
-      <span class="text-slate-500 text-[10px]">({{ total_users_count }})</span>
+      <span class="{% if active_tab == 'users' %}text-white/70{% else %}text-slate-400{% endif %} text-[10px]">({{ total_users_count }})</span>
     </a>
 
     <!-- 6. Locations -->
     <a href="?tab=locations" 
-       class="px-4 py-2.5 rounded-2xl transition-all whitespace-nowrap flex items-center gap-2
-              {% if active_tab == 'locations' %} bg-slate-800 text-white font-bold border border-slate-700 shadow-sm
-              {% else %} text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 {% endif %}">
-      <i data-lucide="map-pin" class="w-4 h-4 text-teal-400"></i>
+       class="px-4 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-2
+              {% if active_tab == 'locations' %} bg-[#1B2A24] text-white shadow-xs
+              {% else %} text-slate-600 hover:text-[#1B2A24] hover:bg-slate-50 {% endif %}">
+      <i data-lucide="map-pin" class="w-4 h-4 {% if active_tab == 'locations' %}text-[#D97706]{% else %}text-teal-600{% endif %}"></i>
       <span>6. พิกัด & พาสปอร์ต</span>
     </a>
 
     <!-- 7. Content -->
     <a href="?tab=content" 
-       class="px-4 py-2.5 rounded-2xl transition-all whitespace-nowrap flex items-center gap-2
-              {% if active_tab == 'content' %} bg-slate-800 text-white font-bold border border-slate-700 shadow-sm
-              {% else %} text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 {% endif %}">
-      <i data-lucide="book-open" class="w-4 h-4 text-purple-400"></i>
+       class="px-4 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-2
+              {% if active_tab == 'content' %} bg-[#1B2A24] text-white shadow-xs
+              {% else %} text-slate-600 hover:text-[#1B2A24] hover:bg-slate-50 {% endif %}">
+      <i data-lucide="book-open" class="w-4 h-4 {% if active_tab == 'content' %}text-[#D97706]{% else %}text-purple-600{% endif %}"></i>
       <span>7. เรื่องราว & บทความ</span>
     </a>
 
@@ -128,48 +196,56 @@
       <!-- Top Metric Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 shadow-md space-y-2">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-semibold">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-2">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
             <span>สมาชิกทั้งหมดในระบบ</span>
-            <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i>
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <i data-lucide="users" class="w-4 h-4"></i>
+            </div>
           </div>
-          <div class="text-3xl font-extrabold text-white">{{ total_users_count }}</div>
-          <div class="text-[11px] text-slate-400">
+          <div class="text-3xl font-extrabold text-[#1B2A24]">{{ total_users_count }}</div>
+          <div class="text-[11px] text-slate-500">
             นักท่องเที่ยว {{ tourists_count }} · ผู้ประกอบการ {{ merchants_count }}
           </div>
         </div>
 
-        <a href="?tab=approvals" class="bg-slate-950/70 hover:bg-slate-950 rounded-3xl p-5 border border-slate-800 hover:border-emerald-500/40 shadow-md space-y-2 transition group">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-semibold">
+        <a href="?tab=approvals" class="bg-white hover:border-emerald-300 rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-2 transition group">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
             <span>รออนุมัติพาร์ทเนอร์ (KYC)</span>
-            <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            </div>
           </div>
-          <div class="text-3xl font-extrabold text-emerald-400">{{ total_pending_kyc }}</div>
-          <div class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+          <div class="text-3xl font-extrabold text-emerald-700">{{ total_pending_kyc }}</div>
+          <div class="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
             <span>ตรวจสอบใบอนุญาต / ร้านค้า</span>
             <i data-lucide="arrow-right" class="w-3 h-3"></i>
           </div>
         </a>
 
-        <a href="?tab=payments" class="bg-slate-950/70 hover:bg-slate-950 rounded-3xl p-5 border border-slate-800 hover:border-amber-500/40 shadow-md space-y-2 transition group">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-semibold">
+        <a href="?tab=payments" class="bg-white hover:border-amber-300 rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-2 transition group">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
             <span>สลิปโอนเงินรอตรวจ</span>
-            <i data-lucide="receipt" class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform"></i>
+            <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="receipt" class="w-4 h-4"></i>
+            </div>
           </div>
-          <div class="text-3xl font-extrabold text-amber-400">{{ pending_slips_count }}</div>
-          <div class="text-[11px] text-amber-400 font-medium flex items-center gap-1">
-            <span>ระบบตรวจจับสลิปซ้ำ SHA-256</span>
+          <div class="text-3xl font-extrabold text-amber-700">{{ pending_slips_count }}</div>
+          <div class="text-[11px] text-amber-600 font-medium flex items-center gap-1">
+            <span>ตรวจจับสลิปซ้ำ (SHA-256)</span>
             <i data-lucide="arrow-right" class="w-3 h-3"></i>
           </div>
         </a>
 
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 shadow-md space-y-2">
-          <div class="flex items-center justify-between text-slate-400 text-xs font-semibold">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-2">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
             <span>รายได้สะสมชุมชน (สำเร็จ)</span>
-            <i data-lucide="coins" class="w-4 h-4 text-[#C49A45]"></i>
+            <div class="w-8 h-8 rounded-lg bg-amber-50 text-[#D97706] flex items-center justify-center">
+              <i data-lucide="coins" class="w-4 h-4"></i>
+            </div>
           </div>
-          <div class="text-3xl font-extrabold text-[#C49A45]">฿{{ total_revenue|floatformat:0 }}</div>
-          <div class="text-[11px] text-slate-400">
+          <div class="text-3xl font-extrabold text-[#D97706]">฿{{ total_revenue|floatformat:0 }}</div>
+          <div class="text-[11px] text-slate-500">
             คำสั่งซื้อทั้งหมด {{ total_bookings_count }} รายการ
           </div>
         </div>
@@ -180,43 +256,46 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- Recent Bookings Table -->
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 shadow-md space-y-4">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i data-lucide="calendar" class="w-4 h-4 text-amber-400"></i>
+            <h3 class="text-sm font-bold text-[#1B2A24] flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-[#D97706]"></i>
               <span>คำสั่งซื้อล่าสุด</span>
             </h3>
-            <span class="text-[11px] text-slate-500">เรียงตามเวลา</span>
+            <a href="?tab=payments" class="text-xs text-slate-500 hover:text-[#1B2A24]">ดูทั้งหมด</a>
           </div>
 
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
               <thead>
-                <tr class="border-b border-slate-800 text-slate-500 text-[11px]">
-                  <th class="pb-2">รหัสการจอง</th>
-                  <th class="pb-2">ผู้สั่งซื้อ</th>
-                  <th class="pb-2">ยอดเงิน</th>
-                  <th class="pb-2">สถานะ</th>
+                <tr class="border-b border-slate-100 text-slate-400 text-[11px]">
+                  <th class="pb-2.5 font-semibold">รหัสการจอง</th>
+                  <th class="pb-2.5 font-semibold">ผู้สั่งซื้อ</th>
+                  <th class="pb-2.5 font-semibold">ยอดเงิน</th>
+                  <th class="pb-2.5 font-semibold">สถานะ</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-900">
+              <tbody class="divide-y divide-slate-100">
                 {% for b in recent_bookings %}
-                  <tr>
-                    <td class="py-2.5 font-bold text-slate-200">{{ b.booking_code }}</td>
-                    <td class="py-2.5 text-slate-400 truncate max-w-[120px]">{{ b.customer.email }}</td>
-                    <td class="py-2.5 text-[#C49A45] font-semibold">฿{{ b.total_amount|floatformat:0 }}</td>
+                  <tr class="hover:bg-slate-50/70 transition">
+                    <td class="py-2.5 font-mono font-bold text-[#1B2A24]">{{ b.booking_code }}</td>
+                    <td class="py-2.5 text-slate-600 truncate max-w-[140px]">{{ b.customer.email }}</td>
+                    <td class="py-2.5 font-semibold text-[#1B2A24]">฿{{ b.total_amount|floatformat:0 }}</td>
                     <td class="py-2.5">
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold
-                        {% if b.status == 'CONFIRMED' %} bg-emerald-950 text-emerald-400 border border-emerald-800/40
-                        {% elif b.status == 'AWAITING_PAYMENT' %} bg-amber-950 text-amber-400 border border-amber-800/40
-                        {% else %} bg-slate-800 text-slate-400 {% endif %}">
-                        {{ b.get_status_display }}
-                      </span>
+                      {% if b.status == 'CONFIRMED' %}
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">ชำระแล้ว</span>
+                      {% elif b.status == 'AWAITING_PAYMENT' %}
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">รอชำระ</span>
+                      {% elif b.status == 'COMPLETED' %}
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">สำเร็จ</span>
+                      {% else %}
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">{{ b.status }}</span>
+                      {% endif %}
                     </td>
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="4" class="py-4 text-center text-slate-500">ยังไม่มีรายการสั่งซื้อ</td>
+                    <td colspan="4" class="py-6 text-center text-slate-400">ยังไม่มีรายการสั่งซื้อ</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -224,51 +303,38 @@
           </div>
         </div>
 
-        <!-- Recent Audit Logs Table -->
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 shadow-md space-y-4">
+        <!-- Pending KYC Quick List -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i data-lucide="activity" class="w-4 h-4 text-rose-400"></i>
-              <span>บันทึกความปลอดภัย (Audit Logs)</span>
+            <h3 class="text-sm font-bold text-[#1B2A24] flex items-center gap-2">
+              <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i>
+              <span>ร้านค้าที่รอการอนุมัติ (KYC)</span>
             </h3>
-            <a href="{% url 'accounts:admin_audit' %}" class="text-[11px] font-bold text-rose-400 hover:underline">
-              ดูทั้งหมด ➔
-            </a>
+            <a href="?tab=approvals" class="text-xs text-slate-500 hover:text-[#1B2A24]">ไปหน้ารวม ({{ total_pending_kyc }})</a>
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead>
-                <tr class="border-b border-slate-800 text-slate-500 text-[11px]">
-                  <th class="pb-2">เวลา</th>
-                  <th class="pb-2">ผู้ดำเนินการ</th>
-                  <th class="pb-2">การกระทำ</th>
-                  <th class="pb-2">โมเดล</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-900">
-                {% for log in recent_audits %}
-                  <tr>
-                    <td class="py-2.5 text-slate-500 text-[11px]">{{ log.timestamp|date:"H:i:s" }}</td>
-                    <td class="py-2.5 text-slate-300 truncate max-w-[120px]">{{ log.user.email|default:"ระบบอัตโนมัติ" }}</td>
-                    <td class="py-2.5">
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold
-                        {% if log.action == 'CREATE' %} bg-emerald-950 text-emerald-400
-                        {% elif log.action == 'UPDATE' %} bg-cyan-950 text-cyan-400
-                        {% elif log.action == 'DELETE' %} bg-rose-950 text-rose-400
-                        {% else %} bg-slate-800 text-slate-400 {% endif %}">
-                        {{ log.action }}
-                      </span>
-                    </td>
-                    <td class="py-2.5 text-slate-400 font-mono text-[11px]">{{ log.model_name }}</td>
-                  </tr>
-                {% empty %}
-                  <tr>
-                    <td colspan="4" class="py-4 text-center text-slate-500">ยังไม่มีบันทึก Audit Logs</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          <div class="space-y-3">
+            {% for p in pending_merchants %}
+              <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 flex items-center justify-between gap-3 text-xs">
+                <div class="min-w-0">
+                  <p class="font-bold text-[#1B2A24] truncate">{{ p.business_name }}</p>
+                  <p class="text-[11px] text-slate-500 truncate">{{ p.user.email }} · {{ p.phone_number }}</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <form method="POST" action="{% url 'accounts:admin_approve_merchant' p.user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs">
+                      อนุมัติ
+                    </button>
+                  </form>
+                </div>
+              </div>
+            {% empty %}
+              <div class="py-8 text-center text-slate-400 text-xs">
+                <i data-lucide="check-circle" class="w-8 h-8 text-emerald-500 mx-auto mb-2 opacity-60"></i>
+                <p>ไม่มีพาร์ทเนอร์ค้างการอนุมัติ ทุกรายการได้รับการตรวจสอบครบถ้วน</p>
+              </div>
+            {% endfor %}
           </div>
         </div>
 
@@ -279,172 +345,115 @@
 
 
   <!-- ============================================================================== -->
-  <!-- TAB 2: APPROVALS (KYC Merchant Verification)                                   -->
-  <!-- ============================================================================== -->
-  {% if active_tab == 'approvals' %}
-    <div class="space-y-6">
-      
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 class="text-lg font-bold text-white">ตรวจสอบและอนุมัติผู้ประกอบการชุมชน (Merchant KYC)</h2>
-          <p class="text-xs text-slate-400">ตรวจสอบข้อมูลร้านค้า เลขประจำตัวผู้เสียภาษี และอนุมัติการเปิดให้บริการ</p>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <a href="?tab=approvals" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if not selected_kyc_status %}bg-slate-800 text-white{% else %}text-slate-400 hover:text-white{% endif %}">
-            ทั้งหมด
-          </a>
-          <a href="?tab=approvals&status=PENDING" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if selected_kyc_status == 'PENDING' %}bg-amber-900/60 text-amber-300 border border-amber-700/60{% else %}text-slate-400 hover:text-white{% endif %}">
-            รอตรวจสอบ
-          </a>
-          <a href="?tab=approvals&status=APPROVED" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if selected_kyc_status == 'APPROVED' %}bg-emerald-900/60 text-emerald-300 border border-emerald-700/60{% else %}text-slate-400 hover:text-white{% endif %}">
-            อนุมัติแล้ว
-          </a>
-        </div>
-      </div>
-
-      <div class="bg-slate-950/70 rounded-3xl border border-slate-800 shadow-md overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
-              <tr>
-                <th class="p-4">ชื่อร้าน / ธุรกิจ</th>
-                <th class="p-4">หมวดหมู่</th>
-                <th class="p-4">เจ้าของ / อีเมล</th>
-                <th class="p-4">เบอร์โทรศัพท์</th>
-                <th class="p-4">เลขประจำตัว/นิติบุคคล</th>
-                <th class="p-4">สถานะ</th>
-                <th class="p-4 text-right">ดำเนินการ</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-850">
-              {% for profile in profiles_page %}
-                <tr class="hover:bg-slate-900/50 transition">
-                  <td class="p-4 font-bold text-white">{{ profile.shop_name }}</td>
-                  <td class="p-4 text-slate-400">{{ profile.get_category_display }}</td>
-                  <td class="p-4">
-                    <div class="font-medium text-slate-200">{{ profile.user.full_name|default:profile.user.username }}</div>
-                    <div class="text-[11px] text-slate-500">{{ profile.user.email }}</div>
-                  </td>
-                  <td class="p-4 text-slate-300 font-mono">{{ profile.phone_number }}</td>
-                  <td class="p-4 text-slate-400 font-mono">{{ profile.id_card_or_tax_id|default:"-" }}</td>
-                  <td class="p-4">
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold
-                      {% if profile.status == 'APPROVED' %} bg-emerald-950 text-emerald-400 border border-emerald-800
-                      {% elif profile.status == 'PENDING' %} bg-amber-950 text-amber-400 border border-amber-800 animate-pulse
-                      {% else %} bg-rose-950 text-rose-400 border border-rose-800 {% endif %}">
-                      {{ profile.get_status_display }}
-                    </span>
-                  </td>
-                  <td class="p-4 text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      {% if profile.status != 'APPROVED' %}
-                        <form method="POST" action="{% url 'accounts:admin_approve_merchant' profile.user.id %}" onsubmit="return confirm('ยืนยันอนุมัติพาร์ทเนอร์รายนี้ใช่หรือไม่?');">
-                          {% csrf_token %}
-                          <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] transition shadow-xs">
-                            อนุมัติ
-                          </button>
-                        </form>
-                      {% endif %}
-
-                      {% if profile.status != 'REJECTED' %}
-                        <form method="POST" action="{% url 'accounts:admin_reject_merchant' profile.user.id %}" onsubmit="return confirm('ยืนยันปฏิเสธการอนุมัติพาร์ทเนอร์รายนี้ใช่หรือไม่?');">
-                          {% csrf_token %}
-                          <input type="hidden" name="reason" value="เอกสารประกอบการยืนยันตัวตนไม่ครบถ้วน">
-                          <button type="submit" class="px-3 py-1.5 rounded-xl bg-rose-900/60 hover:bg-rose-800 text-rose-300 font-bold text-[11px] transition border border-rose-700/60">
-                            ปฏิเสธ
-                          </button>
-                        </form>
-                      {% endif %}
-                    </div>
-                  </td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="7" class="p-8 text-center text-slate-500">
-                    ไม่มีรายการพาร์ทเนอร์ในสถานะที่เลือก
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-  {% endif %}
-
-
-  <!-- ============================================================================== -->
-  <!-- TAB 3: PAYMENTS (Bank Slip Verification)                                       -->
+  <!-- TAB 2: PAYMENTS & SLIPS AUDIT                                                  -->
   <!-- ============================================================================== -->
   {% if active_tab == 'payments' %}
-    <div class="space-y-6">
+    <div class="space-y-4">
       
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h2 class="text-lg font-bold text-white">ตรวจสอบสลิปการโอนเงิน (Bank Slip Verification)</h2>
-          <p class="text-xs text-slate-400">ตรวจสอบความถูกต้องของสลิป ยอดโอน และป้องกันสลิปซ้ำผ่าน SHA-256</p>
+          <h2 class="text-sm font-bold text-[#1B2A24] flex items-center gap-2">
+            <i data-lucide="receipt" class="w-4 h-4 text-[#D97706]"></i>
+            <span>ตรวจสอบสลิปการโอนเงิน (Slip Verification)</span>
+          </h2>
+          <p class="text-xs text-slate-500">ตรวจสอบความถูกต้องของสลิป ยอดโอน และบัญชีกสิกรไทย 001-1-50448-5</p>
         </div>
 
         <div class="flex items-center gap-2">
-          <a href="?tab=payments" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if not selected_status %}bg-slate-800 text-white{% else %}text-slate-400 hover:text-white{% endif %}">
+          <a href="?tab=payments" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if not selected_status %}bg-[#1B2A24] text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}">
             ทั้งหมด
           </a>
-          <a href="?tab=payments&status=PENDING" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if selected_status == 'PENDING' %}bg-amber-900/60 text-amber-300 border border-amber-700/60{% else %}text-slate-400 hover:text-white{% endif %}">
-            รอตรวจสอบ
+          <a href="?tab=payments&status=PENDING" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if selected_status == 'PENDING' %}bg-amber-600 text-white{% else %}bg-amber-50 text-amber-800 hover:bg-amber-100{% endif %}">
+            รอตรวจสอบ ({{ pending_slips_count }})
           </a>
-          <a href="?tab=payments&status=SUCCESS" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if selected_status == 'SUCCESS' %}bg-emerald-900/60 text-emerald-300 border border-emerald-700/60{% else %}text-slate-400 hover:text-white{% endif %}">
+          <a href="?tab=payments&status=SUCCESS" class="px-3 py-1.5 rounded-xl text-xs font-semibold {% if selected_status == 'SUCCESS' %}bg-emerald-600 text-white{% else %}bg-emerald-50 text-emerald-800 hover:bg-emerald-100{% endif %}">
             สำเร็จแล้ว
           </a>
         </div>
       </div>
 
-      <div class="bg-slate-950/70 rounded-3xl border border-slate-800 shadow-md overflow-hidden">
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-semibold">
               <tr>
-                <th class="p-4">รหัสการจอง</th>
-                <th class="p-4">นักท่องเที่ยว</th>
-                <th class="p-4">ยอดชำระ</th>
-                <th class="p-4">ช่องทาง</th>
-                <th class="p-4">สถานะสลิป</th>
-                <th class="p-4">เวลาที่แจ้งโอน</th>
-                <th class="p-4 text-right">ดำเนินการ</th>
+                <th class="p-4">รหัสการจอง / วันที่</th>
+                <th class="p-4">ผู้สั่งซื้อ</th>
+                <th class="p-4">ยอดเงิน</th>
+                <th class="p-4">หลักฐานสลิป</th>
+                <th class="p-4">สถานะการชำระ</th>
+                <th class="p-4 text-right">การจัดการ</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-850">
+            <tbody class="divide-y divide-slate-100">
               {% for pay in payments_page %}
-                <tr class="hover:bg-slate-900/50 transition">
-                  <td class="p-4 font-bold text-white">{{ pay.booking.booking_code }}</td>
+                <tr class="hover:bg-slate-50/80 transition">
                   <td class="p-4">
-                    <div class="font-medium text-slate-200">{{ pay.booking.customer.email }}</div>
-                    <div class="text-[11px] text-slate-500">{{ pay.booking.customer.phone_number|default:"-" }}</div>
+                    <span class="font-mono font-bold text-[#1B2A24] block">{{ pay.booking.booking_code }}</span>
+                    <span class="text-[11px] text-slate-400">{{ pay.created_at|date:"d/m/Y H:i" }}</span>
                   </td>
-                  <td class="p-4 font-bold text-[#C49A45]">฿{{ pay.amount|floatformat:2 }}</td>
-                  <td class="p-4 text-slate-400">{{ pay.get_payment_channel_display }}</td>
                   <td class="p-4">
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold
-                      {% if pay.status == 'SUCCESS' %} bg-emerald-950 text-emerald-400 border border-emerald-800
-                      {% elif pay.status == 'PENDING' %} bg-amber-950 text-amber-400 border border-amber-800 animate-pulse
-                      {% else %} bg-rose-950 text-rose-400 border border-rose-800 {% endif %}">
-                      {{ pay.get_status_display }}
-                    </span>
+                    <span class="font-semibold text-slate-800 block truncate max-w-[180px]">{{ pay.booking.customer.email }}</span>
+                    <span class="text-[11px] text-slate-400">{{ pay.booking.customer.phone_number|default:"-" }}</span>
                   </td>
-                  <td class="p-4 text-slate-500 text-[11px]">{{ pay.created_at|date:"d M Y H:i" }}</td>
+                  <td class="p-4">
+                    <span class="text-sm font-bold text-[#1B2A24]">฿{{ pay.amount|floatformat:2 }}</span>
+                  </td>
+                  <td class="p-4">
+                    {% with latest_slip=pay.slips.first %}
+                      {% if latest_slip and latest_slip.image %}
+                        <div class="flex items-center gap-2">
+                          <a href="{{ latest_slip.image.url }}" target="_blank" class="block w-10 h-10 rounded-lg overflow-hidden border border-slate-200 hover:scale-105 transition">
+                            <img src="{{ latest_slip.image.url }}" alt="Slip" class="w-full h-full object-cover">
+                          </a>
+                          <div class="min-w-0">
+                            <span class="font-mono text-[10px] text-slate-600 block truncate max-w-[100px]">{{ latest_slip.provider_reference|default:"ไม่มีรหัสอ้างอิง" }}</span>
+                            <!-- Delete slip button -->
+                            <form method="POST" action="{% url 'accounts:admin_slip_delete' latest_slip.id %}" onsubmit="return confirm('ยืนยันลบสลิปนี้หรือไม่?')">
+                              {% csrf_token %}
+                              <button type="submit" class="text-[10px] text-rose-600 hover:underline">ลบสลิป</button>
+                            </form>
+                          </div>
+                        </div>
+                      {% else %}
+                        <span class="text-slate-400 text-[11px]">ยังไม่แนบสลิป</span>
+                      {% endif %}
+                    {% endwith %}
+                  </td>
+                  <td class="p-4">
+                    {% if pay.status == 'SUCCESS' %}
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        สำเร็จแล้ว
+                      </span>
+                    {% elif pay.status == 'PENDING' %}
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                        รอตรวจสอบสลิป
+                      </span>
+                    {% else %}
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200">
+                        {{ pay.get_status_display }}
+                      </span>
+                    {% endif %}
+                  </td>
                   <td class="p-4 text-right">
-                    <a href="{% url 'payments:admin_review' pay.id %}" class="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-[11px] transition inline-flex items-center gap-1 shadow-xs">
-                      <span>ตรวจสลิป</span>
-                      <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                    </a>
+                    <div class="flex items-center justify-end gap-1.5">
+                      <a href="{% url 'payments:admin_review' pay.id %}" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition shadow-2xs">
+                        ตรวจสอบสลิป
+                      </a>
+                      <button 
+                        type="button" 
+                        @click="openEditPayment({ id: '{{ pay.id }}', code: '{{ pay.booking.booking_code }}', amount: '{{ pay.amount }}', status: '{{ pay.status }}' })"
+                        class="px-2.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 transition"
+                        title="แก้ไขสถานะ"
+                      >
+                        <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="7" class="p-8 text-center text-slate-500">
-                    ไม่มีรายการชำระเงินในเงื่อนไขที่เลือก
-                  </td>
+                  <td colspan="6" class="p-8 text-center text-slate-400">ไม่พบรายการการชำระเงินตามเงื่อนไข</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -457,93 +466,402 @@
 
 
   <!-- ============================================================================== -->
-  <!-- TAB 4: CATALOG (Accommodations, Food, Spa, OTOP)                                -->
+  <!-- TAB 3: PARTNER APPROVALS (KYC)                                                 -->
   <!-- ============================================================================== -->
-  {% if active_tab == 'catalog' %}
-    <div class="space-y-6">
+  {% if active_tab == 'approvals' %}
+    <div class="space-y-4">
       
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h2 class="text-lg font-bold text-white">แคตตาล็อกรวมวิสาหกิจชุมชน (Community Catalog)</h2>
-          <p class="text-xs text-slate-400">ตรวจสอบที่พัก อาหาร สปา และสินค้า OTOP ที่เผยแพร่ในระบบ</p>
+          <h2 class="text-sm font-bold text-[#1B2A24] flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+            <span>อนุมัติและจัดการข้อมูลพาร์ทเนอร์ชุมชน (One-Time Merchant KYC)</span>
+          </h2>
+          <p class="text-xs text-slate-500">ตรวจสอบและเพิ่ม/แก้ไข/ลบโปรไฟล์ผู้ประกอบการโฮมสเตย์ อาหาร สปา และ OTOP</p>
+        </div>
+
+        <button 
+          type="button" 
+          @click="showAddPartnerModal = true"
+          class="px-4 py-2 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-2 cursor-pointer"
+        >
+          <i data-lucide="plus" class="w-4 h-4 text-[#D97706]"></i>
+          <span>เพิ่มพาร์ทเนอร์ใหม่</span>
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-semibold">
+              <tr>
+                <th class="p-4">สถานประกอบการ / ร้านค้า</th>
+                <th class="p-4">หมวดหมู่</th>
+                <th class="p-4">ข้อมูลติดต่อ</th>
+                <th class="p-4">สถานะการตรวจสอบ</th>
+                <th class="p-4 text-right">การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              {% for prof in profiles_page %}
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="p-4">
+                    <span class="font-bold text-[#1B2A24] block">{{ prof.business_name }}</span>
+                    <span class="text-[11px] text-slate-400 block">{{ prof.description|truncatechars:50 }}</span>
+                  </td>
+                  <td class="p-4">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                      {{ prof.get_business_category_display }}
+                    </span>
+                  </td>
+                  <td class="p-4">
+                    <span class="text-slate-700 block truncate">{{ prof.user.email }}</span>
+                    <span class="text-[11px] text-slate-400">{{ prof.phone_number|default:"-" }}</span>
+                  </td>
+                  <td class="p-4">
+                    {% if prof.status == 'APPROVED' %}
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        อนุมัติแล้ว
+                      </span>
+                    {% elif prof.status == 'REJECTED' %}
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200">
+                        ปฏิเสธ
+                      </span>
+                    {% else %}
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                        รอตรวจสอบ
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td class="p-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      {% if prof.status != 'APPROVED' %}
+                        <form method="POST" action="{% url 'accounts:admin_approve_merchant' prof.user.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs">
+                            อนุมัติทันที
+                          </button>
+                        </form>
+                      {% endif %}
+                      
+                      <button 
+                        type="button" 
+                        @click="openEditPartner({
+                          id: '{{ prof.user.id }}',
+                          name: '{{ prof.business_name|escapejs }}',
+                          category: '{{ prof.business_category }}',
+                          phone: '{{ prof.phone_number|escapejs }}',
+                          description: '{{ prof.description|escapejs }}',
+                          maps_url: '{{ prof.google_maps_url|escapejs }}',
+                          hours: '{{ prof.opening_hours|escapejs }}'
+                        })"
+                        class="px-2.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 transition"
+                        title="แก้ไขข้อมูลร้าน"
+                      >
+                        <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                      </button>
+
+                      <form method="POST" action="{% url 'accounts:admin_partner_delete' prof.user.id %}" onsubmit="return confirm('ยืนยันการลบหรือระงับบัญชีพาร์ทเนอร์นี้?')">
+                        {% csrf_token %}
+                        <button type="submit" class="p-1.5 rounded-xl text-rose-500 hover:bg-rose-50 transition" title="ลบพาร์ทเนอร์">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="p-8 text-center text-slate-400">ไม่พบรายการพาร์ทเนอร์</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    </div>
+  {% endif %}
+
+
+  <!-- ============================================================================== -->
+  <!-- TAB 4: UNIFIED CATALOG (CRUD FOR ALL 4 TYPES)                                  -->
+  <!-- ============================================================================== -->
+  {% if active_tab == 'catalog' %}
+    <div class="space-y-4">
+      
+      <!-- Catalog Action Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div>
+          <h2 class="text-sm font-bold text-[#1B2A24] flex items-center gap-2">
+            <i data-lucide="grid-2x2" class="w-4 h-4 text-cyan-600"></i>
+            <span>แคตตาล็อกสินค้าและบริการ 4 หมวดหมู่ (Unified Catalog)</span>
+          </h2>
+          <p class="text-xs text-slate-500">ที่พัก ({{ total_stays }}) · อาหาร ({{ total_foods }}) · สปา ({{ total_spas }}) · OTOP ({{ total_products }})</p>
+        </div>
+
+        <button 
+          type="button" 
+          @click="showAddCatalogModal = true"
+          class="px-4 py-2.5 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-2 cursor-pointer"
+        >
+          <i data-lucide="plus" class="w-4 h-4 text-[#D97706]"></i>
+          <span>เพิ่มรายการใหม่ (Add Item)</span>
+        </button>
+      </div>
+
+      <!-- 4 Categorized Sections -->
+      <div class="space-y-6">
         
-        <!-- Stays Card -->
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">โฮมสเตย์ & ที่พัก</span>
-            <span class="text-xs font-bold text-emerald-400">{{ accommodations|length }} แห่ง</span>
+        <!-- 1. Accommodations -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-[#1B2A24]">1. โฮมสเตย์และที่พักชุมชน (Accommodations - {{ total_stays }})</h3>
+            </div>
           </div>
-          <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
-            {% for s in accommodations %}
-              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex justify-between items-center">
-                <div class="truncate mr-2">
-                  <p class="font-bold text-slate-200 truncate">{{ s.name }}</p>
-                  <p class="text-[10px] text-slate-500">{{ s.district|default:"ศรีสะเกษ" }}</p>
-                </div>
-                <span class="font-mono text-[#C49A45] font-semibold shrink-0">฿{{ s.min_price_per_night|floatformat:0 }}</span>
-              </div>
-            {% endfor %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-400 border-b border-slate-100 text-[11px]">
+                <tr>
+                  <th class="pb-2">ชื่อที่พัก</th>
+                  <th class="pb-2">เจ้าของ / พาร์ทเนอร์</th>
+                  <th class="pb-2">ราคาเริ่มต้น/คืน</th>
+                  <th class="pb-2">สถานะ</th>
+                  <th class="pb-2 text-right">การจัดการ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for acc in accommodations %}
+                  <tr class="hover:bg-slate-50/70">
+                    <td class="py-2.5 font-bold text-[#1B2A24]">{{ acc.name }}</td>
+                    <td class="py-2.5 text-slate-600">{{ acc.owner.email }}</td>
+                    <td class="py-2.5 font-mono text-[#1B2A24]">฿{{ acc.min_price_per_night|floatformat:0 }}</td>
+                    <td class="py-2.5">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if acc.status == 'ACTIVE' %}bg-emerald-50 text-emerald-800 border border-emerald-200{% else %}bg-amber-50 text-amber-800 border border-amber-200{% endif %}">
+                        {{ acc.get_status_display }}
+                      </span>
+                    </td>
+                    <td class="py-2.5 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <form method="POST" action="{% url 'accounts:admin_catalog_toggle' 'ACCOMMODATION' acc.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-[11px] font-semibold">
+                            สลับสถานะ
+                          </button>
+                        </form>
+                        <button 
+                          type="button" 
+                          @click="openEditCatalog({ id: '{{ acc.id }}', type: 'ACCOMMODATION', title: '{{ acc.name|escapejs }}', price: '{{ acc.min_price_per_night }}', description: '{{ acc.description|escapejs }}', is_active: {% if acc.status == 'ACTIVE' %}true{% else %}false{% endif %} })"
+                          class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100"
+                        >
+                          <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button 
+                          type="button" 
+                          @click="openDeleteConfirm('{% url 'accounts:admin_catalog_delete' 'ACCOMMODATION' acc.id %}', '{{ acc.name|escapejs }}')"
+                          class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50"
+                        >
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5" class="py-4 text-center text-slate-400">ยังไม่มีข้อมูลที่พัก</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Food Card -->
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">อาหารเพื่อสุขภาพ</span>
-            <span class="text-xs font-bold text-amber-400">{{ foods|length }} เมนู</span>
+        <!-- 2. Foods -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-[#1B2A24]">2. อาหารเพื่อสุขภาพ (Healthy Foods - {{ total_foods }})</h3>
+            </div>
           </div>
-          <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
-            {% for f in foods %}
-              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex justify-between items-center">
-                <div class="truncate mr-2">
-                  <p class="font-bold text-slate-200 truncate">{{ f.name }}</p>
-                  <p class="text-[10px] text-slate-500">{{ f.owner.first_name|default:f.owner.email }}</p>
-                </div>
-                <span class="font-mono text-[#C49A45] font-semibold shrink-0">฿{{ f.price|floatformat:0 }}</span>
-              </div>
-            {% endfor %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-400 border-b border-slate-100 text-[11px]">
+                <tr>
+                  <th class="pb-2">ชื่อเมนู</th>
+                  <th class="pb-2">หมวดหมู่อาหาร</th>
+                  <th class="pb-2">ราคา</th>
+                  <th class="pb-2">สถานะ</th>
+                  <th class="pb-2 text-right">การจัดการ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for food in foods %}
+                  <tr class="hover:bg-slate-50/70">
+                    <td class="py-2.5 font-bold text-[#1B2A24]">{{ food.name }}</td>
+                    <td class="py-2.5 text-slate-600">{{ food.get_wellness_category_display }}</td>
+                    <td class="py-2.5 font-mono text-[#1B2A24]">฿{{ food.price|floatformat:0 }}</td>
+                    <td class="py-2.5">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if food.is_available %}bg-emerald-50 text-emerald-800 border border-emerald-200{% else %}bg-slate-100 text-slate-600 border border-slate-200{% endif %}">
+                        {% if food.is_available %}พร้อมบริการ{% else %}หมด/ปิด{% endif %}
+                      </span>
+                    </td>
+                    <td class="py-2.5 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <form method="POST" action="{% url 'accounts:admin_catalog_toggle' 'FOOD' food.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-[11px] font-semibold">
+                            สลับสถานะ
+                          </button>
+                        </form>
+                        <button 
+                          type="button" 
+                          @click="openEditCatalog({ id: '{{ food.id }}', type: 'FOOD', title: '{{ food.name|escapejs }}', price: '{{ food.price }}', description: '{{ food.description|escapejs }}', is_active: {% if food.is_available %}true{% else %}false{% endif %} })"
+                          class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100"
+                        >
+                          <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button 
+                          type="button" 
+                          @click="openDeleteConfirm('{% url 'accounts:admin_catalog_delete' 'FOOD' food.id %}', '{{ food.name|escapejs }}')"
+                          class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50"
+                        >
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5" class="py-4 text-center text-slate-400">ยังไม่มีเมนูอาหาร</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Spa Card -->
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">นวด & สปาสมุนไพร</span>
-            <span class="text-xs font-bold text-teal-400">{{ spas|length }} บริการ</span>
+        <!-- 3. Wellness / Spa -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-[#1B2A24]">3. บริการสปาและนวดเพื่อสุขภาพ (Wellness & Spa - {{ total_spas }})</h3>
+            </div>
           </div>
-          <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
-            {% for sp in spas %}
-              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex justify-between items-center">
-                <div class="truncate mr-2">
-                  <p class="font-bold text-slate-200 truncate">{{ sp.name }}</p>
-                  <p class="text-[10px] text-slate-500">{{ sp.duration_minutes }} นาที</p>
-                </div>
-                <span class="font-mono text-[#C49A45] font-semibold shrink-0">฿{{ sp.price|floatformat:0 }}</span>
-              </div>
-            {% endfor %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-400 border-b border-slate-100 text-[11px]">
+                <tr>
+                  <th class="pb-2">ชื่อบริการ</th>
+                  <th class="pb-2">ระยะเวลา</th>
+                  <th class="pb-2">ราคา</th>
+                  <th class="pb-2">สถานะ</th>
+                  <th class="pb-2 text-right">การจัดการ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for spa in spas %}
+                  <tr class="hover:bg-slate-50/70">
+                    <td class="py-2.5 font-bold text-[#1B2A24]">{{ spa.name }}</td>
+                    <td class="py-2.5 text-slate-600">{{ spa.duration_minutes }} นาที</td>
+                    <td class="py-2.5 font-mono text-[#1B2A24]">฿{{ spa.price|floatformat:0 }}</td>
+                    <td class="py-2.5">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if spa.is_active %}bg-emerald-50 text-emerald-800 border border-emerald-200{% else %}bg-slate-100 text-slate-600 border border-slate-200{% endif %}">
+                        {% if spa.is_active %}เปิดบริการ{% else %}ปิดชั่วคราว{% endif %}
+                      </span>
+                    </td>
+                    <td class="py-2.5 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <form method="POST" action="{% url 'accounts:admin_catalog_toggle' 'WELLNESS' spa.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-[11px] font-semibold">
+                            สลับสถานะ
+                          </button>
+                        </form>
+                        <button 
+                          type="button" 
+                          @click="openEditCatalog({ id: '{{ spa.id }}', type: 'WELLNESS', title: '{{ spa.name|escapejs }}', price: '{{ spa.price }}', description: '{{ spa.description|escapejs }}', is_active: {% if spa.is_active %}true{% else %}false{% endif %} })"
+                          class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100"
+                        >
+                          <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button 
+                          type="button" 
+                          @click="openDeleteConfirm('{% url 'accounts:admin_catalog_delete' 'WELLNESS' spa.id %}', '{{ spa.name|escapejs }}')"
+                          class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50"
+                        >
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5" class="py-4 text-center text-slate-400">ยังไม่มีบริการสปา</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- OTOP Card -->
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-300">สินค้า OTOP ชุมชน</span>
-            <span class="text-xs font-bold text-purple-400">{{ products|length }} ชิ้น</span>
+        <!-- 4. OTOP Products -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-[#1B2A24]">4. สินค้าภูมิปัญญา OTOP (OTOP Products - {{ total_products }})</h3>
+            </div>
           </div>
-          <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
-            {% for p in products %}
-              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs flex justify-between items-center">
-                <div class="truncate mr-2">
-                  <p class="font-bold text-slate-200 truncate">{{ p.name }}</p>
-                  <p class="text-[10px] text-slate-500">สต็อก: {{ p.stock_quantity }}</p>
-                </div>
-                <span class="font-mono text-[#C49A45] font-semibold shrink-0">฿{{ p.price|floatformat:0 }}</span>
-              </div>
-            {% endfor %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-400 border-b border-slate-100 text-[11px]">
+                <tr>
+                  <th class="pb-2">ชื่อสินค้า</th>
+                  <th class="pb-2">สต็อก</th>
+                  <th class="pb-2">ราคา</th>
+                  <th class="pb-2">สถานะ</th>
+                  <th class="pb-2 text-right">การจัดการ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for otop in products %}
+                  <tr class="hover:bg-slate-50/70">
+                    <td class="py-2.5 font-bold text-[#1B2A24]">{{ otop.name }}</td>
+                    <td class="py-2.5 font-mono text-slate-700">{{ otop.stock_quantity }} ชิ้น</td>
+                    <td class="py-2.5 font-mono text-[#1B2A24]">฿{{ otop.price|floatformat:0 }}</td>
+                    <td class="py-2.5">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if otop.is_active and otop.stock_quantity > 0 %}bg-emerald-50 text-emerald-800 border border-emerald-200{% else %}bg-slate-100 text-slate-600 border border-slate-200{% endif %}">
+                        {% if otop.is_active and otop.stock_quantity > 0 %}พร้อมขาย{% else %}หมด/ปิด{% endif %}
+                      </span>
+                    </td>
+                    <td class="py-2.5 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <form method="POST" action="{% url 'accounts:admin_catalog_toggle' 'OTOP' otop.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-[11px] font-semibold">
+                            สลับสถานะ
+                          </button>
+                        </form>
+                        <button 
+                          type="button" 
+                          @click="openEditCatalog({ id: '{{ otop.id }}', type: 'OTOP', title: '{{ otop.name|escapejs }}', price: '{{ otop.price }}', description: '{{ otop.description|escapejs }}', is_active: {% if otop.is_active %}true{% else %}false{% endif %}, stock: '{{ otop.stock_quantity }}' })"
+                          class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100"
+                        >
+                          <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button 
+                          type="button" 
+                          @click="openDeleteConfirm('{% url 'accounts:admin_catalog_delete' 'OTOP' otop.id %}', '{{ otop.name|escapejs }}')"
+                          class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50"
+                        >
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5" class="py-4 text-center text-slate-400">ยังไม่มีสินค้า OTOP</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -554,83 +872,136 @@
 
 
   <!-- ============================================================================== -->
-  <!-- TAB 5: USERS (Account Registry & Multi-Tier Guards)                           -->
+  <!-- TAB 5: USERS & ACCESS CONTROL (CRUD)                                           -->
   <!-- ============================================================================== -->
   {% if active_tab == 'users' %}
-    <div class="space-y-6">
+    <div class="space-y-4">
       
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h2 class="text-lg font-bold text-white">จัดการผู้ใช้งานและสิทธิ์ (Enterprise User Registry)</h2>
-          <p class="text-xs text-slate-400">ค้นหา กรองบทบาท และจัดการระงับ/ลบบัญชีภายใต้มาตรการป้องกันความปลอดภัย</p>
+          <h2 class="text-sm font-bold text-[#1B2A24] flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
+            <span>จัดการผู้ใช้งานและสิทธิ์เข้าถึง (User Management)</span>
+          </h2>
+          <p class="text-xs text-slate-500">บัญชีทั้งหมดในระบบ ({{ total_users_count }}) · แอดมินสามารถเพิ่ม แก้ไข ระงับ และรีเซ็ตรหัสผ่านได้</p>
         </div>
 
-        <!-- Search Bar -->
-        <form method="GET" action="" class="flex items-center gap-2">
+        <button 
+          type="button" 
+          @click="showAddUserModal = true"
+          class="px-4 py-2 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-2 cursor-pointer"
+        >
+          <i data-lucide="user-plus" class="w-4 h-4 text-[#D97706]"></i>
+          <span>เพิ่มผู้ใช้ใหม่ (Add User)</span>
+        </button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs">
+        <form method="GET" action="/accounts/admin-center/" class="flex flex-wrap items-center gap-2">
           <input type="hidden" name="tab" value="users">
-          <input type="text" name="q" value="{{ user_query }}" placeholder="ค้นหาด้วยอีเมล / ชื่อ / เบอร์..." 
-                 class="px-4 py-2 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
-          <select name="role" class="px-3 py-2 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-300 focus:outline-none">
-            <option value="">ทุกบทบาท</option>
-            {% for code, label in role_choices %}
-              <option value="{{ code }}" {% if user_role_filter == code %}selected{% endif %}>{{ label }}</option>
+          <input 
+            type="text" 
+            name="q" 
+            value="{{ user_query }}" 
+            placeholder="ค้นหาชื่อ อีเมล หรือเบอร์โทร..." 
+            class="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs w-64 focus:ring-2 focus:ring-[#1B2A24]"
+          >
+          <select name="role" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-700">
+            <option value="">ทุกบทบาท (All Roles)</option>
+            {% for r_code, r_label in role_choices %}
+              <option value="{{ r_code }}" {% if user_role_filter == r_code %}selected{% endif %}>{{ r_label }}</option>
             {% endfor %}
           </select>
-          <button type="submit" class="px-4 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">
+          <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition">
             ค้นหา
           </button>
         </form>
       </div>
 
-      <div class="bg-slate-950/70 rounded-3xl border border-slate-800 shadow-md overflow-hidden">
+      <!-- Users Table -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-semibold">
               <tr>
-                <th class="p-4">อีเมลผู้ใช้งาน</th>
-                <th class="p-4">ชื่อ - นามสกุล</th>
-                <th class="p-4">เบอร์โทรศัพท์</th>
-                <th class="p-4">บทบาท</th>
-                <th class="p-4">วันที่สมัคร</th>
+                <th class="p-4">อีเมล / ชื่อผู้ใช้</th>
+                <th class="p-4">บทบาท (Role)</th>
+                <th class="p-4">เบอร์โทร</th>
                 <th class="p-4">สถานะ</th>
-                <th class="p-4 text-right">ดำเนินการ</th>
+                <th class="p-4 text-right">การจัดการ</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-850">
+            <tbody class="divide-y divide-slate-100">
               {% for u in users_page %}
-                <tr class="hover:bg-slate-900/50 transition">
-                  <td class="p-4 font-mono font-bold text-white">{{ u.email }}</td>
-                  <td class="p-4 text-slate-300">{{ u.full_name|default:"-" }}</td>
-                  <td class="p-4 text-slate-400 font-mono">{{ u.phone_number|default:"-" }}</td>
+                <tr class="hover:bg-slate-50/80 transition">
                   <td class="p-4">
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300">
+                    <span class="font-bold text-[#1B2A24] block">{{ u.email }}</span>
+                    <span class="text-[11px] text-slate-400">{{ u.first_name }} {{ u.last_name }}</span>
+                  </td>
+                  <td class="p-4">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold 
+                      {% if u.role == 'SUPER_ADMIN' %}bg-rose-50 text-rose-800 border border-rose-200
+                      {% elif u.role == 'COMMUNITY_ADMIN' %}bg-indigo-50 text-indigo-800 border border-indigo-200
+                      {% elif 'OWNER' in u.role %}bg-amber-50 text-amber-800 border border-amber-200
+                      {% else %}bg-slate-100 text-slate-700 border border-slate-200{% endif %}">
                       {{ u.get_role_display }}
                     </span>
                   </td>
-                  <td class="p-4 text-slate-500 text-[11px]">{{ u.date_joined|date:"d M Y" }}</td>
+                  <td class="p-4 text-slate-600 font-mono">{{ u.phone_number|default:"-" }}</td>
                   <td class="p-4">
                     {% if u.is_active %}
-                      <span class="text-emerald-400 font-bold text-[10px]">● ใช้งานได้</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">เปิดใช้งาน</span>
                     {% else %}
-                      <span class="text-rose-400 font-bold text-[10px]">● ปิดการใช้งาน</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">ระงับชั่วคราว</span>
                     {% endif %}
                   </td>
                   <td class="p-4 text-right">
-                    {% if u.id != request.user.id %}
-                      <form method="POST" action="{% url 'accounts:admin_delete_user' u.id %}" onsubmit="return confirm('คำเตือน: ยืนยันการลบหรือระงับบัญชี {{ u.email }} หรือไม่? (ระบบมี Cascade Guard รองรับ)');">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button 
+                        type="button" 
+                        @click="openResetPassword('{{ u.id }}', '{{ u.email|escapejs }}')"
+                        class="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 transition"
+                        title="รีเซ็ตรหัสผ่าน"
+                      >
+                        <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                      </button>
+
+                      <form method="POST" action="{% url 'accounts:admin_user_toggle' u.id %}">
                         {% csrf_token %}
-                        <button type="submit" class="px-3 py-1 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-400 border border-rose-800/60 text-[10px] font-bold transition">
-                          ลบบัญชี
+                        <button type="submit" class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition" title="สลับสถานะระงับ/เปิด">
+                          <i data-lucide="power" class="w-3.5 h-3.5"></i>
                         </button>
                       </form>
-                    {% else %}
-                      <span class="text-slate-600 text-[10px]">บัญชีตนเอง</span>
-                    {% endif %}
+
+                      <button 
+                        type="button" 
+                        @click="openEditUser({
+                          id: '{{ u.id }}',
+                          email: '{{ u.email|escapejs }}',
+                          first_name: '{{ u.first_name|escapejs }}',
+                          last_name: '{{ u.last_name|escapejs }}',
+                          phone: '{{ u.phone_number|escapejs }}',
+                          role: '{{ u.role }}'
+                        })"
+                        class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition"
+                        title="แก้ไขข้อมูล"
+                      >
+                        <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                      </button>
+
+                      <form method="POST" action="{% url 'accounts:admin_delete_user' u.id %}" onsubmit="return confirm('ยืนยันการลบบัญชีผู้ใช้ {{ u.email }}?')">
+                        {% csrf_token %}
+                        <button type="submit" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition" title="ลบผู้ใช้">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="7" class="p-8 text-center text-slate-500">ไม่พบผู้ใช้งานตามเงื่อนไขที่ค้นหา</td>
+                  <td colspan="5" class="p-8 text-center text-slate-400">ไม่พบบัญชีผู้ใช้งานตามเงื่อนไข</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -646,122 +1017,83 @@
   <!-- TAB 6: LOCATIONS & PASSPORT CHECK-INS                                          -->
   <!-- ============================================================================== -->
   {% if active_tab == 'locations' %}
-    <div class="space-y-6">
+    <div class="space-y-4">
       
-      <div>
-        <h2 class="text-lg font-bold text-white">จุดเช็คอินพิกัด & ดิจิทัลพาสปอร์ต (Location & Passport Stamps)</h2>
-        <p class="text-xs text-slate-400">รายการพิกัดสถานที่ท่องเที่ยว 4 ชนเผ่า และประวัติการประทับตราพาสปอร์ต</p>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <!-- Map Locations -->
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 space-y-4">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2">
-            <i data-lucide="map-pin" class="w-4 h-4 text-teal-400"></i>
-            <span>สถานที่เช็คอินบนแผนที่ (Map Locations)</span>
-          </h3>
-
-          <div class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
-            {% for loc in map_locations %}
-              <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs space-y-1">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-white">{{ loc.title }}</span>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] bg-teal-950 text-teal-400 border border-teal-800">
-                    {{ loc.get_category_display }}
-                  </span>
-                </div>
-                <div class="text-[11px] text-slate-400 font-mono">
-                  Lat: {{ loc.latitude }}, Lng: {{ loc.longitude }}
-                </div>
-                <div class="text-[10px] text-slate-500 truncate font-mono">
-                  QR Secret: {{ loc.qr_secret }}
-                </div>
-              </div>
-            {% empty %}
-              <p class="text-slate-500 text-center py-4">ยังไม่มีสถานที่เช็คอิน</p>
-            {% endfor %}
-          </div>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div>
+          <h2 class="text-sm font-bold text-[#1B2A24] flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-teal-600"></i>
+            <span>จัดการพิกัดท่องเที่ยว & จุดเช็คอินพาสปอร์ต (Map Locations)</span>
+          </h2>
+          <p class="text-xs text-slate-500">จุดเช็คอินวัฒนธรรม แหล่งท่องเที่ยวธรรมชาติ และรหัส QR ประทับตรา</p>
         </div>
 
-        <!-- Location Events & PDPA Logs -->
-        <div class="bg-slate-950/70 rounded-3xl p-5 border border-slate-800 space-y-4">
-          <h3 class="text-sm font-bold text-white flex items-center gap-2">
-            <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i>
-            <span>ประวัติการขอสิทธิ์พิกัด (PDPA Consent Logs)</span>
-          </h3>
-
-          <div class="space-y-2 max-h-96 overflow-y-auto pr-1">
-            {% for evt in location_events %}
-              <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs flex justify-between items-center">
-                <div>
-                  <span class="font-bold text-slate-200 block truncate">{{ evt.user.email }}</span>
-                  <span class="text-[10px] text-slate-500">{{ evt.created_at|date:"d M Y H:i:s" }}</span>
-                </div>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold
-                  {% if evt.action == 'CONSENT_GRANTED' %} bg-emerald-950 text-emerald-400
-                  {% else %} bg-rose-950 text-rose-400 {% endif %}">
-                  {{ evt.action }}
-                </span>
-              </div>
-            {% empty %}
-              <p class="text-slate-500 text-center py-4">ยังไม่มีบันทึกขอสิทธิ์พิกัด</p>
-            {% endfor %}
-          </div>
-        </div>
-
+        <button 
+          type="button" 
+          @click="showAddLocationModal = true"
+          class="px-4 py-2 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-2 cursor-pointer"
+        >
+          <i data-lucide="plus" class="w-4 h-4 text-[#D97706]"></i>
+          <span>เพิ่มจุดเช็คอินใหม่</span>
+        </button>
       </div>
 
-    </div>
-  {% endif %}
-
-
-  <!-- ============================================================================== -->
-  <!-- TAB 7: CONTENT / STORIES                                                       -->
-  <!-- ============================================================================== -->
-  {% if active_tab == 'content' %}
-    <div class="space-y-6">
-      
-      <div>
-        <h2 class="text-lg font-bold text-white">เรื่องราว & บทความมรดกชุมชน (Cultural Content & Stories)</h2>
-        <p class="text-xs text-slate-400">เรื่องเล่าภูมิปัญญา 4 ชนเผ่า (เขมร ส่วย ลาว เยอ) และแหล่งท่องเที่ยวสุขภาวะ</p>
-      </div>
-
-      <div class="bg-slate-950/70 rounded-3xl border border-slate-800 shadow-md overflow-hidden">
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-semibold">
               <tr>
-                <th class="p-4">หัวข้อเรื่องราว</th>
-                <th class="p-4">ประเภท</th>
-                <th class="p-4">สถานที่</th>
-                <th class="p-4">สถานะการเผยแพร่</th>
-                <th class="p-4">แก้ไขล่าสุด</th>
+                <th class="p-4">ชื่อสถานที่ / พิกัด</th>
+                <th class="p-4">หมวดหมู่</th>
+                <th class="p-4">ที่อยู่ / พื้นที่</th>
+                <th class="p-4">QR Stamp Secret</th>
+                <th class="p-4 text-right">การจัดการ</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-850">
-              {% for s in stories %}
-                <tr class="hover:bg-slate-900/50 transition">
-                  <td class="p-4 font-bold text-white">{{ s.title }}</td>
-                  <td class="p-4 text-slate-400">{{ s.get_kind_display }}</td>
-                  <td class="p-4 text-slate-300">{{ s.location|default:"ศรีสะเกษ" }}</td>
+            <tbody class="divide-y divide-slate-100">
+              {% for loc in map_locations %}
+                <tr class="hover:bg-slate-50/80 transition">
                   <td class="p-4">
-                    {% if s.is_published %}
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
-                        เผยแพร่แล้ว
-                      </span>
-                    {% else %}
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400">
-                        ร่างบทความ
-                      </span>
-                    {% endif %}
+                    <span class="font-bold text-[#1B2A24] block">{{ loc.title }}</span>
+                    <span class="text-[11px] text-slate-400 font-mono">{{ loc.latitude }}, {{ loc.longitude }}</span>
                   </td>
-                  <td class="p-4 text-slate-500 text-[11px]">{{ s.updated_at|date:"d M Y" }}</td>
+                  <td class="p-4">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                      {{ loc.get_category_display }}
+                    </span>
+                  </td>
+                  <td class="p-4 text-slate-600 truncate max-w-[200px]">{{ loc.address|default:"-" }}</td>
+                  <td class="p-4 font-mono text-[11px] text-slate-700">{{ loc.qr_secret|truncatechars:12 }}</td>
+                  <td class="p-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button 
+                        type="button" 
+                        @click="openEditLocation({
+                          id: '{{ loc.id }}',
+                          title: '{{ loc.title|escapejs }}',
+                          category: '{{ loc.category }}',
+                          latitude: '{{ loc.latitude }}',
+                          longitude: '{{ loc.longitude }}',
+                          address: '{{ loc.address|escapejs }}',
+                          is_active: {% if loc.is_active %}true{% else %}false{% endif %}
+                        })"
+                        class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition"
+                        title="แก้ไขพิกัด"
+                      >
+                        <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                      </button>
+
+                      <form method="POST" action="{% url 'accounts:admin_location_delete' loc.id %}" onsubmit="return confirm('ยืนยันการลบจุดเช็คอิน {{ loc.title }}?')">
+                        {% csrf_token %}
+                        <button type="submit" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition" title="ลบพิกัด">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
                 </tr>
               {% empty %}
-                <tr>
-                  <td colspan="5" class="p-8 text-center text-slate-500">ยังไม่มีบทความในระบบ</td>
-                </tr>
+                <tr><td colspan="5" class="p-8 text-center text-slate-400">ยังไม่มีข้อมูลจุดเช็คอิน</td></tr>
               {% endfor %}
             </tbody>
           </table>
@@ -770,6 +1102,682 @@
 
     </div>
   {% endif %}
+
+
+  <!-- ============================================================================== -->
+  <!-- TAB 7: EDITORIAL CONTENT & HERITAGE STORIES                                    -->
+  <!-- ============================================================================== -->
+  {% if active_tab == 'content' %}
+    <div class="space-y-4">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        <div>
+          <h2 class="text-sm font-bold text-[#1B2A24] flex items-center gap-2">
+            <i data-lucide="book-open" class="w-4 h-4 text-purple-600"></i>
+            <span>เรื่องเล่าและบทความมรดกชุมชน (Heritage Stories)</span>
+          </h2>
+          <p class="text-xs text-slate-500">บทความวัฒนธรรม 4 ชนเผ่า (กูย ลาว เขมร เยอ) ภูมิปัญญาสุขภาวะ และข่าวสาร</p>
+        </div>
+
+        <button 
+          type="button" 
+          @click="showAddContentModal = true"
+          class="px-4 py-2 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-2 cursor-pointer"
+        >
+          <i data-lucide="plus" class="w-4 h-4 text-[#D97706]"></i>
+          <span>เขียนบทความใหม่</span>
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-semibold">
+              <tr>
+                <th class="p-4">หัวข้อเรื่องเล่า / บทความ</th>
+                <th class="p-4">ประเภท</th>
+                <th class="p-4">สถานะการเผยแพร่</th>
+                <th class="p-4">อัปเดตล่าสุด</th>
+                <th class="p-4 text-right">การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              {% for story in stories %}
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="p-4">
+                    <span class="font-bold text-[#1B2A24] block">{{ story.title }}</span>
+                    <span class="text-[11px] text-slate-400 block truncate max-w-sm">{{ story.summary|default:story.body|truncatechars:60 }}</span>
+                  </td>
+                  <td class="p-4">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-200">
+                      {{ story.get_kind_display }}
+                    </span>
+                  </td>
+                  <td class="p-4">
+                    {% if story.is_published %}
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">เผยแพร่แล้ว</span>
+                    {% else %}
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">ฉบับร่าง</span>
+                    {% endif %}
+                  </td>
+                  <td class="p-4 text-[11px] text-slate-500">{{ story.updated_at|date:"d/m/Y H:i" }}</td>
+                  <td class="p-4 text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button 
+                        type="button" 
+                        @click="openEditContent({
+                          id: '{{ story.id }}',
+                          title: '{{ story.title|escapejs }}',
+                          kind: '{{ story.kind }}',
+                          summary: '{{ story.summary|escapejs }}',
+                          body: '{{ story.body|escapejs }}',
+                          image_url: '{{ story.image_url|escapejs }}',
+                          location: '{{ story.location|escapejs }}',
+                          is_published: {% if story.is_published %}true{% else %}false{% endif %}
+                        })"
+                        class="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition"
+                        title="แก้ไขบทความ"
+                      >
+                        <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                      </button>
+
+                      <form method="POST" action="{% url 'accounts:admin_content_delete' story.id %}" onsubmit="return confirm('ยืนยันการลบบทความ {{ story.title }}?')">
+                        {% csrf_token %}
+                        <button type="submit" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition" title="ลบบทความ">
+                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="5" class="p-8 text-center text-slate-400">ยังไม่มีบทความในระบบ</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  {% endif %}
+
+
+  <!-- ============================================================================== -->
+  <!-- MODALS: INTERACTIVE FULL CRUD ACTIONS                                          -->
+  <!-- ============================================================================== -->
+
+  <!-- 1. ADD CATALOG ITEM MODAL -->
+  <div x-show="showAddCatalogModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-[#D97706]"></i>
+          <span>เพิ่มรายการใหม่ในแคตตาล็อก (Add Catalog Item)</span>
+        </h3>
+        <button type="button" @click="showAddCatalogModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" action="{% url 'accounts:admin_catalog_add' %}" enctype="multipart/form-data" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่รายการ *</label>
+          <select name="item_type" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+            <option value="ACCOMMODATION">1. โฮมสเตย์ / ที่พักชุมชน (Homestay)</option>
+            <option value="FOOD">2. อาหารเพื่อสุขภาพ (Healthy Food)</option>
+            <option value="WELLNESS">3. บริการสปา / นวดแผนไทย (Wellness & Spa)</option>
+            <option value="OTOP">4. สินค้าภูมิปัญญา OTOP (OTOP Retail)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อรายการ *</label>
+          <input type="text" name="title" required placeholder="เช่น โฮมสเตย์บ้านปราสาทเยอ / ข้าวอินทรีย์ 4 สี" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ราคา (บาท) *</label>
+            <input type="number" step="0.01" name="price" required placeholder="550.00" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">สต็อก (สำหรับ OTOP)</label>
+            <input type="number" name="stock_quantity" value="20" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">รายละเอียด / คำอธิบาย</label>
+          <textarea name="description" rows="3" placeholder="ระบุจุดเด่น ข้อมูลสุขภาวะ..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">รูปภาพสินค้า/บริการ</label>
+          <input type="file" name="image" accept="image/*" class="w-full text-slate-500">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showAddCatalogModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] shadow-xs">บันทึกรายการ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. EDIT CATALOG ITEM MODAL -->
+  <div x-show="showEditCatalogModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="edit" class="w-5 h-5 text-[#D97706]"></i>
+          <span>แก้ไขข้อมูลแคตตาล็อก (<span x-text="editCatalogData.type"></span>)</span>
+        </h3>
+        <button type="button" @click="showEditCatalogModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" :action="'/accounts/admin/catalog/' + editCatalogData.type + '/' + editCatalogData.id + '/edit/'" enctype="multipart/form-data" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อรายการ *</label>
+          <input type="text" name="title" x-model="editCatalogData.title" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ราคา (บาท) *</label>
+            <input type="number" step="0.01" name="price" x-model="editCatalogData.price" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+          <template x-if="editCatalogData.type === 'OTOP'">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">สต็อกสินค้าคงเหลือ</label>
+              <input type="number" name="stock_quantity" x-model="editCatalogData.stock" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+            </div>
+          </template>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">รายละเอียด</label>
+          <textarea name="description" rows="3" x-model="editCatalogData.description" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">สถานะเปิดให้บริการ / พร้อมขาย</label>
+          <select name="is_active" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+            <option value="1" :selected="editCatalogData.is_active">เปิดให้บริการ / พร้อมขาย (Active)</option>
+            <option value="0" :selected="!editCatalogData.is_active">ระงับ / ปิดชั่วคราว (Inactive)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">อัปโหลดรูปภาพใหม่ (ถ้าต้องการเปลี่ยน)</label>
+          <input type="file" name="image" accept="image/*" class="w-full text-slate-500">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showEditCatalogModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] shadow-xs">บันทึกการเปลี่ยนแปลง</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. ADD PARTNER MODAL -->
+  <div x-show="showAddPartnerModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-5 h-5 text-emerald-600"></i>
+          <span>เพิ่มพาร์ทเนอร์ชุมชนใหม่ (Add Partner)</span>
+        </h3>
+        <button type="button" @click="showAddPartnerModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" action="{% url 'accounts:admin_partner_add' %}" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">อีเมลพาร์ทเนอร์ (สำหรับเข้าสู่ระบบ) *</label>
+          <input type="email" name="email" required placeholder="partner@sisaket.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อสถานประกอบการ / ร้านค้า *</label>
+          <input type="text" name="business_name" required placeholder="เช่น กลุ่มทอผ้าไหมลายลูกแก้วบ้านโนนแกด" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่ธุรกิจ *</label>
+            <select name="business_category" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+              <option value="HOMESTAY">โฮมสเตย์ / ที่พัก</option>
+              <option value="RESTAURANT">ร้านอาหารเพื่อสุขภาพ</option>
+              <option value="WELLNESS">บริการสุขภาพ & สปา</option>
+              <option value="OTOP">สินค้า OTOP ชุมชน</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์</label>
+            <input type="text" name="phone_number" placeholder="08XXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">รายละเอียดร้านค้า / ประวัติความเป็นมา</label>
+          <textarea name="description" rows="3" placeholder="ข้อมูลแนะนำชุมชน..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">รหัสผ่านเริ่มต้น</label>
+          <input type="text" name="password" value="WellTrip2026!" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showAddPartnerModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-xs">สร้างและอนุมัติทันที</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. EDIT PARTNER MODAL -->
+  <div x-show="showEditPartnerModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="edit" class="w-5 h-5 text-[#D97706]"></i>
+          <span>แก้ไขข้อมูลพาร์ทเนอร์</span>
+        </h3>
+        <button type="button" @click="showEditPartnerModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" :action="'/accounts/admin/partners/' + editPartnerData.id + '/edit/'" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อสถานประกอบการ *</label>
+          <input type="text" name="business_name" x-model="editPartnerData.name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่ธุรกิจ</label>
+            <select name="business_category" x-model="editPartnerData.category" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+              <option value="HOMESTAY">โฮมสเตย์ / ที่พัก</option>
+              <option value="RESTAURANT">ร้านอาหารเพื่อสุขภาพ</option>
+              <option value="WELLNESS">บริการสุขภาพ & สปา</option>
+              <option value="OTOP">สินค้า OTOP ชุมชน</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์</label>
+            <input type="text" name="phone_number" x-model="editPartnerData.phone" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">รายละเอียดร้านค้า</label>
+          <textarea name="description" rows="3" x-model="editPartnerData.description" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Google Maps URL</label>
+          <input type="url" name="google_maps_url" x-model="editPartnerData.maps_url" placeholder="https://maps.google.com/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">เวลาทำการ</label>
+          <input type="text" name="opening_hours" x-model="editPartnerData.hours" placeholder="เช่น 08:00 - 18:00 น." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showEditPartnerModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] shadow-xs">บันทึกข้อมูล</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. ADD USER MODAL -->
+  <div x-show="showAddUserModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-5 h-5 text-indigo-600"></i>
+          <span>สร้างบัญชีผู้ใช้งานใหม่ (Add User)</span>
+        </h3>
+        <button type="button" @click="showAddUserModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" action="{% url 'accounts:admin_user_add' %}" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">อีเมล *</label>
+          <input type="email" name="email" required placeholder="user@example.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ชื่อจริง</label>
+            <input type="text" name="first_name" placeholder="สมชาย" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">นามสกุล</label>
+            <input type="text" name="last_name" placeholder="ใจดี" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">บทบาท (Role) *</label>
+            <select name="role" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+              {% for r_code, r_label in role_choices %}
+                <option value="{{ r_code }}">{{ r_label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เบอร์โทร</label>
+            <input type="text" name="phone_number" placeholder="08XXXXXXXX" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">รหัสผ่านเริ่มต้น</label>
+          <input type="text" name="password" value="WellTrip2026!" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showAddUserModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-xs">สร้างผู้ใช้</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. EDIT USER MODAL -->
+  <div x-show="showEditUserModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="edit" class="w-5 h-5 text-[#D97706]"></i>
+          <span>แก้ไขข้อมูลผู้ใช้งาน (<span x-text="editUserData.email"></span>)</span>
+        </h3>
+        <button type="button" @click="showEditUserModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" :action="'/accounts/admin/users/' + editUserData.id + '/edit/'" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ชื่อจริง</label>
+            <input type="text" name="first_name" x-model="editUserData.first_name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">นามสกุล</label>
+            <input type="text" name="last_name" x-model="editUserData.last_name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">บทบาท (Role)</label>
+            <select name="role" x-model="editUserData.role" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+              {% for r_code, r_label in role_choices %}
+                <option value="{{ r_code }}">{{ r_label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เบอร์โทร</label>
+            <input type="text" name="phone_number" x-model="editUserData.phone" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showEditUserModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] shadow-xs">บันทึกข้อมูล</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. RESET PASSWORD MODAL -->
+  <div x-show="showResetPasswordModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="key" class="w-5 h-5 text-amber-500"></i>
+          <span>รีเซ็ตรหัสผ่าน</span>
+        </h3>
+        <button type="button" @click="showResetPasswordModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500">
+        รีเซ็ตรหัสผ่านสำหรับบัญชี <strong class="text-[#1B2A24]" x-text="resetPasswordUserEmail"></strong>
+      </p>
+
+      <form method="POST" :action="'/accounts/admin/users/' + resetPasswordUserId + '/reset-password/'" class="space-y-3 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">รหัสผ่านใหม่</label>
+          <input type="text" name="new_password" required value="WellTrip2026!" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showResetPasswordModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-amber-600 text-white font-bold hover:bg-amber-700 shadow-xs">ยืนยันรีเซ็ต</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 8. ADD LOCATION MODAL -->
+  <div x-show="showAddLocationModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="map-pin" class="w-5 h-5 text-teal-600"></i>
+          <span>เพิ่มจุดเช็คอินใหม่ (Add Location)</span>
+        </h3>
+        <button type="button" @click="showAddLocationModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" action="{% url 'accounts:admin_location_add' %}" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อจุดเช็คอิน *</label>
+          <input type="text" name="title" required placeholder="เช่น ผามออีแดง อุทยานแห่งชาติเขาพระวิหาร" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">หมวดหมู่</label>
+            <select name="category" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+              <option value="PHOTO_SPOT">จุดถ่ายรูป / จุดเช็คอินธรรมชาติ</option>
+              <option value="HOMESTAY">โฮมสเตย์ / ที่พักชุมชน</option>
+              <option value="FOOD">ร้านอาหารสุขภาพ</option>
+              <option value="WELLNESS">ศูนย์นวดแผนไทยและสปา</option>
+              <option value="OTOP">ศูนย์จำหน่ายสินค้า OTOP</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ที่อยู่ / อำเภอ</label>
+            <input type="text" name="address" placeholder="อ.กันทรลักษ์ จ.ศรีสะเกษ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ละติจูด (Latitude) *</label>
+            <input type="text" name="latitude" required value="15.1186" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ลองจิจูด (Longitude) *</label>
+            <input type="text" name="longitude" required value="104.3225" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono">
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showAddLocationModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 shadow-xs">บันทึกจุดเช็คอิน</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 9. ADD CONTENT/STORY MODAL -->
+  <div x-show="showAddContentModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-xl bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="book-open" class="w-5 h-5 text-purple-600"></i>
+          <span>เขียนบทความมรดกชุมชนใหม่ (Write Story)</span>
+        </h3>
+        <button type="button" @click="showAddContentModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form method="POST" action="{% url 'accounts:admin_content_add' %}" class="space-y-3.5 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">หัวข้อเรื่องเล่า / บทความ *</label>
+          <input type="text" name="title" required placeholder="เช่น ตำนานผ้าไหมมัดหมี่ย้อมมะเกลือ 4 ชนเผ่า" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ประเภทเนื้อหา</label>
+            <select name="kind" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+              <option value="STORY">เรื่องเล่าชุมชน (Story)</option>
+              <option value="COMMUNITY">วิสาหกิจชุมชน (Community)</option>
+              <option value="ATTRACTION">แหล่งท่องเที่ยว (Attraction)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">สถานที่อ้างอิง</label>
+            <input type="text" name="location" placeholder="เช่น อ.ขุนหาญ จ.ศรีสะเกษ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">สรุปย่อ (Excerpt / Summary)</label>
+          <textarea name="summary" rows="2" placeholder="บทคัดย่อสั้นๆ สำหรับแสดงบนการ์ด..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">เนื้อหาบทความฉบับเต็ม</label>
+          <textarea name="body" rows="5" placeholder="เนื้อหาเรื่องเล่า ภูมิปัญญาสุขภาวะ..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">URL รูปภาพหน้าปก</label>
+          <input type="url" name="image_url" placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">สถานะการเผยแพร่</label>
+          <select name="is_published" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+            <option value="1">เผยแพร่ทันที (Published)</option>
+            <option value="0">บันทึกเป็นฉบับร่าง (Draft)</option>
+          </select>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showAddContentModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-700 shadow-xs">บันทึกบทความ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 10. EDIT PAYMENT MODAL -->
+  <div x-show="showEditPaymentModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24] flex items-center gap-2">
+          <i data-lucide="receipt" class="w-5 h-5 text-[#D97706]"></i>
+          <span>แก้ไขสถานะการชำระเงิน</span>
+        </h3>
+        <button type="button" @click="showEditPaymentModal = false" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-500">
+        รหัสการจอง: <strong class="text-[#1B2A24]" x-text="editPaymentData.code"></strong> (฿<span x-text="editPaymentData.amount"></span>)
+      </p>
+
+      <form method="POST" :action="'/accounts/admin/payments/' + editPaymentData.id + '/edit/'" class="space-y-3 text-xs">
+        {% csrf_token %}
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">สถานะการชำระเงิน</label>
+          <select name="status" x-model="editPaymentData.status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white">
+            <option value="PENDING">รอการตรวจสอบสลิป (Pending)</option>
+            <option value="SUCCESS">ชำระเงินสำเร็จ (Success - ยืนยันการจอง)</option>
+            <option value="FAILED">การชำระเงินไม่ถูกต้อง (Failed)</option>
+            <option value="EXPIRED">หมดเวลาชำระเงิน (Expired)</option>
+          </select>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" @click="showEditPaymentModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] shadow-xs">บันทึกสถานะ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 11. GENERAL DELETE CONFIRMATION DIALOG -->
+  <div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 grid place-items-center bg-black/60 backdrop-blur-xs p-4">
+    <div class="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl space-y-4 text-center border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+      <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+      </div>
+
+      <div class="space-y-1">
+        <h3 class="font-serif font-bold text-base text-[#1B2A24]">
+          ยืนยันการลบข้อมูล?
+        </h3>
+        <p class="text-xs text-slate-500">
+          รายการ: <strong class="text-[#1B2A24]" x-text="deleteItemTitle"></strong>
+        </p>
+        <p class="text-[11px] text-rose-600 font-medium">
+          คำเตือน: การลบรายการนี้จะไม่สามารถกู้คืนได้ และจะถูกบันทึกไว้ใน Audit Logs
+        </p>
+      </div>
+
+      <form method="POST" :action="deleteActionUrl" class="flex items-center gap-2 pt-2">
+        {% csrf_token %}
+        <button 
+          type="button" 
+          @click="showDeleteModal = false" 
+          class="w-1/2 py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 text-xs transition"
+        >
+          ยกเลิก
+        </button>
+        <button 
+          type="submit" 
+          class="w-1/2 py-2.5 px-4 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 text-xs shadow-xs transition"
+        >
+          ยืนยันลบ
+        </button>
+      </form>
+    </div>
+  </div>
 
 </div>
 {% endblock %}

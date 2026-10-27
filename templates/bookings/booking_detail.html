@@ -39,31 +39,58 @@
     {% if booking.status == 'AWAITING_PAYMENT' %}
       <div x-data="{
              timeLeft: {{ remaining_seconds }},
-             get minutes() { return Math.floor(this.timeLeft / 60) },
-             get seconds() { return (this.timeLeft % 60).toString().padStart(2, '0') }
-           }"
-           x-init="setInterval(() => { if (timeLeft > 0) { timeLeft--; } else { window.location.reload(); } }, 1000)"
-           class="p-5 rounded-2xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-        
-        <div class="space-y-1 text-center sm:text-left">
-          <div class="text-xs font-bold text-amber-900 flex items-center justify-center sm:justify-start gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-            <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
-            <span>เวลาที่เหลือในการชำระเงินและแนบสลิป</span>
+             timer: null,
+             isExpired: {% if remaining_seconds <= 0 %}true{% else %}false{% endif %},
+             get minutes() { return Math.max(0, Math.floor(this.timeLeft / 60)) },
+             get seconds() { return Math.max(0, this.timeLeft % 60).toString().padStart(2, '0') },
+             init() {
+               if (this.timeLeft <= 0) {
+                 this.isExpired = true;
+                 return;
+               }
+               this.timer = setInterval(() => {
+                 if (this.timeLeft > 0) {
+                   this.timeLeft--;
+                 } else {
+                   this.isExpired = true;
+                   clearInterval(this.timer);
+                 }
+               }, 1000);
+             }
+           }">
+        <!-- Active Timer State -->
+        <div x-show="!isExpired" class="p-5 rounded-2xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <div class="text-xs font-bold text-amber-900 flex items-center justify-center sm:justify-start gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+              <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+              <span>เวลาที่เหลือในการชำระเงินและแนบสลิป</span>
+            </div>
+            <p class="text-[11px] text-amber-700 font-light">หากพ้นเวลานี้ ระบบจะปล่อยสต็อกห้องพักและสินค้าคืนชุมชนโดยอัตโนมัติ</p>
           </div>
-          <p class="text-[11px] text-amber-700 font-light">หากพ้นเวลานี้ ระบบจะปล่อยสต็อกห้องพักและสินค้าคืนชุมชนโดยอัตโนมัติ</p>
+
+          <div class="flex items-center gap-3">
+            <div class="px-4 py-2 rounded-xl bg-white border border-amber-200 shadow-xs font-mono text-xl font-bold text-amber-900">
+              <span x-text="minutes">0</span>:<span x-text="seconds">00</span>
+            </div>
+            <a 
+              href="{% url 'payments:payment_instruction' booking.id %}" 
+              class="px-5 py-2.5 rounded-xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>แนบสลิป</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+            </a>
+          </div>
         </div>
 
-        <div class="flex items-center gap-3">
-          <div class="px-4 py-2 rounded-xl bg-white border border-amber-200 shadow-xs font-mono text-xl font-bold text-amber-900">
-            <span x-text="minutes">0</span>:<span x-text="seconds">00</span>
+        <!-- Expired State (No loop) -->
+        <div x-show="isExpired" style="display: none;" class="p-5 rounded-2xl bg-rose-50 border border-rose-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div class="flex items-center gap-2.5 text-xs font-bold text-rose-800">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+            <span>คำสั่งซื้อนี้หมดเวลาชำระเงิน 15 นาทีแล้ว ระบบได้ทำการปล่อยสต็อกคืนชุมชน</span>
           </div>
-          <a 
-            href="{% url 'payments:payment_instruction' booking.id %}" 
-            class="px-5 py-2.5 rounded-xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
-          >
-            <span>แนบสลิป</span>
-            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+          <a href="{% url 'bookings:my_bookings' %}" class="px-3.5 py-1.5 rounded-xl bg-white border border-rose-300 text-rose-700 text-xs font-semibold hover:bg-rose-100 transition shrink-0">
+            ดูรายการจองของฉัน
           </a>
         </div>
       </div>
