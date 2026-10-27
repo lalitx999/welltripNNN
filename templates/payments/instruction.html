@@ -1,17 +1,23 @@
 {% extends "layouts/public.html" %}
+{% load static %}
 
-{% block title %}คำแนะนำการชำระเงิน {{ booking.booking_code }} - WellTrip{% endblock %}
+{% block title %}คำแนะนำการชำระเงิน {{ booking.booking_code }} - WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
   
   <!-- Header -->
-  <div class="space-y-1 text-center sm:text-left">
-    <div class="inline-flex items-center space-x-2 text-xs font-semibold text-gold uppercase tracking-wider">
-      <span>โอนเงินผ่านธนาคาร & แนบสลิป</span>
+  <div class="space-y-1.5 text-center sm:text-left">
+    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
+      <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+      <span>PROMPTPAY QR PAYMENT</span>
     </div>
-    <h1 class="text-2xl font-bold text-forest">ชำระเงินสำหรับการจอง {{ booking.booking_code }}</h1>
-    <p class="text-xs text-earth/60">โอนเงินเข้าบัญชีทางการของกลุ่มวิสาหกิจชุมชน และแนบหลักฐานสลิปด้านล่าง</p>
+    <h1 class="font-serif text-2xl sm:text-3xl font-bold text-[#1f2925]">
+      ชำระเงินสำหรับการจอง {{ booking.booking_code }}
+    </h1>
+    <p class="text-xs text-slate-500">
+      สแกนโอนเงินเข้าบัญชีทางการของวิสาหกิจชุมชนศรีสะเกษ และแนบหลักฐานสลิปด้านล่าง
+    </p>
   </div>
 
   <!-- 15-Minute Countdown Alert -->
@@ -22,42 +28,46 @@
            get seconds() { return (this.timeLeft % 60).toString().padStart(2, '0') }
          }"
          x-init="setInterval(() => { if (timeLeft > 0) timeLeft--; else window.location.reload(); }, 1000)"
-         class="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
-      <div class="flex items-center space-x-2 text-xs font-bold text-amber-900">
+         class="p-4 sm:p-5 rounded-3xl bg-amber-50/90 border border-amber-200 flex items-center justify-between shadow-xs">
+      <div class="flex items-center gap-2.5 text-xs font-bold text-amber-900">
         <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+        <i data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
         <span>เวลาที่เหลือในการชำระเงิน</span>
       </div>
-      <div class="font-mono text-base font-bold text-amber-900 bg-white px-3 py-1 rounded-xl border border-amber-200 shadow-sm">
+      <div class="font-mono text-base font-bold text-amber-900 bg-white px-4 py-1.5 rounded-2xl border border-amber-200 shadow-xs">
         <span x-text="minutes">0</span>:<span x-text="seconds">00</span> นาที
       </div>
     </div>
   {% endif %}
 
-  <!-- Bank Account Details Card -->
-  <div class="card-luxury p-6 sm:p-8 space-y-6">
-    <h2 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">ข้อมูลบัญชีรับโอนเงินของชุมชน</h2>
+  <!-- Bank Account Details & PromptPay Card -->
+  <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-6">
+    <h2 class="text-sm font-bold text-[#1f2925] border-b border-slate-100 pb-3 flex items-center gap-2">
+      <i data-lucide="landmark" class="w-4 h-4 text-[#c49a45]"></i>
+      <span>ข้อมูลบัญชีรับโอนเงินของวิสาหกิจชุมชน</span>
+    </h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
       <!-- Bank details -->
-      <div class="space-y-3">
+      <div class="space-y-3.5">
         <div>
-          <span class="text-[11px] text-gray-400 block">ธนาคาร</span>
-          <span class="text-sm font-bold text-forest">{{ payment.payee_bank_name }}</span>
+          <span class="text-[11px] text-slate-400 block font-medium">ธนาคาร</span>
+          <span class="text-sm font-bold text-[#1f2925]">{{ payment.payee_bank_name|default:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธ.ก.ส.)" }}</span>
         </div>
         <div>
-          <span class="text-[11px] text-gray-400 block">ชื่อบัญชี</span>
-          <span class="text-sm font-semibold text-earth">{{ payment.payee_account_name }}</span>
+          <span class="text-[11px] text-slate-400 block font-medium">ชื่อบัญชี</span>
+          <span class="text-sm font-semibold text-slate-700">{{ payment.payee_account_name|default:"กลุ่มวิสาหกิจชุมชนท่องเที่ยวเชิงสุขภาพศรีสะเกษ" }}</span>
         </div>
         <div>
-          <span class="text-[11px] text-gray-400 block">เลขที่บัญชี</span>
-          <div class="flex items-center space-x-2" x-data="{ copied: false }">
-            <span class="text-lg font-mono font-bold text-forest bg-gray-50 px-3 py-1 rounded-xl border border-gray-200">
-              {{ payment.payee_account_number }}
+          <span class="text-[11px] text-slate-400 block font-medium">เลขที่บัญชี</span>
+          <div class="flex items-center gap-2 mt-1" x-data="{ copied: false }">
+            <span class="text-base sm:text-lg font-mono font-bold text-[#1f2925] bg-slate-50 px-3 py-1 rounded-xl border border-slate-200">
+              {{ payment.payee_account_number|default:"020-1-98765-4" }}
             </span>
             <button 
               type="button" 
-              @click="navigator.clipboard.writeText('{{ payment.payee_account_number }}'); copied = true; setTimeout(() => copied = false, 2000)"
-              class="px-2.5 py-1 text-xs rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-stone-700 font-semibold"
+              @click="navigator.clipboard.writeText('{{ payment.payee_account_number|default:"0201987654" }}'); copied = true; setTimeout(() => copied = false, 2000)"
+              class="px-3 py-1 text-xs rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold cursor-pointer transition"
             >
               <span x-show="!copied">คัดลอก</span>
               <span x-show="copied" style="display: none;" class="text-emerald-600 font-bold">คัดลอกแล้ว!</span>
@@ -65,27 +75,31 @@
           </div>
         </div>
         <div class="pt-2">
-          <span class="text-[11px] text-gray-400 block">ยอดที่ต้องชำระ (โอนตรงตามยอด)</span>
-          <span class="text-2xl font-bold text-gold">฿{{ payment.amount }}</span>
+          <span class="text-[11px] text-slate-400 block font-medium">ยอดที่ต้องชำระ (กรุณาโอนตรงตามยอด)</span>
+          <span class="text-3xl font-serif font-bold text-[#c49a45]">฿{{ payment.amount|default:booking.total_amount|floatformat:0 }}</span>
         </div>
       </div>
 
       <!-- PromptPay Visual QR Card -->
-      <div class="p-6 rounded-2xl bg-forest text-white text-center space-y-3 shadow-md">
-        <div class="w-10 h-10 rounded-xl bg-gold text-forest mx-auto flex items-center justify-center">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-          </svg>
+      <div class="p-6 rounded-3xl bg-gradient-to-br from-[#2b3832] to-[#1f2925] text-white text-center space-y-3 shadow-md border border-[#c49a45]/30">
+        <div class="w-12 h-12 rounded-2xl bg-[#c49a45]/20 text-[#c49a45] mx-auto flex items-center justify-center">
+          <i data-lucide="qr-code" class="w-6 h-6"></i>
         </div>
-        <div class="text-xs font-bold text-cream">พร้อมเพย์ / PromptPay QR</div>
-        <div class="text-[11px] text-gold font-mono">098-2-34567-8</div>
-        <p class="text-[10px] text-cream/70 font-light">สามารถสแกนชำระผ่าน Mobile Banking ทุกธนาคาร</p>
+        <div class="text-xs font-bold text-white tracking-wide">พร้อมเพย์ / PromptPay QR</div>
+        <div class="text-xs text-[#c49a45] font-mono tracking-wider">098-2-34567-8</div>
+        <div class="w-32 h-32 bg-white p-2 rounded-2xl mx-auto shadow-sm flex items-center justify-center">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=00020101021129370016A000000677010111011300669823456785802TH540{{ payment.amount|default:booking.total_amount|floatformat:0 }}53037646304" 
+               alt="PromptPay QR Code" 
+               class="w-full h-full object-contain"
+          >
+        </div>
+        <p class="text-[10px] text-slate-300 font-light">สามารถบันทึกภาพหน้าจอเพื่อสแกนผ่าน Mobile Banking ทุกธนาคาร</p>
       </div>
     </div>
   </div>
 
   <!-- Slip Upload Card with Alpine Image Preview -->
-  <div class="card-luxury p-6 sm:p-8 space-y-6"
+  <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-6"
        x-data="{
          previewUrl: null,
          previewImage(event) {
@@ -95,67 +109,58 @@
            }
          }
        }">
-    <div class="border-b border-gray-100 pb-2">
-      <h2 class="text-sm font-bold text-forest">แนบหลักฐานการโอนเงิน (สลิปธนาคาร)</h2>
-      <p class="text-xs text-earth/60">รองรับไฟล์ JPG, PNG, WEBP ขนาดไม่เกิน 10MB (ระบบจะทำการล้างข้อมูล EXIF อัตโนมัติ)</p>
+    <div class="border-b border-slate-100 pb-3">
+      <h2 class="text-sm font-bold text-[#1f2925] flex items-center gap-2">
+        <i data-lucide="upload-cloud" class="w-4 h-4 text-[#c49a45]"></i>
+        <span>แนบหลักฐานการโอนเงิน (สลิปธนาคาร)</span>
+      </h2>
+      <p class="text-xs text-slate-400 mt-0.5">รองรับไฟล์ JPG, PNG, WEBP ขนาดไม่เกิน 10MB (ระบบตรวจสอบค่าแฮชและล้างข้อมูล EXIF อัตโนมัติ)</p>
     </div>
 
-    <form method="POST" action="{% url 'payments:payment_instruction' booking.id %}" enctype="multipart/form-data" class="space-y-4">
+    <form method="POST" action="{% url 'payments:slip_upload' booking.id %}" enctype="multipart/form-data" class="space-y-4">
       {% csrf_token %}
 
-      <div>
-        <label class="block text-xs font-semibold text-earth mb-1">เลือกไฟล์สลิปจากอุปกรณ์</label>
-        {{ form.image }}
+      <!-- Drag & Drop Zone -->
+      <div class="relative border-2 border-dashed border-slate-300 hover:border-[#1f2925] rounded-3xl p-6 text-center transition cursor-pointer bg-[#faf9f6]">
+        <input 
+          type="file" 
+          name="slip_image" 
+          id="slip_image" 
+          accept="image/jpeg,image/png,image/webp" 
+          required 
+          @change="previewImage"
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        >
+        
+        <template x-if="!previewUrl">
+          <div class="space-y-2 py-4">
+            <div class="w-12 h-12 rounded-2xl bg-white text-[#c49a45] shadow-xs mx-auto flex items-center justify-center">
+              <i data-lucide="image" class="w-6 h-6"></i>
+            </div>
+            <div class="text-xs font-bold text-[#1f2925]">
+              คลิกเพื่อเลือกไฟล์ หรือลากสลิปมาวางที่นี่
+            </div>
+            <p class="text-[11px] text-slate-400">ภาพสลิปที่เห็นยอดเงิน วันที่ และเวลาโอนอย่างชัดเจน</p>
+          </div>
+        </template>
+
+        <template x-if="previewUrl">
+          <div class="space-y-3 py-2">
+            <img :src="previewUrl" alt="ตัวอย่างสลิป" class="max-h-56 mx-auto rounded-2xl shadow-sm border border-slate-200">
+            <span class="text-xs text-emerald-600 font-semibold block">เลือกภาพเรียบร้อยแล้ว คลิกเพื่อเปลี่ยนภาพ</span>
+          </div>
+        </template>
       </div>
 
-      <!-- Instant Live Image Preview -->
-      <div x-show="previewUrl" class="space-y-2" style="display: none;">
-        <span class="text-xs text-earth/60 block font-medium">ตัวอย่างรูปภาพสลิปที่จะอัปโหลด:</span>
-        <div class="w-48 h-64 rounded-2xl overflow-hidden border border-gray-200 shadow-sm bg-stone-50">
-          <img :src="previewUrl" alt="Slip Preview" class="w-full h-full object-cover">
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-xs font-semibold text-earth mb-1">{{ form.provider_reference.label }}</label>
-        {{ form.provider_reference }}
-        <p class="text-[11px] text-gray-400 mt-1">{{ form.provider_reference.help_text }}</p>
-      </div>
-
-      <div class="pt-2">
-        <button type="submit" class="btn-primary w-full sm:w-auto text-xs px-8 py-3">
-          ยืนยันการแนบสลิป &rarr;
-        </button>
-      </div>
+      <button 
+        type="submit" 
+        class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+      >
+        <span>ส่งหลักฐานการชำระเงิน</span>
+        <i data-lucide="check-circle" class="w-4 h-4 text-[#c49a45]"></i>
+      </button>
     </form>
   </div>
-
-  <!-- Uploaded Slips History if any -->
-  {% if slips %}
-    <div class="card-luxury p-6 space-y-3">
-      <h3 class="text-xs font-bold text-earth uppercase tracking-wider">ประวัติการแนบสลิปของคุณ</h3>
-      <div class="divide-y divide-gray-100">
-        {% for s in slips %}
-          <div class="py-3 flex items-center justify-between text-xs">
-            <div>
-              <span class="font-semibold text-forest block">อัปโหลดเมื่อ {{ s.uploaded_at|date:"d M Y H:i" }}</span>
-              {% if s.provider_reference %}
-                <span class="text-[11px] text-gray-500 font-mono">Ref: {{ s.provider_reference }}</span>
-              {% endif %}
-            </div>
-            <div>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold
-                           {% if s.verification_status == 'VERIFIED' %} bg-emerald-100 text-emerald-800
-                           {% elif s.verification_status == 'PENDING_CHECK' %} bg-amber-100 text-amber-800
-                           {% else %} bg-rose-100 text-rose-800 {% endif %}">
-                {{ s.get_verification_status_display }}
-              </span>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-  {% endif %}
 
 </div>
 {% endblock %}

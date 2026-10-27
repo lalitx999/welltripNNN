@@ -1,70 +1,115 @@
 {% extends "layouts/public.html" %}
+{% load static %}
 
-{% block title %}ยืนยันคำสั่งซื้อ - WellTrip{% endblock %}
+{% block title %}ยืนยันคำสั่งซื้อและการจอง - WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  
+  <!-- Booking Stepper Indicator -->
+  <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-xs">
+    <div class="flex items-center justify-between max-w-xl mx-auto text-xs font-bold">
+      <div class="flex items-center gap-2 text-slate-400">
+        <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[11px]">1</span>
+        <span class="hidden sm:inline">ตะกร้าบริการ</span>
+      </div>
+      <div class="h-0.5 w-8 sm:w-16 bg-[#c49a45]"></div>
+      <div class="flex items-center gap-2 text-[#1f2925]">
+        <span class="w-6 h-6 rounded-full bg-[#1f2925] text-white flex items-center justify-center text-[11px]">2</span>
+        <span class="text-[#c49a45]">ยืนยันการจอง</span>
+      </div>
+      <div class="h-0.5 w-8 sm:w-16 bg-slate-200"></div>
+      <div class="flex items-center gap-2 text-slate-400">
+        <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[11px]">3</span>
+        <span class="hidden sm:inline">ชำระเงิน</span>
+      </div>
+    </div>
+  </div>
+
   <div class="space-y-1">
-    <h1 class="text-2xl font-bold text-forest">ยืนยันคำสั่งซื้อและการจอง</h1>
-    <p class="text-xs text-earth/60">ตรวจสอบรายการก่อนล็อคห้องพักและสินค้า (ระบบจะเปิดเวลานับถอยหลังชำระเงิน 15 นาที)</p>
+    <h1 class="font-serif text-2xl sm:text-3xl font-bold text-[#1f2925]">ยืนยันคำสั่งซื้อและการจอง</h1>
+    <p class="text-xs text-slate-500">
+      ตรวจสอบรายการก่อนระบบทำการล็อคห้องพักและสินค้า (ระบบจะเปิดเวลานับถอยหลังชำระเงิน 15 นาที)
+    </p>
   </div>
 
   <form method="POST" action="{% url 'bookings:checkout' %}" class="space-y-6">
     {% csrf_token %}
 
-    <!-- Cart review -->
-    <div class="card-luxury p-6 space-y-4">
-      <h3 class="text-sm font-bold text-forest border-b border-gray-100 pb-2">รายการที่สั่งจอง ({{ cart|length }} รายการ)</h3>
-      <div class="divide-y divide-gray-100">
+    <!-- Cart Items Review Card -->
+    <div class="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-bold text-[#1f2925] flex items-center gap-2">
+          <i data-lucide="receipt-text" class="w-4 h-4 text-[#c49a45]"></i>
+          <span>รายการที่สั่งจอง ({{ cart|length }} รายการ)</span>
+        </h3>
+        <span class="text-xs text-[#c49a45] font-semibold">ยืนยันสต็อกเรียลไทม์</span>
+      </div>
+
+      <div class="divide-y divide-slate-100">
         {% for item in cart %}
-          <div class="py-3 flex justify-between items-center text-xs">
-            <div>
-              <span class="font-bold text-forest">{{ item.title }}</span>
+          <div class="py-3.5 flex justify-between items-center text-xs">
+            <div class="space-y-0.5">
+              <span class="font-bold text-[#1f2925] text-sm block">{{ item.title }}</span>
               {% if item.date %}
-                <span class="text-gray-400 block text-[11px]">วันที่: {{ item.date }}</span>
+                <span class="text-slate-400 block text-[11px]">กำหนดวันที่: {{ item.date }}</span>
               {% endif %}
             </div>
             <div class="text-right">
-              <span class="font-bold text-gold">฿{{ item.price }}</span>
-              <span class="text-gray-400 block text-[11px]">x {{ item.quantity }}</span>
+              <span class="font-bold text-[#c49a45] font-serif text-sm">฿{{ item.price|floatformat:0 }}</span>
+              <span class="text-slate-400 block text-[11px]">x {{ item.quantity|default:"1" }}</span>
             </div>
           </div>
         {% endfor %}
       </div>
 
-      <div class="pt-4 border-t border-gray-100 flex justify-between items-baseline">
-        <span class="text-sm font-bold text-forest">ยอดชำระรวมทั้งสิ้น</span>
-        <span class="text-2xl font-bold text-gold">฿{{ total_amount }}</span>
+      <div class="pt-4 border-t border-slate-100 flex justify-between items-baseline">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">ยอดชำระรวมทั้งสิ้น</span>
+        <span class="text-2xl sm:text-3xl font-serif font-bold text-[#c49a45]">฿{{ total_amount|floatformat:0 }}</span>
       </div>
     </div>
 
     <!-- Customer Notes -->
-    <div class="card-luxury p-6 space-y-2">
-      <label for="customer_notes" class="block text-xs font-semibold text-earth">ข้อความเพิ่มเติมถึงผู้ประกอบการ (ถ้ามี)</label>
-      <textarea id="customer_notes" name="customer_notes" rows="2"
-                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-forest"
-                placeholder="เช่น คาดว่าจะถึงเวลา 15:00 น. หรือแพ้อาหารทะเล"></textarea>
+    <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-2">
+      <label for="customer_notes" class="block text-xs font-semibold text-[#1f2925] flex items-center gap-1.5">
+        <i data-lucide="message-square" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+        <span>ข้อความเพิ่มเติมถึงผู้ประกอบการชุมชน (ถ้ามี)</span>
+      </label>
+      <textarea 
+        id="customer_notes" 
+        name="customer_notes" 
+        rows="2"
+        class="w-full px-4 py-3 rounded-2xl border border-slate-200 text-xs text-[#1f2925] focus:outline-none focus:border-[#1f2925]"
+        placeholder="เช่น คาดว่าจะเดินทางถึงเวลา 15:00 น. หรือแพ้อาหารทะเล / ต้องการอาหารมังสวิรัติ"
+      ></textarea>
     </div>
 
     <!-- Security & Concurrency Guarantee Alert -->
-    <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
-      <div class="font-bold flex items-center space-x-1.5">
-        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span>ระบบล็อคสต็อกอัตโนมัติ 15 นาที</span>
+    <div class="p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-amber-900 text-xs space-y-1">
+      <div class="font-bold flex items-center gap-2 text-[#1f2925]">
+        <i data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
+        <span>ระบบล็อคสต็อกห้องพักอัตโนมัติ 15 นาที</span>
       </div>
-      <p class="text-[11px] text-amber-800">
-        เมื่อกดยืนยันสั่งซื้อ ระบบจะทำการล็อคห้องพักและสินค้าให้คุณทันที และคุณจะมีเวลา 15 นาทีในการโอนเงินและแนบสลิป
+      <p class="text-[11px] text-amber-800 leading-relaxed font-light pl-6">
+        เมื่อกดยืนยันสั่งซื้อ ระบบจะล็อคห้องพักและสินค้าให้คุณทันที และคุณจะมีเวลา 15 นาทีในการสแกนโอนเงินผ่าน PromptPay QR และแนบสลิป
       </p>
     </div>
 
-    <div class="flex items-center justify-between pt-2">
-      <a href="{% url 'bookings:cart' %}" class="text-xs text-earth/70 hover:text-forest">
-        &larr; กลับไปแก้ไขตะกร้า
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+      <a 
+        href="{% url 'bookings:cart' %}" 
+        class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#1f2925] transition"
+      >
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>กลับไปแก้ไขตะกร้า</span>
       </a>
-      <button type="submit" class="btn-primary text-xs px-8 py-3.5 shadow-lg shadow-forest/20">
-        ยืนยันการสั่งจองและชำระเงิน &rarr;
+
+      <button 
+        type="submit" 
+        class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md inline-flex items-center justify-center gap-2 cursor-pointer"
+      >
+        <span>ยืนยันการสั่งจองและชำระเงิน</span>
+        <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45]"></i>
       </button>
     </div>
   </form>
