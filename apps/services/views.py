@@ -10,14 +10,41 @@ from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot
 from apps.services.forms import FoodMenuForm, WellnessServiceForm, WellnessTimeSlotForm
 
 
+from django.db.models import Q
+
+
 def list_view(request):
-    """Public list of healthy dining menus and wellness spa services."""
-    menus = FoodMenu.objects.filter(is_available=True).select_related('owner')[:20]
-    services = WellnessService.objects.filter(is_active=True).select_related('owner')[:20]
+    """
+    Public list of healthy dining menus and wellness spa services:
+    Supports filtering by active category tab ('all', 'FOOD', 'SPA') and search query.
+    """
+    category = request.GET.get('category', 'all').strip()
+    query = request.GET.get('q', '').strip()
+
+    menus_qs = FoodMenu.objects.filter(is_available=True).select_related('owner')
+    services_qs = WellnessService.objects.filter(is_active=True).select_related('owner')
+
+    if query:
+        menus_qs = menus_qs.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(ingredients__icontains=query)
+        )
+        services_qs = services_qs.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(benefits__icontains=query)
+        )
+
     return render(request, 'services/list.html', {
-        'menus': menus,
-        'services': services,
+        'menus': menus_qs,
+        'services': services_qs,
+        'active_category': category,
+        'query': query,
+        'total_menus': menus_qs.count(),
+        'total_services': services_qs.count(),
     })
+
 
 
 # ==============================================================================

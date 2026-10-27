@@ -152,3 +152,37 @@ def admin_dashboard_view(request):
     return render(request, 'accounts/admin_dashboard.html', {
         'page_title': 'ศูนย์ปฏิบัติการชุมชน (Admin Operations)',
     })
+
+
+@require_http_methods(["GET", "POST"])
+def profile_view(request):
+    """Tourist and merchant personal profile view and update."""
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+
+    user = request.user
+    if request.method == "POST":
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        phone_number = request.POST.get('phone_number', '').strip()
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.phone_number = phone_number
+        user.save(update_fields=['first_name', 'last_name', 'phone_number'])
+
+        record_audit_log(
+            request=request,
+            action="UPDATE",
+            model_name="User",
+            object_id=str(user.id),
+            changes={'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number},
+            user=user,
+        )
+        messages.success(request, "บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว")
+        return redirect('accounts:profile')
+
+    return render(request, 'accounts/profile.html', {
+        'page_title': 'โปรไฟล์ส่วนตัว - WellTrip',
+    })
+

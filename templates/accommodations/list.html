@@ -1,83 +1,151 @@
 {% extends "layouts/public.html" %}
+{% load static %}
 
-{% block title %}ที่พักและโฮมสเตย์ชุมชน - WellTrip{% endblock %}
+{% block title %}ที่พักและโฮมสเตย์ชุมชนศรีสะเกษ - WellTrip{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-8 py-10 space-y-8">
+  
+  <!-- Page Header -->
   <div class="space-y-2">
-    <div class="inline-flex items-center space-x-2 text-xs font-semibold text-gold uppercase tracking-wider">
-      <span>โฮมสเตย์มาตรฐานวิถีชุมชน</span>
+    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#D97706] uppercase tracking-wider">
+      <span class="w-2 h-2 rounded-full bg-[#D97706] animate-pulse"></span>
+      <span>โฮมสเตย์มาตรฐานวิถีชุมชน 4 ชนเผ่า</span>
     </div>
-    <h1 class="text-3xl font-bold text-forest">ที่พักและโฮมสเตย์ธรรมชาติ</h1>
-    <p class="text-sm text-earth/70">สัมผัสวิถีชีวิตดั้งเดิม พักผ่อนท่ามกลางธรรมชาติอันสงบเงียบและปลอดภัย</p>
+    <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1F2925]">ที่พักและโฮมสเตย์ธรรมชาติ</h1>
+    <p class="text-xs sm:text-sm text-stone-500 max-w-2xl">
+      สัมผัสวิถีชีวิตดั้งเดิม พักผ่อนท่ามกลางธรรมชาติอันสงบเงียบ ปลอดภัย ตัดรอบสต็อกห้องพักแบบเรียลไทม์
+    </p>
   </div>
 
   <!-- Search & Filter Bar -->
-  <div class="card-luxury p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-    <div class="relative w-full sm:w-80">
-      <input type="text" placeholder="ค้นหาชื่อที่พัก, ตำบล หรืออำเภอ..." 
-             class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest">
-      <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-    </div>
+  <div class="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200/80 shadow-xs">
+    <form method="GET" action="{% url 'accommodations:list' %}" class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+      
+      <!-- Search Input -->
+      <div class="relative w-full sm:w-96">
+        <svg class="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input 
+          type="text" 
+          name="q" 
+          value="{{ query }}" 
+          placeholder="ค้นหาชื่อที่พัก, ตำบล หรืออำเภอในศรีสะเกษ..." 
+          class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-stone-200 text-xs sm:text-sm text-[#1F2925] placeholder-stone-400 focus:outline-none focus:border-[#1F2925]"
+        >
+      </div>
 
-    <div class="flex items-center space-x-3 w-full sm:w-auto">
-      <select class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest">
-        <option value="">ทุกอำเภอ (ศรีสะเกษ)</option>
-        <option value="muang">เมืองศรีสะเกษ</option>
-        <option value="khunhan">ขุนหาญ</option>
-        <option value="kantharalak">กันทรลักษ์</option>
-        <option value="utsumphon">อุทุมพรพิสัย</option>
-      </select>
-    </div>
+      <!-- District Selector -->
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <select 
+          name="district" 
+          class="w-full sm:w-48 px-3.5 py-2.5 rounded-2xl border border-stone-200 text-xs text-stone-700 focus:outline-none focus:border-[#1F2925]"
+        >
+          <option value="">-- ทุกอำเภอ --</option>
+          {% for d in districts %}
+            <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- Price Selector -->
+        <select 
+          name="priceRange" 
+          class="w-full sm:w-40 px-3.5 py-2.5 rounded-2xl border border-stone-200 text-xs text-stone-700 focus:outline-none focus:border-[#1F2925]"
+        >
+          <option value="">-- ทุกช่วงราคา --</option>
+          <option value="budget" {% if selected_price == 'budget' %}selected{% endif %}>ต่ำกว่า 800 บาท</option>
+          <option value="mid" {% if selected_price == 'mid' %}selected{% endif %}>800 - 1,500 บาท</option>
+          <option value="luxury" {% if selected_price == 'luxury' %}selected{% endif %}>มากกว่า 1,500 บาท</option>
+        </select>
+
+        <button type="submit" class="px-6 py-2.5 rounded-2xl bg-[#1F2925] hover:bg-[#2B3832] text-white text-xs font-bold transition-all shrink-0 shadow-xs cursor-pointer">
+          กรองผลลัพธ์
+        </button>
+
+        {% if query or selected_district or selected_price %}
+          <a href="{% url 'accommodations:list' %}" class="px-4 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-semibold text-center transition-colors">
+            ล้างตัวกรอง
+          </a>
+        {% endif %}
+      </div>
+
+    </form>
   </div>
 
-  <!-- Grid of Homestays -->
+  <!-- Real Grid of Homestays from Database -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- Sample Card 1 -->
-    <div class="card-luxury overflow-hidden group">
-      <div class="h-48 bg-stone-200 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
-        <div class="absolute top-3 left-3 z-20">
-          <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-forest text-gold">วิถีเกษตรอินทรีย์</span>
-        </div>
-        <div class="absolute bottom-3 left-3 right-3 z-20 flex justify-between items-end text-white">
-          <span class="text-xs font-light">อ.ขุนหาญ, ศรีสะเกษ</span>
-          <span class="text-sm font-bold text-gold">฿1,200 <span class="text-[10px] font-normal text-cream">/คืน</span></span>
-        </div>
-      </div>
-      <div class="p-5 space-y-3">
-        <h3 class="text-base font-bold text-forest group-hover:text-gold transition-colors">โฮมสเตย์สวนภูมินทร์</h3>
-        <p class="text-xs text-earth/70 line-clamp-2">พักผ่อนริมสวนผลไม้ปลอดสารพิษ สัมผัสวิถีชีวิตชาวสวนขุนหาญ พร้อมอาหารเช้าพื้นถิ่น</p>
-        <div class="pt-2 flex items-center justify-between border-t border-gray-100 text-xs">
-          <span class="text-emerald-700 font-medium">● ห้องว่างพร้อมจอง</span>
-          <a href="#" class="font-semibold text-forest hover:text-gold">ดูรายละเอียด &rarr;</a>
-        </div>
-      </div>
-    </div>
+    {% for acc in accommodations %}
+      <article class="rounded-3xl bg-white border border-stone-200/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+        
+        <!-- Image & Tags Frame -->
+        <div class="h-56 bg-stone-100 relative overflow-hidden">
+          {% if acc.hero_image %}
+            <img src="{{ acc.hero_image.url }}" alt="{{ acc.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          {% else %}
+            <img src="{% static 'images/banner1.jpeg' %}" alt="{{ acc.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          {% endif %}
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+          
+          <!-- Category Badge Top-Left -->
+          <div class="absolute top-3 left-3 z-10">
+            <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-[#1F2925]/90 text-[#D97706] backdrop-blur-md border border-white/20">
+              โฮมสเตย์นิเวศ
+            </span>
+          </div>
 
-    <!-- Sample Card 2 -->
-    <div class="card-luxury overflow-hidden group">
-      <div class="h-48 bg-stone-200 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
-        <div class="absolute top-3 left-3 z-20">
-          <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-forest text-gold">ริมอ่างเก็บน้ำ</span>
+          <!-- Price & Location Bottom Bar -->
+          <div class="absolute bottom-3 left-4 right-4 z-10 flex justify-between items-end text-white">
+            <div class="text-xs font-light text-stone-200 truncate max-w-[60%]">
+              {{ acc.district|default:"ศรีสะเกษ" }}, {{ acc.province|default:"ศรีสะเกษ" }}
+            </div>
+            <div class="text-sm font-bold text-[#D97706] bg-black/60 px-3 py-1 rounded-xl backdrop-blur-md">
+              ฿{{ acc.min_price_per_night|default:"650"|floatformat:0 }} 
+              <span class="text-[10px] font-normal text-stone-300">/คืน</span>
+            </div>
+          </div>
         </div>
-        <div class="absolute bottom-3 left-3 right-3 z-20 flex justify-between items-end text-white">
-          <span class="text-xs font-light">อ.กันทรลักษ์, ศรีสะเกษ</span>
-          <span class="text-sm font-bold text-gold">฿950 <span class="text-[10px] font-normal text-cream">/คืน</span></span>
+
+        <!-- Body Content -->
+        <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+          <div class="space-y-1.5">
+            <h3 class="font-bold text-lg text-[#1F2925] group-hover:text-[#D97706] transition-colors line-clamp-1">
+              {{ acc.name }}
+            </h3>
+            <p class="text-xs text-stone-500 line-clamp-2 leading-relaxed">
+              {{ acc.description|default:"สัมผัสอากาศบริสุทธิ์และวิถีโฮมสเตย์ท้องถิ่น อุ่นใจ ปลอดภัย อาหารเช้าอินทรีย์" }}
+            </p>
+          </div>
+
+          <!-- Bottom Footer Link -->
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between text-xs">
+            <span class="text-emerald-700 font-semibold flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>พร้อมให้บริการ</span>
+            </span>
+            <a href="{% url 'accommodations:detail' acc.slug|default:acc.id %}" class="inline-flex items-center gap-1 font-bold text-[#1F2925] group-hover:text-[#D97706] transition-colors">
+              <span>ดูห้องพักและจอง</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </article>
+    {% empty %}
+      <div class="col-span-full py-16 text-center space-y-3 bg-white rounded-3xl border border-stone-200 p-8">
+        <svg class="w-12 h-12 text-stone-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <p class="text-sm font-semibold text-stone-700">ไม่พบโฮมสเตย์ที่ตรงตามเงื่อนไขการค้นหา</p>
+        <p class="text-xs text-stone-400">ลองเปลี่ยนคำค้นหา หรือเลือกตัวกรองเป็น "ทุกอำเภอ"</p>
+        <div class="pt-2">
+          <a href="{% url 'accommodations:list' %}" class="px-5 py-2 rounded-xl bg-[#1F2925] text-white text-xs font-bold inline-block">
+            ดูโฮมสเตย์ทั้งหมด
+          </a>
         </div>
       </div>
-      <div class="p-5 space-y-3">
-        <h3 class="text-base font-bold text-forest group-hover:text-gold transition-colors">บ้านสวนสายธารโฮมสเตย์</h3>
-        <p class="text-xs text-earth/70 line-clamp-2">บ้านไม้ใต้ถุนสูง รับลมเย็นธรรมชาติ เงียบสงบ เหมาะสำหรับฟื้นฟูกายใจ</p>
-        <div class="pt-2 flex items-center justify-between border-t border-gray-100 text-xs">
-          <span class="text-emerald-700 font-medium">● ห้องว่างพร้อมจอง</span>
-          <a href="#" class="font-semibold text-forest hover:text-gold">ดูรายละเอียด &rarr;</a>
-        </div>
-      </div>
-    </div>
+    {% endfor %}
   </div>
+
 </div>
 {% endblock %}

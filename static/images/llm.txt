@@ -1,0 +1,28 @@
+# WellTrip Sisaket - Smart Eco-Wellness Tourism Platform
+
+> WellTrip Sisaket is the official smart eco-wellness tourism platform for Sisaket Province, Thailand. It connects tourists with community homestays, local organic dining, herbal wellness spas, GI volcano products, historical Khmer castles, and community events.
+
+## Core Factual Information
+- **Location**: Sisaket Province, Northeastern Thailand (Isan).
+- **Cultural Identity**: Land of 4 Ethnic Tribes (Khmer, Lao, Suai/Kouy, Yoe).
+- **Key Attractions**: 31 official tourist destinations including Pha Mo E-Daeng cliff, Prasat Sa Kamphaeng Yai castle, Wat Pa Maha Chedi Kaew (Wat Lan Khuat - 1.5 million bottle temple), Wat Phrai Phatthana (Luang Pu Suang), Suan Somdet Srinagarindra (40,000 Lamduan trees), and Sisaket Aquarium.
+- **GI Products**: Sisaket Lava Durian (ทุเรียนภูเขาไฟ GI), Khun Han Volcano Robusta Coffee 500g (กาแฟโรบัสต้าดินภูเขาไฟ GI), Sisaket Shallots & Garlic GI.
+- **Key Events**: Sound of Sisaket 2026, 244th Sisaket City Celebration, Lava Durian Fest, Lamduan Flower Festival, San Don Ta Khmer Ancestor Festival.
+
+## Essential Page Sitemap
+- [/home](https://www.welltripthailand.com/home): Explore Sisaket home & recommended experiences
+- [/recommended](https://www.welltripthailand.com/recommended): 31 Official Tourism Attractions (Natural, Cultural, Historical)
+- [/community](https://www.welltripthailand.com/community): 13 Featured OTOP Nawatwithi Tourism Villages
+- [/hotels](https://www.welltripthailand.com/hotels): Community Homestays & Eco-Resorts
+- [/foods](https://www.welltripthailand.com/foods): Healthy Local Cuisine & Organic Dining
+- [/wellness](https://www.welltripthailand.com/wellness): Herbal Spa Services & Wellness Activities
+- [/otop](https://www.welltripthailand.com/otop): Official Sisaket Souvenirs (T-Shirts, Volcano Coffee 500g, Crafts)
+- [/news](https://www.welltripthailand.com/news): Event Calendar & Sound of Sisaket 2026
+- [/llm-full.txt](https://www.welltripthailand.com/llm-full.txt): Complete detailed text dataset for LLM ingestion
+
+## API & Data Endpoints
+- `GET /api/v1/accommodations/`: Community homestays and lodging inventory
+- `GET /api/v1/otop/`: OTOP product catalog
+- `GET /api/v1/services/foods/`: Healthy local dining menus
+- `GET /api/v1/services/wellness/`: Herbal spa packages and time slots
+- `GET /api/v1/community/villages/`: OTOP Nawatwithi villages directory

@@ -10,10 +10,45 @@ from apps.otop.models import OTOPProduct
 from apps.otop.forms import OTOPProductForm, StockAdjustmentForm
 
 
+from django.db.models import Q
+from apps.otop.models import OTOPProduct, OTOPCategory
+
+
 def list_view(request):
-    """Public list of community OTOP retail products."""
-    products = OTOPProduct.objects.filter(is_active=True).select_related('owner')[:30]
-    return render(request, 'otop/list.html', {'products': products})
+    """
+    Public list of community OTOP retail products:
+    Supports filtering by category, search by query 'q', and stock status.
+    """
+    category = request.GET.get('category', '').strip()
+    query = request.GET.get('q', '').strip()
+
+    qs = OTOPProduct.objects.filter(is_active=True).select_related('owner')
+
+    if query:
+        qs = qs.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
+        )
+
+    if category:
+        qs = qs.filter(category=category)
+
+    return render(request, 'otop/list.html', {
+        'products': qs,
+        'categories': OTOPCategory.choices,
+        'selected_category': category,
+        'query': query,
+        'total_count': qs.count(),
+    })
+
+
+def detail_view(request, product_id):
+    """Public detail view for a single OTOP retail product."""
+    product = get_object_or_404(OTOPProduct.objects.select_related('owner'), id=product_id, is_active=True)
+    return render(request, 'otop/detail.html', {
+        'product': product,
+    })
+
 
 
 @role_required(UserRoles.OTOP_OWNER)

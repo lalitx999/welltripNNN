@@ -1,0 +1,94 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}โปรไฟล์ส่วนตัว - WellTrip Sisaket{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-8 py-10 space-y-8">
+  
+  <div class="space-y-1">
+    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#D97706] uppercase tracking-wider">
+      <span>ข้อมูลสมาชิก WellTrip</span>
+    </div>
+    <h1 class="font-serif text-3xl font-bold text-[#1F2925]">โปรไฟล์ส่วนตัว</h1>
+    <p class="text-xs sm:text-sm text-stone-500">จัดการข้อมูลชื่อ-นามสกุล และเบอร์โทรศัพท์สำหรับใช้ในการจองบริการชุมชน</p>
+  </div>
+
+  <div class="bg-white p-6 sm:p-8 rounded-3xl border border-stone-200/80 shadow-xs space-y-6">
+    
+    <!-- User Badge Summary -->
+    <div class="flex items-center gap-4 p-4 rounded-2xl bg-[#FAF9F6] border border-stone-100">
+      <div class="w-14 h-14 rounded-2xl bg-[#1F2925] text-white flex items-center justify-center font-bold text-xl uppercase shadow-xs">
+        {{ user.email|first }}
+      </div>
+      <div>
+        <div class="font-bold text-base text-[#1F2925]">{{ user.full_name|default:user.email }}</div>
+        <div class="text-xs text-stone-400 font-mono">{{ user.email }}</div>
+        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-[#D97706] border border-[#D97706]/30 mt-1">
+          {{ user.get_role_display }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <form method="POST" action="{% url 'accounts:profile' %}" class="space-y-5">
+      {% csrf_token %}
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-stone-700">ชื่อจริง (First Name)</label>
+          <input 
+            type="text" 
+            name="first_name" 
+            value="{{ user.first_name }}" 
+            class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 text-xs sm:text-sm text-[#1F2925] focus:outline-none focus:border-[#1F2925]"
+          >
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-stone-700">นามสกุล (Last Name)</label>
+          <input 
+            type="text" 
+            name="last_name" 
+            value="{{ user.last_name }}" 
+            class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 text-xs sm:text-sm text-[#1F2925] focus:outline-none focus:border-[#1F2925]"
+          >
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold text-stone-700">เบอร์โทรศัพท์ติดต่อ (Phone Number)</label>
+        <input 
+          type="text" 
+          name="phone_number" 
+          value="{{ user.phone_number }}" 
+          placeholder="08X-XXX-XXXX" 
+          class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 text-xs sm:text-sm font-mono text-[#1F2925] focus:outline-none focus:border-[#1F2925]"
+        >
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold text-stone-500">อีเมลลงทะเบียน (Email - บันทึกในระบบ)</label>
+        <input 
+          type="email" 
+          disabled 
+          value="{{ user.email }}" 
+          class="w-full px-4 py-2.5 rounded-2xl border border-stone-200 bg-stone-50 text-xs sm:text-sm font-mono text-stone-400 cursor-not-allowed"
+        >
+      </div>
+
+      <div class="pt-4 flex items-center justify-between border-t border-stone-100">
+        <a href="{% url 'bookings:my_orders' %}" class="text-xs font-semibold text-stone-600 hover:text-[#1F2925]">
+          &larr; ดูประวัติการจองของฉัน
+        </a>
+        <button type="submit" class="px-6 py-2.5 rounded-2xl bg-[#1F2925] hover:bg-[#2B3832] text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
+          บันทึกการเปลี่ยนแปลง
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+{% endblock %}

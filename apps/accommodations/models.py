@@ -56,6 +56,20 @@ class Accommodation(models.Model):
     def __str__(self):
         return f"{self.name} ({self.province})"
 
+    @property
+    def min_price_per_night(self):
+        first_room = self.rooms.filter(is_active=True).order_by('base_price_per_night').first()
+        return first_room.base_price_per_night if first_room else Decimal("650.00")
+
+    @property
+    def hero_image(self):
+        first_room = self.rooms.filter(is_active=True).first()
+        if first_room:
+            img = first_room.images.filter(is_cover=True).first() or first_room.images.first()
+            if img and img.image:
+                return img.image
+        return None
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = f"{slugify(self.name, allow_unicode=True)}-{uuid.uuid4().hex[:6]}"
@@ -78,6 +92,14 @@ class Room(models.Model):
     )
     total_rooms_count = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
+
+    @property
+    def price_per_night(self):
+        return self.base_price_per_night
+
+    @property
+    def capacity(self):
+        return self.capacity_people
 
     class Meta:
         db_table = "accommodation_rooms"

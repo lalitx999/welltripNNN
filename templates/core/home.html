@@ -1,142 +1,413 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน{% endblock %}
+{% block title %}WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน{% endblock %}
 
 {% block content %}
-<!-- Hero Section (Travilla Luxury Eco-Tourism) -->
-<section class="relative bg-forest-dark text-white py-20 lg:py-28 overflow-hidden">
-  <!-- Authentic Sisaket Community Banner Background -->
-  <div class="absolute inset-0 z-0">
-    <img src="{% static 'images/banner1.jpeg' %}" alt="Sisaket Tourism Landscape" class="w-full h-full object-cover object-center opacity-30">
-    <div class="absolute inset-0 bg-gradient-to-r from-forest-dark via-forest-dark/90 to-forest-dark/75"></div>
-  </div>
+<div class="space-y-16 lg:space-y-24">
 
-  <!-- Subtle decorative ambient circles -->
-  <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-gold/10 blur-3xl pointer-events-none"></div>
-  <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
+  <!-- ========================================================================= -->
+  <!-- 1. Hero Section (Cycling Banner Background + Tabbed Search)               -->
+  <!-- ========================================================================= -->
+  <section 
+    class="relative min-h-[580px] lg:min-h-[660px] flex items-center justify-center overflow-hidden py-20 px-4 sm:px-8 text-white text-center"
+    x-data="{
+      banners: ['{% static 'images/banner1.jpeg' %}', '{% static 'images/banner2.jpeg' %}'],
+      currentIdx: 0,
+      activeTab: 'hotels',
+      query: '',
+      init() {
+        setInterval(() => {
+          this.currentIdx = (this.currentIdx + 1) % this.banners.length;
+        }, 6000);
+      },
+      submitSearch() {
+        let url = '/accommodations/';
+        if (this.activeTab === 'wellness') url = '/services/?category=SPA';
+        else if (this.activeTab === 'foods') url = '/services/?category=FOOD';
+        else if (this.activeTab === 'otop') url = '/otop/';
+        if (this.query.trim()) {
+          url += (url.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(this.query.trim());
+        }
+        window.location.href = url;
+      }
+    }"
+  >
+    <!-- Background Rotating Images -->
+    <template x-for="(b, idx) in banners" :key="idx">
+      <div 
+        class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out"
+        :style="'background-image: url(' + b + ');'"
+        :class="currentIdx === idx ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'"
+      ></div>
+    </template>
+    
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-[#1F2925]/85 via-[#1F2925]/75 to-[#1F2925]/90"></div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div class="max-w-3xl space-y-6 text-center sm:text-left">
-      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs text-gold font-medium">
-        <span class="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
-        <span>สมาร์ทแพลตฟอร์มท่องเที่ยวสุขภาวะชุมชนอีสานใต้ จ.ศรีสะเกษ</span>
+    <!-- Hero Content Container -->
+    <div class="relative z-10 max-w-4xl mx-auto space-y-6">
+      
+      <!-- Brand Subtitle Tag -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs text-[#D97706] font-semibold">
+        <span class="w-2 h-2 rounded-full bg-[#D97706] animate-pulse"></span>
+        <span class="tracking-wide text-white/90">สมาร์ทแพลตฟอร์มท่องเที่ยวสุขภาวะชุมชนอีสานใต้ จ.ศรีสะเกษ</span>
       </div>
 
-      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+      <!-- Main Headline -->
+      <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight drop-shadow-md">
         สัมผัสความสุขแท้จริง <br>
-        <span class="text-gold">วิถีสุขภาวะและภูมิปัญญาชุมชน</span>
+        <span class="text-[#D97706]">วิถีสุขภาวะและภูมิปัญญาชุมชน</span>
       </h1>
 
-      <p class="text-base sm:text-lg text-cream/80 max-w-2xl font-light leading-relaxed">
+      <!-- Description Subtitle -->
+      <p class="text-sm sm:text-base lg:text-lg text-[#FAF9F6]/85 max-w-2xl mx-auto font-light leading-relaxed">
         พักผ่อนโฮมสเตย์ธรรมชาติ ลิ้มลองอาหารสุขภาพ 5 นิเวศน์ ฟื้นฟูกายใจด้วยสปาภูมิปัญญาไทย 
         และสนับสนุนสินค้าหัตถกรรม OTOP ส่งตรงรายได้สู่ชาวบ้าน 100%
       </p>
 
-      <!-- Quick Action Buttons -->
-      <div class="flex flex-col sm:flex-row items-center gap-4 pt-4 justify-center sm:justify-start">
-        <a href="{% url 'accommodations:list' %}" class="btn-gold w-full sm:w-auto text-sm px-8 py-3.5 shadow-lg shadow-gold/20">
-          ค้นหาที่พักโฮมสเตย์
-        </a>
-        <a href="{% url 'community:map' %}" class="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 backdrop-blur-md transition-all duration-200 w-full sm:w-auto">
-          เปิดแผนที่ท่องเที่ยว
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
+      <!-- Search Box with Category Tabs -->
+      <div class="pt-4 max-w-2xl mx-auto">
+        <div class="bg-white/95 backdrop-blur-md p-2 sm:p-3 rounded-3xl shadow-2xl border border-white/30 text-left">
+          
+          <!-- Category Tabs -->
+          <div class="flex items-center gap-1.5 border-b border-stone-200/80 pb-2 px-1 overflow-x-auto text-xs font-bold text-stone-600">
+            <button 
+              type="button" 
+              @click="activeTab = 'hotels'" 
+              :class="activeTab === 'hotels' ? 'bg-[#1F2925] text-white' : 'hover:bg-stone-100 text-stone-600'"
+              class="px-3.5 py-1.5 rounded-full transition-all cursor-pointer shrink-0"
+            >
+              โฮมสเตย์นิเวศ
+            </button>
+            <button 
+              type="button" 
+              @click="activeTab = 'wellness'" 
+              :class="activeTab === 'wellness' ? 'bg-[#1F2925] text-white' : 'hover:bg-stone-100 text-stone-600'"
+              class="px-3.5 py-1.5 rounded-full transition-all cursor-pointer shrink-0"
+            >
+              นวด & สปา
+            </button>
+            <button 
+              type="button" 
+              @click="activeTab = 'foods'" 
+              :class="activeTab === 'foods' ? 'bg-[#1F2925] text-white' : 'hover:bg-stone-100 text-stone-600'"
+              class="px-3.5 py-1.5 rounded-full transition-all cursor-pointer shrink-0"
+            >
+              อาหารสุขภาพ
+            </button>
+            <button 
+              type="button" 
+              @click="activeTab = 'otop'" 
+              :class="activeTab === 'otop' ? 'bg-[#1F2925] text-white' : 'hover:bg-stone-100 text-stone-600'"
+              class="px-3.5 py-1.5 rounded-full transition-all cursor-pointer shrink-0"
+            >
+              ของดี OTOP
+            </button>
+          </div>
 
-<!-- 4 Core Pillars of WellTrip -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    
-    <!-- Homestays -->
-    <a href="{% url 'accommodations:list' %}" class="card-luxury overflow-hidden block group">
-      <div class="h-36 w-full overflow-hidden relative">
-        <img src="{% static 'images/hero_lanna_homestay.jpg' %}" alt="โฮมสเตย์ชุมชน" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-        <span class="absolute bottom-2 left-3 text-xs font-semibold text-white drop-shadow">โฮมสเตย์ &amp; ฟาร์มสเตย์</span>
-      </div>
-      <div class="p-4">
-        <h3 class="text-base font-bold text-forest mb-1">โฮมสเตย์ชุมชน</h3>
-        <p class="text-xs text-earth/70 leading-relaxed">สัมผัสอากาศบริสุทธิ์และวิถีเรียบง่าย อุ่นใจ ปลอดภัย ตัดรอบห้องพักแบบเรียลไทม์</p>
-      </div>
-    </a>
+          <!-- Input Bar & Search CTA -->
+          <form @submit.prevent="submitSearch()" class="flex items-center gap-2 pt-2 px-1">
+            <div class="flex-1 flex items-center gap-2 pl-3">
+              <svg class="w-4 h-4 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input 
+                type="text" 
+                x-model="query" 
+                placeholder="ค้นหาชื่อที่พัก, เมนูสุขภาพ, บริการสปา หรือสินค้า OTOP..." 
+                class="w-full text-xs sm:text-sm text-[#1F2925] placeholder-stone-400 focus:outline-none bg-transparent"
+              >
+            </div>
+            <button 
+              type="submit" 
+              class="px-6 py-3 rounded-2xl bg-[#D97706] hover:bg-[#b86403] text-white font-bold text-xs sm:text-sm transition-all shadow-md shrink-0 cursor-pointer"
+            >
+              ค้นหา
+            </button>
+          </form>
 
-    <!-- Healthy Dining -->
-    <a href="{% url 'services:list' %}" class="card-luxury overflow-hidden block group">
-      <div class="h-36 w-full overflow-hidden relative">
-        <img src="{% static 'images/organic_community_food.jpg' %}" alt="อาหารสุขภาพ 5 นิเวศน์" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-        <span class="absolute bottom-2 left-3 text-xs font-semibold text-white drop-shadow">อาหารอินทรีย์พื้นถิ่น</span>
-      </div>
-      <div class="p-4">
-        <h3 class="text-base font-bold text-forest mb-1">อาหารสุขภาพ 5 นิเวศน์</h3>
-        <p class="text-xs text-earth/70 leading-relaxed">คัดสรรวัตถุดิบอินทรีย์พื้นถิ่น โซเดียมต่ำ น้ำตาลน้อย อร่อยตามธรรมชาติ</p>
-      </div>
-    </a>
-
-    <!-- Wellness Spa -->
-    <a href="{% url 'services:list' %}" class="card-luxury overflow-hidden block group">
-      <div class="h-36 w-full overflow-hidden relative">
-        <img src="{% static 'images/eco_wellness_spa.jpg' %}" alt="สปา & นวดแผนไทย" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-        <span class="absolute bottom-2 left-3 text-xs font-semibold text-white drop-shadow">นวดแผนไทยสมุนไพรสด</span>
-      </div>
-      <div class="p-4">
-        <h3 class="text-base font-bold text-forest mb-1">สปา &amp; นวดแผนไทย</h3>
-        <p class="text-xs text-earth/70 leading-relaxed">ศาสตร์การฟื้นฟูร่างกายด้วยสมุนไพรสดและหมอนวดท้องถิ่นผู้เชี่ยวชาญ</p>
-      </div>
-    </a>
-
-    <!-- OTOP Products -->
-    <a href="{% url 'otop:list' %}" class="card-luxury overflow-hidden block group">
-      <div class="h-36 w-full overflow-hidden relative">
-        <img src="{% static 'images/cocoa_craft_sisaket.jpg' %}" alt="สินค้าชุมชน OTOP" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-        <span class="absolute bottom-2 left-3 text-xs font-semibold text-white drop-shadow">หัตถกรรม &amp; ผลิตภัณฑ์ GI</span>
-      </div>
-      <div class="p-4">
-        <h3 class="text-base font-bold text-forest mb-1">สินค้าชุมชน OTOP</h3>
-        <p class="text-xs text-earth/70 leading-relaxed">ผ้าไหมย้อมมะเกลือ งานจักสาน และสมุนไพรแปรรูป การันตีคุณภาพพรีเมียม</p>
-      </div>
-    </a>
-
-  </div>
-</section>
-
-  </div>
-</section>
-
-<!-- Community Showcase / Digital Passport Banner -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-  <div class="card-luxury bg-gradient-to-r from-forest to-forest-dark text-white p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-    <div class="space-y-4 max-w-xl">
-      <span class="inline-block px-3 py-1 rounded-full bg-gold/20 text-gold text-xs font-semibold uppercase tracking-wider">
-        Digital Passport Gamification
-      </span>
-      <h2 class="text-2xl sm:text-3xl font-bold">พาสปอร์ตท่องเที่ยวชุมชนดิจิทัล</h2>
-      <p class="text-sm text-cream/80 font-light leading-relaxed">
-        เช็คอิน ณ จุดท่องเที่ยว แสกน QR Code เก็บตราประทับดิจิทัล สะสมแต้มรับของที่ระลึกพิเศษจากชุมชนได้ทันที
-      </p>
-      <div class="pt-2">
-        <a href="{% url 'community:map' %}" class="btn-gold text-xs px-6 py-3">
-          ดูจุดเช็คอินบนแผนที่
-        </a>
-      </div>
-    </div>
-
-    <div class="w-full md:w-auto flex justify-center">
-      <div class="w-48 h-48 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-6 flex flex-col items-center justify-center text-center shadow-2xl">
-        <div class="w-16 h-16 rounded-2xl bg-gold text-forest flex items-center justify-center mb-3">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-          </svg>
         </div>
-        <span class="text-xs font-bold text-white">Scan & Stamp</span>
-        <span class="text-[10px] text-gold">สะสมตราประทับชุมชน</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 2. Category Chips / Slider with Real Live Database Counts                 -->
+  <!-- ========================================================================= -->
+  <section class="max-w-[1440px] mx-auto px-4 sm:px-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Stays -->
+      <a href="{% url 'accommodations:list' %}" class="p-5 rounded-3xl bg-white border border-stone-200/80 shadow-xs hover:border-[#D97706]/40 hover:shadow-md transition-all group flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center shrink-0 group-hover:bg-[#1F2925] group-hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </div>
+        <div>
+          <span class="block text-xs text-stone-500 font-medium">โฮมสเตย์นิเวศ</span>
+          <h3 class="font-bold text-base text-[#1F2925] group-hover:text-[#D97706] transition-colors">
+            {{ total_stays|default:"14" }} ที่พัก
+          </h3>
+        </div>
+      </a>
+
+      <!-- Wellness -->
+      <a href="/services/?category=SPA" class="p-5 rounded-3xl bg-white border border-stone-200/80 shadow-xs hover:border-[#D97706]/40 hover:shadow-md transition-all group flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-[#D97706] flex items-center justify-center shrink-0 group-hover:bg-[#1F2925] group-hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <span class="block text-xs text-stone-500 font-medium">นวด & สปา herbal</span>
+          <h3 class="font-bold text-base text-[#1F2925] group-hover:text-[#D97706] transition-colors">
+            {{ total_wellness|default:"8" }} บริการ
+          </h3>
+        </div>
+      </a>
+
+      <!-- Foods -->
+      <a href="/services/?category=FOOD" class="p-5 rounded-3xl bg-white border border-stone-200/80 shadow-xs hover:border-[#D97706]/40 hover:shadow-md transition-all group flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center shrink-0 group-hover:bg-[#1F2925] group-hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        </div>
+        <div>
+          <span class="block text-xs text-stone-500 font-medium">อาหารเพื่อสุขภาพ</span>
+          <h3 class="font-bold text-base text-[#1F2925] group-hover:text-[#D97706] transition-colors">
+            {{ total_foods|default:"20" }} เมนู
+          </h3>
+        </div>
+      </a>
+
+      <!-- OTOP -->
+      <a href="{% url 'otop:list' %}" class="p-5 rounded-3xl bg-white border border-stone-200/80 shadow-xs hover:border-[#D97706]/40 hover:shadow-md transition-all group flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-[#D97706] flex items-center justify-center shrink-0 group-hover:bg-[#1F2925] group-hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        </div>
+        <div>
+          <span class="block text-xs text-stone-500 font-medium">ของดี & OTOP</span>
+          <h3 class="font-bold text-base text-[#1F2925] group-hover:text-[#D97706] transition-colors">
+            {{ total_products|default:"35" }} สินค้า
+          </h3>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 3. Featured Multi-Vendor Experiences (4 Columns Grid)                     -->
+  <!-- ========================================================================= -->
+  <section class="max-w-[1440px] mx-auto px-4 sm:px-8 space-y-8">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div>
+        <span class="text-xs font-bold tracking-widest text-[#D97706] uppercase">CURATED EXPERIENCES</span>
+        <h2 class="font-serif text-2xl sm:text-4xl font-bold text-[#1F2925] mt-1">
+          ประสบการณ์สุขภาวะคัดสรรประจำฤดูกาล
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-500 mt-1">
+          คัดสรรโฮมสเตย์ บริการสปา และอาหารอินทรีย์ที่ได้รับความนิยมสูงสุดในศรีสะเกษ
+        </p>
+      </div>
+      <a href="{% url 'accommodations:list' %}" class="inline-flex items-center gap-2 text-xs font-bold text-[#D97706] hover:text-[#b86403] transition-colors shrink-0">
+        <span>ดูทั้งหมดในแคตตาล็อก</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </a>
+    </div>
+
+    <!-- 4 Columns Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for item in featured_experiences %}
+        <article class="rounded-3xl bg-white border border-stone-200/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between p-3 group">
+          
+          <div class="space-y-3">
+            <!-- Image Frame -->
+            <div class="relative h-48 w-full rounded-2xl overflow-hidden bg-stone-100">
+              <img src="{{ item.image }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              
+              <!-- Badge Top-Left -->
+              <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-[11px] font-bold text-[#1F2925] border border-white/40 shadow-xs">
+                {{ item.badge }}
+              </span>
+
+              <!-- Wishlist Heart Top-Right -->
+              <button type="button" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-stone-600 hover:text-rose-500 flex items-center justify-center backdrop-blur-md transition-colors shadow-xs">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              </button>
+
+              <!-- Price Tag Overlay Bottom-Left -->
+              <div class="absolute bottom-3 left-3 bg-[#1F2925]/90 text-white px-3 py-1.5 rounded-xl backdrop-blur-md flex items-baseline gap-1">
+                <span class="text-sm font-bold text-[#D97706]">{{ item.price }}</span>
+                <span class="text-[10px] text-stone-300 font-light">{{ item.period }}</span>
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="space-y-1.5 px-2">
+              <div class="flex items-center justify-between text-xs text-stone-500">
+                <span class="font-semibold text-[#D97706]">{{ item.category }}</span>
+                <span class="flex items-center gap-1 font-bold text-[#1F2925]">
+                  <svg class="w-3.5 h-3.5 text-[#D97706] fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  <span>{{ item.rating }}</span>
+                </span>
+              </div>
+
+              <h3 class="font-bold text-base text-[#1F2925] group-hover:text-[#D97706] transition-colors line-clamp-1">
+                {{ item.title }}
+              </h3>
+
+              <p class="flex items-center gap-1 text-xs text-stone-500">
+                <svg class="w-3.5 h-3.5 text-[#D97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>{{ item.location }}</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Bottom Full-Width CTA -->
+          <a href="{{ item.href }}" class="mt-4 flex items-center justify-between w-full h-11 px-4 rounded-2xl bg-[#FAF9F6] text-[#1F2925] font-bold text-xs hover:bg-[#1F2925] hover:text-[#FAF9F6] transition-all border border-stone-200">
+            <span>ดูรายละเอียด</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+
+        </article>
+      {% empty %}
+        <div class="col-span-4 p-8 text-center text-xs text-stone-400 bg-white rounded-3xl border border-stone-200">
+          กำลังเตรียมข้อมูลรายการท่องเที่ยวสุขภาวะ
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 4. AI Wellness Curator Banner                                             -->
+  <!-- ========================================================================= -->
+  <section class="max-w-[1440px] mx-auto px-4 sm:px-8">
+    <div class="rounded-3xl sm:rounded-[2.5rem] bg-gradient-to-br from-[#2B3832] to-[#1F2925] text-[#FAF9F6] p-8 sm:p-12 border border-[#C49A45]/30 shadow-xl space-y-6">
+      
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 text-[#D97706] text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-[#D97706] animate-pulse"></span>
+            <span class="uppercase tracking-widest">AI WELLNESS TRIP CURATOR</span>
+          </div>
+          <h3 class="font-serif text-2xl sm:text-4xl font-bold leading-tight">
+            ให้ AI ช่วยวางแผนทริปที่เหมาะกับสุขภาพของคุณ
+          </h3>
+          <p class="text-xs sm:text-sm text-stone-300 font-light max-w-xl">
+            ประเมิน BMI / BMR และความต้องการชาร์จพลังชีวิต พร้อมจับคู่โปรแกรมโฮมสเตย์และสปาสมุนไพรในศรีสะเกษเฉพาะบุคคล
+          </p>
+        </div>
+
+        <a href="{% url 'ai_recommendations:assessment' %}" class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[#D97706] hover:bg-[#b86403] text-white text-xs sm:text-sm font-bold transition-all shadow-lg shadow-[#D97706]/20 shrink-0">
+          <span>เริ่มประเมินสุขภาพฟรี</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+      </div>
+
+      <!-- Goal Selection Chips -->
+      <div class="flex flex-wrap items-center gap-2.5 pt-4 border-t border-white/10">
+        <span class="text-xs text-stone-300 font-medium">เลือกเป้าหมายสุขภาพของคุณ:</span>
+        {% for g in wellness_goals %}
+          <a href="{{ g.target }}" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-[#D97706] hover:text-white text-xs font-semibold text-[#FAF9F6] transition-all border border-white/15">
+            {{ g.label }}
+          </a>
+        {% endfor %}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 5. Why Choose Us & Real Live System Totals (Full-Width #1F2925)            -->
+  <!-- ========================================================================= -->
+  <section class="w-full bg-[#1F2925] text-[#FAF9F6] py-20 px-4 sm:px-8">
+    <div class="max-w-[1440px] mx-auto space-y-12">
+      
+      <div class="text-center space-y-3 max-w-2xl mx-auto">
+        <span class="text-xs font-bold tracking-widest text-[#D97706] uppercase">WHY WELLTRIP SISAKET</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">
+          เที่ยวแบบชะลอวัย อุ่นใจในทุกขั้นตอน
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-light">
+          เราคัดสรรโฮมสเตย์และบริการสุขภาพที่ผ่านการรับรองโดยชุมชน ปลอดสารเคมี และกระจายรายได้สู่ผู้ประกอบการท้องถิ่นโดยตรง 100%
+        </p>
+      </div>
+
+      <!-- Real Live Database Totals Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center border-y border-white/10 py-10">
+        {% for s in stats %}
+          <div class="space-y-1">
+            <div class="font-serif text-3xl sm:text-5xl font-bold text-[#D97706]">{{ s.value }}</div>
+            <div class="text-xs sm:text-sm text-stone-300 font-light">{{ s.label }}</div>
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 6. Digital Passport QR Stamp Banner                                       -->
+  <!-- ========================================================================= -->
+  <section class="max-w-[1440px] mx-auto px-4 sm:px-8">
+    <div class="rounded-3xl bg-white border border-stone-200/80 p-8 sm:p-12 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="space-y-3 max-w-xl text-left">
+        <span class="inline-block px-3 py-1 rounded-full bg-amber-50 text-[#D97706] border border-[#D97706]/30 text-xs font-bold uppercase tracking-wider">
+          Digital Passport Gamification
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#1F2925]">
+          พาสปอร์ตท่องเที่ยวชุมชนดิจิทัล
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-light">
+          เช็คอิน ณ จุดท่องเที่ยว 13 ชุมชนศรีสะเกษ สแกน QR Code เก็บตราประทับดิจิทัล สะสมแต้มแลกรับส่วนลดและของที่ระลึกพิเศษจากชุมชนได้ทันที
+        </p>
+        <div class="pt-2">
+          <a href="{% url 'community:map' %}" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1F2925] hover:bg-[#2B3832] text-white text-xs font-bold transition-all shadow-sm">
+            <span>ดูจุดเช็คอินบนแผนที่</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="w-full md:w-auto flex justify-center shrink-0">
+        <div class="w-48 h-48 rounded-3xl bg-[#FAF9F6] border border-stone-200 p-6 flex flex-col items-center justify-center text-center shadow-xs">
+          <div class="w-16 h-16 rounded-2xl bg-[#D97706] text-white flex items-center justify-center mb-3 shadow-md">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+          </div>
+          <span class="text-xs font-bold text-[#1F2925]">Scan & Stamp</span>
+          <span class="text-[10px] text-[#D97706] font-semibold">สะสมตราประทับชุมชน</span>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 7. Newsletter & Stay Connected Banner                                     -->
+  <!-- ========================================================================= -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-8 pb-12">
+    <div class="rounded-3xl bg-white border border-stone-200 p-8 sm:p-12 text-center space-y-4 shadow-xs">
+      <span class="text-xs font-bold tracking-widest text-[#D97706] uppercase">STAY CONNECTED</span>
+      <h3 class="font-serif text-2xl sm:text-3xl font-bold text-[#1F2925]">
+        รับข่าวสารสิทธิพิเศษและทริปสุขภาพศรีสะเกษ
+      </h3>
+      <p class="text-xs sm:text-sm text-stone-500 max-w-md mx-auto leading-relaxed">
+        ลงทะเบียนเพื่อรับสิทธิส่วนลดพิเศษ แพ็กเกจโฮมสเตย์ประจำฤดูกาล และคำแนะนำสุขภาพฟรี ส่งตรงถึงอีเมลของคุณ
+      </p>
+      
+      <form class="flex flex-col sm:flex-row max-w-md mx-auto gap-2 pt-2" onsubmit="alert('ขอบคุณสำหรับการสมัครรับข่าวสาร WellTrip!'); return false;">
+        <input 
+          type="email" 
+          required 
+          placeholder="กรอกอีเมลของคุณ..." 
+          class="flex-1 px-4 py-3 rounded-full border border-stone-300 text-xs text-[#1F2925] focus:outline-none focus:border-[#1F2925]"
+        >
+        <button type="submit" class="px-6 py-3 rounded-full bg-[#1F2925] hover:bg-[#2B3832] text-white text-xs font-bold transition-all shadow-sm">
+          สมัครรับข่าวสาร
+        </button>
+      </form>
+    </div>
+  </section>
+
+</div>
 {% endblock %}

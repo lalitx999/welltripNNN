@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
+from django.db.models import Q
 
 from apps.accounts.models import UserRoles
 from apps.accounts.permissions import role_required, can_edit_object
@@ -12,9 +13,71 @@ from apps.accommodations.forms import AccommodationForm, RoomForm, RoomPricingCa
 
 
 def list_view(request):
-    """Public list of active homestays for tourists."""
-    accommodations = Accommodation.objects.filter(status=AccommodationStatus.ACTIVE).select_related('owner')
-    return render(request, 'accommodations/list.html', {'accommodations': accommodations})
+    """
+    Public list of active homestays for tourists:
+    Supports searching by keyword (name/address), filtering by district and price.
+    """
+    query = request.GET.get('q', '').strip()
+    district = request.GET.get('district', '').strip()
+    price_range = request.GET.get('priceRange', '').strip()
+
+    qs = Accommodation.objects.filter(status=AccommodationStatus.ACTIVE).select_related('owner').prefetch_related('rooms')
+
+    if query:
+        qs = qs.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(address__icontains=query) |
+            Q(subdistrict__icontains=query) |
+            Q(district__icontains=query)
+        )
+
+    if district:
+        qs = qs.filter(district__icontains=district)
+
+    if price_range == 'budget':
+        qs = qs.filter(min_price_per_night__lt=800)
+    elif price_range == 'mid':
+        qs = qs.filter(min_price_per_night__gte=800, min_price_per_night__lte=1500)
+    elif price_range == 'luxury':
+        qs = qs.filter(min_price_per_night__gt=1500)
+
+    # Districts for filter dropdown
+    districts = [
+        "เมืองศรีสะเกษ", "กันทรลักษ์", "กันทรารมย์", "ขุนหาญ", "ราษีไศล",
+        "อุทุมพรพิสัย", "ปรางค์กู่", "ขุขันธ์", "ไพรบึง", "ห้วยทับทัน",
+        "โนนคูณ", "ศรีรัตนะ", "น้ำเกลี้ยง", "วังหิน", "ภูสิงห์", "เมืองจันทร์",
+        "เบญจลักษ์", "พยุห์", "โพธิ์ศรีสุวรรณ", "ศิลาลาด"
+    ]
+
+    return render(request, 'accommodations/list.html', {
+        'accommodations': qs,
+        'query': query,
+        'selected_district': district,
+        'selected_price': price_range,
+        'districts': districts,
+        'total_count': qs.count(),
+    })
+
+
+def detail_view(request, identifier):
+    """
+    Public detail view of a single homestay:
+    Accepts either UUID or slug, displays rooms, amenities, photo gallery,
+    and direct room booking form.
+    """
+    try:
+        accommodation = Accommodation.objects.prefetch_related('rooms').get(slug=identifier, status=AccommodationStatus.ACTIVE)
+    except (Accommodation.DoesNotExist, ValueError):
+        accommodation = get_object_or_404(Accommodation.objects.prefetch_related('rooms'), id=identifier, status=AccommodationStatus.ACTIVE)
+
+    rooms = accommodation.rooms.filter(is_active=True)
+
+    return render(request, 'accommodations/detail.html', {
+        'accommodation': accommodation,
+        'rooms': rooms,
+    })
+
 
 
 @role_required(UserRoles.HOMESTAY_OWNER)

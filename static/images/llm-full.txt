@@ -1,0 +1,146 @@
+# WellTrip Sisaket - Full Knowledge Base & Text Dataset for LLMs
+
+> Complete, comprehensive text reference dataset for Sisaket Eco-Wellness Tourism Platform (WellTrip Thailand). Intended for ingestion by Large Language Models (LLMs), RAG pipelines, and AI Answer Engines.
+
+---
+
+## 1. Executive Summary & Platform Overview
+
+WellTrip Sisaket is an eco-wellness tourism platform specifically designed for Sisaket Province in Northeastern Thailand (Isan). It operates under a Zero-Emoji, Eco-Premium design philosophy, connecting visitors directly with authentic community homestays, GI agricultural goods, ancient Khmer heritage sites, and local wellness providers.
+
+- **Primary URL**: https://www.welltripthailand.com
+- **Province**: Sisaket (ศรีสะเกษ), Thailand
+- **Admin Contact**: promlikit@sskru.ac.th (Super Admin)
+- **Key Focus**: Sustainable tourism, 4 ethnic tribes culture, volcano soil products, health & wellness.
+
+---
+
+## 2. Cultural Background & 4 Ethnic Tribes
+
+Sisaket Province is uniquely defined by its blend of 4 indigenous ethnic groups, each contributing distinct linguistic, culinary, and artisanal traditions:
+
+1. **Khmer (เขมร)**: Concentrated in southern districts (Kantharalak, Khun Han, Phu Sing, Khukhan). Known for ancient Khmer stone temples, San Don Ta ancestor worship, and traditional silk weaving.
+2. **Lao (ลาว)**: Concentrated along the Mun River basin (Mueang Sisaket, Kanthararom, Rasi Salai). Known for Mor Lam music, sticky rice culture, bamboo crafts, and river fish gastronomy.
+3. **Suai / Kouy (ส่วย/กูย)**: Famous for elephant husbandry, deep forest knowledge, herbal medicine, and unique dialect traditions.
+4. **Yoe (เยอ)**: Concentrated in Mueang Phrai Bueng (Ban Prasat Yoe). Known for distinctive dark indigo handwoven textiles, ancient temple archways, and Luang Pu Mum reverence.
+
+---
+
+## 3. Geographical GI Products (Geographical Indication)
+
+- **Sisaket Lava Durian (ทุเรียนภูเขาไฟ GI)**: Grown on rich mineralized volcanic soil in Kantharalak and Khun Han. Features a creamy, smooth texture, mild aroma, and low sulfur smell. Harvest season: June - July.
+- **Khun Han Volcano Robusta Coffee (กาแฟโรบัสต้าดินภูเขาไฟ GI)**: Grown on high-mineral volcanic soil in Khun Han District. 100% Robusta beans offering a rich, smooth flavor profile. Packaged in 500g bags.
+- **Sisaket GI Shallots & Garlic (หอมแดงและกระเทียมโทน GI)**: Renowned throughout Thailand for tight bulbs, intense aroma, high allicin content, and long shelf life.
+
+---
+
+## 4. 31 Official Tourist Destinations
+
+### Natural Attractions (13)
+1. **น้ำตกภูลออ (Namtok Phu La-or)** - Kantharalak District: Serene waterfall inside Phanom Dong Rak Wildlife Sanctuary.
+2. **น้ำตกสำโรงเกียรติ (Namtok Samrong Kiat)** - Khun Han District: 8-meter cliff waterfall surrounded by lush flora.
+3. **น้ำตกนาตราว (Namtok Na Traw)** - Khun Han District: Secluded forest waterfall with broad stone terraces.
+4. **น้ำตกห้วยจันทร์ (Namtok Huai Chan)** - Khun Han District: Popular multi-tiered waterfall flowing year-round.
+5. **น้ำตกซำไทร (Namtok Sam Sai)** - Khun Han District: Quiet forest stream under large tree canopies.
+6. **น้ำตกห้วยสวาย (Namtok Huai Sawai)** - Khun Han District: Natural cascade hidden in Phanom Dong Rak mountain range.
+7. **น้ำตกห้วยวัญใหญ่ (Namtok Huai Wang Yai)** - Kantharalak District: Large waterfall falling into a deep jungle basin.
+8. **ผามออีแดง (Pha Mo E-Daeng)** - Kantharalak District: Border cliff viewpoint overlooking Preah Vihear castle, morning sea of mist, and 1,500-year-old bas-relief carvings.
+9. **ผาพญากูปรี (Pha Phaya Kouprey)** - Phu Sing District: Scenic mountain viewpoint featuring a large Kouprey statue.
+10. **สวนสมเด็จพระศรีนครินทร์ (Suan Somdet Srinagarindra)** - Mueang District: Park housing 40,000 natural Lamduan trees.
+11. **เกาะกลางน้ำห้วยน้ำคำ (Huai Nam Kham Island)** - Mueang District: Urban lake park with jogging tracks and Sisaket Aquarium.
+12. **ศรีสะเกษ อควาเรียม (Sisaket Aquarium)** - Mueang District: Freshwater and marine aquarium with underwater glass tunnel.
+13. **หาดนางเหงา (Hat Nang Ngao)** - Kanthararom District: Mun River sandbank famous for sunsets and fresh river fish dining.
+
+### Cultural & Religious Sites (9)
+14. **วัดไพรพัฒนา (Wat Phrai Phatthana)** - Phu Sing District: Shrine of Luang Pu Suang (Teveda Len Din).
+15. **วัดมหาพุทธาราม / วัดพระโต (Wat Maha Phuttharam)** - Mueang District: Royal temple housing the sacred Luang Pho To Buddha statue.
+16. **วัดศรีบึงบูรพ์ (Wat Si Bueng Bun)** - Bueng Bun District: Riverside temple featuring Thai-Khmer architecture on Huai Thap Than stream.
+17. **วัดพระธาตุเรืองรอง (Wat Phra That Rueang Rong)** - Mueang District: 6-tier pagoda housing 4 ethnic tribes cultural museum.
+18. **วัดสุพรรณหงส์ (Wat Suphannahong)** - Mueang District: Temple chapel built on a simulated Suphannahong royal barge floating on water.
+19. **วัดป่ามหาเจดีย์แก้ว / วัดล้านขวด (Wat Pa Maha Chedi Kaew)** - Khun Han District: Globally famous temple constructed with over 1.5 million recycled glass bottles.
+20. **วัดถ้ำสระพงษ์ (Wat Tham Sa Phong)** - Khun Han District: Forest meditation temple built inside natural rock caves.
+21. **ตึกขุนอำไพพาณิชย์ (Khun Amphai Phanit Building)** - Mueang District: Award-winning Sino-Portuguese historic merchant house.
+22. **วัดหนองตะเคียน (Wat Nong Takhian)** - Mueang District: Temple surrounded by a majestic row of white Buddha statues.
+
+### Historical Castles & Monuments (9)
+23. **ปราสาทสระกำแพงใหญ่ (Prasat Sa Kamphaeng Yai)** - Uthumphon Phisai District: Largest Khmer sandstone castle in Sisaket (11th Century Baphuon style).
+24. **ปราสาทสระกำแพงน้อย (Prasat Sa Kamphaeng Noi)** - Uthumphon Phisai District: Ancient Khmer hospital chapel (Arokayasala) built under Jayavarman VII.
+25. **ปราสาทโดนตวล (Prasat Don Tual)** - Kantharalak District: Sandstone cliff castle near the Cambodian border.
+26. **ปราสาทเมืองจันทร์ (Prasat Mueang Chan)** - Mueang Chan District: Ancient moated Khmer sanctuary ruins.
+27. **ปราสาทตาเล็ง (Prasat Ta Leng)** - Khukhan District: Single sandstone tower with intact Kleang-style lintels.
+28. **ปราสาทบ้านปราสาท (Prasat Ban Prasat)** - Huai Thap Than District: Trio of brick towers located near a 2,000-year-old archaeological site.
+29. **ปราสาทบ้านสมอ (Prasat Ban Samo)** - Prang Ku District: Ancient Khmer Arokayasala chapel structure.
+30. **ปราสาทปรางค์กู่ (Prasat Prang Ku)** - Prang Ku District: Laterite Khmer sanctuary adjacent to a large ancient Baray reservoir.
+31. **สถูปคู่ (Sathup Khu)** - Kantharalak District: Twin sandstone stupas located on Pha Mo E-Daeng cliff.
+
+---
+
+## 5. 13 Featured OTOP Nawatwithi Tourism Villages
+
+1. **บ้านละทาย (Ban La Thai)** - Kanthararom: Boat trips on Mun river, bamboo crafts, fresh river fish. Contact: 087-248-2612.
+2. **บ้านกู่ (Ban Ku)** - Prang Ku: Prasat Prang Ku, ancient Baray lake, handwoven silk, Praimae dessert. Contact: 086-258-2941.
+3. **บ้านปราสาท (Ban Prasat)** - Huai Thap Than: Archaeological digs, Huai Thap Than grilled chicken. Contact: 089-945-8120.
+4. **บ้านลำภู (Ban Lam Phu)** - Nam Khliangg: Herbal gardens, organic herbal teas, rubber plantations. Contact: 081-790-3345.
+5. **บ้านกุดนาแก้ว (Ban Kud Na Kaew)** - Si Rattana: Integrated farming, Prasat Phu Fai mountain trips. Contact: 085-467-1123.
+6. **บ้านปราสาทเยอ (Ban Ban Prasat Yoe)** - Phrai Bueng: Luang Pu Mum, Yoe ethnic culture & indigo weaving. Contact: 083-378-9941.
+7. **บ้านกำแพงใหญ่ (Ban Kamphaeng Yai)** - Uthumphon Phisai: Prasat Sa Kamphaeng Yai, Luang Pu Khreuang. Contact: 086-123-9876.
+8. **บ้านหัวนา (Ban Hua Na)** - Yang Chum Noi: Hua Na dam, organic shallots, Phra That Katanyu. Contact: 084-556-7890.
+9. **บ้านหว้าน (Ban Wan)** - Sila Lat: Dong Ling monkey forest, nature trail walking. Contact: 082-998-1234.
+10. **บ้านสร้างเรือง (Ban Sang Rueang)** - Mueang District: Wat Phra That Rueang Rong, 4 tribes museum. Contact: 089-445-6789.
+11. **บ้านซำตารมย์ (Ban Sam Ta Rom)** - Kantharalak: Lava durian orchards, Phanom Dong Rak mountain views. Contact: 081-332-4567.
+12. **บ้านซำขี้เหล็ก (Ban Sam Khilek)** - Khun Han: Khun Han volcano Robusta coffee, fruit picking homestays. Contact: 087-889-0123.
+13. **บ้านขุนหาญ (Ban Khun Han)** - Khun Han: Wat Lan Khuat (1.5M glass bottle temple). Contact: 086-778-9012.
+
+---
+
+## 6. Official Souvenirs & Featured Goods
+
+- **Sisaket Tourism T-Shirt (เสื้อยืดอัตลักษณ์ศรีสะเกษ)**:
+  - **Price**: 290 THB per piece
+  - **Specs**: 100% Premium Cotton, available in Minimal White and Forest Green. Features "Sisaket City of Opportunity" and "Sound of Sisaket 2026" artwork.
+- **Khun Han GI Volcano Robusta Coffee 500g (กาแฟโรบัสต้าดินภูเขาไฟ GI)**:
+  - **Price**: 250 THB per 500g bag
+  - **Specs**: 100% Robusta roasted coffee beans grown on GI mineral volcanic soil in Khun Han District. Smooth, bold, rich aroma.
+
+---
+
+## 7. Annual Traditional Festivals & Sound of Sisaket 2026
+
+- **Sound of Sisaket 2026 (Nov - Dec 2026)**:
+  - Pong Lang Folk Music Contest (Nov 6-7)
+  - Sisaket Coffee & Music Fest #4 "Sang Sook" (Nov 13-15)
+  - 52nd King's Cup Football Tournament (Nov 14-17)
+  - 244th Sisaket City Foundation Celebration (Nov 18-22)
+  - National Luk Thung Music Contest (Nov 21-22)
+  - Sisaket Loy Krathong Tradition (Nov 23-24)
+  - Annual Chinese Opera Festival (Nov 25 - Dec 2)
+  - Camp Klang Koh Sisaket (Dec 12-13 & 19-20)
+  - World Marching Band Competition (Dec 16-19)
+  - Sound of Sisaket Acoustic Music Fest (Dec 16-20)
+  - Thai Baan Land 7.0 Music Festival (Dec 19)
+
+- **12-Month Sisaket Traditional Calendar**:
+  - Jan: Boon Koon Lan (Rice Castle Ceremony)
+  - Feb: Boon Khao Jee & Khukhan Harvest Fest / Yang Chum Noi Shallot Fest
+  - Mar: Lamduan Flower Festival (4 Ethnic Tribes Light & Sound Performance at Suan Somdet)
+  - Apr: Songkran & Luang Pho To Bathing / Luang Pu Suang Robe Changing
+  - May: Ancient Rocket Festival (Boon Bang Fai)
+  - Jun-Jul: Lava Durian Fest (เทศกาลทุเรียนภูเขาไฟศรีสะเกษ)
+  - Jul: Sisaket Candle Procession Festival
+  - Aug: Khun Han Fruit Festival
+  - Sep-Oct: San Don Ta Khmer Ancestor Festival
+  - Oct: Tak Bat Devo at Pha Mo E-Daeng Cliff
+
+---
+
+## 8. API Architecture & Developer Integration
+
+The WellTrip platform provides RESTful API endpoints for external integrations:
+
+- `POST /api/v1/auth/login/`: User & Admin Authentication (JWT Access + Refresh)
+- `POST /api/v1/auth/oauth/google/`: Google OAuth 2.0 ID Token verification
+- `GET /api/v1/accommodations/`: Lodging & homestay directory with room calendar availability
+- `GET /api/v1/otop/`: OTOP product catalog with inventory management
+- `GET /api/v1/services/foods/`: Healthy local dining & calorie-tracked menus
+- `GET /api/v1/services/wellness/`: Herbal spa packages and session slot booking
+- `POST /api/v1/payments/verify-slip/`: PromptPay slip verification via EasySlip API
