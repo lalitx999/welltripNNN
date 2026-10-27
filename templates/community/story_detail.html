@@ -1,87 +1,82 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}{{ story.title }} | เรื่องเล่าชุมชน WellTrip{% endblock %}
+{% block title %}{{ story.title }} - เรื่องเล่าชุมชน WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<article class="bg-cream py-10 lg:py-16 min-h-screen">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    
-    <!-- Breadcrumb -->
-    <nav class="flex items-center space-x-2 text-xs text-earth/60 mb-6">
-      <a href="{% url 'core:home' %}" class="hover:text-forest">หน้าแรก</a>
-      <span>/</span>
-      <a href="{% url 'community:stories_list' %}" class="hover:text-forest">เรื่องเล่าชุมชน</a>
-      <span>/</span>
-      <span class="text-forest font-medium truncate max-w-xs">{{ story.title }}</span>
-    </nav>
+<article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  
+  <!-- Breadcrumbs -->
+  <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+    <a href="{% url 'core:home' %}" class="hover:text-[#1f2925] transition-colors">หน้าแรก</a>
+    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+    <a href="{% url 'community:stories_list' %}" class="hover:text-[#1f2925] transition-colors">เรื่องเล่าชุมชน</a>
+    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+    <span class="text-[#c49a45] font-bold truncate max-w-xs">{{ story.title }}</span>
+  </nav>
 
-    <!-- Header & Title -->
-    <header class="space-y-4 mb-8">
-      <div class="flex items-center space-x-2">
-        <span class="px-3 py-1 rounded-full bg-forest text-gold text-xs font-semibold">
-          {{ story.get_kind_display }}
+  <!-- Header & Title -->
+  <header class="space-y-4 border-b border-slate-200 pb-6">
+    <div class="flex items-center gap-2">
+      <span class="px-3 py-1 rounded-full bg-[#1f2925] text-[#c49a45] text-xs font-bold">
+        {{ story.get_kind_display }}
+      </span>
+      {% if story.location %}
+        <span class="text-xs text-slate-500 flex items-center gap-1">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+          <span>{{ story.location }}</span>
         </span>
-        {% if story.location %}
-          <span class="text-xs text-earth/70 flex items-center space-x-1">
-            <svg class="w-3.5 h-3.5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-            <span>{{ story.location }}</span>
-          </span>
-        {% endif %}
-      </div>
-
-      <h1 class="text-3xl sm:text-4xl font-bold text-forest tracking-tight leading-tight">
-        {{ story.title }}
-      </h1>
-
-      {% if story.title_en %}
-        <p class="text-base text-earth/60 font-serif italic">
-          {{ story.title_en }}
-        </p>
-      {% endif %}
-
-      <div class="text-xs text-earth/50 pt-2 border-t border-gray-200">
-        เผยแพร่เมื่อ: {{ story.updated_at|date:"d F Y" }}
-      </div>
-    </header>
-
-    <!-- Cover Image -->
-    <div class="w-full h-72 sm:h-96 rounded-3xl overflow-hidden shadow-md mb-10 bg-stone-100">
-      {% if story.image_url %}
-        <img src="{{ story.image_url }}" alt="{{ story.image_alt|default:story.title }}" class="w-full h-full object-cover">
-      {% else %}
-        <img src="{% static 'images/sisaket-nature-concept.webp' %}" alt="{{ story.title }}" class="w-full h-full object-cover">
       {% endif %}
     </div>
 
-    <!-- Article Content -->
-    <div class="bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-gray-100 prose prose-lg prose-forest max-w-none text-earth leading-relaxed font-light">
-      {% if story.summary %}
-        <p class="text-lg font-medium text-forest border-l-4 border-gold pl-4 my-6 italic">
-          {{ story.summary }}
-        </p>
-      {% endif %}
+    <h1 class="font-serif text-3xl sm:text-5xl font-bold text-[#1f2925] tracking-tight leading-tight">
+      {{ story.title }}
+    </h1>
 
-      <div class="whitespace-pre-line text-sm sm:text-base space-y-4">
-        {{ story.body }}
-      </div>
-    </div>
-
-    <!-- Related Articles -->
-    {% if related_stories %}
-      <div class="mt-14 pt-10 border-t border-gray-200">
-        <h3 class="text-xl font-bold text-forest mb-6">เรื่องเล่าชุมชนที่น่าสนใจ</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {% for r_story in related_stories %}
-            <a href="{% url 'community:story_detail' r_story.id %}" class="bg-white p-4 rounded-2xl border border-gray-100 block group hover:shadow-md transition-all">
-              <span class="text-[10px] text-gold font-semibold uppercase block mb-1">{{ r_story.get_kind_display }}</span>
-              <h4 class="text-xs sm:text-sm font-bold text-forest group-hover:text-gold line-clamp-2 transition-colors">{{ r_story.title }}</h4>
-            </a>
-          {% endfor %}
-        </div>
-      </div>
+    {% if story.title_en %}
+      <p class="text-base text-slate-500 font-serif italic">
+        {{ story.title_en }}
+      </p>
     {% endif %}
 
+    <div class="text-xs text-slate-400 pt-2 flex items-center gap-2">
+      <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+      <span>เผยแพร่เมื่อ: {{ story.updated_at|date:"d F Y" }}</span>
+    </div>
+  </header>
+
+  <!-- Cover Image -->
+  <div class="w-full h-72 sm:h-96 rounded-3xl overflow-hidden shadow-md bg-slate-100">
+    {% if story.image_url %}
+      <img src="{{ story.image_url }}" alt="{{ story.image_alt|default:story.title }}" class="w-full h-full object-cover">
+    {% else %}
+      <img src="{% static 'images/sisaket-nature-concept.webp' %}" alt="{{ story.title }}" class="w-full h-full object-cover">
+    {% endif %}
   </div>
+
+  <!-- Article Content -->
+  <div class="bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-slate-200/90 text-slate-700 leading-relaxed font-light space-y-4">
+    {% if story.summary %}
+      <p class="text-base sm:text-lg font-medium text-[#1f2925] border-l-4 border-[#c49a45] pl-4 my-4 italic">
+        {{ story.summary }}
+      </p>
+    {% endif %}
+
+    <div class="prose max-w-none text-slate-700 leading-relaxed text-sm sm:text-base">
+      {{ story.content|safe }}
+    </div>
+  </div>
+
+  <!-- Back Link -->
+  <div class="text-center pt-4">
+    <a 
+      href="{% url 'community:stories_list' %}" 
+      class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-sm"
+    >
+      <i data-lucide="arrow-left" class="w-4 h-4"></i>
+      <span>กลับไปยังเรื่องเล่าชุมชนทั้งหมด</span>
+    </a>
+  </div>
+
 </article>
 {% endblock %}
