@@ -4,30 +4,38 @@
 {% block title %}สินค้าภูมิปัญญาชุมชน OTOP ศรีสะเกษ - WellTrip{% endblock %}
 
 {% block content %}
-<div class="max-w-[1440px] mx-auto px-4 sm:px-8 py-10 space-y-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
   
   <!-- Page Header -->
   <div class="space-y-2">
-    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#D97706] uppercase tracking-wider">
-      <span class="w-2 h-2 rounded-full bg-[#D97706] animate-pulse"></span>
-      <span>สินค้าหัตถกรรม ภูมิปัญญา และผลิตภัณฑ์ GI ศรีสะเกษ</span>
+    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
+      <span class="w-2 h-2 rounded-full bg-[#c49a45] animate-pulse"></span>
+      <span>LOCAL CRAFTS & COMMUNITY WISDOM</span>
     </div>
-    <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1F2925]">ศูนย์จำหน่ายผลิตภัณฑ์ชุมชน OTOP</h1>
-    <p class="text-xs sm:text-sm text-stone-500 max-w-2xl">
+    <h1 class="font-serif text-3xl sm:text-5xl font-bold text-[#1f2925] tracking-tight">
+      ศูนย์จำหน่ายผลิตภัณฑ์ชุมชน OTOP
+    </h1>
+    <p class="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
       ผ้าไหมย้อมมะเกลือ กาแฟโรบัสต้าภูเขาไฟ สมุนไพรแปรรูป และงานจักสาน รายได้กระจายตรงสู่ชาวบ้าน 100%
     </p>
   </div>
 
-  <!-- Search & Category Filters -->
-  <div class="bg-white p-4 sm:p-5 rounded-3xl border border-stone-200/80 shadow-xs flex flex-col md:flex-row gap-4 items-center justify-between">
+  <!-- Search & Category Filters Bar -->
+  <div class="bg-white p-3 sm:p-4 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
     
     <!-- Category Pills -->
-    <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto text-xs font-bold">
-      <a href="?category={% if query %}&q={{ query }}{% endif %}" class="px-4 py-2.5 rounded-full transition-all shrink-0 {% if not selected_category %}bg-[#1F2925] text-white shadow-xs{% else %}bg-stone-100 text-stone-600 hover:bg-stone-200{% endif %}">
+    <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto text-xs font-bold scrollbar-none">
+      <a 
+        href="?category={% if query %}&q={{ query }}{% endif %}" 
+        class="px-4 py-2.5 rounded-full transition-all shrink-0 {% if not selected_category %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}"
+      >
         สินค้าทั้งหมด
       </a>
       {% for cat_key, cat_label in categories %}
-        <a href="?category={{ cat_key }}{% if query %}&q={{ query }}{% endif %}" class="px-4 py-2.5 rounded-full transition-all shrink-0 {% if selected_category == cat_key %}bg-[#1F2925] text-white shadow-xs{% else %}bg-stone-100 text-stone-600 hover:bg-stone-200{% endif %}">
+        <a 
+          href="?category={{ cat_key }}{% if query %}&q={{ query }}{% endif %}" 
+          class="px-4 py-2.5 rounded-full transition-all shrink-0 {% if selected_category == cat_key %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}"
+        >
           {{ cat_label }}
         </a>
       {% endfor %}
@@ -42,15 +50,18 @@
           name="q" 
           value="{{ query }}" 
           placeholder="ค้นหาชื่อสินค้า, ผ้าไหม, กาแฟ..." 
-          class="w-full pl-9 pr-3 py-2 rounded-2xl border border-stone-200 text-xs text-[#1F2925] focus:outline-none focus:border-[#1F2925]"
+          class="w-full pl-9 pr-3 py-2.5 rounded-2xl border border-slate-200 text-xs text-[#1f2925] placeholder-slate-400 focus:outline-none focus:border-[#1f2925]"
         >
-        <svg class="w-4 h-4 text-stone-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
       </div>
-      <button type="submit" class="px-4 py-2 rounded-2xl bg-[#1F2925] text-white text-xs font-bold shrink-0">
+      <button 
+        type="submit" 
+        class="px-5 py-2.5 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-white text-xs font-bold transition shadow-sm shrink-0 cursor-pointer"
+      >
         ค้นหา
       </button>
       {% if query or selected_category %}
-        <a href="{% url 'otop:list' %}" class="p-2 text-xs text-stone-400 hover:text-stone-600">ล้าง</a>
+        <a href="{% url 'otop:list' %}" class="p-2 text-xs text-slate-400 hover:text-slate-600">ล้าง</a>
       {% endif %}
     </form>
 
@@ -58,77 +69,69 @@
 
   <!-- Real Grid of OTOP Products from Database -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    {% for p in products %}
-      <article class="rounded-3xl bg-white border border-stone-200/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between p-4 group">
-        
-        <div class="space-y-3">
-          <!-- Image Frame -->
-          <div class="h-48 rounded-2xl overflow-hidden bg-stone-100 relative">
-            {% if p.image %}
-              <img src="{{ p.image.url }}" alt="{{ p.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+    {% for product in products %}
+      <article class="rounded-3xl bg-white border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group p-3">
+        <div>
+          <div class="relative overflow-hidden rounded-2xl mb-3 aspect-[4/3] bg-slate-100">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
             {% else %}
-              <img src="{% static 'images/cocoa_craft_sisaket.jpg' %}" alt="{{ p.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="{% static 'images/cocoa_craft_sisaket.jpg' %}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
             {% endif %}
-            
-            <span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1F2925]/90 text-white backdrop-blur-md">
-              {{ p.get_category_display }}
+
+            <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold bg-[#1f2925]/90 text-[#c49a45] backdrop-blur-md border border-[#c49a45]/30">
+              หัตถกรรม OTOP
             </span>
 
-            <span class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-[#D97706] text-white backdrop-blur-md">
-              ฿{{ p.price|floatformat:0 }}
-            </span>
+            <div class="absolute bottom-3 left-3 bg-[#1f2925]/90 text-white px-3 py-1.5 rounded-xl backdrop-blur-md flex items-baseline gap-1">
+              <span class="text-sm font-bold text-[#c49a45]">฿{{ product.price|floatformat:0 }}</span>
+              <span class="text-[10px] text-slate-300">/ ชิ้น</span>
+            </div>
           </div>
 
-          <!-- Content -->
-          <div class="space-y-1">
-            <h3 class="font-bold text-sm sm:text-base text-[#1F2925] line-clamp-1 group-hover:text-[#D97706] transition-colors">
-              {{ p.name }}
+          <div class="space-y-1.5 px-1">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[#c49a45] block">
+              {{ product.get_category_display|default:"สินค้าชุมชน" }}
+            </span>
+            <h3 class="font-bold text-base text-[#1f2925] group-hover:text-[#c49a45] transition-colors line-clamp-1">
+              {{ product.name }}
             </h3>
-            <p class="text-xs text-stone-500 line-clamp-2">
-              {{ p.description|default:"ผลิตภัณฑ์หัตถกรรมชุมชนแท้ ผลิตจากวัตถุดิบท้องถิ่น ฝีมือประณีต" }}
+            <p class="text-xs text-slate-500 line-clamp-2">
+              {{ product.description|default:"ผลงานหัตถศิลป์สร้างสรรค์ด้วยภูมิปัญญาดั้งเดิมและวัตถุดิบอินทรีย์แห่งเมืองศรีสะเกษ" }}
             </p>
+
+            <div class="pt-2 flex items-center justify-between text-xs text-slate-500">
+              <span class="flex items-center gap-1">
+                <i data-lucide="store" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+                <span class="truncate max-w-[130px]">{{ product.owner.first_name|default:"กลุ่มวิสาหกิจชุมชน" }}</span>
+              </span>
+              {% if product.stock > 0 %}
+                <span class="text-emerald-600 text-[11px] font-semibold flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span>มีสินค้า</span>
+                </span>
+              {% else %}
+                <span class="text-rose-500 text-[11px] font-semibold">สินค้าหมด</span>
+              {% endif %}
+            </div>
           </div>
         </div>
 
-        <!-- Add to Cart CTA -->
-        <div class="pt-4 border-t border-stone-100 mt-3 space-y-2">
-          <div class="flex items-center justify-between text-[11px]">
-            {% if p.stock_quantity > 0 %}
-              <span class="text-emerald-700 font-semibold">● คงเหลือ {{ p.stock_quantity }} ชิ้น</span>
-            {% else %}
-              <span class="text-rose-600 font-semibold">● สินค้าหมดชั่วคราว</span>
-            {% endif %}
-          </div>
-
-          <form method="POST" action="{% url 'bookings:cart_add' %}">
-            {% csrf_token %}
-            <input type="hidden" name="item_type" value="OTOP">
-            <input type="hidden" name="entity_id" value="{{ p.id }}">
-            <input type="hidden" name="title" value="{{ p.name }}">
-            <input type="hidden" name="price" value="{{ p.price }}">
-            <input type="hidden" name="quantity" value="1">
-            <button 
-              type="submit" 
-              {% if p.stock_quantity <= 0 %}disabled{% endif %}
-              class="w-full py-2.5 rounded-xl {% if p.stock_quantity > 0 %}bg-[#1F2925] hover:bg-[#2B3832] text-white{% else %}bg-stone-200 text-stone-400 cursor-not-allowed{% endif %} font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-            >
-              <span>+ เพิ่มลงในตะกร้า</span>
-            </button>
-          </form>
-        </div>
-
+        <a 
+          href="{% url 'otop:detail' product.id %}" 
+          class="mt-4 flex items-center justify-between w-full h-11 px-4 rounded-2xl bg-[#faf9f6] text-[#1f2925] font-bold text-xs hover:bg-[#1f2925] hover:text-[#faf9f6] transition-all border border-slate-200 cursor-pointer"
+        >
+          <span>ดูรายละเอียดสินค้า</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
       </article>
     {% empty %}
-      <div class="col-span-full py-16 text-center space-y-3 bg-white rounded-3xl border border-stone-200 p-8">
-        <svg class="w-12 h-12 text-stone-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-        </svg>
-        <p class="text-sm font-semibold text-stone-700">ไม่พบสินค้า OTOP ที่ตรงตามเงื่อนไข</p>
-        <div class="pt-2">
-          <a href="{% url 'otop:list' %}" class="px-5 py-2 rounded-xl bg-[#1F2925] text-white text-xs font-bold inline-block">
-            ดูสินค้าทั้งหมด
-          </a>
+      <div class="col-span-4 py-16 text-center text-xs text-slate-400 bg-white rounded-3xl border border-slate-200 p-8 space-y-2">
+        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-[#c49a45] mx-auto flex items-center justify-center">
+          <i data-lucide="shopping-bag" class="w-6 h-6"></i>
         </div>
+        <h3 class="font-bold text-base text-[#1f2925]">ยังไม่มีสินค้า OTOP ในหมวดหมู่นี้</h3>
+        <p class="text-xs text-slate-500">ผู้ผลิตชุมชนกำลังอยู่ระหว่างจัดเตรียมสินค้าขึ้นระบบ</p>
       </div>
     {% endfor %}
   </div>

@@ -1,10 +1,10 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}AI Wellness Assistant - วิเคราะห์สุขภาพและจัดทริปเฉพาะบุคคล | WellTrip{% endblock %}
+{% block title %}AI Wellness Assistant - วิเคราะห์สุขภาพและจัดทริปเฉพาะบุคคล | WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="bg-cream py-10 lg:py-16 min-h-screen"
+<div class="py-10 lg:py-16 min-h-[85vh]"
      x-data="{
        weight: {{ profile.weight_kg|default:65 }},
        height: {{ profile.height_cm|default:170 }},
@@ -30,19 +30,19 @@
        }
      }">
 
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
     
     <!-- Header Hero Banner -->
-    <div class="text-center max-w-2xl mx-auto mb-10">
-      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-forest-50 border border-forest/10 text-xs text-forest font-semibold mb-4">
-        <span class="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
-        <span>Dual-AI Wellness Recommendation Engine</span>
+    <div class="text-center max-w-2xl mx-auto space-y-3">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs text-[#c49a45] font-bold tracking-widest uppercase">
+        <span class="w-2 h-2 rounded-full bg-[#c49a45] animate-pulse"></span>
+        <span>AI WELLNESS CURATOR</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-bold text-forest tracking-tight">
+      <h1 class="font-serif text-3xl sm:text-5xl font-bold text-[#1f2925] tracking-tight">
         วางแผนทริปสุขภาวะศรีสะเกษ <br>
-        <span class="text-gold">ด้วยการประเมินสุขภาพอัจฉริยะ</span>
+        <span class="text-[#c49a45] italic font-normal">ด้วยการประเมินสุขภาพอัจฉริยะ</span>
       </h1>
-      <p class="text-sm text-earth/70 mt-3 font-light leading-relaxed">
+      <p class="text-xs sm:text-sm text-slate-500 font-light leading-relaxed">
         วิเคราะห์ดัชนีมวลกาย (BMI) อัตราการเผาผลาญ (BMR) และจับคู่ทริปพักผ่อน อาหารสุขภาพ 5 นิเวศน์ 
         และสปาภูมิปัญญาไทยที่เหมาะกับร่างกายของคุณที่สุด
       </p>
@@ -51,25 +51,23 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
       <!-- Left Column: Interactive Form (5 cols) -->
-      <div class="lg:col-span-5 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
-        <h2 class="text-lg font-bold text-forest mb-4 flex items-center space-x-2">
-          <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+      <div class="lg:col-span-5 bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200/90 space-y-5">
+        <h2 class="text-base font-bold text-[#1f2925] flex items-center gap-2">
+          <i data-lucide="clipboard-list" class="w-5 h-5 text-[#c49a45]"></i>
           <span>ข้อมูลร่างกายและเป้าหมาย</span>
         </h2>
 
         <!-- Real-time BMI/BMR Live Feedback Meter -->
-        <div class="bg-forest-50/60 p-4 rounded-2xl border border-forest/10 mb-6">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-earth/70">ดัชนีมวลกาย (BMI)</span>
-            <span class="text-lg font-bold text-forest font-mono" x-text="bmi"></span>
+        <div class="bg-[#faf9f6] p-4 rounded-2xl border border-slate-200/80 space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-500 font-medium">ดัชนีมวลกาย (BMI)</span>
+            <span class="text-base font-bold text-[#1f2925] font-mono" x-text="bmi"></span>
           </div>
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs text-earth/70">อัตราเผาผลาญพื้นฐาน (BMR)</span>
-            <span class="text-sm font-semibold text-gold font-mono" x-text="bmr + ' kcal/วัน'"></span>
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-500 font-medium">อัตราเผาผลาญพื้นฐาน (BMR)</span>
+            <span class="text-xs font-bold text-[#c49a45] font-mono" x-text="bmr + ' kcal/วัน'"></span>
           </div>
-          <div class="text-center py-1.5 px-3 rounded-full text-xs font-medium border"
+          <div class="text-center py-1.5 px-3 rounded-full text-xs font-semibold border"
                :class="bmiBadge.color"
                x-text="bmiBadge.label">
           </div>
@@ -78,33 +76,33 @@
         <form hx-post="{% url 'ai_recommendations:assess_htmx' %}"
               hx-target="#ai-results-container"
               hx-indicator="#ai-spinner"
-              class="space-y-5">
+              class="space-y-4">
           {% csrf_token %}
 
           <!-- Weight & Height Grid -->
           <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-earth/80 mb-1">น้ำหนัก (kg)</label>
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">น้ำหนัก (kg)</label>
               <input type="number" name="weight_kg" x-model.number="weight" min="30" max="250" step="0.5" required
-                     class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-forest focus:ring-1 focus:ring-forest">
+                     class="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs text-[#1f2925] focus:outline-none focus:border-[#1f2925]">
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-earth/80 mb-1">ส่วนสูง (cm)</label>
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">ส่วนสูง (cm)</label>
               <input type="number" name="height_cm" x-model.number="height" min="100" max="230" step="1" required
-                     class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-forest focus:ring-1 focus:ring-forest">
+                     class="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs text-[#1f2925] focus:outline-none focus:border-[#1f2925]">
             </div>
           </div>
 
           <!-- Age & Gender Grid -->
           <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-earth/80 mb-1">อายุ (ปี)</label>
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">อายุ (ปี)</label>
               <input type="number" name="age" x-model.number="age" min="12" max="100" required
-                     class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-forest focus:ring-1 focus:ring-forest">
+                     class="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs text-[#1f2925] focus:outline-none focus:border-[#1f2925]">
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-earth/80 mb-1">เพศ</label>
-              <select name="gender" x-model="gender" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-forest focus:ring-1 focus:ring-forest bg-white">
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">เพศ</label>
+              <select name="gender" x-model="gender" class="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-xs text-[#1f2925] focus:outline-none focus:border-[#1f2925] bg-white cursor-pointer">
                 <option value="female">หญิง</option>
                 <option value="male">ชาย</option>
                 <option value="other">ทั่วไป</option>
@@ -113,58 +111,56 @@
           </div>
 
           <!-- Health Goals -->
-          <div>
-            <label class="block text-xs font-semibold text-earth/80 mb-1.5">เป้าหมายหลักด้านสุขภาวะ</label>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-slate-700">เป้าหมายหลักด้านสุขภาวะ</label>
             <input type="hidden" name="health_goal" :value="selectedGoal">
             <div class="grid grid-cols-2 gap-2 text-xs">
               <button type="button" @click="selectedGoal = 'STRESS_RELIEF'"
-                      :class="selectedGoal === 'STRESS_RELIEF' ? 'border-forest bg-forest-50 text-forest font-semibold' : 'border-gray-200 text-earth/70 hover:border-forest/40'"
-                      class="p-2.5 rounded-xl border text-left transition-colors">
+                      :class="selectedGoal === 'STRESS_RELIEF' ? 'border-[#1f2925] bg-[#1f2925] text-white font-bold' : 'border-slate-200 text-slate-600 hover:border-slate-400'"
+                      class="p-2.5 rounded-2xl border text-left transition-all cursor-pointer">
                 🌿 คลายเครียด / ออฟฟิศซินโดรม
               </button>
               <button type="button" @click="selectedGoal = 'DETOX'"
-                      :class="selectedGoal === 'DETOX' ? 'border-forest bg-forest-50 text-forest font-semibold' : 'border-gray-200 text-earth/70 hover:border-forest/40'"
-                      class="p-2.5 rounded-xl border text-left transition-colors">
+                      :class="selectedGoal === 'DETOX' ? 'border-[#1f2925] bg-[#1f2925] text-white font-bold' : 'border-slate-200 text-slate-600 hover:border-slate-400'"
+                      class="p-2.5 rounded-2xl border text-left transition-all cursor-pointer">
                 ✨ ดีท็อกซ์ &amp; ฟื้นฟูสมดุล
               </button>
               <button type="button" @click="selectedGoal = 'WEIGHT_MANAGEMENT'"
-                      :class="selectedGoal === 'WEIGHT_MANAGEMENT' ? 'border-forest bg-forest-50 text-forest font-semibold' : 'border-gray-200 text-earth/70 hover:border-forest/40'"
-                      class="p-2.5 rounded-xl border text-left transition-colors">
+                      :class="selectedGoal === 'WEIGHT_MANAGEMENT' ? 'border-[#1f2925] bg-[#1f2925] text-white font-bold' : 'border-slate-200 text-slate-600 hover:border-slate-400'"
+                      class="p-2.5 rounded-2xl border text-left transition-all cursor-pointer">
                 🏃 ควบคุมน้ำหนัก &amp; เผาผลาญ
               </button>
               <button type="button" @click="selectedGoal = 'SENIOR_WELLNESS'"
-                      :class="selectedGoal === 'SENIOR_WELLNESS' ? 'border-forest bg-forest-50 text-forest font-semibold' : 'border-gray-200 text-earth/70 hover:border-forest/40'"
-                      class="p-2.5 rounded-xl border text-left transition-colors">
+                      :class="selectedGoal === 'SENIOR_WELLNESS' ? 'border-[#1f2925] bg-[#1f2925] text-white font-bold' : 'border-slate-200 text-slate-600 hover:border-slate-400'"
+                      class="p-2.5 rounded-2xl border text-left transition-all cursor-pointer">
                 🍵 สุขภาวะผู้สูงอายุ
               </button>
             </div>
           </div>
 
           <!-- Dietary Restrictions -->
-          <div>
-            <label class="block text-xs font-semibold text-earth/80 mb-1.5">ข้อจำกัดด้านอาหารและโภชนาการ</label>
-            <div class="space-y-1.5 text-xs text-earth/80">
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="checkbox" name="dietary_restrictions" value="LOW_SODIUM" class="rounded text-forest focus:ring-forest">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-slate-700">ข้อจำกัดด้านอาหารและโภชนาการ</label>
+            <div class="space-y-1.5 text-xs text-slate-600">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="dietary_restrictions" value="LOW_SODIUM" class="rounded text-[#1f2925] focus:ring-[#1f2925]">
                 <span>เน้นโซเดียมต่ำ (บำรุงหัวใจ/ไต)</span>
               </label>
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="checkbox" name="dietary_restrictions" value="ORGANIC" class="rounded text-forest focus:ring-forest">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="dietary_restrictions" value="ORGANIC" class="rounded text-[#1f2925] focus:ring-[#1f2925]">
                 <span>เกษตรอินทรีย์ ปลอดสารเคมี 100%</span>
               </label>
-              <label class="flex items-center space-x-2 cursor-pointer">
-                <input type="checkbox" name="dietary_restrictions" value="VEGAN" class="rounded text-forest focus:ring-forest">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="dietary_restrictions" value="VEGAN" class="rounded text-[#1f2925] focus:ring-[#1f2925]">
                 <span>มังสวิรัติ / อาหารเจ</span>
               </label>
             </div>
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" class="btn-primary w-full py-3.5 text-sm shadow-md flex items-center justify-center space-x-2">
+          <button type="submit" class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
             <span>ให้ AI วิเคราะห์และจัดทริป</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            <i data-lucide="sparkles" class="w-4 h-4 text-[#c49a45]"></i>
           </button>
         </form>
       </div>
@@ -173,23 +169,21 @@
       <div class="lg:col-span-7">
         
         <!-- Loading Spinner State (Controlled by HTMX) -->
-        <div id="ai-spinner" class="htmx-indicator bg-white p-12 rounded-3xl border border-gray-100 text-center shadow-sm">
-          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-forest border-t-gold mb-4"></div>
-          <h3 class="text-base font-bold text-forest">DeepSeek AI กำลังวิเคราะห์สภาวะสุขภาพ...</h3>
-          <p class="text-xs text-earth/60 mt-1">กำลังค้นหาโฮมสเตย์ เมนูอาหาร และสปาสมุนไพรที่ตรงกับเป้าหมายของคุณในศรีสะเกษ</p>
+        <div id="ai-spinner" class="htmx-indicator bg-white p-12 rounded-3xl border border-slate-200 text-center shadow-sm">
+          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-[#1f2925] border-t-[#c49a45] mb-4"></div>
+          <h3 class="text-base font-bold text-[#1f2925]">AI กำลังวิเคราะห์สภาวะสุขภาพ...</h3>
+          <p class="text-xs text-slate-500 mt-1">กำลังค้นหาโฮมสเตย์ เมนูอาหาร และสปาสมุนไพรที่ตรงกับเป้าหมายของคุณในศรีสะเกษ</p>
         </div>
 
         <!-- Dynamic Results Injection Target -->
         <div id="ai-results-container">
           <!-- Initial Placeholder Card -->
-          <div class="bg-white/80 backdrop-blur-sm p-10 rounded-3xl border border-dashed border-gray-200 text-center">
-            <div class="w-16 h-16 rounded-full bg-forest-50 text-forest flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
+          <div class="bg-white/80 backdrop-blur-sm p-10 rounded-3xl border border-dashed border-slate-300 text-center space-y-3">
+            <div class="w-16 h-16 rounded-2xl bg-slate-100 text-[#c49a45] flex items-center justify-center mx-auto">
+              <i data-lucide="sparkles" class="w-8 h-8"></i>
             </div>
-            <h3 class="text-lg font-bold text-forest">รอการกรอกข้อมูลร่างกาย</h3>
-            <p class="text-xs text-earth/70 max-w-md mx-auto mt-2 leading-relaxed">
+            <h3 class="text-lg font-bold text-[#1f2925]">รอการกรอกข้อมูลร่างกาย</h3>
+            <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed font-light">
               ระบุน้ำหนัก ส่วนสูง และเป้าหมายสุขภาพทางด้านซ้าย จากนั้นกด <strong>"ให้ AI วิเคราะห์และจัดทริป"</strong> เพื่อรับแผนการท่องเที่ยวสุขภาวะเฉพาะบุคคล
             </p>
           </div>

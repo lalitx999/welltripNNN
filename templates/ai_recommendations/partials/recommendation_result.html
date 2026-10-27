@@ -1,90 +1,84 @@
 {% load static %}
-<div class="space-y-6 animate-fade-in">
+<div class="space-y-6">
 
-  <!-- 1. DeepSeek AI Health Rationale Card -->
-  <div class="bg-white p-6 sm:p-7 rounded-3xl shadow-sm border border-forest/15 relative overflow-hidden">
-    <div class="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl pointer-events-none"></div>
-
+  <!-- 1. AI Health Rationale Card -->
+  <div class="bg-white p-6 sm:p-7 rounded-3xl shadow-sm border border-slate-200 relative overflow-hidden">
     <div class="flex items-center space-x-3 mb-4">
-      <div class="w-10 h-10 rounded-2xl bg-forest text-gold flex items-center justify-center shadow-md">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
+      <div class="w-10 h-10 rounded-2xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center shadow-md shrink-0">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
       </div>
       <div>
-        <h3 class="text-base font-bold text-forest">ผลวิเคราะห์สุขภาพเฉพาะบุคคล (AI Health Rationale)</h3>
-        <span class="text-xs text-gold font-medium">DeepSeek Wellness Tourism Reasoning</span>
+        <h3 class="text-base font-bold text-[#1f2925]">ผลวิเคราะห์สุขภาพเฉพาะบุคคล (AI Health Rationale)</h3>
+        <span class="text-xs text-[#c49a45] font-semibold">DeepSeek Wellness Tourism Reasoning</span>
       </div>
     </div>
 
     <!-- Health Metrics Summary Strip -->
-    <div class="grid grid-cols-3 gap-3 bg-cream p-3 rounded-2xl border border-gray-100 text-center mb-4 text-xs">
+    <div class="grid grid-cols-3 gap-3 bg-[#faf9f6] p-3 rounded-2xl border border-slate-200 text-center mb-4 text-xs">
       <div>
-        <span class="text-earth/60 block text-[11px]">ดัชนีมวลกาย</span>
-        <span class="font-bold text-forest font-mono text-sm">{{ result.health_metrics.bmi }}</span>
+        <span class="text-slate-400 block text-[11px]">ดัชนีมวลกาย</span>
+        <span class="font-bold text-[#1f2925] font-mono text-sm">{{ result.health_metrics.bmi }}</span>
       </div>
       <div>
-        <span class="text-earth/60 block text-[11px]">สถานะสรีระ</span>
+        <span class="text-slate-400 block text-[11px]">สถานะสรีระ</span>
         <span class="font-semibold text-emerald-800">{{ result.health_metrics.bmi_category }}</span>
       </div>
       <div>
-        <span class="text-earth/60 block text-[11px]">อัตราเผาผลาญ (BMR)</span>
-        <span class="font-bold text-gold font-mono text-sm">{{ result.health_metrics.bmr }} kcal</span>
+        <span class="text-slate-400 block text-[11px]">อัตราเผาผลาญ (BMR)</span>
+        <span class="font-bold text-[#c49a45] font-mono text-sm">{{ result.health_metrics.bmr }} kcal</span>
       </div>
     </div>
 
     <!-- DeepSeek Reasoning Content -->
-    <div class="text-xs sm:text-sm text-earth/80 leading-relaxed space-y-2 bg-forest-50/40 p-4 rounded-2xl border border-forest/10 font-light">
+    <div class="text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2 bg-[#faf9f6] p-4 rounded-2xl border border-slate-200/60 font-light">
       <p>{{ result.deepseek_analysis }}</p>
     </div>
 
     <!-- Medical Disclaimer -->
-    <div class="mt-4 pt-3 border-t border-gray-100 flex items-start space-x-2 text-[11px] text-earth/60">
-      <svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
+    <div class="mt-4 pt-3 border-t border-slate-100 flex items-start space-x-2 text-[11px] text-slate-500">
+      <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5"></i>
       <p>{{ result.recommended_package.disclaimer }}</p>
     </div>
   </div>
 
   <!-- 2. Matched Sisaket Eco-Tourism Package Card -->
-  <div class="bg-white p-6 sm:p-7 rounded-3xl shadow-sm border border-gray-100">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-100 gap-2">
+  <div class="bg-white p-6 sm:p-7 rounded-3xl shadow-sm border border-slate-200">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
       <div>
-        <span class="text-xs text-gold font-semibold uppercase tracking-wider block">Tailored Itinerary</span>
-        <h3 class="text-lg font-bold text-forest">{{ result.recommended_package.package_title }}</h3>
+        <span class="text-xs text-[#c49a45] font-semibold uppercase tracking-wider block">Tailored Itinerary</span>
+        <h3 class="text-lg font-bold text-[#1f2925]">{{ result.recommended_package.package_title }}</h3>
       </div>
       <div class="text-right">
-        <span class="text-xs text-earth/60 block">ประมาณการราคารวม</span>
-        <span class="text-xl font-bold text-forest">฿{{ result.recommended_package.total_package_price|floatformat:2 }}</span>
+        <span class="text-xs text-slate-400 block font-medium">ประมาณการราคารวม</span>
+        <span class="text-xl font-bold font-serif text-[#1f2925]">฿{{ result.recommended_package.total_package_price|floatformat:0 }}</span>
       </div>
     </div>
 
     <!-- Package Items List -->
-    <div class="divide-y divide-gray-100 mt-4 space-y-3">
+    <div class="divide-y divide-slate-100 mt-4 space-y-3">
       {% for item in result.recommended_package.items %}
         <div class="pt-3 flex items-center justify-between gap-4">
           <div class="flex items-center space-x-3 min-w-0">
-            <div class="w-9 h-9 rounded-xl bg-forest-50 text-forest flex items-center justify-center shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-slate-100 text-[#c49a45] flex items-center justify-center shrink-0">
               {% if item.item_type == "ACCOMMODATION" %}
-                <svg class="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <i data-lucide="house" class="w-4 h-4"></i>
               {% elif item.item_type == "FOOD" %}
-                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <i data-lucide="utensils" class="w-4 h-4"></i>
               {% elif item.item_type == "WELLNESS" %}
-                <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
               {% else %}
-                <svg class="w-5 h-5 text-stone-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
               {% endif %}
             </div>
             <div class="min-w-0">
-              <h4 class="text-xs sm:text-sm font-bold text-forest truncate">{{ item.title }}</h4>
-              <span class="text-[11px] text-earth/60 block truncate">{{ item.category_label }}</span>
+              <h4 class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">{{ item.title }}</h4>
+              <span class="text-[11px] text-slate-400 block truncate">{{ item.category_label }}</span>
             </div>
           </div>
 
           <div class="flex items-center space-x-3 shrink-0">
-            <span class="text-xs font-bold text-forest font-mono">฿{{ item.unit_price|floatformat:2 }}</span>
-            <a href="{{ item.detail_url }}" class="text-xs px-3 py-1 rounded-full bg-forest-50 text-forest hover:bg-forest hover:text-white font-medium transition-colors">
+            <span class="text-xs font-bold text-[#1f2925] font-mono">฿{{ item.unit_price|floatformat:0 }}</span>
+            <a href="{{ item.detail_url }}" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-[#1f2925] hover:bg-[#1f2925] hover:text-[#faf9f6] font-semibold transition-colors">
               ดูรายละเอียด
             </a>
           </div>
@@ -93,14 +87,19 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center gap-3">
-      <a href="{% url 'accommodations:list' %}" class="btn-primary w-full sm:w-auto text-xs px-6 py-3 text-center">
+    <div class="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+      <a href="{% url 'accommodations:list' %}" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-sm text-center">
         เริ่มต้นจองที่พักในแพ็กเกจนี้
       </a>
-      <a href="{% url 'community:map' %}" class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 rounded-full border border-gray-200 text-earth text-xs font-medium hover:bg-cream transition-colors">
+      <a href="{% url 'community:map' %}" class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 rounded-2xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors">
         ดูพิกัดชุมชนบนแผนที่
       </a>
     </div>
   </div>
 
 </div>
+<script>
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+</script>

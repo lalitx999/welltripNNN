@@ -1,0 +1,137 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} - สินค้า OTOP ศรีสะเกษ WellTrip{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+  <!-- Breadcrumbs -->
+  <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+    <a href="{% url 'core:home' %}" class="hover:text-[#1f2925] transition-colors">หน้าหลัก</a>
+    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+    <a href="{% url 'otop:list' %}" class="hover:text-[#1f2925] transition-colors">สินค้า OTOP ชุมชน</a>
+    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+    <span class="text-[#c49a45] font-bold truncate">{{ product.name }}</span>
+  </nav>
+
+  <!-- Product Container (2 Columns) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+    
+    <!-- Left: Image Showcase (6 cols) -->
+    <div class="lg:col-span-6 space-y-4">
+      <div class="relative overflow-hidden rounded-3xl bg-slate-100 aspect-square shadow-lg border border-slate-200/80">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+        {% else %}
+          <img src="{% static 'images/cocoa_craft_sisaket.jpg' %}" alt="{{ product.name }}" class="w-full h-full object-cover">
+        {% endif %}
+
+        <span class="absolute top-4 left-4 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1f2925]/90 text-[#c49a45] backdrop-blur-md border border-[#c49a45]/30">
+          ภูมิปัญญาชุมชนแท้ 100%
+        </span>
+      </div>
+    </div>
+
+    <!-- Right: Information & Ordering (6 cols) -->
+    <div class="lg:col-span-6 space-y-6" x-data="{ qty: 1 }">
+      
+      <div class="space-y-2 border-b border-slate-200 pb-6">
+        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#c49a45] uppercase tracking-wider">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span>{{ product.get_category_display|default:"สินค้าหัตถกรรมชุมชน" }}</span>
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1f2925]">
+          {{ product.name }}
+        </h1>
+        <div class="flex items-baseline gap-2 pt-2">
+          <span class="text-3xl sm:text-4xl font-serif font-bold text-[#c49a45]">
+            ฿{{ product.price|floatformat:0 }}
+          </span>
+          <span class="text-xs text-slate-400">/ ชิ้น</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">เรื่องราวและคุณลักษณะ</h3>
+        <p class="text-sm text-slate-600 leading-relaxed font-normal whitespace-pre-line">
+          {{ product.description|default:"ผลงานหัตถศิลป์สร้างสรรค์ด้วยภูมิปัญญาดั้งเดิมและวัตถุดิบอินทรีย์แห่งเมืองศรีสะเกษ ทุกการอุดหนุนกระจายรายได้สู่กลุ่มแม่บ้านและเกษตรกรท้องถิ่นโดยตรง" }}
+        </p>
+      </div>
+
+      <!-- Producer Community Info -->
+      <div class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200/80 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center shrink-0">
+          <i data-lucide="store" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="block text-[10px] text-slate-400 uppercase font-semibold">กลุ่มผู้ผลิตชุมชน</span>
+          <span class="block text-xs font-bold text-[#1f2925]">
+            {{ product.owner.first_name|default:"กลุ่มวิสาหกิจชุมชนหัตถกรรมศรีสะเกษ" }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Quantity Selector & Action Button -->
+      <div class="space-y-4 pt-4 border-t border-slate-200">
+        <div class="flex items-center gap-4">
+          <span class="text-xs font-semibold text-[#1f2925]">จำนวน:</span>
+          <div class="inline-flex items-center border border-slate-300 rounded-2xl bg-white overflow-hidden">
+            <button 
+              type="button" 
+              @click="if (qty > 1) qty--" 
+              class="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+            >
+              <i data-lucide="minus" class="w-3.5 h-3.5"></i>
+            </button>
+            <span class="w-12 text-center text-xs font-bold text-[#1f2925]" x-text="qty"></span>
+            <button 
+              type="button" 
+              @click="qty++" 
+              class="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+            >
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <span class="text-xs text-slate-400">
+            คงเหลือ {{ product.stock_quantity|default:product.stock|default:"10" }} ชิ้นในระบบ
+          </span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button 
+            type="button"
+            onclick="alert('เพิ่มสินค้าลงตะกร้าเรียบร้อยแล้ว')"
+            class="flex-1 min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <i data-lucide="shopping-bag" class="w-4 h-4 text-[#c49a45]"></i>
+            <span>สั่งซื้อสินค้า / สั่งจอง</span>
+          </button>
+          <a
+            href="{% url 'otop:list' %}"
+            class="px-6 min-h-[48px] rounded-2xl border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center justify-center transition"
+          >
+            ดูสินค้าอื่น
+          </a>
+        </div>
+      </div>
+
+      <!-- Trust Assurances -->
+      <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 text-[11px] text-slate-500">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+          <span>รับรองสินค้าภูมิปัญญา OTOP</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="truck" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
+          <span>จัดส่งตรงจากชุมชนศรีสะเกษ</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
