@@ -49,7 +49,7 @@
       
       <!-- Brand Logo & Subtitle -->
       <a href="{% url 'core:home' %}" class="flex items-center gap-2.5 shrink-0 group no-underline" aria-label="WellTrip Sisaket">
-        <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip Logo" class="w-8 h-8 rounded-full object-cover border border-[#D97706]/40 shadow-xs group-hover:scale-105 transition-transform">
+        <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip Logo" width="32" height="32" style="width: 32px; height: 32px;" class="w-8 h-8 rounded-full object-cover border border-[#D97706]/40 shadow-xs group-hover:scale-105 transition-transform">
         <span class="font-serif text-xl sm:text-2xl font-bold text-[#1F2925] tracking-tight flex flex-col leading-none">
           WellTrip
           <small class="text-[8px] tracking-[1.8px] font-bold text-[#D97706] mt-0.5 font-sans">SLOW DAYS · SISAKET</small>
@@ -68,9 +68,7 @@
             class="flex items-center gap-1.5 h-10 px-4 rounded-full border border-transparent transition-all cursor-pointer"
           >
             <span>สำรวจศรีสะเกษ</span>
-            <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="megaMenuOpen ? 'rotate-180 text-[#C49A45]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200" :class="megaMenuOpen ? 'rotate-180 text-[#C49A45]' : ''"></i>
           </button>
         </div>
 
@@ -108,9 +106,7 @@
             @click="accountMenuOpen = !accountMenuOpen; megaMenuOpen = false;"
             class="h-10 px-4 rounded-full border border-stone-200/90 bg-white hover:border-stone-300 hover:shadow-xs flex items-center gap-2 text-xs font-semibold text-stone-800 transition-all cursor-pointer"
           >
-            <svg class="w-4 h-4 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+            <i data-lucide="user" class="w-4 h-4 text-stone-600"></i>
             <span class="max-w-[120px] truncate">
               {% if user.is_authenticated %}
                 {{ user.first_name|default:user.email|truncatechars:15 }}
@@ -118,9 +114,7 @@
                 บัญชี
               {% endif %}
             </span>
-            <svg class="w-3.5 h-3.5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-stone-400"></i>
           </button>
 
           <!-- Account Dropdown Popover -->
@@ -200,9 +194,7 @@
 
         <!-- Cart Button with Live Badge -->
         <a href="{% url 'bookings:cart' %}" class="w-10 h-10 rounded-full bg-white border border-[#C49A45]/35 hover:bg-[#1F2925] hover:text-[#FAF9F6] text-[#1F2925] flex items-center justify-center relative transition-all shadow-2xs" aria-label="ตะกร้าสินค้า">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-          </svg>
+          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
           {% if cart_item_count and cart_item_count > 0 %}
             <span class="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 rounded-full bg-[#C49A45] text-[#1F2925] text-[11px] font-extrabold flex items-center justify-center shadow-xs">
               {{ cart_item_count }}
@@ -217,12 +209,12 @@
           class="lg:hidden wt-mobile-toggle w-10 h-10 rounded-full bg-white border border-[#C49A45]/35 flex items-center justify-center text-[#1F2925]"
           aria-label="เปิดเมนูมือถือ"
         >
-          <svg class="w-5 h-5" x-show="!mobileMenuOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          <svg class="w-5 h-5" x-show="mobileMenuOpen" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <span x-show="!mobileMenuOpen" class="flex items-center justify-center">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </span>
+          <span x-show="mobileMenuOpen" style="display: none;" class="flex items-center justify-center">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </span>
         </button>
 
       </div>
@@ -503,20 +495,20 @@
     
     <!-- 1. Home -->
     <a href="{% url 'core:home' %}" class="flex flex-col items-center justify-center gap-1 text-[10px] font-bold text-[#1F2925]">
-      <svg class="w-5 h-5 text-[#C49A45]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <i data-lucide="home" class="w-5 h-5 text-[#C49A45]"></i>
       <span>หน้าหลัก</span>
     </a>
 
     <!-- 2. Stays -->
     <a href="{% url 'accommodations:list' %}" class="flex flex-col items-center justify-center gap-1 text-[10px] font-semibold text-stone-500 hover:text-[#1F2925]">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      <i data-lucide="building-2" class="w-5 h-5"></i>
       <span>ที่พัก</span>
     </a>
 
     <!-- 3. Cart with Badge -->
     <a href="{% url 'bookings:cart' %}" class="flex flex-col items-center justify-center gap-1 text-[10px] font-semibold text-stone-500 hover:text-[#1F2925] relative">
       <div class="relative">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
         {% if cart_item_count and cart_item_count > 0 %}
           <span class="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-[#C49A45] text-[#1F2925] text-[9px] font-extrabold flex items-center justify-center shadow-xs">
             {{ cart_item_count }}
@@ -528,13 +520,13 @@
 
     <!-- 4. AI Wellness -->
     <a href="{% url 'ai_recommendations:assessment' %}" class="flex flex-col items-center justify-center gap-1 text-[10px] font-semibold text-stone-500 hover:text-[#1F2925]">
-      <svg class="w-5 h-5 text-[#D97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      <i data-lucide="sparkles" class="w-5 h-5 text-[#D97706]"></i>
       <span>สุขภาพ AI</span>
     </a>
 
     <!-- 5. Account / Settings -->
     <a href="{% if user.is_authenticated %}{% url 'bookings:my_orders' %}{% else %}{% url 'accounts:login' %}{% endif %}" class="flex flex-col items-center justify-center gap-1 text-[10px] font-semibold text-stone-500 hover:text-[#1F2925]">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <i data-lucide="user" class="w-5 h-5"></i>
       <span>{% if user.is_authenticated %}บัญชี{% else %}เข้าสู่ระบบ{% endif %}</span>
     </a>
 

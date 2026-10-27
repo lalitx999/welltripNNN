@@ -18,17 +18,100 @@
   <link rel="icon" type="image/x-icon" href="{% static 'images/logoWelltrip.ico' %}">
   <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
   
-  <!-- Fonts -->
+  <!-- Fonts: Plus Jakarta Sans (Eng) + Noto Sans Thai (TH) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Compiled Tailwind CSS -->
-  <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
-  
-  <!-- Vendor Scripts (Local) -->
+  <!-- Tailwind CSS Play CDN with In-Memory JIT Engine -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["'Plus Jakarta Sans'", "'Noto Sans Thai'", '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            display: ["'Plus Jakarta Sans'", "'Noto Sans Thai'", 'sans-serif'],
+          },
+          colors: {
+            forest: {
+              DEFAULT: '#193E30',
+              50: '#F2F7F4',
+              100: '#E2EDE6',
+              200: '#C4DBD0',
+              300: '#99C0AD',
+              400: '#5D9B7B',
+              500: '#27543E',
+              600: '#1E4431',
+              700: '#183728',
+              800: '#193E30',
+              900: '#12291E',
+              950: '#0B1A13',
+              dark: '#1F2925',
+            },
+            gold: {
+              DEFAULT: '#C5A059',
+              50: '#FAF6ED',
+              100: '#F3EBD6',
+              200: '#E7D6AC',
+              300: '#D6BF84',
+              400: '#CEAF6C',
+              500: '#C5A059',
+              600: '#D97706',
+              700: '#84652B',
+              800: '#634B20',
+            },
+            cream: {
+              DEFAULT: '#FAF9F6',
+              50: '#FFFFFF',
+              100: '#FAF9F6',
+              200: '#F4EFE6',
+              300: '#EAE3D5',
+              400: '#DDD4C3',
+              500: '#C5B8A3',
+            },
+            earth: {
+              DEFAULT: '#1F2925',
+              500: '#6E6862',
+              800: '#26221F',
+              900: '#111827',
+            },
+            surface: '#FFFFFF',
+          },
+          borderRadius: {
+            'luxury': '24px',
+            '2xl': '1rem',
+            '3xl': '1.5rem',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Lucide Icons & Scripts -->
+  <script defer src="https://unpkg.com/lucide@latest"></script>
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
   <script src="{% static 'js/alpine.min.js' %}" defer></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #FAF9F6;
+    }
+    [data-lucide] {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* HTMX indicator */
+    .htmx-indicator {
+      opacity: 0;
+      transition: opacity 200ms ease-in-out;
+    }
+    .htmx-request .htmx-indicator,
+    .htmx-request.htmx-indicator {
+      opacity: 1;
+    }
+  </style>
   
   {% block extra_css %}{% endblock %}
 </head>
@@ -69,6 +152,19 @@
           .catch((err) => console.warn('WellTrip SW registration failed:', err));
       });
     }
+  </script>
+
+  <!-- Lucide Icon Auto-Rehydration for HTMX & DOM -->
+  <script>
+    function refreshLucideIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+    }
+    document.addEventListener('DOMContentLoaded', refreshLucideIcons);
+    document.body.addEventListener('htmx:afterSwap', refreshLucideIcons);
+    // Double check after window load for deferred CDN scripts
+    window.addEventListener('load', refreshLucideIcons);
   </script>
 
   {% block extra_js %}{% endblock %}
