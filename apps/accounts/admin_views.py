@@ -201,7 +201,6 @@ def admin_approve_merchant_view(request, user_id):
 
         MerchantProfile.objects.filter(user=merchant).update(
             status=MerchantApprovalStatus.APPROVED,
-            reviewed_at=timezone.now(),
             rejection_reason=""
         )
 
@@ -240,7 +239,6 @@ def admin_reject_merchant_view(request, user_id):
     with transaction.atomic():
         MerchantProfile.objects.filter(user=merchant).update(
             status=MerchantApprovalStatus.REJECTED,
-            reviewed_at=timezone.now(),
             rejection_reason=reason
         )
 

@@ -52,21 +52,21 @@
       <div class="space-y-3.5">
         <div>
           <span class="text-[11px] text-slate-400 block font-medium">ธนาคาร</span>
-          <span class="text-sm font-bold text-[#1f2925]">{{ payment.payee_bank_name|default:"ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธ.ก.ส.)" }}</span>
+          <span class="text-sm font-bold text-[#1f2925]">{{ payment.payee_bank_name|default:"ธนาคารกสิกรไทย (Kasikornbank)" }}</span>
         </div>
         <div>
           <span class="text-[11px] text-slate-400 block font-medium">ชื่อบัญชี</span>
-          <span class="text-sm font-semibold text-slate-700">{{ payment.payee_account_name|default:"กลุ่มวิสาหกิจชุมชนท่องเที่ยวเชิงสุขภาพศรีสะเกษ" }}</span>
+          <span class="text-sm font-semibold text-slate-700">{{ payment.payee_account_name|default:"นาย พรหมลิขิต อุรา" }}</span>
         </div>
         <div>
           <span class="text-[11px] text-slate-400 block font-medium">เลขที่บัญชี</span>
           <div class="flex items-center gap-2 mt-1" x-data="{ copied: false }">
             <span class="text-base sm:text-lg font-mono font-bold text-[#1f2925] bg-slate-50 px-3 py-1 rounded-xl border border-slate-200">
-              {{ payment.payee_account_number|default:"020-1-98765-4" }}
+              {{ payment.payee_account_number|default:"001-1-50448-5" }}
             </span>
             <button 
               type="button" 
-              @click="navigator.clipboard.writeText('{{ payment.payee_account_number|default:"0201987654" }}'); copied = true; setTimeout(() => copied = false, 2000)"
+              @click="navigator.clipboard.writeText('{{ payment.payee_account_number|default:"001-1-50448-5" }}'); copied = true; setTimeout(() => copied = false, 2000)"
               class="px-3 py-1 text-xs rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold cursor-pointer transition"
             >
               <span x-show="!copied">คัดลอก</span>
@@ -86,9 +86,9 @@
           <i data-lucide="qr-code" class="w-6 h-6"></i>
         </div>
         <div class="text-xs font-bold text-white tracking-wide">พร้อมเพย์ / PromptPay QR</div>
-        <div class="text-xs text-[#c49a45] font-mono tracking-wider">098-2-34567-8</div>
+        <div class="text-xs text-[#c49a45] font-mono tracking-wider font-semibold">001-1-50448-5</div>
         <div class="w-32 h-32 bg-white p-2 rounded-2xl mx-auto shadow-sm flex items-center justify-center">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=00020101021129370016A000000677010111011300669823456785802TH540{{ payment.amount|default:booking.total_amount|floatformat:0 }}53037646304" 
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=00020101021129370016A0000006770101110113006600115044855802TH540{{ payment.amount|default:booking.total_amount|floatformat:0 }}53037646304" 
                alt="PromptPay QR Code" 
                class="w-full h-full object-contain"
           >
@@ -117,15 +117,15 @@
       <p class="text-xs text-slate-400 mt-0.5">รองรับไฟล์ JPG, PNG, WEBP ขนาดไม่เกิน 10MB (ระบบตรวจสอบค่าแฮชและล้างข้อมูล EXIF อัตโนมัติ)</p>
     </div>
 
-    <form method="POST" action="{% url 'payments:slip_upload' booking.id %}" enctype="multipart/form-data" class="space-y-4">
+    <form method="POST" action="{% url 'payments:payment_instruction' booking.id %}" enctype="multipart/form-data" class="space-y-4">
       {% csrf_token %}
 
       <!-- Drag & Drop Zone -->
       <div class="relative border-2 border-dashed border-slate-300 hover:border-[#1f2925] rounded-3xl p-6 text-center transition cursor-pointer bg-[#faf9f6]">
         <input 
           type="file" 
-          name="slip_image" 
-          id="slip_image" 
+          name="image" 
+          id="id_image" 
           accept="image/jpeg,image/png,image/webp" 
           required 
           @change="previewImage"
@@ -152,6 +152,20 @@
         </template>
       </div>
 
+      <!-- Optional provider reference -->
+      <div>
+        <label for="id_provider_reference" class="block text-xs font-semibold text-slate-700 mb-1">
+          รหัสอ้างอิงธุรกรรม / Transaction Reference (ระบุถ้ามี)
+        </label>
+        <input 
+          type="text" 
+          name="provider_reference" 
+          id="id_provider_reference" 
+          placeholder="เช่น 20261027XXXXXX" 
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-mono focus:ring-2 focus:ring-[#1f2925]"
+        >
+      </div>
+
       <button 
         type="submit" 
         class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
@@ -160,6 +174,47 @@
         <i data-lucide="check-circle" class="w-4 h-4 text-[#c49a45]"></i>
       </button>
     </form>
+
+    <!-- Uploaded slips list -->
+    {% if slips %}
+      <div class="pt-4 border-t border-slate-100 space-y-3">
+        <h3 class="text-xs font-bold text-[#1f2925]">ประวัติสลิปที่แนบไว้แล้ว ({{ slips.count }})</h3>
+        <div class="space-y-2">
+          {% for slip in slips %}
+            <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
+              <div class="flex items-center gap-3">
+                {% if slip.image %}
+                  <img src="{{ slip.image.url }}" alt="Slip" class="w-12 h-12 object-cover rounded-xl border border-slate-200">
+                {% endif %}
+                <div>
+                  <div class="font-mono text-[11px] text-slate-700 font-semibold">
+                    {{ slip.provider_reference|default:slip.id|truncatechars:18 }}
+                  </div>
+                  <div class="text-[10px] text-slate-400">
+                    {{ slip.uploaded_at|date:"d/m/Y H:i" }}
+                  </div>
+                </div>
+              </div>
+              <div>
+                {% if slip.verification_status == 'VERIFIED' %}
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                    ตรวจสอบผ่านแล้ว
+                  </span>
+                {% elif slip.verification_status == 'REJECTED' %}
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">
+                    ปฏิเสธ / สลิปไม่ถูกต้อง
+                  </span>
+                {% else %}
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                    รอเจ้าหน้าที่ตรวจสอบ
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
   </div>
 
 </div>

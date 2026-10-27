@@ -89,10 +89,37 @@ def can_view_object(user, obj):
     if user.is_superuser or user.role in {UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN}:
         return True
 
-    if hasattr(obj, "owner_id"):
-        return obj.owner_id == user.id
-    if hasattr(obj, "user_id"):
-        return obj.user_id == user.id
+    # 1. Direct ownership by owner_id or owner
+    if hasattr(obj, "owner_id") and obj.owner_id == user.id:
+        return True
+    if hasattr(obj, "owner") and getattr(obj, "owner", None) == user:
+        return True
+
+    # 2. Direct ownership by user_id or user
+    if hasattr(obj, "user_id") and obj.user_id == user.id:
+        return True
+    if hasattr(obj, "user") and getattr(obj, "user", None) == user:
+        return True
+
+    # 3. Customer ownership (e.g., Booking, Order)
+    if hasattr(obj, "customer_id") and obj.customer_id == user.id:
+        return True
+    if hasattr(obj, "customer") and getattr(obj, "customer", None) == user:
+        return True
+
+    # 4. Payment ownership through associated booking
+    if hasattr(obj, "booking"):
+        booking = getattr(obj, "booking", None)
+        if booking and (getattr(booking, "customer_id", None) == user.id or getattr(booking, "customer", None) == user):
+            return True
+
+    # 5. Vendor who has items inside this booking
+    if hasattr(obj, "items") and hasattr(user, "id"):
+        try:
+            if obj.items.filter(vendor=user).exists():
+                return True
+        except Exception:
+            pass
 
     return False
 
@@ -108,10 +135,23 @@ def can_edit_object(user, obj):
     if user.is_superuser or user.role in {UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN}:
         return True
 
-    if hasattr(obj, "owner_id"):
-        return obj.owner_id == user.id
-    if hasattr(obj, "user_id"):
-        return obj.user_id == user.id
+    if hasattr(obj, "owner_id") and obj.owner_id == user.id:
+        return True
+    if hasattr(obj, "owner") and getattr(obj, "owner", None) == user:
+        return True
+    if hasattr(obj, "user_id") and obj.user_id == user.id:
+        return True
+    if hasattr(obj, "user") and getattr(obj, "user", None) == user:
+        return True
+    if hasattr(obj, "customer_id") and obj.customer_id == user.id:
+        return True
+    if hasattr(obj, "customer") and getattr(obj, "customer", None) == user:
+        return True
+
+    if hasattr(obj, "booking"):
+        booking = getattr(obj, "booking", None)
+        if booking and (getattr(booking, "customer_id", None) == user.id or getattr(booking, "customer", None) == user):
+            return True
 
     return False
 
@@ -127,8 +167,16 @@ def can_delete_object(user, obj):
     if user.is_superuser or user.role == UserRoles.SUPER_ADMIN:
         return True
 
+    owner_matches = False
     if hasattr(obj, "owner_id") and obj.owner_id == user.id:
-        # Vendors can only delete drafts or inactive items
+        owner_matches = True
+    elif hasattr(obj, "user_id") and obj.user_id == user.id:
+        owner_matches = True
+    elif hasattr(obj, "customer_id") and obj.customer_id == user.id:
+        owner_matches = True
+
+    if owner_matches:
+        # Vendors/owners can only delete drafts or inactive items
         status = getattr(obj, "status", None)
         if status in {"DRAFT", "PENDING_VERIFICATION", None}:
             return True
@@ -152,9 +200,11 @@ def get_scoped_queryset(model_class, user, select_related=None, prefetch_related
     if user.is_authenticated and (user.is_superuser or user.role in {UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN}):
         return qs
 
-    # For merchants and users: strictly filter by owner or user
+    # For merchants and users: strictly filter by owner, customer, or user
     if hasattr(model_class, "owner"):
         return qs.filter(owner=user)
+    elif hasattr(model_class, "customer"):
+        return qs.filter(customer=user)
     elif hasattr(model_class, "user"):
         return qs.filter(user=user)
 
