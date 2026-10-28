@@ -35,14 +35,16 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 COPY . /app/
 
-# Create media, staticfiles, and non-root user for security
+# Create media, staticfiles, and non-root user with valid home directory
+ENV HOME=/app
 RUN mkdir -p /app/staticfiles /app/media && \
     addgroup --system appgroup && \
-    adduser --system --ingroup appgroup appuser && \
+    adduser --system --ingroup appgroup --home /app appuser && \
     chown -R appuser:appgroup /app
 
 USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "--timeout", "60", "config.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "--timeout", "60", "--access-logfile", "-", "--error-logfile", "-", "--capture-output", "config.wsgi:application"]
+
