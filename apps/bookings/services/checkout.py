@@ -23,7 +23,16 @@ class StockUnavailableError(Exception):
 
 
 @transaction.atomic
-def process_checkout(user, cart_items, customer_notes="", request=None):
+def process_checkout(
+    user,
+    cart_items,
+    customer_notes="",
+    request=None,
+    shipping_fee=Decimal("0.00"),
+    discount_amount=Decimal("0.00"),
+    coupon_code="",
+    shipping_address=None,
+):
     """
     Executes multi-vendor checkout with strict row-locking (select_for_update).
     Guarantees no race condition or negative inventory can ever occur.
@@ -194,10 +203,16 @@ def process_checkout(user, cart_items, customer_notes="", request=None):
                 "booking_metadata": {"wellness_category": menu.wellness_category},
             })
 
+    final_total = max(Decimal("0.00"), total_booking_amount + shipping_fee - discount_amount)
+
     # Create Booking
     booking = Booking.objects.create(
         customer=user,
-        total_amount=total_booking_amount,
+        total_amount=final_total,
+        shipping_fee=shipping_fee,
+        discount_amount=discount_amount,
+        coupon_code=coupon_code,
+        shipping_address=shipping_address or {},
         customer_notes=customer_notes,
         status=BookingStatus.AWAITING_PAYMENT,
     )

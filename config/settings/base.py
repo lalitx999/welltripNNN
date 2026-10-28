@@ -9,9 +9,27 @@ from decouple import config, Csv
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Secrets & Core Settings
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production-welltrip-secret-key-1234567890')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
+SECRET_KEY = config(
+    'SECRET_KEY',
+    default=config('DJANGO_SECRET_KEY', default='django-insecure-change-this-in-production-welltrip-secret-key-1234567890')
+)
+DEBUG = config('DEBUG', default=config('DJANGO_DEBUG', default=False, cast=bool), cast=bool)
+
+# Allowed Hosts & CSRF Trusted Origins (Behind Cloudflare Tunnel / Reverse Proxy)
+_raw_hosts = config('ALLOWED_HOSTS', default=config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1,localhost'))
+if isinstance(_raw_hosts, str):
+    ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(',') if h.strip()]
+else:
+    ALLOWED_HOSTS = list(_raw_hosts)
+
+_raw_csrf = config('CSRF_TRUSTED_ORIGINS', default='')
+if isinstance(_raw_csrf, str):
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in _raw_csrf.split(',') if origin.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = list(_raw_csrf)
+
+# Reverse Proxy SSL Header (Cloudflare Tunnel / Nginx)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 DJANGO_APPS = [
@@ -81,13 +99,30 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
-# Default to SQLite for local development; override with DATABASE_URL or prod.py
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Default to SQLite for local development; dynamically connects to PostgreSQL if DATABASE_URL is set
+from urllib.parse import urlparse, unquote
+
+_db_url = config('DATABASE_URL', default='')
+if _db_url and _db_url.startswith(('postgres://', 'postgresql://')):
+    _parsed = urlparse(_db_url)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': _parsed.path.lstrip('/'),
+            'USER': unquote(_parsed.username or ''),
+            'PASSWORD': unquote(_parsed.password or ''),
+            'HOST': _parsed.hostname or 'localhost',
+            'PORT': _parsed.port or 5432,
+            'CONN_MAX_AGE': 600,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Custom User Model (UUID pk + 7 roles)
 AUTH_USER_MODEL = 'accounts.User'
@@ -213,4 +248,41 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='welltripth@welltripthailand
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='WellTrip Thailand <welltripth@welltripthailand.com>')
 ADMIN_EMAIL = config('ADMIN_EMAIL', default='promlikit@sskru.ac.th')
+
+# ==============================================================================
+# Cache (Redis or In-Memory)
+# ==============================================================================
+REDIS_URL = config('REDIS_URL', default='')
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'welltrip-local-cache',
+        }
+    }
+
+# ==============================================================================
+# EasySlip Verification & Payee Bank Account
+# ==============================================================================
+EASYSLIP_API_KEY = config('EASYSLIP_API_KEY', default=config('SLIP_PROVIDER_API_KEY', default=''))
+EASYSLIP_URL = config('EASYSLIP_URL', default=config('SLIP_PROVIDER_URL', default='https://developer.easyslip.com/api/v1/verify'))
+EASYSLIP_MOCK_VERIFY = config('EASYSLIP_MOCK_VERIFY', default=False, cast=bool)
+
+PAYEE_ACCOUNT_NUMBER = config('PAYEE_ACCOUNT_NUMBER', default='001-1-50448-5')
+PAYEE_ACCOUNT_NAME = config('PAYEE_ACCOUNT_NAME', default='นาย พรหมลิขิต อุรา')
+PAYEE_BANK_NAME = config('PAYEE_BANK_NAME', default='ธนาคารกสิกรไทย')
+
+# ==============================================================================
+# Google OAuth & AI API Keys
+# ==============================================================================
+GOOGLE_OAUTH_CLIENT_IDS = config('GOOGLE_OAUTH_CLIENT_IDS', default='')
+DEEPSEEK_API_KEY = config('DEEPSEEK_API_KEY', default='')
+GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
 

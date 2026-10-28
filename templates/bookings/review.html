@@ -174,25 +174,38 @@
       <div class="space-y-2.5 text-xs">
         <div class="flex justify-between text-slate-600">
           <span>ยอดรวมสินค้าและบริการ</span>
-          <span class="font-bold text-[#1f2925]">฿{{ total_amount|floatformat:0 }}</span>
+          <span class="font-bold text-[#1f2925]">฿{{ totals.subtotal|floatformat:0 }}</span>
+        </div>
+        <div class="flex justify-between items-center text-slate-600">
+          <span>ค่าจัดส่งสินค้า OTOP</span>
+          <span class="font-bold {% if totals.shipping_fee == 0 %}text-emerald-700{% else %}text-[#1f2925]{% endif %}">
+            {{ totals.shipping_status_text }}
+          </span>
         </div>
         <div class="flex justify-between text-emerald-700 font-semibold">
           <span>ค่าธรรมเนียมระบบ</span>
-          <span>ฟรี</span>
+          <span>ฟรี (สนับสนุนชุมชน)</span>
         </div>
-        <div class="flex justify-between text-emerald-700 font-semibold">
-          <span>ค่าจัดส่งสินค้า OTOP</span>
-          <span>ส่งฟรีทั่วไทย</span>
-        </div>
-        <div class="flex justify-between text-slate-400 text-[11px]">
+
+        {% if totals.discount_amount > 0 %}
+          <div class="flex justify-between text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200">
+            <span>ส่วนลดคูปอง ({{ totals.coupon_code }})</span>
+            <span>-฿{{ totals.discount_amount|floatformat:0 }}</span>
+          </div>
+        {% endif %}
+
+        <div class="flex justify-between text-slate-400 text-[11px] pt-1 border-t border-slate-100">
           <span>ภาษีมูลค่าเพิ่ม</span>
           <span>รวมในราคาแล้ว</span>
         </div>
       </div>
 
       <div class="pt-3 border-t border-slate-100 flex justify-between items-baseline">
-        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">ยอดชำระสุทธิ</span>
-        <span class="text-2xl font-serif font-bold text-[#c49a45]">฿{{ total_amount|floatformat:0 }}</span>
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">ยอดชำระสุทธิ</span>
+          <div class="text-[10px] text-slate-400">รวมค่าส่งและหักส่วนลดแล้ว</div>
+        </div>
+        <span class="text-2xl font-serif font-bold text-[#c49a45]">฿{{ totals.final_total|floatformat:0 }}</span>
       </div>
 
       <div class="pt-3">

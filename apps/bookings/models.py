@@ -63,6 +63,20 @@ class Booking(models.Model):
         validators=[MinValueValidator(Decimal("0.00"))],
         default=Decimal("0.00"),
     )
+    shipping_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.00"))],
+        default=Decimal("0.00"),
+    )
+    discount_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.00"))],
+        default=Decimal("0.00"),
+    )
+    coupon_code = models.CharField(max_length=50, blank=True, default="")
+    shipping_address = models.JSONField(null=True, blank=True, default=dict)
     customer_notes = models.TextField(blank=True, default="")
     expires_at = models.DateTimeField(default=default_expires_at, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -117,3 +131,47 @@ class BookingItem(models.Model):
 
     def __str__(self):
         return f"[{self.item_type}] {self.item_title_snapshot} x {self.quantity} (฿{self.subtotal})"
+
+
+class ShippingSetting(models.Model):
+    """
+    Platform-wide delivery fee configurations managed by administrators.
+    """
+    base_shipping_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("40.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+        verbose_name="ค่าจัดส่งเริ่มต้น (บาท)",
+    )
+    is_free_shipping_enabled = models.BooleanField(
+        default=False,
+        verbose_name="เปิดโปรโมชันส่งฟรีทุกออเดอร์",
+    )
+    free_shipping_min_order = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("500.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+        verbose_name="ยอดสั่งซื้อขั้นต่ำสำหรับส่งฟรี (บาท)",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "shipping_settings"
+        verbose_name = "การตั้งค่าค่าจัดส่ง"
+
+    def __str__(self):
+        status = "ส่งฟรีทุกรายการ" if self.is_free_shipping_enabled else f"เริ่มต้น ฿{self.base_shipping_fee}"
+        return f"Shipping Settings ({status})"
+
+    @classmethod
+    def get_settings(cls):
+        obj = cls.objects.first()
+        if not obj:
+            obj = cls.objects.create(
+                base_shipping_fee=Decimal("40.00"),
+                is_free_shipping_enabled=False,
+                free_shipping_min_order=Decimal("500.00"),
+            )
+        return obj

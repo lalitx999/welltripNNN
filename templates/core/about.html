@@ -122,7 +122,65 @@
   </section>
 
   <!-- ============================================================================== -->
-  <!-- 4. CTA BANNER                                                                  -->
+  <!-- 4. STRATEGIC PARTNERS & FUNDING SUPPORTERS                                     -->
+  <!-- ============================================================================== -->
+  <section class="mx-auto max-w-6xl px-3 sm:px-6">
+    <div class="rounded-3xl border border-stone-200/90 bg-white p-6 sm:p-10 shadow-xs space-y-8">
+      
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 text-[#1f2925] text-[10px] font-bold uppercase tracking-wider">
+          <i data-lucide="award" class="w-3.5 h-3.5 text-[#c49a45]"></i>
+          <span>เครือข่ายความร่วมมือและผู้สนับสนุน</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold text-[#1f2925] leading-tight">
+          หน่วยงานผู้สนับสนุนทุนวิจัยและบ่มเพาะนวัตกรรม
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-light">
+          ความร่วมมือเชิงยุทธศาสตร์ระหว่างภาครัฐ สถาบันอุดมศึกษา และวิสาหกิจชุมชน เพื่อผลักดันโมเดลเศรษฐกิจสู่ความยั่งยืน
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- NIA -->
+        <div class="rounded-2xl border border-stone-200 p-6 bg-stone-50/50 flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          <div class="w-24 h-24 rounded-2xl bg-white p-3 border border-stone-200 shadow-xs shrink-0 flex items-center justify-center">
+            <img src="{% static 'images/partners/logo-nia.png' %}" alt="สำนักงานนวัตกรรมแห่งชาติ" class="max-w-full max-h-full object-contain">
+          </div>
+          <div class="space-y-2 text-center sm:text-left">
+            <div class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold">
+              หน่วยงานสนับสนุนทุน
+            </div>
+            <h3 class="text-base font-bold text-stone-900">สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน)</h3>
+            <p class="text-xs text-stone-600 font-light leading-relaxed">
+              สนับสนุนทุนโครงการนวัตกรรมเพื่อสังคมเพื่อส่งเสริมการนำเทคโนโลยีและกระบวนการสร้างสรรค์มายกระดับคุณภาพชีวิต ชุมชน และสิ่งแวดล้อมอย่างยั่งยืน
+            </p>
+          </div>
+        </div>
+
+        <!-- SIP UBU -->
+        <div class="rounded-2xl border border-stone-200 p-6 bg-stone-50/50 flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          <div class="w-24 h-24 rounded-2xl bg-white p-3 border border-stone-200 shadow-xs shrink-0 flex items-center justify-center">
+            <img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี" class="max-w-full max-h-full object-contain">
+          </div>
+          <div class="space-y-2 text-center sm:text-left">
+            <div class="inline-flex items-center px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-bold">
+              แม่ข่ายอุทยานวิทยาศาสตร์
+            </div>
+            <h3 class="text-base font-bold text-stone-900">อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี</h3>
+            <p class="text-xs text-stone-600 font-light leading-relaxed">
+              สถาบันแม่ข่ายเครือข่ายอุดมศึกษาภาคตะวันออกเฉียงเหนือตอนล่าง ทำหน้าที่บ่มเพาะวิสาหกิจ เชื่อมโยงงานวิจัย และส่งเสริมการใช้วิทยาศาสตร์ เทคโนโลยี และนวัตกรรม
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================================== -->
+  <!-- 5. CTA BANNER                                                                  -->
   <!-- ============================================================================== -->
   <section class="mx-auto max-w-6xl px-3 sm:px-6">
     <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#14231d] via-[#1f2925] to-[#2b3832] p-6 sm:p-8 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-6 border border-[#c49a45]/30">
@@ -141,7 +199,36 @@
         </a>
       </div>
     </div>
-  </section>
+  <!-- Structured Data: AboutPage (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ",
+    "description": "โครงการวิจัยและพัฒนานวัตกรรมการท่องเที่ยวเชิงสุขภาพ โดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) ภายใต้การสนับสนุนของสำนักงานนวัตกรรมแห่งชาติ (NIA) และอุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)",
+    "url": "{{ request.build_absolute_uri }}",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "WellTrip Sisaket Wellness Tourism Initiative",
+      "url": "{{ request.scheme }}://{{ request.get_host }}/",
+      "funder": {
+        "@type": "GovernmentOrganization",
+        "name": "สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) - NIA",
+        "url": "https://www.nia.or.th/"
+      },
+      "sponsor": {
+        "@type": "EducationalOrganization",
+        "name": "อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)",
+        "url": "https://www.ubu.ac.th/"
+      },
+      "parentOrganization": {
+        "@type": "CollegeOrUniversity",
+        "name": "มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)",
+        "url": "https://www.sskru.ac.th/"
+      }
+    }
+  }
+  </script>
 
 </div>
 {% endblock %}

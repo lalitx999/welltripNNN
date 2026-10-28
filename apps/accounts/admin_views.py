@@ -177,6 +177,13 @@ def admin_command_center_view(request):
     elif active_tab == 'content':
         context['stories'] = EditorialEntry.objects.all().order_by('-updated_at')
 
+    # TAB 8: VOUCHERS & SHIPPING SETTINGS
+    elif active_tab == 'vouchers':
+        from apps.community.models import Coupon
+        from apps.bookings.models import ShippingSetting
+        context['coupons'] = Coupon.objects.all().order_by('-created_at')
+        context['shipping_settings'] = ShippingSetting.get_settings()
+
     return render(request, 'admin/dashboard.html', context)
 
 
@@ -1279,5 +1286,138 @@ def admin_payment_delete_view(request, payment_id):
         messages.error(request, f"เกิดข้อผิดพลาดในการลบรายการ: {str(exc)}")
 
     return redirect('/accounts/admin-center/?tab=payments')
+
+
+@role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
+@require_http_methods(["POST"])
+def admin_coupon_create_view(request):
+    """Admin creates a new promotional voucher / gift voucher."""
+    from apps.community.models import Coupon
+    from datetime import timedelta
+
+    code = request.POST.get('code', '').strip().upper()
+    discount_amount = request.POST.get('discount_amount', '0').strip()
+    min_purchase = request.POST.get('min_purchase', '0').strip()
+    days_valid = request.POST.get('days_valid', '30').strip()
+
+    if not code:
+        messages.error(request, "กรุณาระบุรหัสคูปอง (Coupon Code)")
+        return redirect('/accounts/admin-center/?tab=vouchers')
+
+    if Coupon.objects.filter(code=code).exists():
+        messages.error(request, f"รหัสคูปอง '{code}' มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น")
+        return redirect('/accounts/admin-center/?tab=vouchers')
+
+    try:
+        discount_val = Decimal(discount_amount)
+        if discount_val <= Decimal('0'):
+            messages.error(request, "มูลค่าส่วนลดต้องมากกว่า 0 บาท")
+            return redirect('/accounts/admin-center/?tab=vouchers')
+    except Exception:
+        messages.error(request, "มูลค่าส่วนลดไม่ถูกต้อง")
+        return redirect('/accounts/admin-center/?tab=vouchers')
+
+    try:
+        min_purch_val = Decimal(min_purchase) if min_purchase else Decimal('0.00')
+    except Exception:
+        min_purch_val = Decimal('0.00')
+
+    try:
+        days = int(days_valid) if days_valid else 30
+    except Exception:
+        days = 30
+
+    expires_at = timezone.now() + timedelta(days=days)
+
+    Coupon.objects.create(
+        code=code,
+        discount_amount=discount_val,
+        min_purchase=min_purch_val,
+        expires_at=expires_at,
+        is_active=True,
+    )
+    record_audit_log(
+        request=request,
+        action="CREATE",
+        model_name="Coupon",
+        object_id=code,
+        changes={"code": code, "discount_amount": str(discount_val), "min_purchase": str(min_purch_val)},
+        user=request.user,
+    )
+    messages.success(request, f"สร้างคูปองส่วนลดรหัส '{code}' (ส่วนลด ฿{discount_val:,.2f}) เรียบร้อยแล้ว")
+    return redirect('/accounts/admin-center/?tab=vouchers')
+
+
+@role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
+@require_http_methods(["POST"])
+def admin_coupon_toggle_view(request, coupon_id):
+    """Admin toggles active status of a coupon."""
+    from apps.community.models import Coupon
+    coupon = get_object_or_404(Coupon, id=coupon_id)
+    coupon.is_active = not coupon.is_active
+    coupon.save(update_fields=['is_active'])
+    status_str = "เปิดใช้งาน" if coupon.is_active else "ปิดการใช้งาน"
+    messages.success(request, f"{status_str} คูปอง '{coupon.code}' เรียบร้อยแล้ว")
+    return redirect('/accounts/admin-center/?tab=vouchers')
+
+
+@role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
+@require_http_methods(["POST"])
+def admin_coupon_delete_view(request, coupon_id):
+    """Admin permanently deletes a promotional voucher."""
+    from apps.community.models import Coupon
+    coupon = get_object_or_404(Coupon, id=coupon_id)
+    code = coupon.code
+    coupon.delete()
+    record_audit_log(
+        request=request,
+        action="DELETE",
+        model_name="Coupon",
+        object_id=str(coupon_id),
+        changes={"code": code},
+        user=request.user,
+    )
+    messages.success(request, f"ลบคูปองส่วนลด '{code}' เรียบร้อยแล้ว")
+    return redirect('/accounts/admin-center/?tab=vouchers')
+
+
+@role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
+@require_http_methods(["POST"])
+def admin_shipping_settings_update_view(request):
+    """Admin updates global shipping fee settings."""
+    from apps.bookings.models import ShippingSetting
+    settings = ShippingSetting.get_settings()
+
+    base_fee = request.POST.get('base_shipping_fee', '40.00').strip()
+    is_free = request.POST.get('is_free_shipping_enabled') == 'on'
+    free_min = request.POST.get('free_shipping_min_order', '500.00').strip()
+
+    try:
+        settings.base_shipping_fee = max(Decimal('0.00'), Decimal(base_fee))
+    except Exception:
+        settings.base_shipping_fee = Decimal('40.00')
+
+    settings.is_free_shipping_enabled = is_free
+
+    try:
+        settings.free_shipping_min_order = max(Decimal('0.00'), Decimal(free_min))
+    except Exception:
+        settings.free_shipping_min_order = Decimal('500.00')
+
+    settings.save()
+    record_audit_log(
+        request=request,
+        action="UPDATE",
+        model_name="ShippingSetting",
+        object_id=str(settings.id),
+        changes={
+            "base_shipping_fee": str(settings.base_shipping_fee),
+            "is_free_shipping_enabled": settings.is_free_shipping_enabled,
+            "free_shipping_min_order": str(settings.free_shipping_min_order),
+        },
+        user=request.user,
+    )
+    messages.success(request, "บันทึกการตั้งค่าค่าจัดส่งเรียบร้อยแล้ว")
+    return redirect('/accounts/admin-center/?tab=vouchers')
 
 

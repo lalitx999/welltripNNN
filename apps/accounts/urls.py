@@ -55,5 +55,11 @@ urlpatterns = [
 
     # Security Audits
     path('admin/audit/', admin_views.admin_audit_log_view, name='admin_audit'),
+
+    # Vouchers & Shipping Settings
+    path('admin/vouchers/create/', admin_views.admin_coupon_create_view, name='admin_coupon_create'),
+    path('admin/vouchers/<uuid:coupon_id>/toggle/', admin_views.admin_coupon_toggle_view, name='admin_coupon_toggle'),
+    path('admin/vouchers/<uuid:coupon_id>/delete/', admin_views.admin_coupon_delete_view, name='admin_coupon_delete'),
+    path('admin/shipping/update/', admin_views.admin_shipping_settings_update_view, name='admin_shipping_settings_update'),
 ]
 

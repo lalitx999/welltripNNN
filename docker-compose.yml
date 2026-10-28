@@ -1,67 +1,35 @@
 services:
-  db:
-    image: postgres:16-alpine
-    container_name: welltrip_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-welltrip_prod}
-      POSTGRES_USER: ${POSTGRES_USER:-welltrip_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-welltrip_secure_password_123}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-welltrip_user} -d ${POSTGRES_DB:-welltrip_prod}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
     container_name: welltrip_redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
+    restart: always
+    networks:
+      - db-network
+    expose:
+      - "6379"
 
-  web:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: welltrip_monolith
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
+    container_name: welltrip_backend
+    restart: always
+    ports:
+      - "8016:8000"
     env_file:
       - .env
     environment:
-      DJANGO_SETTINGS_MODULE: config.settings.prod
-      DATABASE_URL: postgres://${POSTGRES_USER:-welltrip_user}:${POSTGRES_PASSWORD:-welltrip_secure_password_123}@db:5432/${POSTGRES_DB:-welltrip_prod}
-      REDIS_URL: redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=config.settings.prod
+      - DATABASE_URL=postgres://postgres:661201123_Asd@shared-postgres:5432/welltrip_db
+      - REDIS_URL=redis://welltrip_redis:6379/0
     volumes:
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-    expose:
-      - "8000"
-
-  nginx:
-    image: nginx:alpine
-    container_name: welltrip_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
+      - /mnt/hdd_backup/welltrip/media:/app/media
+      - /mnt/hdd_backup/welltrip/static:/app/staticfiles
     depends_on:
-      - web
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - static_volume:/app/staticfiles:ro
-      - media_volume:/app/media:ro
+      - redis
+    networks:
+      - db-network
 
-volumes:
-  postgres_data:
-  redis_data:
-  static_volume:
-  media_volume:
+networks:
+  db-network:
+    external: true

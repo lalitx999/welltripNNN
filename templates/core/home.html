@@ -39,8 +39,8 @@
           โฮมสเตย์ธรรมชาติ อาหารสุขภาพ 5 นิเวศน์ นวดสปาสมุนไพรสด และของดี 4 ชนเผ่าศรีสะเกษ
         </p>
 
-        <!-- Single Capsule Search Pill + Filter Icon Button (เหมือนเซ้งร้านด่วน) -->
-        <div class="w-full mt-2 sm:mt-4">
+        <!-- Single Capsule Search Pill + Filter Icon Button (เหมือนเซ้งร้านด่วน) with ปู่ AJAX -->
+        <div class="w-full mt-2 sm:mt-4 relative" x-data="heroLiveSearch()" @click.away="open = false">
           <form id="hero-search-form" action="{% url 'accommodations:list' %}" method="get" class="relative w-full">
             
             <!-- Hidden filter inputs populated by Filter Modal -->
@@ -58,8 +58,31 @@
 
               <!-- Text Input -->
               <input type="text" name="q" id="hero-search-q"
+                     x-model="query"
+                     @input.debounce.200ms="onInput()"
+                     @focus="onFocus()"
+                     @keydown.escape="open = false"
+                     @keydown.arrow-down.prevent="selectNext()"
+                     @keydown.arrow-up.prevent="selectPrev()"
+                     @keydown.enter="onEnter($event)"
+                     autocomplete="off"
                      placeholder="ค้นหาที่พัก, เมนูสุขภาพ, สปา, หรืออำเภอ (เช่น ขุนหาญ, กันทรลักษ์, ผ้าทอ)..."
                      class="w-full flex-1 bg-transparent px-3 py-2 sm:py-2.5 text-xs sm:text-sm text-stone-800 placeholder:text-stone-400 outline-none">
+
+              <!-- Clear button -->
+              <button type="button" x-show="query.length > 0" @click="clear()" style="display: none;"
+                      class="p-1 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 mr-1 transition"
+                      aria-label="ล้างคำค้น">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+
+              <!-- Loading spinner -->
+              <div x-show="loading" style="display: none;" class="mr-2">
+                <svg class="animate-spin w-4 h-4 text-[#c49a45]" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+              </div>
 
               <!-- Filter Modal Button (Sliders Icon) -->
               <button type="button"
@@ -80,6 +103,65 @@
 
             </div>
           </form>
+
+          <!-- Floating Live Autocomplete Dropdown ("ปู่ AJAX") -->
+          <div x-show="open && (results.length > 0 || (query.trim().length >= 1 && !loading))"
+               x-transition:enter="transition ease-out duration-150"
+               x-transition:enter-start="opacity-0 translate-y-2 scale-98"
+               x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+               x-transition:leave="transition ease-in duration-100"
+               x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+               x-transition:leave-end="opacity-0 translate-y-2 scale-98"
+               style="display: none;"
+               class="absolute left-0 right-0 top-full mt-2 z-50 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-stone-200 text-left overflow-hidden">
+            
+            <!-- Dropdown Header -->
+            <div class="px-4 py-2.5 bg-stone-50/90 border-b border-stone-100 flex items-center justify-between text-xs">
+              <span class="font-bold text-[#1f2925] flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span class="text-[#c49a45] font-mono uppercase text-[10px] tracking-wider">LIVE AJAX</span>
+                <span>ผลการค้นหาด่วน</span>
+              </span>
+              <span class="text-[11px] text-stone-500" x-show="results.length > 0">
+                พบ <span class="font-bold text-[#1f2925]" x-text="results.length"></span> รายการ
+              </span>
+            </div>
+
+            <!-- Results List -->
+            <div class="max-h-[360px] overflow-y-auto divide-y divide-stone-100">
+              <template x-for="(item, index) in results" :key="index">
+                <a :href="item.url"
+                   :id="'live-result-item-' + index"
+                   :class="{'bg-[#c49a45]/10': selectedIndex === index, 'hover:bg-stone-50': selectedIndex !== index}"
+                   class="flex items-center justify-between px-4 py-3 transition group cursor-pointer block">
+                  <div class="flex items-center gap-3 min-w-0 pr-3">
+                    <span :class="item.type_badge" class="px-2 py-0.5 rounded-lg text-[10px] font-bold border shrink-0" x-text="item.type"></span>
+                    <div class="min-w-0">
+                      <div class="text-xs font-bold text-[#1f2925] group-hover:text-[#c49a45] transition truncate" x-text="item.title"></div>
+                      <div class="text-[11px] text-stone-500 truncate" x-text="item.subtitle"></div>
+                    </div>
+                  </div>
+                  <div class="text-right shrink-0 flex items-center gap-2">
+                    <span class="text-xs font-bold text-emerald-700" x-show="item.price" x-text="item.price"></span>
+                    <svg class="w-4 h-4 text-stone-300 group-hover:text-[#c49a45] group-hover:translate-x-0.5 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                  </div>
+                </a>
+              </template>
+
+              <!-- Empty Results -->
+              <div x-show="results.length === 0 && !loading" class="p-6 text-center text-xs text-stone-500 space-y-1">
+                <p class="font-bold text-stone-700">ไม่พบรายการที่ตรงกับ "<span x-text="query"></span>"</p>
+                <p class="text-[11px] text-stone-400">กดปุ่มค้นหาหรือ Enter เพื่อค้นหาทั่วไปในหน้าแคตตาล็อก</p>
+              </div>
+            </div>
+
+            <!-- Footer Hint -->
+            <div class="px-4 py-2 bg-stone-50/50 border-t border-stone-100 flex items-center justify-between text-[10px] text-stone-400">
+              <span>กดลูกศร ↑ ↓ เพื่อเลือก · Enter เพื่อไปทันที</span>
+              <span>WellTrip Real-Time Engine</span>
+            </div>
+
+          </div>
         </div>
 
       </div>
@@ -389,6 +471,65 @@
   </section>
 
   <!-- ============================================================================== -->
+  <!-- 3.5 STRATEGIC PARTNERS TRUST BAR (หน่วยงานสนับสนุนทุนวิจัยและบ่มเพาะนวัตกรรม) -->
+  <!-- ============================================================================== -->
+  <section class="mx-auto max-w-6xl px-3 sm:px-6">
+    <div class="rounded-2xl sm:rounded-3xl border border-[#c49a45]/40 bg-gradient-to-r from-white via-[#faf9f6] to-white p-4 sm:p-5 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- Label / Title -->
+      <div class="flex items-center gap-3 text-center sm:text-left">
+        <div class="w-10 h-10 rounded-2xl bg-amber-50 text-[#c49a45] flex items-center justify-center shrink-0 border border-amber-100 shadow-2xs">
+          <i data-lucide="award" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#c49a45]">
+            <span>โครงการสนับสนุนทุนและขับเคลื่อนนวัตกรรม</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          </div>
+          <h2 class="text-xs sm:text-sm font-extrabold text-[#1f2925] leading-tight">
+            นวัตกรรมเพื่อสังคมสู่การท่องเที่ยวเชิงสุขภาวะศรีสะเกษ
+          </h2>
+        </div>
+      </div>
+
+      <!-- Logos Container -->
+      <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 shrink-0">
+        
+        <!-- NIA Logo Card -->
+        <div class="bg-white px-3.5 py-2 rounded-xl shadow-xs border border-stone-200/90 flex items-center gap-2.5 transition-all hover:scale-105" title="สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน)">
+          <img src="{% static 'images/partners/logo-nia.png' %}" alt="สำนักงานนวัตกรรมแห่งชาติ (NIA)" class="h-8 sm:h-9 w-auto object-contain">
+          <div class="text-left hidden sm:block border-l border-stone-200 pl-2">
+            <div class="text-[10px] font-bold text-stone-900 leading-tight">สำนักงานนวัตกรรมแห่งชาติ</div>
+            <div class="text-[8px] text-stone-500 font-medium">National Innovation Agency</div>
+          </div>
+        </div>
+
+        <!-- SIP UBU Logo Card -->
+        <div class="bg-white px-3.5 py-2 rounded-xl shadow-xs border border-stone-200/90 flex items-center gap-2.5 transition-all hover:scale-105" title="อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี">
+          <img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP)" class="h-8 sm:h-9 w-auto object-contain">
+          <div class="text-left hidden sm:block border-l border-stone-200 pl-2">
+            <div class="text-[10px] font-bold text-stone-900 leading-tight">อุทยานวิทยาศาสตร์ ม.อุบลฯ</div>
+            <div class="text-[8px] text-stone-500 font-medium">Science & Innovation Park</div>
+          </div>
+        </div>
+
+        <!-- SSKRU Badge -->
+        <div class="bg-[#1f2925] text-white px-3.5 py-2 rounded-xl shadow-xs border border-[#1f2925] flex items-center gap-2" title="มหาวิทยาลัยราชภัฏศรีสะเกษ">
+          <div class="w-6 h-6 rounded-lg bg-[#c49a45]/30 text-[#c49a45] flex items-center justify-center text-[10px] font-black">
+            SSKRU
+          </div>
+          <div class="text-left">
+            <div class="text-[10px] font-bold text-white leading-tight">มรภ.ศรีสะเกษ</div>
+            <div class="text-[8px] text-stone-300">หน่วยบริหารโครงการ</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================================== -->
   <!-- 4. COMPACT PROMOTIONAL BANNER: AI WELLNESS CURATOR (ลิงก์ถูกต้องไปหน้า AI)     -->
   <!-- ============================================================================== -->
   <section class="mx-auto max-w-6xl px-3 sm:px-6">
@@ -610,6 +751,298 @@
     </div>
   </section>
 
+  <!-- ============================================================================== -->
+  <!-- 8. INNOVATION & FUNDING SUPPORTERS (หน่วยงานสนับสนุนทุนและขับเคลื่อนนวัตกรรม) -->
+  <!-- ============================================================================== -->
+  <section class="mx-auto max-w-6xl px-3 sm:px-6 pt-2">
+    <div class="rounded-2xl sm:rounded-3xl border border-[#c49a45]/30 bg-gradient-to-br from-white via-[#faf9f6] to-[#f4efe6] p-6 sm:p-10 shadow-xs space-y-6">
+      
+      <div class="text-center space-y-2 max-w-2xl mx-auto">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1f2925] text-[#c49a45] text-[10px] font-bold uppercase tracking-wider">
+          <i data-lucide="award" class="w-3.5 h-3.5"></i>
+          <span>FUNDING & STRATEGIC PARTNERS</span>
+        </div>
+        <h2 class="text-lg sm:text-2xl font-extrabold text-[#1f2925] tracking-tight">
+          ขับเคลื่อนนวัตกรรมสู่เศรษฐกิจฐานรากศรีสะเกษ
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-light">
+          โครงการวิจัยและพัฒนานวัตกรรมแพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะ ได้รับการสนับสนุนทุนวิจัยและบ่มเพาะเทคโนโลยีโดยหน่วยงานภาครัฐและสถาบันอุดมศึกษา
+        </p>
+      </div>
+
+      <!-- Partner Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-2">
+        
+        <!-- Partner 1: NIA -->
+        <div class="rounded-2xl border border-stone-200/80 bg-white p-5 sm:p-6 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left group">
+          <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-stone-50 border border-stone-100 p-3 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <img src="{% static 'images/partners/logo-nia.png' %}" alt="สำนักงานนวัตกรรมแห่งชาติ (NIA)" class="max-w-full max-h-full object-contain">
+          </div>
+          <div class="space-y-1.5">
+            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold">
+              <span>หน่วยงานสนับสนุนทุนวิจัย</span>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold text-stone-900 leading-snug">
+              สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน)
+            </h3>
+            <p class="text-[11px] text-stone-500 font-medium">National Innovation Agency (NIA)</p>
+            <p class="text-xs text-stone-600 leading-relaxed font-light pt-1">
+              สนับสนุนทุนส่งเสริมการสร้างสรรค์นวัตกรรมเพื่อสังคม ยกระดับผู้ประกอบการชุมชนสู่การท่องเที่ยวเชิงสุขภาวะมูลค่าสูง
+            </p>
+          </div>
+        </div>
+
+        <!-- Partner 2: SIP UBU -->
+        <div class="rounded-2xl border border-stone-200/80 bg-white p-5 sm:p-6 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left group">
+          <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-stone-50 border border-stone-100 p-3 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP)" class="max-w-full max-h-full object-contain">
+          </div>
+          <div class="space-y-1.5">
+            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold">
+              <span>หน่วยบ่มเพาะและเชื่อมโยงนวัตกรรม</span>
+            </div>
+            <h3 class="text-sm sm:text-base font-bold text-stone-900 leading-snug">
+              อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี
+            </h3>
+            <p class="text-[11px] text-stone-500 font-medium">Science and Innovation Park, Ubon Ratchathani University (SIP)</p>
+            <p class="text-xs text-stone-600 leading-relaxed font-light pt-1">
+              สถาบันแม่ข่ายเครือข่ายอุดมศึกษาภาคตะวันออกเฉียงเหนือตอนล่าง สนับสนุนการบ่มเพาะวิสาหกิจและถ่ายทอดเทคโนโลยีสู่ชุมชน
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Academic Unit Mention: SSKRU -->
+      <div class="pt-2 border-t border-stone-200/70 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-2">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <span>หน่วยบริหารโครงการหลัก: <strong>มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)</strong></span>
+        </div>
+        <div class="text-[11px] text-stone-400">
+          บูรณาการภูมิปัญญาท้องถิ่น 4 ชนเผ่ากับมาตรฐานวิทยาศาสตร์สุขภาพ
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================================== -->
+  <!-- 7. AEO KNOWLEDGE CAPSULE & FAQ (คู่มือท่องเที่ยวสุขภาวะ & คำถามที่พบบ่อย)          -->
+  <!-- ============================================================================== -->
+  <section class="mx-auto max-w-6xl px-3 sm:px-6" id="wellness-faq">
+    <div class="rounded-3xl border border-stone-200/90 bg-white p-6 sm:p-10 shadow-xs space-y-8">
+      
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 border-b border-stone-100 pb-6">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold uppercase tracking-wider mb-2">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5 text-emerald-700"></i>
+            <span>AEO & KNOWLEDGE BASE · องค์ความรู้สุขภาวะและการท่องเที่ยว</span>
+          </div>
+          <h2 id="aeo-faq-heading" class="text-xl sm:text-2xl font-bold text-[#1f2925] tracking-tight">
+            คำถามที่พบบ่อยและข้อมูลอ้างอิงการท่องเที่ยวเชิงสุขภาพ จ.ศรีสะเกษ
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-500 font-light mt-1">
+            ข้อมูลมาตรฐานสำหรับการท่องเที่ยววิถีบำบัด โภชนบำบัดดินภูเขาไฟ และการอ้างอิงเชิงวิชาการ
+          </p>
+        </div>
+        <div class="text-[11px] text-stone-400 shrink-0 flex items-center gap-1.5 bg-stone-50 px-3 py-1.5 rounded-full border border-stone-200">
+          <i data-lucide="bot" class="w-3.5 h-3.5 text-stone-500"></i>
+          <span>พร้อมสำหรับการอ้างอิง AI & Search</span>
+        </div>
+      </div>
+
+      <!-- FAQ Accordion (Alpine.js) -->
+      <div class="space-y-3" x-data="{ active: 1 }">
+        
+        <!-- Q1: WellTrip Sisaket คืออะไร -->
+        <div class="rounded-2xl border border-stone-200/80 bg-stone-50/40 overflow-hidden transition-all">
+          <button type="button"
+                  @click="active = active === 1 ? null : 1"
+                  class="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-stone-50 transition cursor-pointer">
+            <span class="font-bold text-sm sm:text-base text-stone-900 flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-full bg-[#1f2925] text-white text-xs flex items-center justify-center shrink-0">1</span>
+              <span>WellTrip Sisaket คืออะไร และตอบโจทย์การท่องเที่ยวเชิงสุขภาพอย่างไร?</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-stone-500 shrink-0 transition-transform" :class="{ 'rotate-180': active === 1 }"></i>
+          </button>
+          <div x-show="active === 1" x-collapse class="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm text-stone-600 leading-relaxed font-light aeo-answer space-y-2">
+            <p>
+              <strong>WellTrip Sisaket</strong> คือแพลตฟอร์มการท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน (Wellness & Community-Based Tourism) ครอบคลุม 13 อำเภอในจังหวัดศรีสะเกษ รวบรวมโฮมสเตย์ธรรมชาติ อาหารสุขภาพ 5 นิเวศน์ นวดสปาสมุนไพรสด และผลิตภัณฑ์ภูมิปัญญา 4 ชนเผ่าพื้นถิ่น ช่วยให้นักท่องเที่ยวได้สัมผัสวิถีสโลว์ไลฟ์ พักผ่อนฟื้นฟูร่างกายและจิตใจอย่างยั่งยืน โดยรายได้ 100% กระจายสู่ชุมชนฐานรากโดยตรง
+            </p>
+          </div>
+        </div>
+
+        <!-- Q2: อาหารสุขภาพดินภูเขาไฟ -->
+        <div class="rounded-2xl border border-stone-200/80 bg-stone-50/40 overflow-hidden transition-all">
+          <button type="button"
+                  @click="active = active === 2 ? null : 2"
+                  class="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-stone-50 transition cursor-pointer">
+            <span class="font-bold text-sm sm:text-base text-stone-900 flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-full bg-[#1f2925] text-white text-xs flex items-center justify-center shrink-0">2</span>
+              <span>อาหารสุขภาพดินภูเขาไฟศรีสะเกษ (Volcanic Soil Nutrition) มีจุดเด่นอะไรบ้าง?</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-stone-500 shrink-0 transition-transform" :class="{ 'rotate-180': active === 2 }"></i>
+          </button>
+          <div x-show="active === 2" x-collapse class="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm text-stone-600 leading-relaxed font-light aeo-answer space-y-2">
+            <p>
+              จังหวัดศรีสะเกษมีพื้นที่ลาวาภูเขาไฟโบราณที่อุดมสมบูรณ์ด้วยแร่ธาตุธรรมชาติ อาทิ โพแทสเซียม แมกนีเซียม และฟอสฟอรัส ส่งผลให้ผลผลิตทางการเกษตร เช่น <strong>ทุเรียนภูเขาไฟศรีสะเกษ (GI)</strong>, <strong>หอมแดง</strong>, <strong>กระเทียม</strong> และพืชผักสมุนไพรอินทรีย์ มีรสชาติหวานกรอบเฉพาะตัวและมีสารต้านอนุมูลอิสระสูง ถูกนำมารังสรรค์เป็นเมนูโภชนบำบัดตามธาตุ 5 นิเวศน์เพื่อเสริมสร้างภูมิคุ้มกัน ชะลอวัย และดูแลระบบทางเดินอาหาร
+            </p>
+          </div>
+        </div>
+
+        <!-- Q3: การท่องเที่ยววิถีบำบัด 4 ชนเผ่า -->
+        <div class="rounded-2xl border border-stone-200/80 bg-stone-50/40 overflow-hidden transition-all">
+          <button type="button"
+                  @click="active = active === 3 ? null : 3"
+                  class="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-stone-50 transition cursor-pointer">
+            <span class="font-bold text-sm sm:text-base text-stone-900 flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-full bg-[#1f2925] text-white text-xs flex items-center justify-center shrink-0">3</span>
+              <span>วิถีบำบัด 4 ชนเผ่าโบราณศรีสะเกษ ประกอบด้วยชนเผ่าใดและมีเอกลักษณ์อย่างไร?</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-stone-500 shrink-0 transition-transform" :class="{ 'rotate-180': active === 3 }"></i>
+          </button>
+          <div x-show="active === 3" x-collapse class="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm text-stone-600 leading-relaxed font-light aeo-answer space-y-2">
+            <p>
+              จังหวัดศรีสะเกษมีอัตลักษณ์ทางชาติพันธุ์ 4 ชนเผ่า ได้แก่:
+            </p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>ชนเผ่าลาว:</strong> ศาสตร์อาหารหมักดองธรรมชาติ สมุนไพรสวนครัว และการฮีลลิ่งด้วยเสียงพิณแคนและวิถีพุทธริมน้ำ</li>
+              <li><strong>ชนเผ่าเขมร:</strong> ศาสตร์สมุนไพรป่าแถบเขาพนมดงรัก การแช่เท้าสมุนไพร และเวทศาสตร์นวดคลายเส้นโบราณ</li>
+              <li><strong>ชนเผ่าส่วย (กูย):</strong> ภูมิปัญญาคนเลี้ยงช้าง ศาสตร์สมุนไพรกำลังพลาย และศิลปะการย้อมผ้าด้วยมะเกลือโบราณ</li>
+              <li><strong>ชนเผ่าเยอ:</strong> วิถีการกินอยู่อย่างเรียบง่าย เกษตรอินทรีย์พื้นบ้าน และศาสตร์การประคบสมุนไพรสดลดอักเสบ</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q4: มาตรฐานความสะอาดและความปลอดภัยของโฮมสเตย์ -->
+        <div class="rounded-2xl border border-stone-200/80 bg-stone-50/40 overflow-hidden transition-all">
+          <button type="button"
+                  @click="active = active === 4 ? null : 4"
+                  class="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-stone-50 transition cursor-pointer">
+            <span class="font-bold text-sm sm:text-base text-stone-900 flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-full bg-[#1f2925] text-white text-xs flex items-center justify-center shrink-0">4</span>
+              <span>มาตรฐานความปลอดภัยและสุขอนามัยของโฮมสเตย์ WellTrip เป็นอย่างไร?</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-stone-500 shrink-0 transition-transform" :class="{ 'rotate-180': active === 4 }"></i>
+          </button>
+          <div x-show="active === 4" x-collapse class="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm text-stone-600 leading-relaxed font-light aeo-answer space-y-2">
+            <p>
+              โฮมสเตย์ทุกแห่งในแพลตฟอร์มผ่านเกณฑ์การประเมินมาตรฐานสุขอนามัยชุมชนและการท่องเที่ยวเชิงสุขภาพ (Wellness Homestay Standard) ได้รับการฝึกอบรมด้านการบริการ การจัดการอาหารปลอดภัย และระบบรองรับนักท่องเที่ยวโดยคณาจารย์มหาวิทยาลัยราชภัฏศรีสะเกษ มีระบบยืนยันตัวตนเจ้าของที่พักและระบุหมายเลขการจองปลอดภัยทุกรายการ
+            </p>
+          </div>
+        </div>
+
+        <!-- Q5: องค์กรผู้สนับสนุนและหน่วยงานพันธมิตร -->
+        <div class="rounded-2xl border border-stone-200/80 bg-stone-50/40 overflow-hidden transition-all">
+          <button type="button"
+                  @click="active = active === 5 ? null : 5"
+                  class="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-stone-50 transition cursor-pointer">
+            <span class="font-bold text-sm sm:text-base text-stone-900 flex items-center gap-2.5">
+              <span class="w-6 h-6 rounded-full bg-[#1f2925] text-white text-xs flex items-center justify-center shrink-0">5</span>
+              <span>โครงการ WellTrip ได้รับการสนับสนุนและการรับรองจากหน่วยงานใด?</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-stone-500 shrink-0 transition-transform" :class="{ 'rotate-180': active === 5 }"></i>
+          </button>
+          <div x-show="active === 5" x-collapse class="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm text-stone-600 leading-relaxed font-light aeo-answer space-y-2">
+            <p>
+              WellTrip Sisaket ได้รับการสนับสนุนทุนนวัตกรรมเพื่อสังคมจาก <strong>สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) หรือ NIA</strong> ภายใต้การบ่มเพาะและเชื่อมโยงเครือข่ายอุดมศึกษาภาคตะวันออกเฉียงเหนือตอนล่างโดย <strong>อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)</strong> และดำเนินการวิจัยพัฒนาองค์ความรู้โดย <strong>มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)</strong>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================================== -->
+  <!-- Structured Data: TouristDestination, FAQPage & Speakable (Schema.org)           -->
+  <!-- ============================================================================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TouristDestination",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}/#destination",
+        "name": "WellTrip Sisaket Wellness Tourism Destination",
+        "alternateName": "การท่องเที่ยวเชิงสุขภาพและวิถีบำบัด 4 ชนเผ่า จังหวัดศรีสะเกษ",
+        "description": "แหล่งท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน จ.ศรีสะเกษ สัมผัสโฮมสเตย์ธรรมชาติ อาหารสุขภาพดินภูเขาไฟ สปาสมุนไพรสด และภูมิปัญญา 4 ชนเผ่า (ลาว, เขมร, ส่วย, เยอ)",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/",
+        "touristType": ["Wellness Tourism", "Ecotourism", "Cultural Tourism", "Culinary Tourism"],
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 15.1186,
+          "longitude": 104.3220
+        },
+        "containedInPlace": {
+          "@type": "AdministrativeArea",
+          "name": "Sisaket Province",
+          "addressCountry": "TH"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "WellTrip Sisaket คืออะไร และตอบโจทย์การท่องเที่ยวเชิงสุขภาพอย่างไร?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "WellTrip Sisaket คือแพลตฟอร์มการท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน (Wellness & Community-Based Tourism) ในจังหวัดศรีสะเกษ รวบรวมโฮมสเตย์ธรรมชาติ อาหารสุขภาพ 5 นิเวศน์ นวดสปาสมุนไพรสด และผลิตภัณฑ์ภูมิปัญญา 4 ชนเผ่า (ลาว เขมร ส่วย เยอ) โดยรายได้ส่งตรงถึงชุมชน 100%"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "อาหารสุขภาพดินภูเขาไฟศรีสะเกษ (Volcanic Soil Nutrition) มีจุดเด่นอะไรบ้าง?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "ดินภูเขาไฟโบราณในศรีสะเกษอุดมไปด้วยแร่ธาตุธรรมชาติสูง ทำให้พืชผลเช่น ทุเรียนภูเขาไฟ (GI) หอมแดง กระเทียม มีรสชาติเข้มข้นเฉพาะตัว มีสารต้านอนุมูลอิสระสูง นำมารังสรรค์เป็นเมนูโภชนบำบัดตามธาตุ 5 นิเวศน์เพื่อสุขภาพ"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "วิถีบำบัด 4 ชนเผ่าโบราณศรีสะเกษ ประกอบด้วยชนเผ่าใดและมีเอกลักษณ์อย่างไร?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "ประกอบด้วย 4 ชนเผ่า: ลาว (อาหารหมักดองธรรมชาติ สมุนไพรสวนครัว ดนตรีบำบัด), เขมร (สมุนไพรป่าพนมดงรัก แช่เท้าสมุนไพร นวดคลายเส้น), ส่วยหรือกูย (ศาสตร์คนเลี้ยงช้าง ย้อมผ้ามะเกลือ), และเยอ (เกษตรอินทรีย์ ประคบสมุนไพรสดลดอักเสบ)"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "มาตรฐานความปลอดภัยและสุขอนามัยของโฮมสเตย์ WellTrip เป็นอย่างไร?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "โฮมสเตย์ทุกแห่งผ่านเกณฑ์มาตรฐานสุขอนามัยชุมชนและการท่องเที่ยวเชิงสุขภาพ (Wellness Homestay Standard) ได้รับการฝึกอบรมและรับรองโดยมหาวิทยาลัยราชภัฏศรีสะเกษและชุมชนท้องถิ่น"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "โครงการ WellTrip ได้รับการสนับสนุนและการรับรองจากหน่วยงานใด?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "ได้รับการสนับสนุนทุนนวัตกรรมเพื่อสังคมจากสำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) หรือ NIA ภายใต้การบ่มเพาะโดยอุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU) และดำเนินการวิจัยพัฒนาโดย มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "WebPage",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}/#webpage",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/",
+        "name": "WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ",
+        "speakable": {
+          "@type": "SpeakableSpecification",
+          "cssSelector": ["#aeo-faq-heading", ".aeo-answer"]
+        }
+      }
+    ]
+  }
+  </script>
+
 </div>
 {% endblock %}
 
@@ -681,5 +1114,77 @@
   } else {
     initFilterModal();
   }
+
+  // ปู่ AJAX: Real-Time Universal Search Engine for Hero Bar
+  function heroLiveSearch() {
+    return {
+      query: '',
+      open: false,
+      loading: false,
+      results: [],
+      selectedIndex: -1,
+
+      onInput() {
+        const q = this.query.trim();
+        if (q.length < 1) {
+          this.results = [];
+          this.open = false;
+          this.loading = false;
+          return;
+        }
+        this.loading = true;
+        this.open = true;
+        this.selectedIndex = -1;
+
+        fetch(`/api/search/live/?q=${encodeURIComponent(q)}`)
+          .then(res => res.json())
+          .then(data => {
+            this.loading = false;
+            this.results = data.results || [];
+          })
+          .catch(() => {
+            this.loading = false;
+          });
+      },
+
+      onFocus() {
+        if (this.query.trim().length >= 1 && this.results.length > 0) {
+          this.open = true;
+        }
+      },
+
+      selectNext() {
+        if (!this.results.length) return;
+        this.selectedIndex = (this.selectedIndex + 1) % this.results.length;
+        this.scrollToSelected();
+      },
+
+      selectPrev() {
+        if (!this.results.length) return;
+        this.selectedIndex = (this.selectedIndex - 1 + this.results.length) % this.results.length;
+        this.scrollToSelected();
+      },
+
+      scrollToSelected() {
+        const el = document.getElementById(`live-result-item-${this.selectedIndex}`);
+        if (el) el.scrollIntoView({ block: 'nearest' });
+      },
+
+      onEnter(e) {
+        if (this.open && this.selectedIndex >= 0 && this.results[this.selectedIndex]) {
+          e.preventDefault();
+          window.location.href = this.results[this.selectedIndex].url;
+        }
+      },
+
+      clear() {
+        this.query = '';
+        this.results = [];
+        this.open = false;
+        this.selectedIndex = -1;
+      }
+    };
+  }
+  window.heroLiveSearch = heroLiveSearch;
 </script>
 {% endblock %}

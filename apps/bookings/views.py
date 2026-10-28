@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -7,7 +8,8 @@ from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 
 from apps.accounts.permissions import can_view_object
-from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType
+from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType, ShippingSetting
+from apps.community.models import Coupon
 from apps.bookings.services.checkout import process_checkout, StockUnavailableError
 
 
@@ -56,24 +58,114 @@ def get_selected_address(request):
     return addresses[0]
 
 
+def calculate_cart_totals(request, cart):
+    """
+    Calculates subtotal, smart shipping fee (only for physical OTOP goods),
+    and applies any validated discount voucher.
+    """
+    subtotal = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+
+    # Smart shipping: detect physical goods
+    otop_items = [
+        item for item in cart 
+        if str(item.get('item_type')).upper() in ['OTOP', 'OTOP_PRODUCT', BookingItemType.OTOP]
+    ]
+    has_physical_items = len(otop_items) > 0
+    otop_subtotal = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in otop_items)
+
+    shipping_setting = ShippingSetting.get_settings()
+    shipping_fee = Decimal("0.00")
+    shipping_status_text = "ไม่มีค่าจัดส่ง"
+
+    if has_physical_items:
+        if shipping_setting.is_free_shipping_enabled:
+            shipping_fee = Decimal("0.00")
+            shipping_status_text = "ฟรี (โปรโมชันส่งฟรีทั้งระบบ)"
+        elif otop_subtotal >= shipping_setting.free_shipping_min_order:
+            shipping_fee = Decimal("0.00")
+            shipping_status_text = f"ฟรี (ช้อปครบ ฿{shipping_setting.free_shipping_min_order:,.0f})"
+        else:
+            shipping_fee = shipping_setting.base_shipping_fee
+            shipping_status_text = f"฿{shipping_fee:,.2f}"
+    else:
+        shipping_status_text = "ไม่มีสินค้าต้องจัดส่ง (ที่พัก/บริการ)"
+
+    # Coupon / Gift Voucher check
+    applied_coupon_code = request.session.get('applied_coupon', '').strip().upper()
+    discount_amount = Decimal("0.00")
+    coupon_obj = None
+    coupon_error = ""
+
+    if applied_coupon_code:
+        coupon_obj = Coupon.objects.filter(code=applied_coupon_code, is_active=True).first()
+        if coupon_obj:
+            is_valid, msg = coupon_obj.is_valid_for(subtotal)
+            if is_valid:
+                discount_amount = min(coupon_obj.discount_amount, subtotal)
+            else:
+                coupon_error = msg
+                request.session['applied_coupon'] = ""
+                request.session.modified = True
+                coupon_obj = None
+        else:
+            request.session['applied_coupon'] = ""
+            request.session.modified = True
+            coupon_error = "ไม่พบคูปองส่วนลดนี้หรือคูปองถูกระงับแล้ว"
+
+    final_total = max(Decimal("0.00"), subtotal + shipping_fee - discount_amount)
+
+    return {
+        'subtotal': subtotal,
+        'has_physical_items': has_physical_items,
+        'otop_subtotal': otop_subtotal,
+        'shipping_fee': shipping_fee,
+        'shipping_status_text': shipping_status_text,
+        'shipping_setting': shipping_setting,
+        'coupon_code': applied_coupon_code if coupon_obj else "",
+        'coupon_obj': coupon_obj,
+        'coupon_error': coupon_error,
+        'discount_amount': discount_amount,
+        'final_total': final_total,
+    }
+
+
 @require_http_methods(["GET"])
 def cart_view(request):
     """
-    Step 1: Displays cart items, +/- quantity controls, and shipping address manager (max 3).
+    Step 1: Displays cart items, +/- quantity controls, shipping fee, voucher box, and shipping address manager.
     """
     cart = get_cart(request)
-    total_amount = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+    totals = calculate_cart_totals(request, cart)
     shipping_addresses = get_shipping_addresses(request)
     selected_idx = request.session.get('selected_address_idx', 0)
 
+    # 22 Districts of Sisaket for clean dropdown selector
+    sisaket_districts = [
+        "เมืองศรีสะเกษ", "กันทรลักษ์", "กันทรารมย์", "ขุนหาญ", "ราษีไศล",
+        "อุทุมพรพิสัย", "ปรางค์กู่", "ขุขันธ์", "ไพรบึง", "ห้วยทับทัน",
+        "โนนคูณ", "ศรีรัตนะ", "น้ำเกลี้ยง", "วังหิน", "ภูสิงห์", "เมืองจันทร์",
+        "เบญจลักษ์", "พยุห์", "โพธิ์ศรีสุวรรณ", "ศิลาลาด", "บึงบูรพ์", "ยางชุมน้อย"
+    ]
+    active_coupons = Coupon.objects.filter(
+        is_active=True,
+        expires_at__gt=timezone.now()
+    ).order_by('min_purchase')[:4]
+
     return render(request, 'bookings/cart.html', {
         'cart': cart,
-        'total_amount': total_amount,
+        'totals': totals,
+        'total_amount': totals['final_total'],
+        'subtotal': totals['subtotal'],
+        'shipping_fee': totals['shipping_fee'],
+        'discount_amount': totals['discount_amount'],
+        'coupon_code': totals['coupon_code'],
+        'active_coupons': active_coupons,
         'item_count': len(cart),
         'shipping_addresses': shipping_addresses,
         'selected_idx': selected_idx,
         'selected_address': get_selected_address(request),
         'can_add_address': len(shipping_addresses) < 3,
+        'sisaket_districts': sisaket_districts,
     })
 
 
@@ -217,6 +309,105 @@ def cart_remove_view(request, index):
     return redirect('bookings:cart')
 
 
+@require_http_methods(["POST"])
+def coupon_apply_view(request):
+    """
+    Applies a gift voucher or discount coupon via AJAX or form POST.
+    """
+    code = ""
+    content_type = request.content_type or ""
+    if "application/json" in content_type and request.body:
+        try:
+            body_data = json.loads(request.body.decode("utf-8"))
+            code = (body_data.get("coupon_code") or body_data.get("code") or "").strip().upper()
+        except Exception:
+            pass
+
+    if not code:
+        code = (request.POST.get("coupon_code") or request.POST.get("code") or "").strip().upper()
+
+    cart = get_cart(request)
+    subtotal = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+
+    is_ajax = (
+        request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        or bool(request.headers.get("HX-Request"))
+        or "application/json" in (request.content_type or "")
+    )
+
+    def safe_add_message(level, text):
+        try:
+            level(request, text)
+        except Exception:
+            pass
+
+    if not code:
+        if is_ajax:
+            return JsonResponse({"success": False, "message": "กรุณากรอกรหัสคูปอง"})
+        safe_add_message(messages.error, "กรุณากรอกรหัสคูปอง")
+        return redirect('bookings:cart')
+
+    coupon = Coupon.objects.filter(code=code, is_active=True).first()
+    if not coupon:
+        if is_ajax:
+            return JsonResponse({"success": False, "message": f"ไม่พบรหัสคูปอง '{code}' หรือคูปองหมดอายุแล้ว"})
+        safe_add_message(messages.error, f"ไม่พบรหัสคูปอง '{code}' หรือคูปองหมดอายุแล้ว")
+        return redirect('bookings:cart')
+
+    is_valid, msg = coupon.is_valid_for(subtotal)
+    if not is_valid:
+        if is_ajax:
+            return JsonResponse({"success": False, "message": msg})
+        safe_add_message(messages.error, msg)
+        return redirect('bookings:cart')
+
+    request.session['applied_coupon'] = code
+    request.session.modified = True
+
+    totals = calculate_cart_totals(request, cart)
+
+    if is_ajax:
+        return JsonResponse({
+            "success": True,
+            "message": f"ใช้งานคูปอง '{code}' สำเร็จ! ลดทันที ฿{totals['discount_amount']:,.0f}",
+            "code": code,
+            "discount_amount": float(totals['discount_amount']),
+            "shipping_fee": float(totals['shipping_fee']),
+            "final_total": float(totals['final_total']),
+        })
+
+    safe_add_message(messages.success, f"ใช้งานคูปอง '{code}' ส่วนลด ฿{totals['discount_amount']:,.0f} สำเร็จ")
+    return redirect('bookings:cart')
+
+
+@require_http_methods(["POST"])
+def coupon_remove_view(request):
+    """Removes currently applied voucher."""
+    request.session['applied_coupon'] = ""
+    request.session.modified = True
+    cart = get_cart(request)
+    totals = calculate_cart_totals(request, cart)
+
+    is_ajax = (
+        request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        or bool(request.headers.get("HX-Request"))
+        or "application/json" in (request.content_type or "")
+    )
+    if is_ajax:
+        return JsonResponse({
+            "success": True,
+            "message": "ยกเลิกคูปองส่วนลดแล้ว",
+            "shipping_fee": float(totals['shipping_fee']),
+            "final_total": float(totals['final_total']),
+        })
+
+    try:
+        messages.info(request, "ยกเลิกการใช้คูปองส่วนลดแล้ว")
+    except Exception:
+        pass
+    return redirect('bookings:cart')
+
+
 @login_required
 @require_http_methods(["GET"])
 def review_view(request):
@@ -228,12 +419,17 @@ def review_view(request):
         messages.warning(request, "ตะกร้าสินค้าว่างเปล่า กรุณาเลือกบริการก่อนดำเนินการสั่งซื้อ")
         return redirect('accommodations:list')
 
-    total_amount = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+    totals = calculate_cart_totals(request, cart)
     shipping_address = get_selected_address(request)
 
     return render(request, 'bookings/review.html', {
         'cart': cart,
-        'total_amount': total_amount,
+        'totals': totals,
+        'total_amount': totals['final_total'],
+        'subtotal': totals['subtotal'],
+        'shipping_fee': totals['shipping_fee'],
+        'discount_amount': totals['discount_amount'],
+        'coupon_code': totals['coupon_code'],
         'item_count': len(cart),
         'shipping_address': shipping_address,
     })
@@ -250,7 +446,7 @@ def checkout_view(request):
         messages.warning(request, "ตะกร้าสินค้าว่างเปล่า กรุณาเลือกบริการก่อนดำเนินการสั่งซื้อ")
         return redirect('accommodations:list')
 
-    total_amount = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+    totals = calculate_cart_totals(request, cart)
     shipping_address = get_selected_address(request)
 
     if request.method == "POST":
@@ -265,9 +461,14 @@ def checkout_view(request):
                 cart_items=cart,
                 customer_notes=customer_notes,
                 request=request,
+                shipping_fee=totals['shipping_fee'],
+                discount_amount=totals['discount_amount'],
+                coupon_code=totals['coupon_code'],
+                shipping_address=shipping_address or {},
             )
-            # Empty cart after successful order placement
+            # Empty cart and clear applied coupon after successful order placement
             save_cart(request, [])
+            request.session['applied_coupon'] = ""
             request.session['last_order_shipping_address'] = shipping_address
             request.session.modified = True
             messages.success(request, f"สร้างคำสั่งซื้อสำเร็จ รหัส: {booking.booking_code}")
