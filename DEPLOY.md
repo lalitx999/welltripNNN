@@ -1,22 +1,13 @@
 # Deploy WellTrip ขึ้น VPS
 
-ระบบมี 4 container: `db` (PostgreSQL 16), `redis`, `backend` (Django + Gunicorn) และ `nginx`
+ระบบมี 5 container: `db` (PostgreSQL 16), `redis`, `backend` (Django + Gunicorn), `nginx` และ `cloudflared`
+คนเข้าเว็บผ่าน **Cloudflare Tunnel** จึงไม่ต้องเปิดพอร์ตหรือทำ SSL เอง และไม่ชนกับโปรเจคอื่นบน VPS
+
+```
+ผู้ใช้ → https://welltripthailand.com → Cloudflare → cloudflared → nginx → backend
+```
+
 ตอน start `backend` จะรัน `migrate` และ `collectstatic` ให้อัตโนมัติ (ดูใน `docker-entrypoint.sh`)
-
-พอร์ต 80/443 บน VPS นี้เป็นของโปรเจคอื่น nginx ของ WellTrip จึงรับที่พอร์ต **8443** แล้วให้ Cloudflare ส่งต่อมา:
-
-```
-ผู้ใช้ → https://welltripthailand.com (Cloudflare :443) → VPS:8443 (welltrip_nginx) → backend
-```
-
-## 0. เตรียมก่อนเริ่ม
-
-- โดเมนต้องใช้ DNS ของ Cloudflare
-- ติดตั้ง Docker บน VPS แล้ว และเปิดพอร์ต 8443 ใน firewall
-
-```bash
-sudo ufw allow 8443/tcp
-```
 
 ## 1. ดึงโค้ดและสร้าง `.env`
 
@@ -36,38 +27,27 @@ cp .env.example .env && chmod 600 .env
 | `DJANGO_ALLOWED_HOSTS` | `welltripthailand.com,www.welltripthailand.com` |
 | `CSRF_TRUSTED_ORIGINS` | `https://welltripthailand.com,https://www.welltripthailand.com` |
 | `POSTGRES_PASSWORD` | ใช้ค่าจาก `openssl rand -hex 24` (ใช้แค่ตัวอักษรและตัวเลข) |
+| `CLOUDFLARE_TUNNEL_TOKEN` | ได้จากขั้นที่ 2 |
 | `SLIP_PROVIDER_API_KEY` | key **ใหม่** ของ EasySlip |
 | `EMAIL_HOST_PASSWORD` | รหัสอีเมล **ใหม่** |
 | `PAYEE_*`, `GOOGLE_OAUTH_CLIENT_IDS`, `ADMIN_EMAIL` | ค่าจริงของคุณ |
 
 ไม่ต้องใส่ `DATABASE_URL` และ `REDIS_URL` เพราะ docker-compose สร้างให้เอง
 
-## 2. ตั้งค่า Cloudflare
+## 2. สร้าง Cloudflare Tunnel
 
-1. **DNS:** ตั้ง A record ของ `@` และ `www` ให้ชี้ไปที่ IP ของ VPS และเปิด Proxy เป็น **เมฆสีส้ม**
-2. **Origin Certificate:** ไปที่ SSL/TLS → Origin Server → Create Certificate
-   ใช้ค่า default (RSA, `*.welltripthailand.com` และ `welltripthailand.com`, อายุ 15 ปี) แล้ววางไฟล์บน VPS:
+ใช้ Tunnel ใหม่ของ VPS ไม่ใช้ `tanchonserver` ตัวเดิมที่อยู่บน homeserver
 
-```bash
-mkdir -p nginx/certs && nano nginx/certs/fullchain.pem
-```
+1. Cloudflare → **Zero Trust** → **Networks** → **Tunnels** → **Create a tunnel** → เลือก **Cloudflared**
+2. ตั้งชื่อ เช่น `welltrip-vps` แล้วกด Save
+3. ในหน้าที่ให้ติดตั้ง เลือก **Docker** แล้วก๊อปเฉพาะ token ซึ่งเป็นข้อความยาว ๆ ต่อจาก `--token`
+   ใส่ใน `.env` เป็น `CLOUDFLARE_TUNNEL_TOKEN=...` (**ไม่ต้อง**รันคำสั่ง docker ที่ Cloudflare ให้มา)
+4. กด Next ไปที่ **Public Hostname** แล้วเพิ่มดังนี้:
+   - Subdomain: ว่าง, Domain: `welltripthailand.com`, Service: **HTTP** → `nginx:80`
+5. เพิ่มอีกอันสำหรับ `www`:
+   - Subdomain: `www`, Domain: `welltripthailand.com`, Service: **HTTP** → `nginx:80`
 
-วางส่วน **Origin Certificate** ลงไปแล้ว save จากนั้นเปิดไฟล์ key:
-
-```bash
-nano nginx/certs/privkey.pem
-```
-
-วางส่วน **Private Key** ลงไปแล้ว save จากนั้นจำกัดสิทธิ์ไฟล์:
-
-```bash
-chmod 600 nginx/certs/privkey.pem
-```
-
-3. **SSL mode:** SSL/TLS → Overview → ตั้งเป็น **Full (strict)**
-4. **Origin Rule (ส่งต่อไปพอร์ต 8443):** Rules → Origin Rules → Create rule
-   - ตั้งเงื่อนไข: Hostname **is in** `welltripthailand.com`, `www.welltripthailand.com`
-   - ตั้ง Destination Port → Rewrite to **8443**
+ถ้ามี A record เดิมของ `welltripthailand.com` หรือ `www` อยู่ใน DNS ให้ลบก่อน ไม่อย่างนั้น Cloudflare จะสร้าง record ของ Tunnel ไม่ได้
 
 ## 3. ย้ายข้อมูลเดิมจาก homeserver (ข้ามขั้นนี้ได้ถ้าจะเริ่มฐานข้อมูลใหม่)
 
@@ -98,8 +78,10 @@ docker compose up -d --build
 ```
 
 ```bash
-docker compose logs -f backend nginx
+docker compose logs -f backend cloudflared
 ```
+
+ใน log ของ `cloudflared` ต้องเห็นบรรทัด `Registered tunnel connection` และในหน้า Tunnels ของ Cloudflare ต้องขึ้นสถานะ **HEALTHY**
 
 ถ้าย้ายไฟล์ media มาจากขั้นที่ 3 ให้แตกไฟล์เข้า volume:
 
@@ -113,13 +95,7 @@ docker compose exec -T backend tar xzf - -C /app/media < welltrip-media.tgz
 docker compose exec backend python manage.py createsuperuser
 ```
 
-ทดสอบบน VPS ก่อน ถ้าได้ `200` หรือ `302` แปลว่า nginx และ backend ทำงานแล้ว:
-
-```bash
-curl -sk -o /dev/null -w '%{http_code}\n' --resolve welltripthailand.com:8443:127.0.0.1 https://welltripthailand.com:8443/
-```
-
-จากนั้นเปิด https://welltripthailand.com แล้วทดสอบหน้าแรก, ล็อกอิน, หน้า `/admin/`, การอัปโหลดรูป และหน้าชำระเงิน
+เปิด https://welltripthailand.com แล้วทดสอบหน้าแรก, ล็อกอิน, หน้า `/admin/`, การอัปโหลดรูป และหน้าชำระเงิน
 
 ## อัปเดตเวอร์ชันครั้งต่อไป
 
