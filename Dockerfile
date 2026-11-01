@@ -44,6 +44,8 @@ RUN mkdir -p /app/staticfiles /app/media && \
 
 USER appuser
 
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+
 EXPOSE 8000
 
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "--timeout", "60", "--access-logfile", "-", "--error-logfile", "-", "--capture-output", "config.wsgi:application"]

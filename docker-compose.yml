@@ -1,12 +1,24 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: welltrip_db
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-welltrip_db}
+      - POSTGRES_USER=${POSTGRES_USER:-welltrip}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   redis:
     image: redis:7-alpine
     container_name: welltrip_redis
     restart: always
-    networks:
-      - db-network
-    expose:
-      - "6379"
 
   backend:
     build:
@@ -14,21 +26,48 @@ services:
       dockerfile: Dockerfile
     container_name: welltrip_backend
     restart: always
-    ports:
-      - "8016:8000"
     env_file:
       - .env
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.prod
-      - REDIS_URL=redis://welltrip_redis:6379/0
+      - DATABASE_URL=postgres://${POSTGRES_USER:-welltrip}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-welltrip_db}
+      - REDIS_URL=redis://redis:6379/0
     volumes:
-      - /mnt/hdd_backup/welltrip/media:/app/media
-      - /mnt/hdd_backup/welltrip/static:/app/staticfiles
+      - media:/app/media
+      - static:/app/staticfiles
     depends_on:
-      - redis
-    networks:
-      - db-network
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
-networks:
-  db-network:
-    external: true
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: welltrip_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - media:/app/media:ro
+      - static:/app/staticfiles:ro
+      - certbot_www:/var/www/certbot:ro
+      - certbot_conf:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+
+  certbot:
+    image: certbot/certbot:v2.11.0
+    container_name: welltrip_certbot
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+    profiles: ["tools"]
+
+volumes:
+  postgres_data:
+  media:
+  static:
+  certbot_www:
+  certbot_conf:

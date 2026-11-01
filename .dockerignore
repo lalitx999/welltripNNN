@@ -1,0 +1,17 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+.DS_Store
+.vscode/
+.idea/
