@@ -1,0 +1,30 @@
+{% extends "layouts/auth.html" %}
+
+{% load i18n %}
+{% block title %}{% translate "ยืนยันอีเมล - WellTrip Sisaket" %}{% endblock %}
+{% block auth_headline %}{% translate "อีกขั้นเดียว" %}<br>{% translate "ก็เริ่มทริปได้แล้ว" %}{% endblock %}
+
+{% block auth_form %}
+<span class="wt-eyebrow">{% translate "ยืนยันอีเมล" %}</span>
+<h1 class="h2 fw-bold mb-1">{% translate "กรอกรหัส OTP" %}</h1>
+<p class="text-secondary mb-4">
+  {% translate "เราส่งรหัส 6 หลักไปที่" %} <strong class="text-break">{{ pending_email }}</strong>
+  {% translate "รหัสมีอายุ 10 นาที หากไม่พบ โปรดดูในกล่องจดหมายขยะ" %}
+</p>
+
+<form method="post" novalidate class="d-grid gap-3">
+  {% csrf_token %}
+  <div>
+    <label for="code" class="form-label fw-semibold small">{% translate "รหัส OTP" %}</label>
+    <input type="text" id="code" name="code" required autofocus inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" class="form-control form-control-lg text-center {% if form.code.errors %}is-invalid{% endif %}">
+    {% if form.code.errors %}<div class="invalid-feedback">{{ form.code.errors.0 }}</div>{% endif %}
+  </div>
+  <button type="submit" class="btn btn-green btn-lg rounded-pill">{% translate "ยืนยันอีเมล" %}</button>
+</form>
+
+<form method="post" action="{% url 'accounts:resend_verification' %}" class="text-center mt-4">
+  {% csrf_token %}
+  <span class="text-secondary">{% translate "ไม่ได้รับรหัส?" %}</span>
+  <button type="submit" class="btn btn-link fw-semibold text-green p-0 align-baseline">{% translate "ขอรหัสใหม่" %}</button>
+</form>
+{% endblock %}

@@ -33,6 +33,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     # Security & Verification
     email_verified = models.BooleanField(default=False)
+    # Set on self-registration only, so accounts from before OTP keep logging in
+    email_verification_required = models.BooleanField(default=False)
     two_factor_enabled = models.BooleanField(default=False)
     two_factor_secret = models.CharField(max_length=64, blank=True, default="")
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
@@ -58,6 +60,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip() or self.email
+
+    @property
+    def needs_email_verification(self):
+        return self.email_verification_required and not self.email_verified
 
     @property
     def is_merchant(self):
@@ -110,6 +116,7 @@ class EmailVerificationOTP(models.Model):
     otp_code = models.CharField(max_length=6)
     purpose = models.CharField(max_length=50, default="MERCHANT_REGISTER")
     is_used = models.BooleanField(default=False)
+    failed_attempts = models.PositiveSmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(db_index=True)
 

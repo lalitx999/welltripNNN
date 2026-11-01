@@ -25,6 +25,13 @@ from apps.core.tasks import send_merchant_kyc_decision_task
 from django.utils.translation import gettext as _
 
 
+def _reviewable_merchant_profiles():
+    """Sign-ups that have not proven their email yet stay out of the KYC queue."""
+    return MerchantProfile.objects.exclude(
+        user__email_verification_required=True, user__email_verified=False
+    )
+
+
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 def admin_command_center_view(request):
     """
@@ -54,7 +61,7 @@ def admin_command_center_view(request):
         UserRoles.OTOP_OWNER,
     ]).count()
 
-    pending_kyc_count = MerchantProfile.objects.filter(status=MerchantApprovalStatus.PENDING).count()
+    pending_kyc_count = _reviewable_merchant_profiles().filter(status=MerchantApprovalStatus.PENDING).count()
     # Fallback to unverified legacy merchant accounts if any
     legacy_pending_kyc = User.objects.filter(
         role__in=[
@@ -103,7 +110,7 @@ def admin_command_center_view(request):
     # TAB 1: OVERVIEW
     if active_tab == 'overview':
         context['recent_bookings'] = Booking.objects.select_related('customer').order_by('-created_at')[:6]
-        context['pending_merchants'] = MerchantProfile.objects.filter(status=MerchantApprovalStatus.PENDING).select_related('user')[:5]
+        context['pending_merchants'] = _reviewable_merchant_profiles().filter(status=MerchantApprovalStatus.PENDING).select_related('user')[:5]
         context['pending_payments'] = Payment.objects.filter(status=PaymentStatus.PENDING).select_related('booking__customer')[:5]
         context['recent_audits'] = AuditLog.objects.select_related('user').order_by('-timestamp')[:8]
 
@@ -122,7 +129,7 @@ def admin_command_center_view(request):
     # TAB 3: APPROVALS (KYC)
     elif active_tab == 'approvals':
         kyc_status = request.GET.get('status', '').strip()
-        profiles_qs = MerchantProfile.objects.select_related('user').order_by('-created_at')
+        profiles_qs = _reviewable_merchant_profiles().select_related('user').order_by('-created_at')
         if kyc_status:
             profiles_qs = profiles_qs.filter(status=kyc_status)
         

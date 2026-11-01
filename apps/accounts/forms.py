@@ -55,6 +55,18 @@ class LoginForm(forms.Form):
         return self.user_cache
 
 
+class EmailOTPForm(forms.Form):
+    """Rejects malformed input up front so a typo does not use up an OTP attempt."""
+    code = forms.RegexField(
+        regex=r'^[0-9]{6}$',
+        label=gettext_lazy("รหัส OTP"),
+        error_messages={
+            'required': gettext_lazy("กรุณากรอกรหัส OTP"),
+            'invalid': gettext_lazy("กรุณากรอกรหัสตัวเลข 6 หลัก"),
+        },
+    )
+
+
 class UserRegistrationForm(forms.ModelForm):
     """
     User Registration Form with strict input validation and password checks.
@@ -134,6 +146,7 @@ class UserRegistrationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
+        user.email_verification_required = True
         if commit:
             user.save()
         return user
@@ -225,6 +238,7 @@ class MerchantRegistrationForm(forms.Form):
             last_name=data['last_name'],
             phone_number=data['phone_number'],
             role=user_role,
+            email_verification_required=True,
         )
 
         from apps.accounts.models import MerchantProfile, MerchantApprovalStatus

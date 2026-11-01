@@ -6284,3 +6284,95 @@ msgstr "No spa services yet"
 #: templates/partials/lang_switch.html:3
 msgid "เปลี่ยนภาษา"
 msgstr "Change language"
+
+#: apps/core/services/notifications.py
+msgid "กรุณารออีก {seconds} วินาทีก่อนขอรหัส OTP ใหม่อีกครั้ง"
+msgstr "Please wait {seconds} seconds before requesting a new OTP"
+
+#: apps/core/services/notifications.py
+msgid "ขอรหัส OTP บ่อยเกินไป กรุณาลองใหม่ในอีก 1 ชั่วโมง"
+msgstr "Too many OTP requests. Please try again in 1 hour"
+
+#: apps/core/services/notifications.py
+msgid "ไม่สามารถส่งอีเมลได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง"
+msgstr "We can't send email right now. Please try again"
+
+#: apps/core/services/notifications.py
+msgid "ส่งรหัส OTP ไปยังอีเมลของท่านเรียบร้อยแล้ว"
+msgstr "We've sent an OTP to your email"
+
+#: apps/core/services/notifications.py
+msgid "รหัส OTP ไม่ถูกต้องหรือถูกใช้งานไปแล้ว กรุณาขอรหัสใหม่"
+msgstr "This OTP is invalid or has already been used. Please request a new one"
+
+#: apps/core/services/notifications.py
+msgid "รหัส OTP หมดอายุแล้ว กรุณาขอรหัสใหม่"
+msgstr "This OTP has expired. Please request a new one"
+
+#: apps/core/services/notifications.py
+msgid "กรอกรหัสผิดเกินกำหนด กรุณาขอรหัสใหม่"
+msgstr "Too many incorrect attempts. Please request a new OTP"
+
+#: apps/core/services/notifications.py
+msgid "รหัส OTP ไม่ถูกต้อง กรอกได้อีก {count} ครั้ง"
+msgstr "Incorrect OTP. Attempts left: {count}"
+
+#: apps/core/services/notifications.py
+msgid "ยืนยันรหัส OTP สำเร็จ"
+msgstr "OTP verified"
+
+#: apps/accounts/forms.py templates/accounts/verify_email.html
+msgid "รหัส OTP"
+msgstr "OTP"
+
+#: apps/accounts/forms.py
+msgid "กรุณากรอกรหัส OTP"
+msgstr "Please enter the OTP"
+
+#: apps/accounts/forms.py
+msgid "กรุณากรอกรหัสตัวเลข 6 หลัก"
+msgstr "Please enter the 6-digit code"
+
+#: apps/accounts/views.py
+msgid "ยืนยันอีเมลสำเร็จ คำขอเปิดร้านของคุณอยู่ระหว่างการตรวจสอบโดยผู้ดูแลระบบ"
+msgstr "Email verified. Your shop application is now waiting for admin review"
+
+#: apps/accounts/views.py
+msgid "ยืนยันอีเมลสำเร็จ ยินดีต้อนรับสู่ WellTrip"
+msgstr "Email verified. Welcome to WellTrip"
+
+#: templates/accounts/verify_email.html
+msgid "ยืนยันอีเมล - WellTrip Sisaket"
+msgstr "Verify email - WellTrip Sisaket"
+
+#: templates/accounts/verify_email.html
+msgid "อีกขั้นเดียว"
+msgstr "Just one more step"
+
+#: templates/accounts/verify_email.html
+msgid "ก็เริ่มทริปได้แล้ว"
+msgstr "and your trip can begin"
+
+#: templates/accounts/verify_email.html
+msgid "ยืนยันอีเมล"
+msgstr "Verify email"
+
+#: templates/accounts/verify_email.html
+msgid "กรอกรหัส OTP"
+msgstr "Enter your OTP"
+
+#: templates/accounts/verify_email.html
+msgid "เราส่งรหัส 6 หลักไปที่"
+msgstr "We sent a 6-digit code to"
+
+#: templates/accounts/verify_email.html
+msgid "รหัสมีอายุ 10 นาที หากไม่พบ โปรดดูในกล่องจดหมายขยะ"
+msgstr "The code is valid for 10 minutes. If you can't find it, check your spam folder"
+
+#: templates/accounts/verify_email.html
+msgid "ไม่ได้รับรหัส?"
+msgstr "Didn't get the code?"
+
+#: templates/accounts/verify_email.html
+msgid "ขอรหัสใหม่"
+msgstr "Request a new code"

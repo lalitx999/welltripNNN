@@ -23,6 +23,18 @@ def send_email_task(subject, message, recipient):
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient], fail_silently=False)
 
 
+@shared_task(
+    autoretry_for=(smtplib.SMTPException, OSError),
+    retry_backoff=15,
+    retry_backoff_max=60,
+    retry_jitter=True,
+    max_retries=3,
+)
+def send_otp_email_task(subject, message, recipient):
+    """OTP mail. Retries end within ~2 minutes, well before the code expires."""
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient], fail_silently=False)
+
+
 def _load_payment(payment_id):
     from apps.payments.models import Payment
 

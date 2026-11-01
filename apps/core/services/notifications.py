@@ -1,7 +1,7 @@
 """
 Centralized Notification Service (Hostinger SMTP Suite).
 Provides robust, formatted, and audited email dispatches for:
-1. Email OTP Verification (with 60-second cooldown rate limit & 10-minute expiry)
+1. Email OTP Verification (60-second cooldown, hourly cap, 10-minute expiry, 5 attempts)
 2. Admin New Merchant KYC Alert
 3. Merchant KYC Decision Notification (Approval/Rejection)
 4. Payment Confirmed & Digital Voucher Dispatches
@@ -11,10 +11,18 @@ import logging
 import secrets
 from datetime import timedelta
 from django.conf import settings
+from django.db.models import F
 from django.utils import timezone
+from django.utils.crypto import constant_time_compare
+from django.utils.translation import gettext as _
 from apps.accounts.models import EmailVerificationOTP
 
 logger = logging.getLogger(__name__)
+
+OTP_TTL_MINUTES = 10
+OTP_COOLDOWN_SECONDS = 60
+OTP_MAX_PER_HOUR = 5
+OTP_MAX_ATTEMPTS = 5
 
 
 def _site_url() -> str:
@@ -50,31 +58,31 @@ def _get_from_email() -> str:
 def request_email_otp(email: str, purpose: str = "MERCHANT_REGISTER") -> tuple[bool, str]:
     """
     Generate and dispatch a 6-digit cryptographic OTP.
-    Enforces a strict 60-second cooldown rate limit.
+    Enforces a 60-second cooldown and an hourly cap, which also limits mail bombing
+    and how many guesses a new code can buy.
     """
+    from apps.core.tasks import send_otp_email_task
+
     clean_email = email.strip().lower()
     now = timezone.now()
+    requests = EmailVerificationOTP.objects.filter(email=clean_email, purpose=purpose)
 
-    # Rate limiting: Check if an OTP was sent within the past 60 seconds
-    recent_otp = (
-        EmailVerificationOTP.objects.filter(email=clean_email, purpose=purpose)
-        .order_by("-created_at")
-        .first()
-    )
-    if recent_otp and (now - recent_otp.created_at).total_seconds() < 60:
-        remaining_sec = 60 - int((now - recent_otp.created_at).total_seconds())
-        return False, f"กรุณารออีก {remaining_sec} วินาทีก่อนขอรหัส OTP ใหม่อีกครั้ง"
+    recent_otp = requests.order_by("-created_at").first()
+    if recent_otp and (now - recent_otp.created_at).total_seconds() < OTP_COOLDOWN_SECONDS:
+        remaining_sec = OTP_COOLDOWN_SECONDS - int((now - recent_otp.created_at).total_seconds())
+        return False, _("กรุณารออีก {seconds} วินาทีก่อนขอรหัส OTP ใหม่อีกครั้ง").format(seconds=remaining_sec)
+
+    if requests.filter(created_at__gte=now - timedelta(hours=1)).count() >= OTP_MAX_PER_HOUR:
+        return False, _("ขอรหัส OTP บ่อยเกินไป กรุณาลองใหม่ในอีก 1 ชั่วโมง")
 
     # Invalidate prior unused OTPs for this email and purpose
-    EmailVerificationOTP.objects.filter(
-        email=clean_email, purpose=purpose, is_used=False
-    ).update(is_used=True)
+    requests.filter(is_used=False).update(is_used=True)
 
     # Generate 6-digit random code
     code = f"{secrets.randbelow(900000) + 100000}"
-    expires_at = now + timedelta(minutes=10)
+    expires_at = now + timedelta(minutes=OTP_TTL_MINUTES)
 
-    EmailVerificationOTP.objects.create(
+    otp_record = EmailVerificationOTP.objects.create(
         email=clean_email,
         otp_code=code,
         purpose=purpose,
@@ -85,42 +93,58 @@ def request_email_otp(email: str, purpose: str = "MERCHANT_REGISTER") -> tuple[b
     message = (
         f"เรียน ผู้ใช้งานแพลตฟอร์ม WellTrip Thailand,\n\n"
         f"รหัสยืนยันตัวตน (OTP) ของคุณคือ: {code}\n\n"
-        f"รหัสนี้จะหมดอายุภายใน 10 นาที (เวลา {expires_at.strftime('%H:%M น.')})\n"
+        f"รหัสนี้จะหมดอายุภายใน {OTP_TTL_MINUTES} นาที (เวลา {timezone.localtime(expires_at).strftime('%H:%M น.')})\n"
         f"หากคุณไม่ได้เป็นผู้ทำรายการ โปรดละเว้นอีเมลฉบับนี้\n\n"
         f"ขอแสดงความนับถือ,\n"
         f"ทีมงาน WellTrip Sisaket Smart Wellness Tourism"
     )
 
-    if not _queue_mail(subject, message, clean_email):
-        return False, "ไม่สามารถส่งอีเมลได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง"
-    return True, "ส่งรหัส OTP ไปยังอีเมลของท่านเรียบร้อยแล้ว"
+    try:
+        # A worker that was down must not deliver a code that has already expired
+        send_otp_email_task.apply_async(
+            args=(subject, message, clean_email), expires=OTP_TTL_MINUTES * 60
+        )
+    except Exception as exc:
+        logger.error("Could not queue OTP email to %s: %s", clean_email, exc)
+        # Nothing was sent, so this attempt must not start the cooldown
+        otp_record.delete()
+        return False, _("ไม่สามารถส่งอีเมลได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง")
+    return True, _("ส่งรหัส OTP ไปยังอีเมลของท่านเรียบร้อยแล้ว")
 
 
 def verify_email_otp(email: str, code: str, purpose: str = "MERCHANT_REGISTER") -> tuple[bool, str]:
-    """Verify submitted 6-digit OTP code against database."""
+    """Check a code against the latest OTP; too many wrong guesses burn that OTP."""
     clean_email = email.strip().lower()
     clean_code = code.strip()
 
     otp_record = (
-        EmailVerificationOTP.objects.filter(
-            email=clean_email,
-            otp_code=clean_code,
-            purpose=purpose,
-            is_used=False,
-        )
+        EmailVerificationOTP.objects.filter(email=clean_email, purpose=purpose, is_used=False)
         .order_by("-created_at")
         .first()
     )
 
     if not otp_record:
-        return False, "รหัส OTP ไม่ถูกต้องหรือถูกใช้งานไปแล้ว"
+        return False, _("รหัส OTP ไม่ถูกต้องหรือถูกใช้งานไปแล้ว กรุณาขอรหัสใหม่")
 
     if timezone.now() > otp_record.expires_at:
-        return False, "รหัส OTP หมดอายุแล้ว กรุณาขอรหัสใหม่"
+        return False, _("รหัส OTP หมดอายุแล้ว กรุณาขอรหัสใหม่")
 
-    otp_record.is_used = True
-    otp_record.save(update_fields=["is_used"])
-    return True, "ยืนยันรหัส OTP สำเร็จ"
+    active_otp = EmailVerificationOTP.objects.filter(pk=otp_record.pk, is_used=False)
+
+    if not constant_time_compare(otp_record.otp_code, clean_code):
+        # F() so parallel guesses cannot share one attempt
+        active_otp.update(failed_attempts=F("failed_attempts") + 1)
+        otp_record.refresh_from_db(fields=["failed_attempts"])
+        remaining = OTP_MAX_ATTEMPTS - otp_record.failed_attempts
+        if remaining <= 0:
+            active_otp.update(is_used=True)
+            return False, _("กรอกรหัสผิดเกินกำหนด กรุณาขอรหัสใหม่")
+        return False, _("รหัส OTP ไม่ถูกต้อง กรอกได้อีก {count} ครั้ง").format(count=remaining)
+
+    # Conditional update so one code cannot be redeemed twice in parallel
+    if not active_otp.update(is_used=True):
+        return False, _("รหัส OTP ไม่ถูกต้องหรือถูกใช้งานไปแล้ว กรุณาขอรหัสใหม่")
+    return True, _("ยืนยันรหัส OTP สำเร็จ")
 
 
 # ---------------------------------------------------------------------------
@@ -138,7 +162,7 @@ def send_admin_new_merchant_alert(merchant_user) -> bool:
         f"- อีเมล: {merchant_user.email}\n"
         f"- เบอร์โทรศัพท์: {merchant_user.phone_number or 'ไม่ได้ระบุ'}\n"
         f"- หมวดหมู่ผู้ประกอบการ: {merchant_user.get_role_display()}\n"
-        f"- วันเวลาที่สมัคร: {merchant_user.date_joined.strftime('%Y-%m-%d %H:%M น.')}\n\n"
+        f"- วันเวลาที่สมัคร: {timezone.localtime(merchant_user.date_joined).strftime('%Y-%m-%d %H:%M น.')}\n\n"
         f"ท่านสามารถตรวจสอบเอกสารและพิจารณาอนุมัติ (KYC) ได้ที่ศูนย์ปฏิบัติการแอดมิน:\n"
         f"{_site_url()}/accounts/admin-center/?tab=approvals\n\n"
         f"ระบบแจ้งเตือนอัตโนมัติ WellTrip Sisaket"
@@ -216,7 +240,7 @@ def send_booking_voucher_and_order_alert(payment) -> bool:
             f"การชำระเงินสำหรับการจองของคุณได้รับการยืนยันเรียบร้อยแล้ว (CONFIRMED)\n\n"
             f"รายละเอียดการจอง:\n"
             f"- รหัสการจอง: {booking.booking_code}\n"
-            f"- วันที่ทำรายการ: {timezone.now().strftime('%d/%m/%Y %H:%M น.')}\n"
+            f"- วันที่ทำรายการ: {timezone.localtime().strftime('%d/%m/%Y %H:%M น.')}\n"
             f"- ยอดเงินที่ชำระ: ฿{payment.amount:,.2f}\n"
             f"- ช่องทาง: โอนเงินผ่านธนาคารกสิกรไทย\n\n"
             f"รายการที่จอง:\n"

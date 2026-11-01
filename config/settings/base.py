@@ -255,6 +255,8 @@ EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=True, cast=bool)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='welltripth@welltripthailand.com')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+# Below the Celery soft limit: a hung SMTP server raises and retries instead of being killed
+EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=15, cast=int)
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='WellTrip Thailand <welltripth@welltripthailand.com>')
 # Absolute links in emails
 SITE_URL = config('SITE_URL', default='https://welltripthailand.com')

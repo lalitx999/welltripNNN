@@ -5,11 +5,14 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
 from django_ratelimit.decorators import ratelimit
 
-from apps.accounts.forms import LoginForm, UserRegistrationForm, MerchantRegistrationForm
-from apps.accounts.models import UserRoles
+from apps.accounts.forms import EmailOTPForm, LoginForm, UserRegistrationForm, MerchantRegistrationForm
+from apps.accounts.models import User, UserRoles
 from apps.accounts.permissions import role_required
+from apps.accounts.services import email_verification_service
 from apps.accounts.services.audit import record_audit_log, get_client_ip
 from django.utils.translation import gettext as _
+
+PENDING_VERIFICATION_SESSION_KEY = 'pending_verification_user_id'
 
 
 @ratelimit(key='ip', rate='20/m', method=['POST'], block=True)
@@ -30,7 +33,12 @@ def login_view(request):
     if request.method == "POST":
         if form.is_valid():
             user = form.get_user()
-            
+
+            # Right password, but no session until the mailbox is proven too
+            if user.needs_email_verification:
+                _begin_email_verification(request, user)
+                return redirect('accounts:verify_email')
+
             # Login user
             login(request, user)
             
@@ -73,7 +81,7 @@ def register_view(request):
     Secure Registration View:
     1. Rate limited to 3 registrations/hour per IP.
     2. ModelForm validation with password complexity enforcement.
-    3. Automatic session initiation and AuditLog creation.
+    3. AuditLog creation, then email OTP verification before the first login.
     """
     if request.user.is_authenticated:
         return redirect_after_auth(request.user)
@@ -93,12 +101,8 @@ def register_view(request):
                 user=user,
             )
 
-            # Auto-login after successful registration with explicit backend
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            request.session.cycle_key()
-
-            messages.success(request, _("สร้างบัญชีผู้ใช้งานสำเร็จ"))
-            return redirect_after_auth(user)
+            _begin_email_verification(request, user)
+            return redirect('accounts:verify_email')
         else:
             messages.error(request, _("ข้อมูลการสมัครสมาชิกไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง"))
 
@@ -137,16 +141,81 @@ def merchant_register_view(request):
                 user=user,
             )
 
-            # Auto-login after successful registration with explicit backend
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            request.session.cycle_key()
-
-            messages.success(request, _("ยื่นคำขอเปิดร้าน '{business_name}' สำเร็จ ขณะนี้อยู่ระหว่างการตรวจสอบโดยผู้ดูแลระบบ (Pending Review)").format(business_name=merchant.business_name))
-            return redirect('accounts:portal_dashboard')
+            _begin_email_verification(request, user)
+            return redirect('accounts:verify_email')
         else:
             messages.error(request, _("ข้อมูลการลงทะเบียนผู้ประกอบการไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง"))
 
     return render(request, 'accounts/register_merchant.html', {'form': form})
+
+
+def _begin_email_verification(request, user):
+    """Remember who is verifying server-side and email them a code."""
+    request.session[PENDING_VERIFICATION_SESSION_KEY] = str(user.id)
+    sent, message = email_verification_service.send_verification_code(user)
+    (messages.success if sent else messages.warning)(request, message)
+
+
+def _get_pending_verification_user(request):
+    user_id = request.session.get(PENDING_VERIFICATION_SESSION_KEY)
+    if not user_id:
+        return None
+    user = User.objects.filter(pk=user_id, is_active=True).first()
+    return user if user and user.needs_email_verification else None
+
+
+@ratelimit(key='ip', rate='20/m', method=['POST'], block=True)
+@require_http_methods(["GET", "POST"])
+def verify_email_view(request):
+    """Second step of sign-up: a correct OTP verifies the email and starts the session."""
+    if request.user.is_authenticated:
+        return redirect_after_auth(request.user)
+
+    user = _get_pending_verification_user(request)
+    if user is None:
+        return redirect('accounts:login')
+
+    form = EmailOTPForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        verified, message = email_verification_service.confirm_verification_code(
+            user, form.cleaned_data['code']
+        )
+        if verified:
+            request.session.pop(PENDING_VERIFICATION_SESSION_KEY, None)
+
+            record_audit_log(
+                request=request,
+                action="EMAIL_VERIFIED",
+                model_name="User",
+                object_id=str(user.id),
+                changes={"email": user.email},
+                user=user,
+            )
+
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            request.session.cycle_key()
+
+            if user.is_merchant:
+                messages.success(request, _("ยืนยันอีเมลสำเร็จ คำขอเปิดร้านของคุณอยู่ระหว่างการตรวจสอบโดยผู้ดูแลระบบ"))
+            else:
+                messages.success(request, _("ยืนยันอีเมลสำเร็จ ยินดีต้อนรับสู่ WellTrip"))
+            return redirect_after_auth(user)
+        form.add_error('code', message)
+
+    return render(request, 'accounts/verify_email.html', {'form': form, 'pending_email': user.email})
+
+
+@ratelimit(key='ip', rate='10/m', method=['POST'], block=True)
+@require_http_methods(["POST"])
+def resend_verification_view(request):
+    user = _get_pending_verification_user(request)
+    if user is None:
+        return redirect('accounts:login')
+
+    sent, message = email_verification_service.send_verification_code(user)
+    (messages.success if sent else messages.warning)(request, message)
+    return redirect('accounts:verify_email')
 
 
 # POST only: a GET logout lets any page sign visitors out via a link or <img> (CSRF)
