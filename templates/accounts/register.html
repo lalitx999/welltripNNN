@@ -60,5 +60,7 @@
   <button type="submit" class="btn btn-green btn-lg rounded-pill">{% translate "สร้างบัญชี" %}</button>
 </form>
 
+{% include "accounts/_google_login.html" %}
+
 <p class="text-center text-secondary mt-4 mb-0">{% translate "มีบัญชีอยู่แล้ว?" %} <a href="{% url 'accounts:login' %}" class="fw-semibold text-green">{% translate "เข้าสู่ระบบ" %}</a></p>
 {% endblock %}

@@ -310,6 +310,7 @@ PAYEE_BANK_NAME = config('PAYEE_BANK_NAME', default='ธนาคารกสิ
 # Google OAuth & AI API Keys
 # ==============================================================================
 GOOGLE_OAUTH_CLIENT_IDS = config('GOOGLE_OAUTH_CLIENT_IDS', default='')
+GOOGLE_OAUTH_CLIENT_SECRET = config('GOOGLE_OAUTH_CLIENT_SECRET', default='')
 DEEPSEEK_API_KEY = config('DEEPSEEK_API_KEY', default='')
 GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
 

@@ -38,6 +38,9 @@
   <button type="submit" class="btn btn-green btn-lg rounded-pill">{% translate "เข้าสู่ระบบ" %}</button>
 </form>
 
+{# Google sign-ups become tourists, so merchants keep their own form #}
+{% if role != 'merchant' %}{% include "accounts/_google_login.html" %}{% endif %}
+
 <p class="text-center text-secondary mt-4 mb-0">
   {% translate "ยังไม่มีบัญชี?" %}
   {% if role == 'merchant' %}

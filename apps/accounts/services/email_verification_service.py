@@ -17,9 +17,13 @@ def confirm_verification_code(user, code: str) -> tuple[bool, str]:
     if not verified:
         return False, message
 
+    mark_email_verified(user)
+    return True, message
+
+
+def mark_email_verified(user) -> None:
     user.email_verified = True
     user.save(update_fields=["email_verified"])
 
     if user.is_merchant:
         notifications.send_admin_new_merchant_alert(user)
-    return True, message

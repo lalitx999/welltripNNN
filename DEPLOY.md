@@ -30,7 +30,7 @@ cp .env.example .env && chmod 600 .env
 | `CLOUDFLARE_TUNNEL_TOKEN` | ได้จากขั้นที่ 2 |
 | `SLIP_PROVIDER_API_KEY` | key **ใหม่** ของ EasySlip |
 | `EMAIL_HOST_PASSWORD` | รหัสอีเมล **ใหม่** |
-| `PAYEE_*`, `GOOGLE_OAUTH_CLIENT_IDS`, `ADMIN_EMAIL` | ค่าจริงของคุณ |
+| `PAYEE_*`, `GOOGLE_OAUTH_CLIENT_IDS`, `GOOGLE_OAUTH_CLIENT_SECRET`, `ADMIN_EMAIL` | ค่าจริงของคุณ |
 
 ไม่ต้องใส่ `DATABASE_URL` และ `REDIS_URL` เพราะ docker-compose สร้างให้เอง
 

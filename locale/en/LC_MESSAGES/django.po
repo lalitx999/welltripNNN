@@ -6376,3 +6376,39 @@ msgstr "Didn't get the code?"
 #: templates/accounts/verify_email.html
 msgid "ขอรหัสใหม่"
 msgstr "Request a new code"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "หรือ"
+msgstr "or"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "ดำเนินการต่อด้วย Google"
+msgstr "Continue with Google"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "ยังไม่เปิดให้เข้าสู่ระบบด้วย Google"
+msgstr "Google sign-in isn't available yet"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "เซสชันเข้าสู่ระบบด้วย Google หมดอายุ กรุณาลองใหม่อีกครั้ง"
+msgstr "Your Google sign-in session expired. Please try again"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "ยกเลิกการเข้าสู่ระบบด้วย Google แล้ว"
+msgstr "Google sign-in was cancelled"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "เข้าสู่ระบบด้วย Google ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
+msgstr "Google sign-in failed. Please try again"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "อีเมลของบัญชี Google นี้ยังไม่ได้รับการยืนยัน"
+msgstr "This Google account's email isn't verified"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "อีเมลนี้เชื่อมกับบัญชี Google อื่นอยู่แล้ว"
+msgstr "This email is already linked to another Google account"
+
+#: apps/accounts/services/google_auth_service.py
+msgid "บัญชีผู้ดูแลระบบต้องเข้าสู่ระบบด้วยรหัสผ่าน"
+msgstr "Admin accounts must sign in with a password"

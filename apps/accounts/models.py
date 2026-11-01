@@ -35,6 +35,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email_verified = models.BooleanField(default=False)
     # Set on self-registration only, so accounts from before OTP keep logging in
     email_verification_required = models.BooleanField(default=False)
+    # Google's stable account ID; unlike the email it never changes or gets recycled
+    google_sub = models.CharField(max_length=255, unique=True, null=True, blank=True, editable=False)
     two_factor_enabled = models.BooleanField(default=False)
     two_factor_secret = models.CharField(max_length=64, blank=True, default="")
     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
