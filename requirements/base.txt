@@ -24,3 +24,6 @@ requests>=2.32.0
 redis>=5.0.0
 
 
+
+# Background Tasks (worker uses the Redis above as broker)
+celery[redis]>=5.4,<6

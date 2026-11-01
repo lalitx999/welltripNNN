@@ -196,7 +196,9 @@ class EasySlipAutomatedVerificationTestCase(TestCase):
                 "is_duplicate": False,
             }
 
-        is_verified, slip, msg = verify_slip_automatically(self.slip.id, provider_func=mock_provider)
+        # Emails are queued on commit; run those callbacks (Celery is eager in tests)
+        with self.captureOnCommitCallbacks(execute=True):
+            is_verified, slip, msg = verify_slip_automatically(self.slip.id, provider_func=mock_provider)
         self.assertTrue(is_verified)
         self.assertEqual(slip.verification_status, SlipVerificationStatus.VERIFIED)
         self.assertEqual(slip.provider_reference, "KBANK-20261027-998877")
@@ -225,7 +227,9 @@ class EasySlipAutomatedVerificationTestCase(TestCase):
                 "is_duplicate": False,
             }
 
-        is_verified, slip, msg = verify_slip_automatically(self.slip.id, provider_func=mock_underpaid_provider)
+        # Emails are queued on commit; run those callbacks (Celery is eager in tests)
+        with self.captureOnCommitCallbacks(execute=True):
+            is_verified, slip, msg = verify_slip_automatically(self.slip.id, provider_func=mock_underpaid_provider)
         self.assertFalse(is_verified)
         self.assertEqual(slip.verification_status, SlipVerificationStatus.REJECTED)
         self.assertIn("ยอดเงินในสลิปไม่ตรงกับยอดที่ต้องชำระ", msg)
@@ -260,3 +264,69 @@ class EasySlipAutomatedVerificationTestCase(TestCase):
         self.assertEqual(slip.verification_status, SlipVerificationStatus.REJECTED)
         self.assertIn("สลิปนี้เคยถูกใช้ยืนยันการชำระเงินในระบบแล้ว", msg)
 
+
+
+class BackgroundSlipFlowTestCase(TestCase):
+    """Slip upload queues the auto-check; the booking page polls until there is a result."""
+
+    def setUp(self):
+        self.tourist = User.objects.create_user(email="poll@example.com", password="x", role=UserRoles.TOURIST)
+        self.other = User.objects.create_user(email="other@example.com", password="x", role=UserRoles.TOURIST)
+        self.booking = Booking.objects.create(
+            customer=self.tourist, total_amount=Decimal("900.00"), status=BookingStatus.AWAITING_PAYMENT
+        )
+        self.payment = Payment.objects.create(booking=self.booking, amount=Decimal("900.00"))
+        self.client.force_login(self.tourist)
+
+    def _slip(self, status):
+        img = Image.new("RGB", (40, 40), color="red")
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
+        return PaymentSlip.objects.create(
+            payment=self.payment,
+            image=SimpleUploadedFile("s.jpg", buf.getvalue(), content_type="image/jpeg"),
+            verification_status=status,
+            verification_notes="ยอดเงินไม่ตรง",
+        )
+
+    def test_upload_queues_verification_after_commit(self):
+        from unittest import mock
+        img = Image.new("RGB", (40, 40))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG")
+        url = reverse('payments:payment_instruction', args=[self.booking.id])
+        with self.settings(EASYSLIP_API_KEY="test-key"), \
+                mock.patch("apps.payments.views.verify_slip_task.delay_on_commit") as queued:
+            response = self.client.post(url, {
+                "image": SimpleUploadedFile("s.jpg", buf.getvalue(), content_type="image/jpeg"),
+                "provider_reference": "REF-1",
+            })
+        self.assertEqual(response.status_code, 302)
+        queued.assert_called_once_with(PaymentSlip.objects.get(payment=self.payment).id)
+
+    def test_booking_page_polls_while_auto_check_runs(self):
+        self._slip(SlipVerificationStatus.PENDING_CHECK)
+        with self.settings(EASYSLIP_API_KEY="test-key"):
+            page = self.client.get(reverse('bookings:detail', args=[self.booking.id]))
+            self.assertContains(page, 'hx-trigger="every 3s"')
+            poll = self.client.get(reverse('payments:slip_status', args=[self.booking.id]))
+        self.assertEqual(poll.status_code, 200)
+        self.assertContains(poll, "กำลังตรวจสอบสลิปอัตโนมัติ")
+
+    def test_poll_reloads_page_once_result_is_in(self):
+        self._slip(SlipVerificationStatus.REJECTED)
+        poll = self.client.get(reverse('payments:slip_status', args=[self.booking.id]))
+        self.assertEqual(poll["HX-Refresh"], "true")
+        page = self.client.get(reverse('bookings:detail', args=[self.booking.id]))
+        self.assertContains(page, "ยอดเงินไม่ตรง")
+
+    def test_manual_review_stops_polling(self):
+        self._slip(SlipVerificationStatus.PENDING_CHECK)
+        with self.settings(EASYSLIP_API_KEY=""):
+            poll = self.client.get(reverse('payments:slip_status', args=[self.booking.id]))
+        self.assertEqual(poll.status_code, 286)
+        self.assertContains(poll, "รอเจ้าหน้าที่ตรวจสอบ", status_code=286)
+
+    def test_other_users_cannot_poll(self):
+        self.client.force_login(self.other)
+        self.assertEqual(self.client.get(reverse('payments:slip_status', args=[self.booking.id])).status_code, 404)

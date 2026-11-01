@@ -20,10 +20,6 @@ from apps.payments.models import (
     PaymentStatus,
     SlipVerificationStatus,
 )
-from apps.core.services.notifications import (
-    send_booking_voucher_and_order_alert,
-    send_slip_rejected_alert,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +167,7 @@ def verify_slip_automatically(slip_id, *, provider_func=None) -> tuple[bool, Pay
     1. Call EasySlip OCR provider (outside DB lock)
     2. Enforce financial rules & DB unique constraint in atomic transaction with select_for_update
     3. Update Payment and Booking status
-    4. Dispatch transactional email alerts
+    4. Queue transactional email alerts
     """
     provider = provider_func or _call_easyslip_provider
 
@@ -257,10 +253,12 @@ def verify_slip_automatically(slip_id, *, provider_func=None) -> tuple[bool, Pay
             is_verified = False
             msg = rejection_reason
 
-    # 3. Dispatch transactional notifications (outside DB transaction)
+    # 3. Queue notification emails (separate tasks so SMTP never delays this one)
+    from apps.core.tasks import send_booking_voucher_task, send_slip_rejected_task
+
     if is_verified:
-        send_booking_voucher_and_order_alert(payment)
+        send_booking_voucher_task.delay_on_commit(payment.id)
     else:
-        send_slip_rejected_alert(payment, rejection_reason)
+        send_slip_rejected_task.delay_on_commit(payment.id, rejection_reason)
 
     return is_verified, slip, msg

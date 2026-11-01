@@ -41,7 +41,14 @@ class HealthProfile(models.Model):
 class AIRecommendationLog(models.Model):
     """
     Historical log of AI recommendation assessments and generated packages.
+    Also the job record for the background AI task: the page polls `status`.
     """
+
+    class Status(models.TextChoices):
+        PENDING = "PENDING", "กำลังวิเคราะห์"
+        DONE = "DONE", "เสร็จแล้ว"
+        FAILED = "FAILED", "ไม่สำเร็จ"
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -53,6 +60,8 @@ class AIRecommendationLog(models.Model):
     input_snapshot = models.JSONField(default=dict)
     health_analysis = models.TextField(blank=True, default="")
     recommended_package = models.JSONField(default=dict)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.DONE)
+    result = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

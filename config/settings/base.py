@@ -246,6 +246,8 @@ EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='welltripth@welltripthailand.com')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='WellTrip Thailand <welltripth@welltripthailand.com>')
+# Absolute links in emails
+SITE_URL = config('SITE_URL', default='https://welltripthailand.com')
 ADMIN_EMAIL = config('ADMIN_EMAIL', default='promlikit@sskru.ac.th')
 
 # ==============================================================================
@@ -266,6 +268,20 @@ else:
             'LOCATION': 'welltrip-local-cache',
         }
     }
+
+# ==============================================================================
+# Celery (background tasks: slip OCR, emails, AI)
+# ==============================================================================
+# Without Redis (local dev, tests) tasks run inline so nothing needs a worker.
+CELERY_BROKER_URL = REDIS_URL or 'memory://'
+CELERY_TASK_ALWAYS_EAGER = not REDIS_URL
+CELERY_TASK_EAGER_PROPAGATES = True
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_TIME_LIMIT = 120
+CELERY_TASK_SOFT_TIME_LIMIT = 90
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_TIMEZONE = TIME_ZONE
 
 # ==============================================================================
 # EasySlip Verification & Payee Bank Account

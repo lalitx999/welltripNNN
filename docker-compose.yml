@@ -24,6 +24,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: welltrip-app:latest
     container_name: welltrip_backend
     restart: always
     env_file:
@@ -40,6 +41,24 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+
+  worker:
+    image: welltrip-app:latest
+    container_name: welltrip_worker
+    restart: always
+    command: celery -A config worker --loglevel=info --concurrency=2
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.prod
+      - DATABASE_URL=postgres://${POSTGRES_USER:-welltrip}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-welltrip_db}
+      - REDIS_URL=redis://redis:6379/0
+      - SKIP_BOOTSTRAP=1
+    volumes:
+      # Slip OCR reads the uploaded images
+      - media:/app/media
+    depends_on:
+      - backend
 
   nginx:
     image: nginx:1.27-alpine

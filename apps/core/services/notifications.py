@@ -11,11 +11,29 @@ import logging
 import secrets
 from datetime import timedelta
 from django.conf import settings
-from django.core.mail import send_mail
 from django.utils import timezone
 from apps.accounts.models import EmailVerificationOTP
 
 logger = logging.getLogger(__name__)
+
+
+def _site_url() -> str:
+    return settings.SITE_URL.rstrip("/")
+
+
+def _queue_mail(subject: str, message: str, recipient: str) -> bool:
+    """
+    Hand the email to the Celery worker, which retries on SMTP errors.
+    One task per recipient, so a retry never re-sends to someone already reached.
+    """
+    from apps.core.tasks import send_email_task
+
+    try:
+        send_email_task.delay(subject, message, recipient)
+        return True
+    except Exception as exc:
+        logger.error("Could not queue email to %s: %s", recipient, exc)
+        return False
 
 
 def _get_from_email() -> str:
@@ -73,13 +91,9 @@ def request_email_otp(email: str, purpose: str = "MERCHANT_REGISTER") -> tuple[b
         f"ทีมงาน WellTrip Sisaket Smart Wellness Tourism"
     )
 
-    try:
-        send_mail(subject, message, _get_from_email(), [clean_email], fail_silently=False)
-        logger.info("Dispatched OTP %s to email %s", code, clean_email)
-        return True, "ส่งรหัส OTP ไปยังอีเมลของท่านเรียบร้อยแล้ว"
-    except Exception as exc:
-        logger.error("Failed to send OTP email to %s: %s", clean_email, exc)
-        return False, f"ไม่สามารถส่งอีเมลได้ในขณะนี้: {str(exc)}"
+    if not _queue_mail(subject, message, clean_email):
+        return False, "ไม่สามารถส่งอีเมลได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง"
+    return True, "ส่งรหัส OTP ไปยังอีเมลของท่านเรียบร้อยแล้ว"
 
 
 def verify_email_otp(email: str, code: str, purpose: str = "MERCHANT_REGISTER") -> tuple[bool, str]:
@@ -115,7 +129,6 @@ def verify_email_otp(email: str, code: str, purpose: str = "MERCHANT_REGISTER") 
 def send_admin_new_merchant_alert(merchant_user) -> bool:
     """Notify system administrators when a community partner submits registration."""
     admin_email = getattr(settings, "ADMIN_EMAIL", "promlikit@sskru.ac.th")
-    from_email = _get_from_email()
 
     subject = f"[WellTrip Admin Alert] มีผู้ประกอบการยื่นขอเปิดร้านใหม่: {merchant_user.full_name or merchant_user.email}"
     message = (
@@ -127,17 +140,11 @@ def send_admin_new_merchant_alert(merchant_user) -> bool:
         f"- หมวดหมู่ผู้ประกอบการ: {merchant_user.get_role_display()}\n"
         f"- วันเวลาที่สมัคร: {merchant_user.date_joined.strftime('%Y-%m-%d %H:%M น.')}\n\n"
         f"ท่านสามารถตรวจสอบเอกสารและพิจารณาอนุมัติ (KYC) ได้ที่ศูนย์ปฏิบัติการแอดมิน:\n"
-        f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/admin/\n\n"
+        f"{_site_url()}/accounts/admin-center/?tab=approvals\n\n"
         f"ระบบแจ้งเตือนอัตโนมัติ WellTrip Sisaket"
     )
 
-    try:
-        send_mail(subject, message, from_email, [admin_email], fail_silently=False)
-        logger.info("Dispatched new merchant alert for %s to admin %s", merchant_user.email, admin_email)
-        return True
-    except Exception as exc:
-        logger.error("Failed to send admin merchant alert: %s", exc)
-        return False
+    return _queue_mail(subject, message, admin_email)
 
 
 # ---------------------------------------------------------------------------
@@ -145,9 +152,8 @@ def send_admin_new_merchant_alert(merchant_user) -> bool:
 # ---------------------------------------------------------------------------
 def send_merchant_kyc_decision(merchant_user, is_approved: bool, reason: str = "") -> bool:
     """Notify merchant of their KYC verification decision."""
-    from_email = _get_from_email()
     recipient = merchant_user.email
-    portal_url = f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/accounts/login/"
+    portal_url = f"{_site_url()}/accounts/login/"
 
     if is_approved:
         subject = "[WellTrip] ยินดีด้วย! ร้านค้าของคุณได้รับการอนุมัติเปิดให้บริการแล้ว"
@@ -172,13 +178,7 @@ def send_merchant_kyc_decision(merchant_user, is_approved: bool, reason: str = "
             f"ทีมงาน WellTrip Thailand"
         )
 
-    try:
-        send_mail(subject, message, from_email, [recipient], fail_silently=False)
-        logger.info("Dispatched decision email to merchant %s (approved=%s)", recipient, is_approved)
-        return True
-    except Exception as exc:
-        logger.error("Failed to send merchant decision email: %s", exc)
-        return False
+    return _queue_mail(subject, message, recipient)
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +188,6 @@ def send_booking_voucher_and_order_alert(payment) -> bool:
     """
     Send digital booking voucher to Tourist and order alert to involved Merchants.
     """
-    from_email = _get_from_email()
     booking = payment.booking
     if not booking:
         return False
@@ -200,67 +199,49 @@ def send_booking_voucher_and_order_alert(payment) -> bool:
     items_summary = []
     merchant_emails = set()
 
-    for item in booking.items.all():
-        name = getattr(item, "item_name", "รายการบริการ/ห้องพัก")
-        qty = getattr(item, "quantity", 1)
-        price = getattr(item, "unit_price", 0)
-        items_summary.append(f"- {name} (จำนวน: {qty}, ราคา: ฿{price:,.2f})")
+    for item in booking.items.select_related("vendor"):
+        items_summary.append(
+            f"- {item.item_title_snapshot} (จำนวน: {item.quantity}, ราคา: ฿{item.unit_price_snapshot:,.2f})"
+        )
+        if item.vendor and item.vendor.email:
+            merchant_emails.add(item.vendor.email)
 
-        # Collect vendor emails if linked
-        room = getattr(item, "room", None)
-        if room and room.accommodation and room.accommodation.owner:
-            merchant_emails.add(room.accommodation.owner.email)
-        service = getattr(item, "service", None)
-        if service and service.owner:
-            merchant_emails.add(service.owner.email)
-        otop = getattr(item, "otop_product", None)
-        if otop and otop.owner:
-            merchant_emails.add(otop.owner.email)
-
-    items_text = "\n".join(items_summary) if items_summary else f"- รหัสการจอง: #{str(booking.id)[:8].upper()}"
+    items_text = "\n".join(items_summary) if items_summary else f"- รหัสการจอง: {booking.booking_code}"
 
     # 1. Email to Tourist
     if tourist_email:
-        tourist_subject = f"[WellTrip] ยืนยันการชำระเงินและเวาเชอร์การจอง (#{str(booking.id)[:8].upper()})"
+        tourist_subject = f"[WellTrip] ยืนยันการชำระเงินและเวาเชอร์การจอง ({booking.booking_code})"
         tourist_message = (
             f"เรียน คุณ {tourist.full_name or 'นักท่องเที่ยว'},\n\n"
             f"การชำระเงินสำหรับการจองของคุณได้รับการยืนยันเรียบร้อยแล้ว (CONFIRMED)\n\n"
             f"รายละเอียดการจอง:\n"
-            f"- รหัสการจอง: #{str(booking.id)[:8].upper()}\n"
+            f"- รหัสการจอง: {booking.booking_code}\n"
             f"- วันที่ทำรายการ: {timezone.now().strftime('%d/%m/%Y %H:%M น.')}\n"
             f"- ยอดเงินที่ชำระ: ฿{payment.amount:,.2f}\n"
             f"- ช่องทาง: โอนเงินผ่านธนาคารกสิกรไทย\n\n"
             f"รายการที่จอง:\n"
             f"{items_text}\n\n"
             f"ท่านสามารถแสดงหลักฐานหรือเปิดดูรายละเอียดการจองได้ที่:\n"
-            f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/bookings/{booking.id}/\n\n"
+            f"{_site_url()}/bookings/detail/{booking.id}/\n\n"
             f"ขอให้ท่านมีความสุขกับการท่องเที่ยวเชิงสุขภาวะในจังหวัดศรีสะเกษ\n"
             f"ทีมงาน WellTrip Thailand"
         )
-        try:
-            send_mail(tourist_subject, tourist_message, from_email, [tourist_email], fail_silently=False)
-            logger.info("Dispatched payment confirmation voucher to %s", tourist_email)
-        except Exception as exc:
-            logger.error("Failed to send tourist voucher email: %s", exc)
+        _queue_mail(tourist_subject, tourist_message, tourist_email)
 
     # 2. Email to Merchants
     for m_email in merchant_emails:
-        m_subject = f"[WellTrip] มีคำสั่งซื้อใหม่และได้รับการชำระเงินแล้ว (#{str(booking.id)[:8].upper()})"
+        m_subject = f"[WellTrip] มีคำสั่งซื้อใหม่และได้รับการชำระเงินแล้ว ({booking.booking_code})"
         m_message = (
             f"เรียน ผู้ประกอบการ WellTrip,\n\n"
             f"มีนักท่องเที่ยวทำการจองและชำระเงินเรียบร้อยแล้ว:\n\n"
-            f"- รหัสการจอง: #{str(booking.id)[:8].upper()}\n"
+            f"- รหัสการจอง: {booking.booking_code}\n"
             f"- ยอดชำระ: ฿{payment.amount:,.2f}\n"
             f"- ผู้จอง: {tourist.full_name or tourist.email if tourist else 'นักท่องเที่ยว'}\n"
             f"- รายการที่จอง:\n{items_text}\n\n"
-            f"ท่านสามารถตรวจสอบคิวงานและเตรียมการให้บริการได้ใน Merchant Studio\n\n"
+            f"ท่านสามารถตรวจสอบคิวงานและเตรียมการให้บริการได้ใน Partner Studio\n\n"
             f"ทีมงาน WellTrip Thailand"
         )
-        try:
-            send_mail(m_subject, m_message, from_email, [m_email], fail_silently=True)
-            logger.info("Dispatched new order alert to merchant %s", m_email)
-        except Exception as exc:
-            logger.warning("Failed to send merchant order alert to %s: %s", m_email, exc)
+        _queue_mail(m_subject, m_message, m_email)
 
     return True
 
@@ -270,7 +251,6 @@ def send_booking_voucher_and_order_alert(payment) -> bool:
 # ---------------------------------------------------------------------------
 def send_slip_rejected_alert(payment, rejection_reason: str) -> bool:
     """Notify tourist when their uploaded slip failed verification."""
-    from_email = _get_from_email()
     booking = payment.booking
     if not booking:
         return False
@@ -280,21 +260,15 @@ def send_slip_rejected_alert(payment, rejection_reason: str) -> bool:
         return False
 
     tourist_email = tourist.email
-    subject = f"[WellTrip] สลิปการชำระเงินไม่ผ่านการตรวจสอบ (รหัสการจอง: #{str(booking.id)[:8].upper()})"
+    subject = f"[WellTrip] สลิปการชำระเงินไม่ผ่านการตรวจสอบ (รหัสการจอง: {booking.booking_code})"
     message = (
         f"เรียน คุณ {tourist.full_name or 'นักท่องเที่ยว'},\n\n"
-        f"ระบบได้ทำการตรวจสอบสลิปการโอนเงินสำหรับการจองรหัส #{str(booking.id)[:8].upper()} แล้วพบว่า:\n\n"
+        f"ระบบได้ทำการตรวจสอบสลิปการโอนเงินสำหรับการจองรหัส {booking.booking_code} แล้วพบว่า:\n\n"
         f"สาเหตุ: {rejection_reason}\n\n"
         f"การจองของท่านยังคงอยู่ในสถานะรอชำระเงิน โปรดแนบหลักฐานการโอนเงินที่ถูกต้องใหม่อีกครั้งได้ที่:\n"
-        f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/payments/{payment.id}/\n\n"
+        f"{_site_url()}/payments/instruction/{booking.id}/\n\n"
         f"หากท่านโอนเงินถูกต้องแล้วและมีข้อสงสัย โปรดติดต่อ welltripth@welltripthailand.com\n\n"
         f"ทีมงาน WellTrip Thailand"
     )
 
-    try:
-        send_mail(subject, message, from_email, [tourist_email], fail_silently=False)
-        logger.info("Dispatched slip rejection email to %s", tourist_email)
-        return True
-    except Exception as exc:
-        logger.error("Failed to send slip rejection email: %s", exc)
-        return False
+    return _queue_mail(subject, message, tourist_email)

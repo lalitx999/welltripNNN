@@ -12,6 +12,9 @@ from apps.accounts.services.audit import record_audit_log
 from apps.bookings.models import Booking, BookingStatus
 from apps.payments.models import Payment, PaymentSlip, PaymentStatus, SlipVerificationStatus
 from apps.payments.forms import SlipUploadForm
+from apps.payments.tasks import verify_slip_task
+from apps.payments.selectors.slip_selector import slip_status_context
+from apps.core.tasks import send_booking_voucher_task, send_slip_rejected_task
 
 
 @login_required
@@ -70,21 +73,11 @@ def payment_instruction_view(request, booking_id):
                 user=request.user,
             )
 
-            messages.success(request, "แนบสลิปเรียบร้อยแล้ว")
-
-            from apps.payments.services import verify_slip_automatically
-
-            if getattr(settings, "EASYSLIP_API_KEY", ""):
-                try:
-                    is_verified, slip, verify_msg = verify_slip_automatically(slip.id)
-                    if is_verified:
-                        messages.success(request, f"ตรวจสอบสลิปอัตโนมัติสำเร็จ! {verify_msg}")
-                    else:
-                        messages.warning(request, f"ผลการตรวจสลิป: {verify_msg} (ส่งให้เจ้าหน้าที่ตรวจสอบมือ)")
-                except Exception as exc:
-                    messages.info(request, "ส่งสลิปให้เจ้าหน้าที่ตรวจสอบเรียบร้อยแล้ว")
+            if settings.EASYSLIP_API_KEY:
+                verify_slip_task.delay_on_commit(slip.id)
+                messages.success(request, "แนบสลิปเรียบร้อยแล้ว ระบบกำลังตรวจสอบอัตโนมัติ")
             else:
-                messages.info(request, "ส่งสลิปเข้าสู่ระบบรอเจ้าหน้าที่ตรวจสอบเรียบร้อยแล้ว")
+                messages.success(request, "แนบสลิปเรียบร้อยแล้ว รอเจ้าหน้าที่ตรวจสอบ")
 
             return redirect('bookings:detail', booking_id=booking.id)
         else:
@@ -155,12 +148,7 @@ def admin_payment_review_view(request, payment_id):
                 user=request.user,
             )
 
-            from apps.core.services.notifications import (
-                send_booking_voucher_and_order_alert,
-                send_slip_rejected_alert,
-            )
-
-            send_booking_voucher_and_order_alert(payment)
+            send_booking_voucher_task.delay_on_commit(payment.id)
             messages.success(request, f"อนุมัติการชำระเงินสำหรับรหัส {booking.booking_code} สำเร็จ")
             return redirect('payments:admin_list')
 
@@ -186,8 +174,7 @@ def admin_payment_review_view(request, payment_id):
                 user=request.user,
             )
 
-            from apps.core.services.notifications import send_slip_rejected_alert
-            send_slip_rejected_alert(payment, notes or "สลิปไม่ผ่านการตรวจสอบ")
+            send_slip_rejected_task.delay_on_commit(payment.id, notes or "สลิปไม่ผ่านการตรวจสอบ")
             messages.warning(request, f"ปฏิเสธสลิปการโอนเงิน รหัส {payment.booking.booking_code}")
             return redirect('payments:admin_list')
 
@@ -195,6 +182,26 @@ def admin_payment_review_view(request, payment_id):
         'payment': payment,
         'slip': latest_slip,
     })
+
+
+@login_required
+@require_GET
+def slip_status_view(request, booking_id):
+    """HTMX poll from the booking page while the worker checks the slip."""
+    booking = get_object_or_404(Booking, id=booking_id)
+    if not can_view_object(request.user, booking):
+        raise Http404
+    context = slip_status_context(booking)
+    slip = context['slip']
+    if slip and slip.verification_status != SlipVerificationStatus.PENDING_CHECK:
+        # Result is in: reload so status badge, voucher and timer all update together
+        response = HttpResponse(status=204)
+        response['HX-Refresh'] = 'true'
+        return response
+    response = render(request, 'payments/partials/slip_status.html', context)
+    if not context['polling']:
+        response.status_code = 286  # htmx: swap this content and stop polling
+    return response
 
 
 @require_GET

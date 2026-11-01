@@ -11,6 +11,7 @@ from apps.accounts.permissions import can_view_object
 from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType, ShippingSetting
 from apps.community.models import Coupon
 from apps.bookings.services.checkout import process_checkout, StockUnavailableError
+from apps.payments.selectors.slip_selector import slip_status_context
 from apps.bookings.services.pricing import cart_line_total, resolve_cart_item
 
 
@@ -554,4 +555,5 @@ def booking_detail_view(request, booking_id):
         'booking': booking,
         'items': items,
         'remaining_seconds': booking.remaining_seconds,
+        **slip_status_context(booking),
     })

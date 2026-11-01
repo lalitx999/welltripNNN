@@ -10,6 +10,7 @@ import logging
 from decimal import Decimal
 import requests
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import timezone
 
 from apps.accommodations.models import Accommodation, AccommodationStatus
@@ -199,8 +200,13 @@ def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> 
     }
 
 
-def process_dual_ai_recommendation(user, input_data: dict) -> dict:
-    """Full Pipeline: Validation -> Math Modeling -> AI Reasoning -> Catalog Matching -> Audit Log."""
+def start_recommendation(user, input_data: dict) -> AIRecommendationLog:
+    """
+    Fast part, runs in the request: BMI/BMR math, save the health profile, and
+    create a PENDING job. The slow AI call is queued to run_recommendation_task.
+    """
+    from .tasks import run_recommendation_task
+
     weight = float(input_data["weight_kg"])
     height = float(input_data["height_cm"])
     age = int(input_data.get("age", 30))
@@ -224,8 +230,8 @@ def process_dual_ai_recommendation(user, input_data: dict) -> dict:
         "dietary_restrictions": dietary,
     }
 
-    # Persist or update profile if user is logged in
-    if user and user.is_authenticated:
+    is_member = bool(user and user.is_authenticated)
+    if is_member:
         HealthProfile.objects.update_or_create(
             user=user,
             defaults={
@@ -241,33 +247,50 @@ def process_dual_ai_recommendation(user, input_data: dict) -> dict:
             },
         )
 
-    # 1. DeepSeek AI Health Reasoning
-    health_analysis = analyze_health_deepseek(profile_dict)
-
-    # 2. Sisaket Catalog Matching
-    package_result = match_sisaket_wellness_package(health_analysis, profile_dict)
-
-    # 3. Log to DB
-    AIRecommendationLog.objects.create(
-        user=user if user and user.is_authenticated else None,
+    log = AIRecommendationLog.objects.create(
+        user=user if is_member else None,
         input_snapshot=profile_dict,
-        health_analysis=health_analysis,
-        recommended_package={
-            "package_title": package_result["package_title"],
-            "total_package_price": str(package_result["total_package_price"]),
-            "items_count": len(package_result["items"]),
-        },
+        status=AIRecommendationLog.Status.PENDING,
     )
+    run_recommendation_task.delay_on_commit(str(log.id))
+    return log
 
-    return {
+
+def complete_recommendation(log_id) -> None:
+    """Slow part, runs in the Celery worker: DeepSeek call + catalog matching."""
+    log = AIRecommendationLog.objects.filter(pk=log_id, status=AIRecommendationLog.Status.PENDING).first()
+    if not log:
+        return
+
+    profile = log.input_snapshot
+    try:
+        health_analysis = analyze_health_deepseek(profile)
+        package_result = match_sisaket_wellness_package(health_analysis, profile)
+    except Exception:
+        logger.exception("AI recommendation %s failed", log_id)
+        log.status = AIRecommendationLog.Status.FAILED
+        log.save(update_fields=["status"])
+        return
+
+    result = {
         "health_metrics": {
-            "bmi": str(bmi),
-            "bmi_category": get_bmi_category(bmi),
-            "bmr": bmr,
-            "weight_kg": weight,
-            "height_cm": height,
-            "health_goal": goal,
+            "bmi": str(profile["bmi"]),
+            "bmi_category": get_bmi_category(profile["bmi"]),
+            "bmr": profile["bmr"],
+            "weight_kg": profile["weight_kg"],
+            "height_cm": profile["height_cm"],
+            "health_goal": profile["health_goal"],
         },
         "deepseek_analysis": health_analysis,
         "recommended_package": package_result,
     }
+    # Decimal prices -> strings so the result fits a JSONField
+    log.result = json.loads(json.dumps(result, cls=DjangoJSONEncoder))
+    log.health_analysis = health_analysis
+    log.recommended_package = {
+        "package_title": package_result["package_title"],
+        "total_package_price": str(package_result["total_package_price"]),
+        "items_count": len(package_result["items"]),
+    }
+    log.status = AIRecommendationLog.Status.DONE
+    log.save(update_fields=["result", "health_analysis", "recommended_package", "status"])

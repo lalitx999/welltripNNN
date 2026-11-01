@@ -352,3 +352,41 @@ class LogoutAndCspTestCase(TestCase):
         for host in ("cdn.tailwindcss.com", "unpkg.com", "cdn.jsdelivr.net", "fonts.googleapis.com"):
             self.assertNotIn(host, csp)
             self.assertNotContains(response, host)
+
+
+class EmailTaskTestCase(TestCase):
+    """Emails go through send_email_task, which retries SMTP failures."""
+
+    def test_smtp_failure_is_retried(self):
+        import smtplib
+        from unittest import mock
+        from apps.core.tasks import send_email_task
+
+        self.assertIn(smtplib.SMTPException, send_email_task.autoretry_for)
+        with mock.patch("apps.core.tasks.send_mail", side_effect=[smtplib.SMTPServerDisconnected("down"), 1]) as sm:
+            send_email_task.apply(args=("s", "m", "a@example.com"), throw=False)
+        self.assertEqual(sm.call_count, 2)
+
+    def test_voucher_lists_real_items_and_notifies_vendor(self):
+        from django.core import mail
+        from apps.accounts.models import User, UserRoles
+        from apps.bookings.models import Booking, BookingItem, BookingStatus
+        from apps.payments.models import Payment
+        from apps.core.services.notifications import send_booking_voucher_and_order_alert
+
+        tourist = User.objects.create_user(email="t@example.com", password="x", role=UserRoles.TOURIST)
+        vendor = User.objects.create_user(email="v@example.com", password="x", role=UserRoles.HOMESTAY_OWNER)
+        booking = Booking.objects.create(customer=tourist, total_amount=Decimal("800"), status=BookingStatus.CONFIRMED)
+        BookingItem.objects.create(
+            booking=booking, vendor=vendor, item_type="ACCOMMODATION", entity_id="1",
+            item_title_snapshot="ห้องริมธาร", unit_price_snapshot=Decimal("800"), quantity=1, subtotal=Decimal("800"),
+        )
+        payment = Payment.objects.create(booking=booking, amount=Decimal("800"))
+
+        with self.settings(SITE_URL="https://welltripthailand.com"):
+            send_booking_voucher_and_order_alert(payment)
+
+        self.assertEqual(sorted(m.to[0] for m in mail.outbox), ["t@example.com", "v@example.com"])
+        voucher = next(m for m in mail.outbox if m.to == ["t@example.com"])
+        self.assertIn("ห้องริมธาร", voucher.body)
+        self.assertIn(f"https://welltripthailand.com/bookings/detail/{booking.id}/", voucher.body)

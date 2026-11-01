@@ -21,7 +21,7 @@ from apps.payments.models import Payment, PaymentStatus, PaymentSlip, SlipVerifi
 from apps.bookings.models import Booking, BookingStatus
 from apps.community.models import MapLocation, MapLocationCategory, PassportStamp, LocationEvent, EditorialEntry
 from apps.core.services.media import sanitize_and_strip_image
-from apps.core.services.notifications import send_merchant_kyc_decision
+from apps.core.tasks import send_merchant_kyc_decision_task
 
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
@@ -229,11 +229,8 @@ def admin_approve_merchant_view(request, user_id):
             user=request.user,
         )
 
-    # Dispatch Hostinger SMTP notification
-    try:
-        send_merchant_kyc_decision(merchant, is_approved=True)
-    except Exception:
-        pass
+    # Email goes out from the worker so SMTP never delays the admin
+    send_merchant_kyc_decision_task.delay_on_commit(merchant.id, True)
 
     messages.success(request, f"อนุมัติพาร์ทเนอร์ {merchant.email} เรียบร้อยแล้ว (สินค้า/ห้องพักเปิดให้บริการทันที พร้อมส่งอีเมลแจ้งเตือน)")
     return redirect('/accounts/admin-center/?tab=approvals')
@@ -264,10 +261,7 @@ def admin_reject_merchant_view(request, user_id):
             user=request.user,
         )
 
-    try:
-        send_merchant_kyc_decision(merchant, is_approved=False, reason=reason)
-    except Exception:
-        pass
+    send_merchant_kyc_decision_task.delay_on_commit(merchant.id, False, reason)
 
     messages.warning(request, f"ปฏิเสธการอนุมัติพาร์ทเนอร์ {merchant.email} และส่งอีเมลแจ้งเหตุผลเรียบร้อยแล้ว")
     return redirect('/accounts/admin-center/?tab=approvals')

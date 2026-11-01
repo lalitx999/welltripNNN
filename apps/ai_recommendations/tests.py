@@ -7,7 +7,7 @@ from apps.accommodations.models import Accommodation, Room, AccommodationStatus
 from apps.services.models import FoodMenu, FoodWellnessCategory, WellnessService
 from apps.otop.models import OTOPProduct, OTOPCategory
 from .models import HealthProfile, AIRecommendationLog
-from .services import calculate_bmi, calculate_bmr, get_bmi_category, process_dual_ai_recommendation
+from .services import calculate_bmi, calculate_bmr, get_bmi_category, start_recommendation
 
 
 class AIRecommendationsTestCase(TestCase):
@@ -94,7 +94,12 @@ class AIRecommendationsTestCase(TestCase):
             "dietary_restrictions": ["LOW_SODIUM"],
         }
 
-        result = process_dual_ai_recommendation(self.tourist, input_data)
+        # Tests run Celery eagerly; on_commit fires the queued AI task here
+        with self.captureOnCommitCallbacks(execute=True):
+            log = start_recommendation(self.tourist, input_data)
+        log.refresh_from_db()
+        self.assertEqual(log.status, AIRecommendationLog.Status.DONE)
+        result = log.result
 
         self.assertIn("health_metrics", result)
         self.assertIn("deepseek_analysis", result)
@@ -102,7 +107,7 @@ class AIRecommendationsTestCase(TestCase):
 
         package = result["recommended_package"]
         self.assertGreater(len(package["items"]), 0)
-        self.assertGreater(package["total_package_price"], Decimal("0.00"))
+        self.assertGreater(Decimal(package["total_package_price"]), Decimal("0.00"))
 
         # Verify DB logging
         log_entry = AIRecommendationLog.objects.filter(user=self.tourist).first()
@@ -130,8 +135,12 @@ class AIRecommendationsTestCase(TestCase):
             "health_goal": "DETOX",
             "dietary_restrictions": ["ORGANIC"],
         }
-        response = self.client.post(reverse("ai_recommendations:assess_htmx"), payload)
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(reverse("ai_recommendations:assess_htmx"), payload)
         self.assertEqual(response.status_code, 200)
+        # The first response is the polling partial; the poll returns the result
+        log = AIRecommendationLog.objects.get(user=self.tourist)
+        response = self.client.get(reverse("ai_recommendations:result_htmx", args=[log.id]))
         self.assertContains(response, "ผลวิเคราะห์สุขภาพเฉพาะบุคคล")
         self.assertContains(response, "Tailored Itinerary")
 
@@ -143,3 +152,17 @@ class AIRecommendationsTestCase(TestCase):
         }
         response = self.client.post(reverse("ai_recommendations:assess_htmx"), payload)
         self.assertEqual(response.status_code, 400)
+
+    def test_pending_job_polls_and_other_users_cannot_read_it(self):
+        """Without the worker the job stays PENDING; only its owner may poll it."""
+        log = AIRecommendationLog.objects.create(
+            user=self.tourist, input_snapshot={}, status=AIRecommendationLog.Status.PENDING
+        )
+        url = reverse("ai_recommendations:result_htmx", args=[log.id])
+
+        self.client.force_login(self.tourist)
+        response = self.client.get(url)
+        self.assertContains(response, 'hx-trigger="load delay:2s"')
+
+        self.client.force_login(self.merchant)
+        self.assertEqual(self.client.get(url).status_code, 404)

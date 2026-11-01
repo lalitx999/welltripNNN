@@ -21,6 +21,7 @@
   </div>
 
   <div class="d-grid gap-4">
+    {% if slip %}{% include "payments/partials/slip_status.html" %}{% endif %}
     {% if booking.status == 'AWAITING_PAYMENT' %}
       {% url 'payments:payment_instruction' booking.id as pay_url %}
       {% include "bookings/partials/payment_timer.html" with pay_url=pay_url %}

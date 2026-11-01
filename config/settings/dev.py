@@ -20,3 +20,5 @@ if os.environ.get('DATABASE_URL') and 'postgres' in os.environ.get('DATABASE_URL
     import psycopg
     # PostgreSQL configuration if specified
     pass
+
+SITE_URL = 'http://127.0.0.1:8000'
