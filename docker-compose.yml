@@ -20,7 +20,6 @@ services:
       - .env
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.prod
-      - DATABASE_URL=postgres://postgres:661201123_Asd@shared-postgres:5432/welltrip_db
       - REDIS_URL=redis://welltrip_redis:6379/0
     volumes:
       - /mnt/hdd_backup/welltrip/media:/app/media
