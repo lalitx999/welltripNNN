@@ -45,29 +45,18 @@ services:
     image: nginx:1.27-alpine
     container_name: welltrip_nginx
     restart: always
+    # 80/443 on this VPS belong to another project; Cloudflare forwards here
     ports:
-      - "80:80"
-      - "443:443"
+      - "8443:8443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
       - media:/app/media:ro
       - static:/app/staticfiles:ro
-      - certbot_www:/var/www/certbot:ro
-      - certbot_conf:/etc/letsencrypt:ro
     depends_on:
       - backend
-
-  certbot:
-    image: certbot/certbot:v2.11.0
-    container_name: welltrip_certbot
-    volumes:
-      - certbot_www:/var/www/certbot
-      - certbot_conf:/etc/letsencrypt
-    profiles: ["tools"]
 
 volumes:
   postgres_data:
   media:
   static:
-  certbot_www:
-  certbot_conf:

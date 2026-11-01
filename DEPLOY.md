@@ -1,26 +1,21 @@
 # Deploy WellTrip ขึ้น VPS
 
-ระบบประกอบด้วย 4 container ใน `docker-compose.yml`: `db` (PostgreSQL 16), `redis`, `backend` (Django + Gunicorn) และ `nginx` (HTTPS ผ่าน Let's Encrypt)
+ระบบมี 4 container: `db` (PostgreSQL 16), `redis`, `backend` (Django + Gunicorn) และ `nginx`
 ตอน start `backend` จะรัน `migrate` และ `collectstatic` ให้อัตโนมัติ (ดูใน `docker-entrypoint.sh`)
+
+พอร์ต 80/443 บน VPS นี้เป็นของโปรเจคอื่น nginx ของ WellTrip จึงรับที่พอร์ต **8443** แล้วให้ Cloudflare ส่งต่อมา:
+
+```
+ผู้ใช้ → https://welltripthailand.com (Cloudflare :443) → VPS:8443 (welltrip_nginx) → backend
+```
 
 ## 0. เตรียมก่อนเริ่ม
 
-- ตั้ง DNS: สร้าง A record ของ `welltripthailand.com` และ `www.welltripthailand.com` ให้ชี้ไปที่ IP ของ VPS
-  ถ้าใช้ Cloudflare ให้ตั้งเป็น **DNS only (เมฆสีเทา)** ไว้ก่อนจนกว่าจะออก cert เสร็จ
-- ติดตั้ง Docker บน VPS แล้ว และเปิดพอร์ต 22, 80, 443
+- โดเมนต้องใช้ DNS ของ Cloudflare
+- ติดตั้ง Docker บน VPS แล้ว และเปิดพอร์ต 8443 ใน firewall
 
 ```bash
-curl -fsSL https://get.docker.com | sh
-```
-
-```bash
-sudo ufw allow OpenSSH && sudo ufw allow 80 && sudo ufw allow 443 && sudo ufw enable
-```
-
-- ทดสอบว่า DNS ชี้มาที่ VPS แล้ว ผลที่ได้ต้องเป็น IP ของ VPS
-
-```bash
-dig +short welltripthailand.com
+sudo ufw allow 8443/tcp
 ```
 
 ## 1. ดึงโค้ดและสร้าง `.env`
@@ -47,13 +42,32 @@ cp .env.example .env && chmod 600 .env
 
 ไม่ต้องใส่ `DATABASE_URL` และ `REDIS_URL` เพราะ docker-compose สร้างให้เอง
 
-## 2. ออก SSL certificate ครั้งแรก
+## 2. ตั้งค่า Cloudflare
 
-ทำตอนที่ nginx ยังไม่ได้รัน เพราะ certbot ต้องใช้พอร์ต 80 (เปลี่ยนอีเมลเป็นของคุณ)
+1. **DNS:** ตั้ง A record ของ `@` และ `www` ให้ชี้ไปที่ IP ของ VPS และเปิด Proxy เป็น **เมฆสีส้ม**
+2. **Origin Certificate:** ไปที่ SSL/TLS → Origin Server → Create Certificate
+   ใช้ค่า default (RSA, `*.welltripthailand.com` และ `welltripthailand.com`, อายุ 15 ปี) แล้ววางไฟล์บน VPS:
 
 ```bash
-docker compose run --rm -p 80:80 certbot certonly --standalone -d welltripthailand.com -d www.welltripthailand.com --email you@example.com --agree-tos --no-eff-email
+mkdir -p nginx/certs && nano nginx/certs/fullchain.pem
 ```
+
+วางส่วน **Origin Certificate** ลงไปแล้ว save จากนั้นเปิดไฟล์ key:
+
+```bash
+nano nginx/certs/privkey.pem
+```
+
+วางส่วน **Private Key** ลงไปแล้ว save จากนั้นจำกัดสิทธิ์ไฟล์:
+
+```bash
+chmod 600 nginx/certs/privkey.pem
+```
+
+3. **SSL mode:** SSL/TLS → Overview → ตั้งเป็น **Full (strict)**
+4. **Origin Rule (ส่งต่อไปพอร์ต 8443):** Rules → Origin Rules → Create rule
+   - ตั้งเงื่อนไข: Hostname **is in** `welltripthailand.com`, `www.welltripthailand.com`
+   - ตั้ง Destination Port → Rewrite to **8443**
 
 ## 3. ย้ายข้อมูลเดิมจาก homeserver (ข้ามขั้นนี้ได้ถ้าจะเริ่มฐานข้อมูลใหม่)
 
@@ -84,7 +98,7 @@ docker compose up -d --build
 ```
 
 ```bash
-docker compose logs -f backend
+docker compose logs -f backend nginx
 ```
 
 ถ้าย้ายไฟล์ media มาจากขั้นที่ 3 ให้แตกไฟล์เข้า volume:
@@ -99,15 +113,13 @@ docker compose exec -T backend tar xzf - -C /app/media < welltrip-media.tgz
 docker compose exec backend python manage.py createsuperuser
 ```
 
-เปิด https://welltripthailand.com ทดสอบ: หน้าแรก, ล็อกอิน, หน้า `/admin/`, อัปโหลดรูป และหน้าชำระเงิน
+ทดสอบบน VPS ก่อน ถ้าได้ `200` หรือ `302` แปลว่า nginx และ backend ทำงานแล้ว:
 
-## 5. ต่ออายุ SSL อัตโนมัติ
-
-ตั้ง cron ด้วย `crontab -e` แล้วเพิ่มบรรทัดนี้ (แก้ path ให้ตรงกับที่ clone ไว้):
-
+```bash
+curl -sk -o /dev/null -w '%{http_code}\n' --resolve welltripthailand.com:8443:127.0.0.1 https://welltripthailand.com:8443/
 ```
-0 3 * * * cd /root/welltrip && docker compose run --rm certbot renew --webroot -w /var/www/certbot --quiet && docker compose exec nginx nginx -s reload
-```
+
+จากนั้นเปิด https://welltripthailand.com แล้วทดสอบหน้าแรก, ล็อกอิน, หน้า `/admin/`, การอัปโหลดรูป และหน้าชำระเงิน
 
 ## อัปเดตเวอร์ชันครั้งต่อไป
 
