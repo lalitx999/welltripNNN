@@ -1,0 +1,24 @@
+{% extends "layouts/public.html" %}
+
+{% block title %}รอการอนุมัติร้านค้า - WellTrip{% endblock %}
+
+{% block content %}
+<section class="container-xl py-5">
+  <div class="wt-card wt-empty mx-auto py-5 px-4" style="max-width: 36rem;">
+    {% if profile and profile.status == 'REJECTED' %}
+      <span class="wt-stat-icon mb-3" style="--c:#c92a2a;--bg:#fff0f0;width:4.5rem;height:4.5rem;border-radius:1.5rem"><i data-lucide="file-x" style="width:2rem;height:2rem"></i></span>
+      <h1 class="h4 fw-bold">ใบสมัครผู้ประกอบการไม่ผ่านการอนุมัติ</h1>
+      {% if profile.rejection_reason %}<p class="text-secondary">เหตุผล: {{ profile.rejection_reason }}</p>{% endif %}
+      <p class="text-secondary mb-4">ติดต่อทีมงานเพื่อแก้ไขข้อมูลและยื่นตรวจสอบใหม่</p>
+    {% else %}
+      <span class="wt-stat-icon mb-3" style="--c:#b86e00;--bg:#fff4dc;width:4.5rem;height:4.5rem;border-radius:1.5rem"><i data-lucide="hourglass" style="width:2rem;height:2rem"></i></span>
+      <h1 class="h4 fw-bold">ร้านค้าของคุณกำลังรอการอนุมัติ</h1>
+      <p class="text-secondary mb-4">{% if profile %}ทีมงานกำลังตรวจสอบข้อมูล "{{ profile.business_name }}" เมื่ออนุมัติแล้วจะแจ้งทางอีเมล และคุณจะเข้า Partner Studio ได้ทันที{% else %}บัญชีนี้ยังไม่มีข้อมูลร้านค้าสำหรับตรวจสอบ กรุณาติดต่อทีมงาน{% endif %}</p>
+    {% endif %}
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      <a href="{% url 'core:contact' %}" class="btn btn-green rounded-pill px-4">ติดต่อทีมงาน</a>
+      <a href="{% url 'core:landing' %}" class="btn btn-outline-ink rounded-pill px-4">กลับหน้าแรก</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

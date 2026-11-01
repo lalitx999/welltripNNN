@@ -3,14 +3,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
-from django.db.models import Q
+from django.db.models import Min, Q
 from django.utils import timezone
 
 from apps.accounts.models import UserRoles
 from apps.accounts.permissions import role_required, can_edit_object
 from apps.accounts.services.audit import record_audit_log
-from apps.accommodations.models import Accommodation, Room, RoomPricingCalendar, AccommodationStatus
-from apps.accommodations.forms import AccommodationForm, RoomForm, RoomPricingCalendarForm
+from apps.accommodations.models import Accommodation, Room, RoomImage, RoomPricingCalendar, AccommodationStatus
+from apps.accommodations.forms import AccommodationForm, RoomForm, RoomImageForm, RoomPricingCalendarForm
 
 
 def list_view(request):
@@ -36,12 +36,17 @@ def list_view(request):
     if district:
         qs = qs.filter(district__icontains=district)
 
+    if price_range:
+        # min_price_per_night is a Python property, so filter on an annotation
+        qs = qs.annotate(
+            lowest_price=Min('rooms__base_price_per_night', filter=Q(rooms__is_active=True))
+        )
     if price_range in ('budget', 'economy'):
-        qs = qs.filter(min_price_per_night__lt=800)
+        qs = qs.filter(lowest_price__lt=800)
     elif price_range in ('mid', 'moderate'):
-        qs = qs.filter(min_price_per_night__gte=800, min_price_per_night__lte=1500)
+        qs = qs.filter(lowest_price__gte=800, lowest_price__lte=1500)
     elif price_range == 'luxury':
-        qs = qs.filter(min_price_per_night__gt=1500)
+        qs = qs.filter(lowest_price__gt=1500)
 
     # Districts for filter dropdown
     districts = [
@@ -100,12 +105,31 @@ def homestay_studio_view(request):
         accommodation = owner_accommodations.first()
 
     if not accommodation:
+        # Starts hidden; the owner publishes it once details and rooms are filled in
         accommodation = Accommodation.objects.create(
             owner=request.user,
             name=f"โฮมสเตย์ของ {request.user.first_name or request.user.email}",
-            status=AccommodationStatus.ACTIVE,
+            status=AccommodationStatus.PENDING_VERIFICATION,
         )
         owner_accommodations = Accommodation.objects.filter(owner=request.user)
+
+    status_action = request.POST.get('status_action')
+    if request.method == "POST" and status_action in ('publish', 'unpublish'):
+        if accommodation.status == AccommodationStatus.SUSPENDED:
+            messages.error(request, "ที่พักนี้ถูกระงับโดยผู้ดูแลระบบ กรุณาติดต่อทีมงาน")
+        elif status_action == 'publish' and not accommodation.rooms.filter(is_active=True).exists():
+            messages.error(request, "เพิ่มห้องพักอย่างน้อย 1 ห้องก่อนเปิดให้จอง")
+        else:
+            accommodation.status = (
+                AccommodationStatus.ACTIVE if status_action == 'publish' else AccommodationStatus.PENDING_VERIFICATION
+            )
+            accommodation.save(update_fields=['status', 'updated_at'])
+            record_audit_log(
+                request=request, action="UPDATE", model_name="Accommodation",
+                object_id=str(accommodation.id), changes={"status": accommodation.status},
+            )
+            messages.success(request, "เปิดให้จองแล้ว" if status_action == 'publish' else "ซ่อนที่พักจากหน้าเว็บแล้ว")
+        return redirect(f"{request.path}?acc_id={accommodation.id}")
 
     if request.method == "POST":
         form = AccommodationForm(request.POST, instance=accommodation)
@@ -123,7 +147,7 @@ def homestay_studio_view(request):
     else:
         form = AccommodationForm(instance=accommodation)
 
-    rooms = accommodation.rooms.all()
+    rooms = accommodation.rooms.all().prefetch_related('images')
     room_form = RoomForm()
 
     return render(request, 'portal/homestay.html', {
@@ -150,6 +174,8 @@ def room_create_view(request):
         room = form.save(commit=False)
         room.accommodation = accommodation
         room.save()
+        if request.FILES.get('image'):
+            _attach_room_image(request, room)
 
         record_audit_log(
             request=request,
@@ -163,6 +189,46 @@ def room_create_view(request):
         messages.error(request, "ข้อมูลห้องพักไม่ถูกต้อง กรุณาตรวจสอบ")
 
     return redirect(f"/accommodations/studio/?acc_id={accommodation.id}")
+
+
+def _attach_room_image(request, room):
+    """Validates and stores an uploaded photo for a room; the first photo becomes the cover."""
+    image_form = RoomImageForm(files=request.FILES)
+    if not image_form.is_valid():
+        messages.error(request, " ".join(image_form.errors.get('image', ["รูปภาพไม่ถูกต้อง"])))
+        return None
+    is_first = not room.images.exists()
+    return RoomImage.objects.create(
+        room=room, image=image_form.cleaned_data['image'], is_cover=is_first, order=room.images.count(),
+    )
+
+
+@role_required(UserRoles.HOMESTAY_OWNER, UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN)
+@require_http_methods(["POST"])
+def room_image_add_view(request, room_id):
+    """Adds a photo to one of the owner's rooms."""
+    if request.user.is_superuser or request.user.role in (UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN):
+        room = get_object_or_404(Room, id=room_id)
+    else:
+        room = get_object_or_404(Room, id=room_id, accommodation__owner=request.user)
+    if _attach_room_image(request, room):
+        messages.success(request, f"เพิ่มรูปห้อง '{room.name}' เรียบร้อยแล้ว")
+    return redirect(f"/accommodations/studio/?acc_id={room.accommodation_id}")
+
+
+@role_required(UserRoles.HOMESTAY_OWNER, UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN)
+@require_http_methods(["POST"])
+def room_image_delete_view(request, image_id):
+    """Removes a room photo owned by the current homestay owner."""
+    if request.user.is_superuser or request.user.role in (UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN):
+        image = get_object_or_404(RoomImage, id=image_id)
+    else:
+        image = get_object_or_404(RoomImage, id=image_id, room__accommodation__owner=request.user)
+    acc_id = image.room.accommodation_id
+    image.image.delete(save=False)
+    image.delete()
+    messages.success(request, "ลบรูปภาพเรียบร้อยแล้ว")
+    return redirect(f"/accommodations/studio/?acc_id={acc_id}")
 
 
 @role_required(UserRoles.HOMESTAY_OWNER, UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN)

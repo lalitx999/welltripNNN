@@ -1,167 +1,64 @@
 {% extends "layouts/public.html" %}
-{% load static %}
 
-{% block title %}รายละเอียดการจอง {{ booking.booking_code }} - WellTrip Sisaket{% endblock %}
+{% block title %}การจอง {{ booking.booking_code }} - WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-  
-  <!-- Breadcrumbs -->
-  <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
-    <a href="{% url 'core:home' %}" class="hover:text-[#1f2925] transition-colors">หน้าหลัก</a>
-    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-    <a href="{% url 'bookings:my_bookings' %}" class="hover:text-[#1f2925] transition-colors">ประวัติการจอง</a>
-    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-    <span class="text-[#c49a45] font-bold">{{ booking.booking_code }}</span>
+<div class="container-xl py-4 py-md-5" style="max-width: 56rem;">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{% url 'bookings:my_bookings' %}" class="text-green">การจองของฉัน</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ booking.booking_code }}</li>
+    </ol>
   </nav>
 
-  <!-- Header with Booking Code and Status -->
-  <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-      <div>
-        <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold block">BOOKING REFERENCE</span>
-        <h1 class="font-serif text-2xl sm:text-3xl font-bold text-[#1f2925] tracking-tight">{{ booking.booking_code }}</h1>
-        <span class="text-xs text-slate-400">สร้างคำสั่งซื้อเมื่อ {{ booking.created_at|date:"d M Y H:i" }} น.</span>
-      </div>
-
-      <div>
-        <span class="px-4 py-1.5 rounded-full text-xs font-bold
-                     {% if booking.status == 'CONFIRMED' %} bg-emerald-100 text-emerald-800
-                     {% elif booking.status == 'AWAITING_PAYMENT' %} bg-amber-100 text-amber-800
-                     {% elif booking.status == 'PAYMENT_EXPIRED' %} bg-rose-100 text-rose-800
-                     {% else %} bg-slate-100 text-slate-700 {% endif %}">
-          {{ booking.get_status_display }}
-        </span>
-      </div>
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+    <div>
+      <small class="text-secondary">รหัสการจอง</small>
+      <h1 class="fw-bold font-monospace mb-0">{{ booking.booking_code }}</h1>
+      <small class="text-secondary">สร้างเมื่อ {{ booking.created_at|date:"d M Y H:i" }} น.</small>
     </div>
+    {% include "bookings/partials/status_badge.html" with status=booking.status label=booking.get_status_display %}
+  </div>
 
-    <!-- 15-Minute Countdown Banner if AWAITING_PAYMENT -->
+  <div class="d-grid gap-4">
     {% if booking.status == 'AWAITING_PAYMENT' %}
-      <div x-data="{
-             timeLeft: {{ remaining_seconds }},
-             timer: null,
-             isExpired: {% if remaining_seconds <= 0 %}true{% else %}false{% endif %},
-             get minutes() { return Math.max(0, Math.floor(this.timeLeft / 60)) },
-             get seconds() { return Math.max(0, this.timeLeft % 60).toString().padStart(2, '0') },
-             init() {
-               if (this.timeLeft <= 0) {
-                 this.isExpired = true;
-                 return;
-               }
-               this.timer = setInterval(() => {
-                 if (this.timeLeft > 0) {
-                   this.timeLeft--;
-                 } else {
-                   this.isExpired = true;
-                   clearInterval(this.timer);
-                 }
-               }, 1000);
-             }
-           }">
-        <!-- Active Timer State -->
-        <div x-show="!isExpired" class="p-5 rounded-2xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="space-y-1 text-center sm:text-left">
-            <div class="text-xs font-bold text-amber-900 flex items-center justify-center sm:justify-start gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-              <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
-              <span>เวลาที่เหลือในการชำระเงินและแนบสลิป</span>
-            </div>
-            <p class="text-[11px] text-amber-700 font-light">หากพ้นเวลานี้ ระบบจะปล่อยสต็อกห้องพักและสินค้าคืนชุมชนโดยอัตโนมัติ</p>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <div class="px-4 py-2 rounded-xl bg-white border border-amber-200 shadow-xs font-mono text-xl font-bold text-amber-900">
-              <span x-text="minutes">0</span>:<span x-text="seconds">00</span>
-            </div>
-            <a 
-              href="{% url 'payments:payment_instruction' booking.id %}" 
-              class="px-5 py-2.5 rounded-xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
-            >
-              <span>แนบสลิป</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-            </a>
-          </div>
-        </div>
-
-        <!-- Expired State (No loop) -->
-        <div x-show="isExpired" style="display: none;" class="p-5 rounded-2xl bg-rose-50 border border-rose-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
-          <div class="flex items-center gap-2.5 text-xs font-bold text-rose-800">
-            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
-            <span>คำสั่งซื้อนี้หมดเวลาชำระเงิน 15 นาทีแล้ว ระบบได้ทำการปล่อยสต็อกคืนชุมชน</span>
-          </div>
-          <a href="{% url 'bookings:my_bookings' %}" class="px-3.5 py-1.5 rounded-xl bg-white border border-rose-300 text-rose-700 text-xs font-semibold hover:bg-rose-100 transition shrink-0">
-            ดูรายการจองของฉัน
-          </a>
-        </div>
-      </div>
+      {% url 'payments:payment_instruction' booking.id as pay_url %}
+      {% include "bookings/partials/payment_timer.html" with pay_url=pay_url %}
     {% elif booking.status == 'PAYMENT_EXPIRED' %}
-      <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-center gap-2">
-        <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
-        <span>คำสั่งซื้อนี้หมดเวลาชำระเงินแล้ว ระบบได้ทำการปลดล็อคห้องพักและสินค้าคืนชุมชนเรียบร้อยแล้ว</span>
+      <div class="alert alert-danger rounded-4 mb-0"><i data-lucide="alert-circle" class="me-1"></i>คำสั่งซื้อนี้หมดเวลาชำระเงินแล้ว ระบบปล่อยห้องพักและสินค้าคืนแล้ว</div>
+    {% endif %}
+
+    {% if booking.status == 'CONFIRMED' %}
+      <div class="wt-panel-green p-4 text-center">
+        <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-2"><i data-lucide="ticket" class="me-1"></i>บัตรเข้าใช้บริการ</span>
+        <div class="display-6 fw-bold font-monospace">{{ booking.booking_code }}</div>
+        <p class="opacity-75 mb-0">แสดงรหัสนี้กับเจ้าของที่พักหรือผู้ให้บริการเพื่อยืนยันสิทธิ์</p>
       </div>
     {% endif %}
 
-    <!-- Items List -->
-    <div class="space-y-3 pt-2">
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-        <i data-lucide="list-checks" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-        <span>รายการสินค้าและบริการในทริป</span>
-      </h3>
-      
-      <div class="divide-y divide-slate-100">
+    <div class="wt-card p-3 p-sm-4">
+      <h2 class="h6 fw-bold mb-2"><i data-lucide="list-checks" class="text-green me-1"></i>รายการ</h2>
+      <div class="list-group list-group-flush">
         {% for item in items %}
-          <div class="py-3.5 flex justify-between items-center text-xs">
-            <div class="space-y-0.5">
-              <span class="font-bold text-[#1f2925] text-sm block">{{ item.item_title_snapshot }}</span>
-              <div class="text-[11px] text-slate-500 flex items-center gap-2">
-                <span>ผู้ให้บริการ: {{ item.vendor.first_name|default:item.vendor.email }}</span>
-                {% if item.booking_metadata.date %}
-                  <span>•</span>
-                  <span>วันที่: {{ item.booking_metadata.date }}</span>
-                {% endif %}
-              </div>
+          <div class="list-group-item px-0 d-flex justify-content-between gap-3">
+            <div class="min-w-0">
+              <div class="fw-semibold">{{ item.item_title_snapshot }}</div>
+              <small class="text-secondary">{{ item.vendor.full_name|default:item.vendor.email }}{% if item.booking_metadata.date %} · {{ item.booking_metadata.date }}{% endif %}</small>
             </div>
-            <div class="text-right">
-              <span class="font-bold text-[#c49a45] font-serif text-sm">฿{{ item.subtotal|floatformat:0 }}</span>
-              <span class="text-[11px] text-slate-400 block">฿{{ item.unit_price_snapshot|floatformat:0 }} x {{ item.quantity }}</span>
+            <div class="text-end text-nowrap">
+              <div class="fw-bold">฿{{ item.subtotal|floatformat:"0g" }}</div>
+              <small class="text-secondary">฿{{ item.unit_price_snapshot|floatformat:"0g" }} × {{ item.quantity }}</small>
             </div>
           </div>
         {% endfor %}
       </div>
-
-      <div class="pt-4 border-t border-slate-100 flex justify-between items-baseline">
-        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">ยอดรวมสุทธิ</span>
-        <span class="text-2xl sm:text-3xl font-serif font-bold text-[#c49a45]">฿{{ booking.total_amount|floatformat:0 }}</span>
+      <div class="d-flex justify-content-between align-items-baseline border-top mt-2 pt-3">
+        <span class="fw-bold">ยอดรวม</span>
+        <span class="fs-4 fw-bold text-green">฿{{ booking.total_amount|floatformat:"2g" }}</span>
       </div>
     </div>
 
-    <!-- Tourist Check-In QR Pass (Visible when confirmed) -->
-    {% if booking.status == 'CONFIRMED' %}
-      <div class="p-6 rounded-3xl bg-[#faf9f6] border border-slate-200/90 text-center space-y-3">
-        <div class="w-10 h-10 rounded-2xl bg-[#1f2925] text-[#c49a45] mx-auto flex items-center justify-center">
-          <i data-lucide="ticket" class="w-5 h-5"></i>
-        </div>
-        <div class="text-sm font-bold text-[#1f2925]">บัตรดิจิทัลสำหรับ Check-in หน้างาน</div>
-        <p class="text-xs text-slate-500 max-w-sm mx-auto">
-          แสดง QR Code นี้แก่เจ้าของโฮมสเตย์หรือผู้ให้บริการเพื่อยืนยันสิทธิ์การเข้าพัก
-        </p>
-        <div class="w-32 h-32 bg-white p-2 rounded-2xl mx-auto shadow-xs border border-slate-200 flex items-center justify-center">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={{ booking.booking_code }}" alt="Check-in QR" class="w-full h-full object-contain">
-        </div>
-      </div>
-    {% endif %}
-
+    <a href="{% url 'bookings:my_bookings' %}" class="small fw-semibold text-green"><i data-lucide="arrow-left" class="me-1"></i>การจองทั้งหมด</a>
   </div>
-
-  <div class="text-center pt-2">
-    <a 
-      href="{% url 'bookings:my_bookings' %}" 
-      class="inline-flex items-center gap-1.5 text-xs font-bold text-[#1f2925] hover:text-[#c49a45] transition"
-    >
-      <i data-lucide="arrow-left" class="w-4 h-4"></i>
-      <span>กลับไปยังประวัติการจองทั้งหมด</span>
-    </a>
-  </div>
-
 </div>
 {% endblock %}

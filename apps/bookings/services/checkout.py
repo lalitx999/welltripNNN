@@ -7,11 +7,13 @@ Enforces Non-Negotiable Concurrency and Stock Locking Requirements:
 """
 from datetime import datetime, date
 from decimal import Decimal
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.utils import timezone
 
 from apps.accounts.services.audit import record_audit_log
 from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType
+from apps.bookings.services.pricing import parse_date, stay_dates
 from apps.accommodations.models import Room, RoomPricingCalendar
 from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot
 from apps.otop.models import OTOPProduct
@@ -52,63 +54,50 @@ def process_checkout(
         if item_type == BookingItemType.ROOM:
             # Book room for specified date
             try:
-                room = Room.objects.select_related("accommodation__owner").get(id=entity_id)
-            except (Room.DoesNotExist, ValueError):
-                acc = Accommodation.objects.select_related("owner").get(id=entity_id)
-                room = acc.rooms.first()
-                if not room:
-                    room = Room.objects.create(
-                        accommodation=acc,
-                        name=f"ห้องพัก {acc.name}",
-                        base_price_per_night=acc.min_price_per_night,
-                    )
+                room = Room.objects.select_related("accommodation__owner").get(id=entity_id, is_active=True)
+            except (Room.DoesNotExist, ValueError, DjangoValidationError):
+                raise StockUnavailableError("ไม่พบห้องพักที่เลือก หรือห้องพักนี้ปิดการจองแล้ว")
 
-            booking_date_str = item.get("date")
-            if booking_date_str:
-                try:
-                    booking_date = datetime.strptime(str(booking_date_str)[:10], "%Y-%m-%d").date()
-                except Exception:
-                    booking_date = timezone.now().date()
-            else:
-                booking_date = timezone.now().date()
+            check_in = parse_date(item.get("date")) or timezone.now().date()
+            nights = max(1, int(item.get("nights", 1) or 1))
 
-            # Row lock the calendar row for this date
-            calendar = (
-                RoomPricingCalendar.objects.select_for_update()
-                .filter(room=room, date=booking_date)
-                .first()
-            )
-
-            # If no custom pricing exists, use room base price and total room capacity
-            if not calendar:
-                calendar = RoomPricingCalendar.objects.create(
-                    room=room,
-                    date=booking_date,
-                    price=room.base_price_per_night,
-                    available_count=room.total_rooms_count,
+            # Lock and decrement availability for every night of the stay
+            for booking_date in stay_dates(check_in, nights):
+                calendar = (
+                    RoomPricingCalendar.objects.select_for_update()
+                    .filter(room=room, date=booking_date)
+                    .first()
                 )
-                # Re-query with lock
-                calendar = RoomPricingCalendar.objects.select_for_update().get(id=calendar.id)
 
-            if calendar.available_count < quantity:
-                raise StockUnavailableError(f"ห้องพัก '{room.name}' เต็มแล้วสำหรับวันที่ {booking_date}")
+                # If no custom pricing exists, use room base price and total room capacity
+                if not calendar:
+                    calendar = RoomPricingCalendar.objects.create(
+                        room=room,
+                        date=booking_date,
+                        price=room.base_price_per_night,
+                        available_count=room.total_rooms_count,
+                    )
+                    calendar = RoomPricingCalendar.objects.select_for_update().get(id=calendar.id)
 
-            calendar.available_count -= quantity
-            calendar.save(update_fields=["available_count"])
+                if calendar.available_count < quantity:
+                    raise StockUnavailableError(f"ห้องพัก '{room.name}' เต็มแล้วสำหรับวันที่ {booking_date}")
 
-            subtotal = calendar.price * quantity
-            total_booking_amount += subtotal
+                calendar.available_count -= quantity
+                calendar.save(update_fields=["available_count"])
 
-            pending_items_to_create.append({
-                "vendor": room.accommodation.owner,
-                "item_type": BookingItemType.ROOM,
-                "entity_id": str(room.id),
-                "item_title_snapshot": f"{room.name} ({room.accommodation.name})",
-                "unit_price_snapshot": calendar.price,
-                "quantity": quantity,
-                "subtotal": subtotal,
-                "booking_metadata": {"date": str(booking_date)},
-            })
+                subtotal = calendar.price * quantity
+                total_booking_amount += subtotal
+
+                pending_items_to_create.append({
+                    "vendor": room.accommodation.owner,
+                    "item_type": BookingItemType.ROOM,
+                    "entity_id": str(room.id),
+                    "item_title_snapshot": f"{room.name} ({room.accommodation.name})",
+                    "unit_price_snapshot": calendar.price,
+                    "quantity": quantity,
+                    "subtotal": subtotal,
+                    "booking_metadata": {"date": str(booking_date), "check_in": str(check_in), "nights": nights},
+                })
 
         elif item_type == BookingItemType.WELLNESS:
             slot = None
@@ -272,10 +261,11 @@ def cancel_and_restore_expired_bookings():
                             cal.save(update_fields=["available_count"])
 
                 elif item.item_type == BookingItemType.WELLNESS:
+                    # Only slot bookings reserve capacity; plain service bookings store a UUID
+                    slot_id = item.booking_metadata.get("slot_id")
                     slot = (
-                        WellnessTimeSlot.objects.select_for_update()
-                        .filter(id=int(item.entity_id))
-                        .first()
+                        WellnessTimeSlot.objects.select_for_update().filter(id=slot_id).first()
+                        if slot_id else None
                     )
                     if slot:
                         slot.capacity_available += item.quantity

@@ -1,0 +1,1 @@
+<span class="badge {% if status == 'CONFIRMED' %}badge-green{% elif status == 'AWAITING_PAYMENT' %}badge-gold{% elif status == 'COMPLETED' %}text-bg-info bg-opacity-25 text-info-emphasis{% elif status == 'PAYMENT_EXPIRED' or status == 'CANCELLED' %}text-bg-danger bg-opacity-10 text-danger-emphasis{% else %}bg-light text-secondary border{% endif %}">{{ label }}</span>

@@ -156,7 +156,7 @@ def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> 
             "unit_price": food.price,
             "quantity": 1,
             "category_label": f"อาหารสุขภาพ ({food.get_wellness_category_display()}) ~{food.calorie_estimate or 250} kcal",
-            "detail_url": "/services/",
+            "detail_url": f"/services/detail/food/{food.id}/",
         })
 
     # 3. Wellness Treatment
@@ -170,7 +170,7 @@ def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> 
             "unit_price": service.price,
             "quantity": 1,
             "category_label": f"สปา & นวดแผนไทย ({service.duration_minutes} นาที)",
-            "detail_url": "/services/",
+            "detail_url": f"/services/detail/wellness/{service.id}/",
         })
 
     # 4. OTOP Product
@@ -184,11 +184,11 @@ def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> 
             "unit_price": prod.price,
             "quantity": 1,
             "category_label": f"สินค้าชุมชน ({prod.get_category_display()})",
-            "detail_url": "/otop/",
+            "detail_url": f"/otop/{prod.id}/",
         })
 
     return {
-        "package_title": "ทริปสุขภาวะและวิถีธรรมชาติขุนหาญ-กันทรลักษ์ (2 วัน 1 คืน)",
+        "package_title": "แพ็กเกจทริปสุขภาวะศรีสะเกษที่แนะนำสำหรับคุณ",
         "duration_label": "2 วัน 1 คืน (พักผ่อนเชิงส่งเสริมสุขภาวะ)",
         "total_package_price": total_price,
         "items": package_items,

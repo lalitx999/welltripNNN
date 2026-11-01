@@ -1,298 +1,137 @@
 {% extends "layouts/public.html" %}
-{% load static %}
 
 {% block title %}ศูนย์ช่วยเหลือและติดต่อเรา — WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="space-y-10 sm:space-y-12 pb-16" x-data="{ activeCategory: 'all', searchQuery: '', openFaq: 'faq-1' }">
-
-  <!-- ============================================================================== -->
-  <!-- 1. COMPACT HERO SECTION (ตามต้นฉบับ Documents/welltrip)                         -->
-  <!-- ============================================================================== -->
-  <section class="mx-auto max-w-4xl px-3 sm:px-6 mt-4 sm:mt-6 text-center space-y-3">
-    <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-[#d97706] text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-      <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#d97706]"></i>
-      <span>HELP & SUPPORT CENTER</span>
-    </div>
-
-    <h1 class="text-2xl sm:text-4xl font-extrabold text-[#1f2925] tracking-tight font-serif">
-      ศูนย์ช่วยเหลือและติดต่อเรา
-    </h1>
-
-    <p class="text-xs sm:text-sm text-stone-500 max-w-md mx-auto leading-relaxed">
-      ค้นหาคำตอบหรือติดต่อทีมงานดูแลนักท่องเที่ยว WellTrip จ.ศรีสะเกษ
-    </p>
-
-    <!-- Search Input -->
-    <div class="max-w-xl mx-auto pt-2">
-      <div class="relative rounded-full border border-stone-300 bg-white px-5 py-3 shadow-xs flex items-center gap-3 focus-within:ring-2 focus-within:ring-[#1f2925] focus-within:border-transparent transition-all">
-        <i data-lucide="search" class="w-4 h-4 text-stone-400 shrink-0"></i>
-        <input
-          type="text"
-          x-model="searchQuery"
-          placeholder="ค้นหาวิธีจอง, การแนบสลิป, หรือนโยบายการยกเลิก..."
-          class="w-full text-xs sm:text-sm text-stone-900 bg-transparent focus:outline-none placeholder:text-stone-400"
-        >
-        <button
-          type="button"
-          x-show="searchQuery.length > 0"
-          @click="searchQuery = ''"
-          class="text-xs text-stone-400 hover:text-stone-700 font-bold"
-        >
-          ล้าง
-        </button>
+<div x-data="{
+  activeCategory: 'all',
+  searchQuery: '',
+  openFaq: 1,
+  matches(cat, q) {
+    return (this.activeCategory === 'all' || this.activeCategory === cat)
+      && (!this.searchQuery || q.toLowerCase().includes(this.searchQuery.toLowerCase()));
+  }
+}">
+  <section class="wt-page-head text-center">
+    <div class="container-xl" style="max-width: 44rem;">
+      <span class="wt-eyebrow justify-content-center"><i data-lucide="life-buoy"></i>Help &amp; support</span>
+      <h1 class="mb-2">ศูนย์ช่วยเหลือและติดต่อเรา</h1>
+      <p class="text-secondary mb-4">ค้นหาคำตอบ หรือติดต่อทีมงานดูแลนักท่องเที่ยว WellTrip ศรีสะเกษ</p>
+      <div class="wt-search-pill d-flex align-items-center border">
+        <i data-lucide="search" class="text-secondary ms-3"></i>
+        <input type="text" class="form-control form-control-lg fs-6" x-model="searchQuery" placeholder="วิธีจอง การแนบสลิป นโยบายการยกเลิก..." aria-label="ค้นหาคำถาม">
+        <button type="button" class="btn-close me-3" x-show="searchQuery.length > 0" x-cloak @click="searchQuery = ''" aria-label="ล้าง"></button>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================================== -->
-  <!-- 2. DIRECT CONTACT CHANNELS (ตามต้นฉบับ Documents/welltrip: ตัด LINE 100%)       -->
-  <!-- ============================================================================== -->
-  <section class="mx-auto max-w-4xl px-3 sm:px-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      
-      <!-- Hotline -->
-      <div class="rounded-3xl bg-white p-6 border border-stone-200/90 shadow-xs space-y-3 text-center hover:border-amber-400 transition-all">
-        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-[#d97706] mx-auto flex items-center justify-center">
-          <i data-lucide="phone-call" class="w-6 h-6 text-[#d97706]"></i>
+  <section class="container-xl pb-4">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="wt-card p-4 h-100 d-flex gap-3">
+          <span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="phone-call" class="icon-lg"></i></span>
+          <div>
+            <div class="small text-secondary">สายด่วนท่องเที่ยว</div>
+            <a href="tel:045962455" class="fs-4 fw-bold text-green">045-962-455</a>
+            <div class="small text-secondary">สอบถามเส้นทางและเหตุฉุกเฉิน</div>
+          </div>
         </div>
-        <div>
-          <h3 class="font-serif font-bold text-sm text-[#1f2925]">
-            สายด่วนท่องเที่ยวศรีสะเกษ
+      </div>
+      <div class="col-md-6">
+        <div class="wt-card p-4 h-100 d-flex gap-3">
+          <span class="wt-stat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="mail" class="icon-lg"></i></span>
+          <div class="min-w-0">
+            <div class="small text-secondary">อีเมลบริการนักท่องเที่ยว</div>
+            <a href="mailto:support@welltripthailand.com" class="fs-5 fw-bold text-break">support@welltripthailand.com</a>
+            <div class="small text-secondary">ข้อเสนอแนะและแจ้งปัญหา (ตอบกลับภายใน 1 วันทำการ)</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="wt-card p-4 d-flex gap-3 bg-sand border-0">
+          <span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff"><i data-lucide="map-pin" class="icon-lg"></i></span>
+          <div>
+            <div class="fw-bold">ศูนย์ปฏิบัติการและวิจัยการท่องเที่ยวเชิงสุขภาวะ (WellTrip)</div>
+            <div class="text-secondary">คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏศรีสะเกษ เลขที่ 319 ถนนไทยพันทา ต.โพธิ์ อ.เมือง จ.ศรีสะเกษ 33000</div>
+            <div class="small text-secondary mt-1"><i data-lucide="clock" class="me-1"></i>จันทร์ – ศุกร์ 08:30 – 16:30 น.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wt-section bg-mint">
+    <div class="container-xl" style="max-width: 52rem;">
+      <h2 class="wt-section-title text-center">คำถามที่พบบ่อย</h2>
+      <div class="wt-pills justify-content-md-center mb-4">
+        <button type="button" class="wt-pill" :class="activeCategory === 'all' && 'active'" @click="activeCategory = 'all'">ทั้งหมด</button>
+        <button type="button" class="wt-pill" :class="activeCategory === 'booking' && 'active'" @click="activeCategory = 'booking'"><i data-lucide="house" class="me-1"></i>การจอง</button>
+        <button type="button" class="wt-pill" :class="activeCategory === 'payment' && 'active'" @click="activeCategory = 'payment'"><i data-lucide="receipt" class="me-1"></i>ชำระเงิน &amp; สลิป</button>
+        <button type="button" class="wt-pill" :class="activeCategory === 'otop' && 'active'" @click="activeCategory = 'otop'"><i data-lucide="package" class="me-1"></i>OTOP &amp; จัดส่ง</button>
+      </div>
+      <div class="accordion">
+        <div class="accordion-item" x-show="matches('payment', 'วิธีแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?')">
+          <h3 class="accordion-header">
+            <button class="accordion-button gap-2" :class="openFaq === 1 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 1 ? null : 1">
+              <span class="wt-num">1</span>วิธีแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?
+            </button>
           </h3>
-          <a href="tel:045962455" class="text-lg font-black text-[#d97706] font-mono hover:underline block mt-1">
-            045-962-455
-          </a>
-          <p class="text-[11px] text-stone-400 mt-1">
-            บริการสอบถามเส้นทางและฉุกเฉิน 24 ชั่วโมง
-          </p>
+          <div class="accordion-collapse" x-show="openFaq === 1" x-cloak>
+            <div class="accordion-body text-secondary">เมื่อโอนเงินแล้ว ให้แนบไฟล์สลิปผ่านหน้าชำระเงิน ระบบจะตรวจสอบยอดเงินและเวลาโอนอัตโนมัติภายใน 5-15 นาที</div>
+          </div>
         </div>
-      </div>
-
-      <!-- Email Support -->
-      <div class="rounded-3xl bg-white p-6 border border-stone-200/90 shadow-xs space-y-3 text-center hover:border-stone-400 transition-all">
-        <div class="w-12 h-12 rounded-2xl bg-stone-100 text-stone-700 mx-auto flex items-center justify-center">
-          <i data-lucide="mail" class="w-6 h-6 text-stone-700"></i>
-        </div>
-        <div>
-          <h3 class="font-serif font-bold text-sm text-[#1f2925]">
-            อีเมลประสานงานและบริการนักท่องเที่ยว
+        <div class="accordion-item" x-show="matches('booking', 'หากต้องการเลื่อนวันเข้าพักต้องทำอย่างไร?')">
+          <h3 class="accordion-header">
+            <button class="accordion-button gap-2" :class="openFaq === 2 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 2 ? null : 2">
+              <span class="wt-num">2</span>หากต้องการเลื่อนวันเข้าพักต้องทำอย่างไร?
+            </button>
           </h3>
-          <a href="mailto:support@welltripthailand.com" class="text-sm font-bold text-stone-800 font-mono hover:underline block mt-1 truncate">
-            support@welltripthailand.com
-          </a>
-          <p class="text-[11px] text-stone-400 mt-1">
-            ส่งข้อเสนอแนะและแจ้งปัญหาขัดข้อง (ตอบกลับใน 1 วันทำการ)
-          </p>
+          <div class="accordion-collapse" x-show="openFaq === 2" x-cloak>
+            <div class="accordion-body text-secondary">ติดต่อเจ้าของที่พักโดยตรงผ่านเบอร์โทรที่แสดงในหน้าการจองของฉัน ล่วงหน้าอย่างน้อย 3 วันก่อนวันเข้าพัก</div>
+          </div>
+        </div>
+        <div class="accordion-item" x-show="matches('otop', 'สินค้า OTOP จัดส่งอย่างไร?')">
+          <h3 class="accordion-header">
+            <button class="accordion-button gap-2" :class="openFaq === 3 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 3 ? null : 3">
+              <span class="wt-num">3</span>สินค้า OTOP จัดส่งอย่างไร?
+            </button>
+          </h3>
+          <div class="accordion-collapse" x-show="openFaq === 3" x-cloak>
+            <div class="accordion-body text-secondary">ผู้ผลิตชุมชนจะจัดส่งพัสดุตรงจากชุมชนศรีสะเกษ ภายใน 1-2 วันทำการหลังยืนยันคำสั่งซื้อ</div>
+          </div>
+        </div>
+        <div class="accordion-item" x-show="matches('booking', 'นโยบายการยกเลิกการจองและรับเงินคืนเป็นอย่างไร?')">
+          <h3 class="accordion-header">
+            <button class="accordion-button gap-2" :class="openFaq === 4 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 4 ? null : 4">
+              <span class="wt-num">4</span>นโยบายการยกเลิกการจองและรับเงินคืนเป็นอย่างไร?
+            </button>
+          </h3>
+          <div class="accordion-collapse" x-show="openFaq === 4" x-cloak>
+            <div class="accordion-body text-secondary">ยกเลิกและขอรับเงินคืนเต็มจำนวนได้ หากยกเลิกก่อนวันเข้าพักอย่างน้อย 7 วัน โดยติดต่อทีมงานทางโทรศัพท์ 045-962-455 หรืออีเมล support@welltripthailand.com</div>
+          </div>
+        </div>
+        <div class="accordion-item" x-show="matches('payment', 'หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?')">
+          <h3 class="accordion-header">
+            <button class="accordion-button gap-2" :class="openFaq === 5 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 5 ? null : 5">
+              <span class="wt-num">5</span>หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?
+            </button>
+          </h3>
+          <div class="accordion-collapse" x-show="openFaq === 5" x-cloak>
+            <div class="accordion-body text-secondary">หากสลิปถูกปฏิเสธ (เช่น ภาพไม่ชัด หรือยอดเงินไม่ตรง) สามารถแนบสลิปใบใหม่ได้ที่หน้ารายละเอียดการจองของฉัน</div>
+          </div>
+        </div>
+        <div class="accordion-item" x-show="matches('otop', 'สั่งสินค้า OTOP พร้อมกับจองที่พักในครั้งเดียวได้ไหม?')">
+          <h3 class="accordion-header">
+            <button class="accordion-button gap-2" :class="openFaq === 6 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 6 ? null : 6">
+              <span class="wt-num">6</span>สั่งสินค้า OTOP พร้อมกับจองที่พักในครั้งเดียวได้ไหม?
+            </button>
+          </h3>
+          <div class="accordion-collapse" x-show="openFaq === 6" x-cloak>
+            <div class="accordion-body text-secondary">ได้ ตะกร้าของ WellTrip รวมที่พัก สปา อาหาร และสินค้า OTOP จากหลายร้านไว้ในการชำระเงินครั้งเดียวได้</div>
+          </div>
         </div>
       </div>
-
-    </div>
-
-    <!-- Office Address Card -->
-    <div class="mt-4 rounded-3xl border border-stone-200/90 bg-white p-6 shadow-xs flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-      <div class="w-12 h-12 rounded-2xl bg-[#1f2925] text-white flex items-center justify-center shrink-0">
-        <i data-lucide="map-pin" class="w-6 h-6 text-[#c49a45]"></i>
-      </div>
-      <div class="space-y-1">
-        <div class="text-xs font-bold text-[#1f2925]">ศูนย์ปฏิบัติการและวิจัยการท่องเที่ยวเชิงสุขภาวะ (WellTrip)</div>
-        <div class="text-xs text-stone-600">
-          คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏศรีสะเกษ เลขที่ 319 ถนนไทยพันทา ต.โพธิ์ อ.เมือง จ.ศรีสะเกษ 33000
-        </div>
-        <div class="text-[11px] text-stone-400">
-          วันและเวลาทำการ: วันจันทร์ – วันศุกร์ เวลา 08:30 – 16:30 น.
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================================================================== -->
-  <!-- 3. FREQUENTLY ASKED QUESTIONS (FAQS จากต้นฉบับ)                                 -->
-  <!-- ============================================================================== -->
-  <section class="mx-auto max-w-4xl px-3 sm:px-6 space-y-6">
-    <div class="text-center space-y-1">
-      <h2 class="text-xl font-bold text-[#1f2925] font-serif">
-        คำถามที่พบบ่อย (FAQ)
-      </h2>
-      <p class="text-xs text-stone-500">
-        รวมข้อสงสัยเกี่ยวกับการจองที่พัก การชำระเงิน และสินค้าชุมชน
-      </p>
-    </div>
-
-    <!-- Category Filters -->
-    <div class="flex items-center justify-center gap-2 overflow-x-auto pb-2">
-      <button
-        type="button"
-        @click="activeCategory = 'all'"
-        :class="activeCategory === 'all' ? 'bg-[#1f2925] text-white border-[#1f2925]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'"
-        class="px-4 py-2 rounded-full text-xs font-semibold transition border shrink-0 inline-flex items-center gap-1.5"
-      >
-        <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
-        <span>ทั้งหมด</span>
-      </button>
-
-      <button
-        type="button"
-        @click="activeCategory = 'booking'"
-        :class="activeCategory === 'booking' ? 'bg-[#1f2925] text-white border-[#1f2925]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'"
-        class="px-4 py-2 rounded-full text-xs font-semibold transition border shrink-0 inline-flex items-center gap-1.5"
-      >
-        <i data-lucide="hotel" class="w-3.5 h-3.5"></i>
-        <span>การจอง & ที่พัก</span>
-      </button>
-
-      <button
-        type="button"
-        @click="activeCategory = 'payment'"
-        :class="activeCategory === 'payment' ? 'bg-[#1f2925] text-white border-[#1f2925]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'"
-        class="px-4 py-2 rounded-full text-xs font-semibold transition border shrink-0 inline-flex items-center gap-1.5"
-      >
-        <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
-        <span>การชำระเงิน & สลิป</span>
-      </button>
-
-      <button
-        type="button"
-        @click="activeCategory = 'otop'"
-        :class="activeCategory === 'otop' ? 'bg-[#1f2925] text-white border-[#1f2925]' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'"
-        class="px-4 py-2 rounded-full text-xs font-semibold transition border shrink-0 inline-flex items-center gap-1.5"
-      >
-        <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
-        <span>สินค้า OTOP & จัดส่ง</span>
-      </button>
-    </div>
-
-    <!-- FAQ Accordion List -->
-    <div class="space-y-3">
-      
-      <!-- FAQ 1: payment -->
-      <div
-        x-show="(activeCategory === 'all' || activeCategory === 'payment') && (searchQuery === '' || 'วิธีการแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
-        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
-      >
-        <button
-          type="button"
-          @click="openFaq = (openFaq === 'faq-1' ? null : 'faq-1')"
-          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
-        >
-          <span class="flex items-center gap-2">
-            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
-            <span>วิธีการแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?</span>
-          </span>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-1' ? 'rotate-180 text-[#1f2925]' : ''"></i>
-        </button>
-        <div x-show="openFaq === 'faq-1'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
-          เมื่อโอนเงินผ่าน PromptPay แล้ว สามารถกดแนบไฟล์สลิปรูปภาพผ่านหน้าชำระเงิน ระบบจะตรวจสอบความถูกต้องของยอดเงินและเวลาอัตโนมัติภายใน 5-15 นาที
-        </div>
-      </div>
-
-      <!-- FAQ 2: booking -->
-      <div
-        x-show="(activeCategory === 'all' || activeCategory === 'booking') && (searchQuery === '' || 'หากต้องการเลื่อนวันเข้าพักโฮมสเตย์ต้องทำอย่างไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
-        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
-      >
-        <button
-          type="button"
-          @click="openFaq = (openFaq === 'faq-2' ? null : 'faq-2')"
-          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
-        >
-          <span class="flex items-center gap-2">
-            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
-            <span>หากต้องการเลื่อนวันเข้าพักโฮมสเตย์ต้องทำอย่างไร?</span>
-          </span>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-2' ? 'rotate-180 text-[#1f2925]' : ''"></i>
-        </button>
-        <div x-show="openFaq === 'faq-2'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
-          ท่านสามารถติดต่อโฮมสเตย์โดยตรงผ่านเบอร์โทรศัพท์ที่แสดงในใบยืนยันการจอง (My Bookings) ล่วงหน้าอย่างน้อย 3 วันก่อนวันเข้าพัก
-        </div>
-      </div>
-
-      <!-- FAQ 3: otop -->
-      <div
-        x-show="(activeCategory === 'all' || activeCategory === 'otop') && (searchQuery === '' || 'สินค้า OTOP จัดส่งตรงจากชุมชนอย่างไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
-        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
-      >
-        <button
-          type="button"
-          @click="openFaq = (openFaq === 'faq-3' ? null : 'faq-3')"
-          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
-        >
-          <span class="flex items-center gap-2">
-            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
-            <span>สินค้า OTOP จัดส่งตรงจากชุมชนอย่างไร?</span>
-          </span>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-3' ? 'rotate-180 text-[#1f2925]' : ''"></i>
-        </button>
-        <div x-show="openFaq === 'faq-3'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
-          กลุ่มวิสาหกิจชุมชนผู้ผลิตสินค้า OTOP จะจัดส่งพัสดุตรงจากหมู่บ้านชุมชนศรีสะเกษ ภายใน 1-2 วันทำการหลังได้รับการยืนยันคำสั่งซื้อ
-        </div>
-      </div>
-
-      <!-- FAQ 4: booking -->
-      <div
-        x-show="(activeCategory === 'all' || activeCategory === 'booking') && (searchQuery === '' || 'นโยบายการยกเลิกการจองโฮมสเตย์และรับเงินคืนเป็นอย่างไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
-        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
-      >
-        <button
-          type="button"
-          @click="openFaq = (openFaq === 'faq-4' ? null : 'faq-4')"
-          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
-        >
-          <span class="flex items-center gap-2">
-            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
-            <span>นโยบายการยกเลิกการจองโฮมสเตย์และรับเงินคืนเป็นอย่างไร?</span>
-          </span>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-4' ? 'rotate-180 text-[#1f2925]' : ''"></i>
-        </button>
-        <div x-show="openFaq === 'faq-4'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
-          ท่านสามารถยกเลิกการจองและขอรับเงินคืนเต็มจำนวนได้ หากทำการยกเลิกก่อนวันเข้าพักอย่างน้อย 7 วัน โดยติดต่อทีมงานทางสายด่วน 045-962-455 หรืออีเมล support@welltripthailand.com
-        </div>
-      </div>
-
-      <!-- FAQ 5: payment -->
-      <div
-        x-show="(activeCategory === 'all' || activeCategory === 'payment') && (searchQuery === '' || 'หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?'.toLowerCase().includes(searchQuery.toLowerCase()))"
-        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
-      >
-        <button
-          type="button"
-          @click="openFaq = (openFaq === 'faq-5' ? null : 'faq-5')"
-          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
-        >
-          <span class="flex items-center gap-2">
-            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
-            <span>หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?</span>
-          </span>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-5' ? 'rotate-180 text-[#1f2925]' : ''"></i>
-        </button>
-        <div x-show="openFaq === 'faq-5'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
-          หากสลิปถูกปฏิเสธ (เช่น ภาพถ่ายไม่ชัดเจน หรือยอดเงินไม่ตรง) ท่านสามารถกดปุ่ม "แนบสลิปโอนเงิน" เพื่ออัปโหลดสลิปใบใหม่อีกครั้งได้ที่หน้ารายละเอียดการจองของฉัน
-        </div>
-      </div>
-
-      <!-- FAQ 6: otop -->
-      <div
-        x-show="(activeCategory === 'all' || activeCategory === 'otop') && (searchQuery === '' || 'สามารถสั่งซื้อสินค้า OTOP ร่วมกับจองที่พักในครั้งเดียวได้หรือไม่?'.toLowerCase().includes(searchQuery.toLowerCase()))"
-        class="rounded-2xl bg-white border border-stone-200/90 shadow-2xs overflow-hidden"
-      >
-        <button
-          type="button"
-          @click="openFaq = (openFaq === 'faq-6' ? null : 'faq-6')"
-          class="w-full p-4 sm:p-5 text-left font-serif text-sm font-bold text-[#1f2925] flex items-center justify-between gap-4 hover:bg-stone-50/50 transition-colors"
-        >
-          <span class="flex items-center gap-2">
-            <i data-lucide="help-circle" class="w-4 h-4 text-[#d97706] shrink-0"></i>
-            <span>สามารถสั่งซื้อสินค้า OTOP ร่วมกับจองที่พักในครั้งเดียวได้หรือไม่?</span>
-          </span>
-          <i data-lucide="chevron-down" class="w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200" :class="openFaq === 'faq-6' ? 'rotate-180 text-[#1f2925]' : ''"></i>
-        </button>
-        <div x-show="openFaq === 'faq-6'" class="px-5 pb-5 text-xs text-stone-600 leading-relaxed border-t border-stone-100 pt-3 bg-[#faf9f6]/50">
-          ได้ครับ ตะกร้าสินค้าของ WellTrip รองรับระบบ Multi-Vendor Bundle สามารถรวมรายการโฮมสเตย์ สปานวด และสินค้า OTOP เพื่อชำระเงินในครั้งเดียวได้เลย
-        </div>
-      </div>
-
     </div>
   </section>
-
 </div>
 {% endblock %}

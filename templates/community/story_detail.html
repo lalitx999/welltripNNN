@@ -4,83 +4,36 @@
 {% block title %}{{ story.title }} - เรื่องเล่าชุมชน WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-  
-  <!-- Breadcrumbs -->
-  <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium">
-    <a href="{% url 'core:home' %}" class="hover:text-[#1f2925] transition-colors">หน้าแรก</a>
-    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-    <a href="{% url 'community:stories_list' %}" class="hover:text-[#1f2925] transition-colors">เรื่องเล่าชุมชน</a>
-    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-    <span class="text-[#c49a45] font-bold truncate max-w-xs">{{ story.title }}</span>
+<article class="container-xl py-4 py-md-5" style="max-width: 50rem;">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{% url 'community:stories_list' %}" class="text-green">เรื่องเล่าชุมชน</a></li>
+      <li class="breadcrumb-item active text-truncate" aria-current="page" style="max-width: 18rem;">{{ story.title }}</li>
+    </ol>
   </nav>
 
-  <!-- Header & Title -->
-  <header class="space-y-4 border-b border-slate-200 pb-6">
-    <div class="flex items-center gap-2">
-      <span class="px-3 py-1 rounded-full bg-[#1f2925] text-[#c49a45] text-xs font-bold">
-        {{ story.get_kind_display }}
-      </span>
-      {% if story.location %}
-        <span class="text-xs text-slate-500 flex items-center gap-1">
-          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-          <span>{{ story.location }}</span>
-        </span>
-      {% endif %}
-    </div>
-
-    <h1 class="font-serif text-3xl sm:text-5xl font-bold text-[#1f2925] tracking-tight leading-tight">
-      {{ story.title }}
-    </h1>
-
-    {% if story.title_en %}
-      <p class="text-base text-slate-500 font-serif italic">
-        {{ story.title_en }}
-      </p>
-    {% endif %}
-
-    <div class="text-xs text-slate-400 pt-2 flex items-center gap-2">
-      <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
-      <span>เผยแพร่เมื่อ: {{ story.updated_at|date:"d F Y" }}</span>
-    </div>
-  </header>
-
-  <!-- Cover Image -->
-  <div class="w-full h-72 sm:h-96 rounded-3xl overflow-hidden shadow-md bg-slate-100">
-    {% if story.image_url %}
-      <img src="{{ story.image_url }}" alt="{{ story.image_alt|default:story.title }}" class="w-full h-full object-cover">
-    {% else %}
-      <img src="{% static 'images/sisaket-nature-concept.webp' %}" alt="{{ story.title }}" class="w-full h-full object-cover">
-    {% endif %}
+  <div class="d-flex flex-wrap gap-2 mb-2">
+    <span class="badge badge-green">{{ story.get_kind_display }}</span>
+    {% if story.location %}<span class="badge bg-light text-secondary border"><i data-lucide="map-pin" class="me-1"></i>{{ story.location }}</span>{% endif %}
   </div>
+  <h1 class="fw-bold mb-1">{{ story.title }}</h1>
+  {% if story.title_en %}<p class="text-secondary fst-italic mb-2">{{ story.title_en }}</p>{% endif %}
+  <div class="small text-secondary mb-4"><i data-lucide="calendar" class="me-1"></i>เผยแพร่เมื่อ {{ story.updated_at|date:"d F Y" }}</div>
 
-  <!-- Article Content -->
-  <div class="bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-slate-200/90 text-slate-700 leading-relaxed font-light space-y-4">
-    {% if story.summary %}
-      <p class="text-base sm:text-lg font-medium text-[#1f2925] border-l-4 border-[#c49a45] pl-4 my-4 italic">
-        {{ story.summary }}
-      </p>
-    {% endif %}
-
-    <div class="prose max-w-none text-slate-700 leading-relaxed text-sm sm:text-base">
-      {{ story.body|safe }}
+  {% if story.image_url %}
+    <div class="ratio ratio-16x9 rounded-4 overflow-hidden mb-4">
+      <img src="{{ story.image_url }}" alt="{{ story.image_alt|default:story.title }}" class="object-fit-cover">
     </div>
-  </div>
+  {% endif %}
 
-  <!-- Back Link -->
-  <div class="text-center pt-4">
-    <a 
-      href="{% url 'community:stories_list' %}" 
-      class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-sm"
-    >
-      <i data-lucide="arrow-left" class="w-4 h-4"></i>
-      <span>กลับไปยังเรื่องเล่าชุมชนทั้งหมด</span>
-    </a>
-  </div>
+  {% if story.summary %}
+    <p class="lead border-start border-4 border-success ps-3 mb-4">{{ story.summary }}</p>
+  {% endif %}
+  <div class="fs-6 lh-lg">{{ story.body|linebreaks }}</div>
 
+  <a href="{% url 'community:stories_list' %}" class="btn btn-outline-ink rounded-pill mt-4"><i data-lucide="arrow-left" class="me-1"></i>เรื่องเล่าทั้งหมด</a>
 </article>
 
-<!-- Schema.org Structured Data for Heritage Story Article -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

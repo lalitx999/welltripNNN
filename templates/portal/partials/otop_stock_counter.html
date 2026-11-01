@@ -1,27 +1,5 @@
-<div id="stock-counter-{{ product.id }}" class="inline-flex items-center space-x-1.5 bg-stone-50 border border-stone-200/90 rounded-2xl px-2 py-1 shadow-inner">
-  <!-- Decrement Button -->
-  <button hx-post="{% url 'otop:stock_update' product.id %}"
-          hx-vals='{"delta": -1}'
-          hx-target="#stock-counter-{{ product.id }}"
-          hx-swap="outerHTML"
-          {% if product.stock_quantity == 0 %}disabled{% endif %}
-          title="ลดจำนวนสต็อก"
-          class="w-7 h-7 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 hover:text-stone-900 flex items-center justify-center font-bold text-xs disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-xs active:scale-95">
-    -
-  </button>
-
-  <!-- Stock Quantity Counter with Animation -->
-  <span class="w-12 text-center font-bold text-xs {% if product.stock_quantity == 0 %}text-rose-600{% else %}text-forest{% endif %}">
-    {{ product.stock_quantity }}
-  </span>
-
-  <!-- Increment Button -->
-  <button hx-post="{% url 'otop:stock_update' product.id %}"
-          hx-vals='{"delta": 1}'
-          hx-target="#stock-counter-{{ product.id }}"
-          hx-swap="outerHTML"
-          title="เพิ่มจำนวนสต็อก"
-          class="w-7 h-7 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 hover:text-stone-900 flex items-center justify-center font-bold text-xs transition-all shadow-xs active:scale-95">
-    +
-  </button>
+<div id="stock-counter-{{ product.id }}" class="btn-group btn-group-sm" role="group" aria-label="ปรับสต็อก {{ product.name }}">
+  <button type="button" class="btn btn-outline-ink" hx-post="{% url 'otop:stock_update' product.id %}" hx-vals='{"delta": -1}' hx-target="#stock-counter-{{ product.id }}" hx-swap="outerHTML" {% if product.stock_quantity == 0 %}disabled{% endif %} aria-label="ลดสต็อก">−</button>
+  <span class="btn btn-outline-ink disabled fw-bold {% if product.stock_quantity == 0 %}text-danger{% endif %}" style="min-width: 3rem;">{{ product.stock_quantity }}</span>
+  <button type="button" class="btn btn-outline-ink" hx-post="{% url 'otop:stock_update' product.id %}" hx-vals='{"delta": 1}' hx-target="#stock-counter-{{ product.id }}" hx-swap="outerHTML" aria-label="เพิ่มสต็อก">+</button>
 </div>

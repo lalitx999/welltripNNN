@@ -1,0 +1,79 @@
+{% load static %}
+  <!-- High-Authority E-E-A-T Schema.org Organization & WebSite JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://welltrip-sisaket.com/#organization",
+        "name": "WellTrip Sisaket",
+        "alternateName": ["เวลทริป ศรีสะเกษ", "Slow Days Sisaket"],
+        "legalName": "โครงการขับเคลื่อนการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญา 4 ชนเผ่า มหาวิทยาลัยราชภัฏศรีสะเกษ",
+        "url": "https://welltrip-sisaket.com/",
+        "logo": "https://welltrip-sisaket.com{% static 'images/logoWelltrip.jpg' %}",
+        "description": "แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟศรีสะเกษ",
+        "foundingDate": "2024",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "319 ถนนไทยพันทา ตำบลโพธิ์",
+          "addressLocality": "เมืองศรีสะเกษ",
+          "addressRegion": "ศรีสะเกษ",
+          "postalCode": "33000",
+          "addressCountry": "TH"
+        },
+        "founder": {
+          "@type": "EducationalOrganization",
+          "name": "มหาวิทยาลัยราชภัฏศรีสะเกษ (Sisaket Rajabhat University)"
+        },
+        "sponsor": [
+          {
+            "@type": "GovernmentOrganization",
+            "name": "สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) - NIA",
+            "url": "https://www.nia.or.th/"
+          },
+          {
+            "@type": "Organization",
+            "name": "อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)",
+            "url": "https://step.ubu.ac.th/"
+          },
+          {
+            "@type": "GovernmentOrganization",
+            "name": "หน่วยบริหารและจัดการทุนด้านการพัฒนาระดับพื้นที่ (บพท.)"
+          },
+          {
+            "@type": "GovernmentOrganization",
+            "name": "กระทรวงการอุดมศึกษา วิทยาศาสตร์ วิจัยและนวัตกรรม (อว.)"
+          }
+        ],
+        "knowsAbout": [
+          "Wellness Tourism",
+          "Community Based Tourism",
+          "Slow Days Travel",
+          "4 Ethnic Tribes Sisaket (Kuy, Lao, Khmer, Yoe)",
+          "Volcanic Soil Ecology",
+          "GI Geographical Indications Products"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://welltrip-sisaket.com/#website",
+        "url": "https://welltrip-sisaket.com/",
+        "name": "WellTrip Sisaket",
+        "description": "Slow Days Sisaket - นวัตกรรมการท่องเที่ยวเชิงสุขภาวะและมรดกวัฒนธรรม",
+        "inLanguage": "th",
+        "publisher": {
+          "@id": "https://welltrip-sisaket.com/#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://welltrip-sisaket.com/accommodations/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }
+  </script>

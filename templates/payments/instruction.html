@@ -1,303 +1,97 @@
 {% extends "layouts/public.html" %}
-{% load static %}
 
-{% block title %}คำแนะนำการชำระเงิน {{ booking.booking_code }} - WellTrip Sisaket{% endblock %}
+{% block title %}ชำระเงิน {{ booking.booking_code }} - WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6"
-     x-data="{
-       timeLeft: {{ remaining_seconds }},
-       timer: null,
-       isExpired: {% if remaining_seconds <= 0 %}true{% else %}false{% endif %},
-       get minutes() { return Math.max(0, Math.floor(this.timeLeft / 60)) },
-       get seconds() { return Math.max(0, this.timeLeft % 60).toString().padStart(2, '0') },
-       init() {
-         {% if booking.status == 'AWAITING_PAYMENT' %}
-           if (this.timeLeft <= 0) {
-             this.isExpired = true;
-             return;
-           }
-           this.timer = setInterval(() => {
-             if (this.timeLeft > 0) {
-               this.timeLeft--;
-             } else {
-               this.isExpired = true;
-               clearInterval(this.timer);
-             }
-           }, 1000);
-         {% endif %}
-       }
-     }">
-  
-  <!-- 3-Step Checkout Stepper Header -->
-  <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-xs">
-    <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-      <!-- Step 1 (Completed) -->
-      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
-          <i data-lucide="check" class="w-4 h-4"></i>
-        </div>
-        <div class="min-w-0">
-          <div class="text-[10px] sm:text-xs font-semibold text-emerald-700 uppercase tracking-wider">ขั้นตอนที่ 1</div>
-          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ตะกร้า & ที่อยู่</div>
-        </div>
-      </div>
-
-      <!-- Step 2 (Completed) -->
-      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
-          <i data-lucide="check" class="w-4 h-4"></i>
-        </div>
-        <div class="min-w-0">
-          <div class="text-[10px] sm:text-xs font-semibold text-emerald-700 uppercase tracking-wider">ขั้นตอนที่ 2</div>
-          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ทวนรายละเอียด</div>
-        </div>
-      </div>
-
-      <!-- Step 3 (Active) -->
-      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-xs">
-          3
-        </div>
-        <div class="min-w-0">
-          <div class="text-[10px] sm:text-xs font-bold text-[#c49a45] uppercase tracking-wider">ขั้นตอนที่ 3</div>
-          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ยืนยัน & ชำระเงิน</div>
-        </div>
-      </div>
-    </div>
+<section class="wt-page-head pb-3">
+  <div class="container-xl" style="max-width: 56rem;">
+    {% include "bookings/partials/checkout_steps.html" with step=3 %}
+    <h1 class="mb-1">ชำระเงิน <span class="font-monospace">{{ booking.booking_code }}</span></h1>
+    <p class="text-secondary mb-0">โอนเงินตามยอดด้านล่าง แล้วแนบสลิปเพื่อยืนยันการจอง</p>
   </div>
+</section>
 
-  <!-- Header -->
-  <div class="space-y-1.5 text-center sm:text-left">
-    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
-      <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-      <span>STEP 3 / 3: PROMPTPAY QR PAYMENT</span>
-    </div>
-    <h1 class="font-serif text-2xl sm:text-3xl font-bold text-[#1f2925]">
-      ชำระเงินสำหรับการจอง {{ booking.booking_code }}
-    </h1>
-    <p class="text-xs text-slate-500">
-      สแกนโอนเงินเข้าบัญชีทางการของวิสาหกิจชุมชนศรีสะเกษ และแนบหลักฐานสลิปด้านล่าง
-    </p>
-  </div>
-
-  <!-- Shipping / Order Note Preview (If available) -->
-  {% if booking.customer_notes %}
-    <div class="p-4 rounded-2xl bg-[#faf9f6] border border-slate-200 text-xs space-y-1">
-      <div class="font-bold text-[#1f2925] flex items-center gap-1.5">
-        <i data-lucide="truck" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-        <span>ข้อมูลการจัดส่งและข้อความถึงชุมชน:</span>
-      </div>
-      <p class="text-slate-600 whitespace-pre-line leading-relaxed">{{ booking.customer_notes }}</p>
-    </div>
-  {% endif %}
-
-  <!-- 15-Minute Countdown Alert -->
+<div class="container-xl pb-5 d-grid gap-4" style="max-width: 56rem;">
   {% if booking.status == 'AWAITING_PAYMENT' %}
-    <div class="space-y-3">
-      <!-- Active Timer State -->
-      <div x-show="!isExpired" class="p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-200 flex items-center justify-between shadow-xs">
-        <div class="flex items-center gap-2.5 text-xs font-bold text-amber-900">
-          <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-          <i data-lucide="clock" class="w-4 h-4 text-amber-600 shrink-0"></i>
-          <span>เวลาที่เหลือในการชำระเงิน</span>
-        </div>
-        <div class="font-mono text-base font-bold text-amber-900 bg-white px-4 py-1.5 rounded-xl border border-amber-200 shadow-xs">
-          <span x-text="minutes">0</span>:<span x-text="seconds">00</span> นาที
-        </div>
-      </div>
-
-      <!-- Expired State (No infinite reload) -->
-      <div x-show="isExpired" style="display: none;" class="p-4 sm:p-5 rounded-2xl bg-rose-50 border border-rose-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
-        <div class="flex items-center gap-2.5 text-xs font-bold text-rose-800">
-          <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
-          <span>คำสั่งซื้อนี้หมดเวลาชำระเงินแล้ว ระบบได้ทำการปลดล็อกสต็อกคืนชุมชน</span>
-        </div>
-        <a href="{% url 'bookings:my_bookings' %}" class="px-3.5 py-1.5 rounded-xl bg-white border border-rose-300 text-rose-700 text-xs font-semibold hover:bg-rose-100 transition shrink-0">
-          ดูรายการจองของฉัน
-        </a>
-      </div>
-    </div>
+    {% include "bookings/partials/payment_timer.html" %}
   {% endif %}
 
-  <!-- Bank Account Details & PromptPay Card -->
-  <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-6">
-    <h2 class="text-sm font-bold text-[#1f2925] border-b border-slate-100 pb-3 flex items-center gap-2">
-      <i data-lucide="landmark" class="w-4 h-4 text-[#c49a45]"></i>
-      <span>ข้อมูลบัญชีรับโอนเงินของวิสาหกิจชุมชน</span>
-    </h2>
+  {% if booking.customer_notes %}
+    <div class="wt-card p-3 small"><span class="fw-semibold"><i data-lucide="message-square" class="text-green me-1"></i>ข้อความของคุณ:</span> {{ booking.customer_notes }}</div>
+  {% endif %}
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-      <!-- Bank details -->
-      <div class="space-y-3.5">
-        <div>
-          <span class="text-[11px] text-slate-400 block font-medium">ธนาคาร</span>
-          <span class="text-sm font-bold text-[#1f2925]">{{ payment.payee_bank_name|default:"ธนาคารกสิกรไทย (Kasikornbank)" }}</span>
-        </div>
-        <div>
-          <span class="text-[11px] text-slate-400 block font-medium">ชื่อบัญชี</span>
-          <span class="text-sm font-semibold text-slate-700">{{ payment.payee_account_name|default:"นาย พรหมลิขิต อุรา" }}</span>
-        </div>
-        <div>
-          <span class="text-[11px] text-slate-400 block font-medium">เลขที่บัญชี</span>
-          <div class="flex items-center gap-2 mt-1" x-data="{ copied: false }">
-            <span class="text-base sm:text-lg font-mono font-bold text-[#1f2925] bg-slate-50 px-3 py-1 rounded-xl border border-slate-200">
-              {{ payment.payee_account_number|default:"001-1-50448-5" }}
-            </span>
-            <button 
-              type="button" 
-              @click="navigator.clipboard.writeText('{{ payment.payee_account_number|default:"001-1-50448-5" }}'); copied = true; setTimeout(() => copied = false, 2000)"
-              class="px-3 py-1 text-xs rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold cursor-pointer transition"
-            >
-              <span x-show="!copied">คัดลอก</span>
-              <span x-show="copied" style="display: none;" class="text-emerald-600 font-bold">คัดลอกแล้ว!</span>
-            </button>
-          </div>
-        </div>
-        <div class="pt-2">
-          <span class="text-[11px] text-slate-400 block font-medium">ยอดที่ต้องชำระ (กรุณาโอนตรงตามยอด)</span>
-          <span class="text-3xl font-serif font-bold text-[#c49a45]">฿{{ payment.amount|default:booking.total_amount|floatformat:0 }}</span>
+  <div class="wt-card p-4">
+    <h2 class="h6 fw-bold mb-3"><i data-lucide="landmark" class="text-green me-1"></i>บัญชีสำหรับโอนเงิน</h2>
+    <div class="row g-3 align-items-center">
+      <div class="col-md-7 d-grid gap-2">
+        <div><small class="text-secondary d-block">ธนาคาร</small><span class="fw-semibold">{{ payment.payee_bank_name }}</span></div>
+        <div><small class="text-secondary d-block">ชื่อบัญชี</small><span class="fw-semibold">{{ payment.payee_account_name }}</span></div>
+        <div x-data="{ copied: false }">
+          <small class="text-secondary d-block">เลขที่บัญชี</small>
+          <span class="fs-4 fw-bold font-monospace me-2">{{ payment.payee_account_number }}</span>
+          <button type="button" class="btn btn-outline-ink btn-sm rounded-pill" @click="navigator.clipboard.writeText('{{ payment.payee_account_number|escapejs }}'); copied = true; setTimeout(() => copied = false, 2000)">
+            <i data-lucide="copy" class="me-1"></i><span x-text="copied ? 'คัดลอกแล้ว' : 'คัดลอก'">คัดลอก</span>
+          </button>
         </div>
       </div>
-
-      <!-- PromptPay Visual QR Card -->
-      <div class="p-6 rounded-3xl bg-gradient-to-br from-[#2b3832] to-[#1f2925] text-white text-center space-y-3 shadow-md border border-[#c49a45]/30">
-        <div class="w-12 h-12 rounded-2xl bg-[#c49a45]/20 text-[#c49a45] mx-auto flex items-center justify-center">
-          <i data-lucide="qr-code" class="w-6 h-6"></i>
+      <div class="col-md-5">
+        <div class="bg-mint rounded-4 p-4 text-center">
+          <small class="text-secondary d-block">ยอดที่ต้องโอน (โอนให้ตรงยอด)</small>
+          <span class="display-6 fw-bold text-green">฿{{ payment.amount|default:booking.total_amount|floatformat:"2g" }}</span>
         </div>
-        <div class="text-xs font-bold text-white tracking-wide">พร้อมเพย์ / PromptPay QR</div>
-        <div class="text-xs text-[#c49a45] font-mono tracking-wider font-semibold">001-1-50448-5</div>
-        <div class="w-32 h-32 bg-white p-2 rounded-2xl mx-auto shadow-sm flex items-center justify-center">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=00020101021129370016A0000006770101110113006600115044855802TH540{{ payment.amount|default:booking.total_amount|floatformat:0 }}53037646304" 
-               alt="PromptPay QR Code" 
-               class="w-full h-full object-contain"
-          >
-        </div>
-        <p class="text-[10px] text-slate-300 font-light">สามารถบันทึกภาพหน้าจอเพื่อสแกนผ่าน Mobile Banking ทุกธนาคาร</p>
       </div>
     </div>
   </div>
 
-  <!-- Slip Upload Card with Alpine Image Preview -->
-  <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-6"
-       x-data="{
-         previewUrl: null,
-         previewImage(event) {
-           const file = event.target.files[0];
-           if (file) {
-             this.previewUrl = URL.createObjectURL(file);
-           }
-         }
-       }">
-    <div class="border-b border-slate-100 pb-3">
-      <h2 class="text-sm font-bold text-[#1f2925] flex items-center gap-2">
-        <i data-lucide="upload-cloud" class="w-4 h-4 text-[#c49a45]"></i>
-        <span>แนบหลักฐานการโอนเงิน (สลิปธนาคาร)</span>
-      </h2>
-      <p class="text-xs text-slate-400 mt-0.5">รองรับไฟล์ JPG, PNG, WEBP ขนาดไม่เกิน 10MB (ระบบตรวจสอบค่าแฮชและล้างข้อมูล EXIF อัตโนมัติ)</p>
-    </div>
-
-    <form method="POST" action="{% url 'payments:payment_instruction' booking.id %}" enctype="multipart/form-data" class="space-y-4">
+  <div class="wt-card p-4" x-data="{ previewUrl: null, pick(e) { const f = e.target.files[0]; this.previewUrl = f ? URL.createObjectURL(f) : null; } }">
+    <h2 class="h6 fw-bold mb-1"><i data-lucide="upload-cloud" class="text-green me-1"></i>แนบสลิปการโอนเงิน</h2>
+    <p class="small text-secondary">ไฟล์ JPG, PNG หรือ WEBP ไม่เกิน 10MB เห็นยอดเงิน วันที่ และเวลาชัดเจน</p>
+    {% if form.errors %}
+      <div class="alert alert-danger rounded-4 small">{% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
+    {% endif %}
+    <form method="post" action="{% url 'payments:payment_instruction' booking.id %}" enctype="multipart/form-data" class="d-grid gap-3" x-data="{ expired: {% if booking.status == 'AWAITING_PAYMENT' and remaining_seconds <= 0 %}true{% else %}false{% endif %} }">
       {% csrf_token %}
-
-      <!-- Drag & Drop Zone -->
-      <div class="relative border-2 border-dashed border-slate-300 hover:border-[#1f2925] rounded-3xl p-6 text-center transition cursor-pointer bg-[#faf9f6]">
-        <input 
-          type="file" 
-          name="image" 
-          id="id_image" 
-          accept="image/jpeg,image/png,image/webp" 
-          required 
-          @change="previewImage"
-          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        >
-        
+      <label class="wt-dropzone p-4 text-center d-block" for="id_image">
+        <input type="file" name="image" id="id_image" accept="image/jpeg,image/png,image/webp" required class="visually-hidden" @change="pick">
         <template x-if="!previewUrl">
-          <div class="space-y-2 py-4">
-            <div class="w-12 h-12 rounded-2xl bg-white text-[#c49a45] shadow-xs mx-auto flex items-center justify-center">
-              <i data-lucide="image" class="w-6 h-6"></i>
-            </div>
-            <div class="text-xs font-bold text-[#1f2925]">
-              คลิกเพื่อเลือกไฟล์ หรือลากสลิปมาวางที่นี่
-            </div>
-            <p class="text-[11px] text-slate-400">ภาพสลิปที่เห็นยอดเงิน วันที่ และเวลาโอนอย่างชัดเจน</p>
-          </div>
+          <span class="d-block">
+            <span class="wt-icon-pill mb-2"><i data-lucide="image-plus"></i></span>
+            <span class="d-block fw-semibold">แตะเพื่อเลือกรูปสลิป</span>
+          </span>
         </template>
-
         <template x-if="previewUrl">
-          <div class="space-y-3 py-2">
-            <img :src="previewUrl" alt="ตัวอย่างสลิป" class="max-h-56 mx-auto rounded-2xl shadow-sm border border-slate-200">
-            <span class="text-xs text-emerald-600 font-semibold block">เลือกภาพเรียบร้อยแล้ว คลิกเพื่อเปลี่ยนภาพ</span>
-          </div>
+          <span class="d-block">
+            <img :src="previewUrl" alt="ตัวอย่างสลิป" class="img-fluid rounded-3 mb-2" style="max-height: 16rem;">
+            <span class="d-block small text-secondary">แตะเพื่อเปลี่ยนรูป</span>
+          </span>
         </template>
-      </div>
-
-      <!-- Optional provider reference -->
+      </label>
       <div>
-        <label for="id_provider_reference" class="block text-xs font-semibold text-slate-700 mb-1">
-          รหัสอ้างอิงธุรกรรม / Transaction Reference (ระบุถ้ามี)
-        </label>
-        <input 
-          type="text" 
-          name="provider_reference" 
-          id="id_provider_reference" 
-          placeholder="เช่น 20261027XXXXXX" 
-          class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-mono focus:ring-2 focus:ring-[#1f2925]"
-        >
+        <label for="id_provider_reference" class="form-label small fw-semibold">เลขอ้างอิงธุรกรรม (ถ้ามี)</label>
+        <input type="text" name="provider_reference" id="id_provider_reference" class="form-control" placeholder="เลขอ้างอิงที่อยู่บนสลิป">
       </div>
-
-      <button 
-        type="submit" 
-        :disabled="isExpired"
-        class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        <span x-show="!isExpired">ส่งหลักฐานการชำระเงิน</span>
-        <span x-show="isExpired" style="display: none;">หมดเวลาชำระเงินแล้ว (ไม่สามารถส่งสลิปได้)</span>
-        <i data-lucide="check-circle" class="w-4 h-4 text-[#c49a45]"></i>
-      </button>
+      <button type="submit" class="btn btn-gold btn-lg rounded-pill" :disabled="expired"><i data-lucide="send" class="me-1"></i>ส่งสลิป</button>
     </form>
 
-    <!-- Uploaded slips list -->
     {% if slips %}
-      <div class="pt-4 border-t border-slate-100 space-y-3">
-        <h3 class="text-xs font-bold text-[#1f2925]">ประวัติสลิปที่แนบไว้แล้ว ({{ slips.count }})</h3>
-        <div class="space-y-2">
-          {% for slip in slips %}
-            <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-              <div class="flex items-center gap-3">
-                {% if slip.image %}
-                  <img src="{{ slip.image.url }}" alt="Slip" class="w-12 h-12 object-cover rounded-xl border border-slate-200">
-                {% endif %}
-                <div>
-                  <div class="font-mono text-[11px] text-slate-700 font-semibold">
-                    {{ slip.provider_reference|default:slip.id|truncatechars:18 }}
-                  </div>
-                  <div class="text-[10px] text-slate-400">
-                    {{ slip.uploaded_at|date:"d/m/Y H:i" }}
-                  </div>
-                </div>
-              </div>
-              <div>
-                {% if slip.verification_status == 'VERIFIED' %}
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                    ตรวจสอบผ่านแล้ว
-                  </span>
-                {% elif slip.verification_status == 'REJECTED' %}
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">
-                    ปฏิเสธ / สลิปไม่ถูกต้อง
-                  </span>
-                {% else %}
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
-                    รอเจ้าหน้าที่ตรวจสอบ
-                  </span>
-                {% endif %}
+      <h3 class="h6 fw-bold mt-4 mb-2">สลิปที่ส่งแล้ว ({{ slips|length }})</h3>
+      <div class="list-group list-group-flush">
+        {% for slip in slips %}
+          <div class="list-group-item px-0 d-flex justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 min-w-0">
+              {% if slip.image %}<a href="{{ slip.image.url }}" target="_blank" rel="noopener"><img src="{{ slip.image.url }}" alt="สลิป" width="48" height="48" class="rounded-3 object-fit-cover border"></a>{% endif %}
+              <div class="min-w-0">
+                <div class="small fw-semibold text-truncate font-monospace">{{ slip.provider_reference|default:"ไม่ระบุเลขอ้างอิง" }}</div>
+                <small class="text-secondary">{{ slip.uploaded_at|date:"d/m/Y H:i" }}</small>
               </div>
             </div>
-          {% endfor %}
-        </div>
+            {% if slip.verification_status == 'VERIFIED' %}<span class="badge badge-green">ตรวจสอบผ่าน</span>
+            {% elif slip.verification_status == 'REJECTED' %}<span class="badge text-bg-danger">ไม่ผ่าน</span>
+            {% else %}<span class="badge badge-gold">รอตรวจสอบ</span>{% endif %}
+          </div>
+        {% endfor %}
       </div>
     {% endif %}
   </div>
-
 </div>
 {% endblock %}

@@ -11,6 +11,7 @@ from apps.accounts.permissions import can_view_object
 from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType, ShippingSetting
 from apps.community.models import Coupon
 from apps.bookings.services.checkout import process_checkout, StockUnavailableError
+from apps.bookings.services.pricing import cart_line_total, resolve_cart_item
 
 
 def get_cart(request):
@@ -24,24 +25,23 @@ def save_cart(request, cart):
     request.session.modified = True
 
 
+LEGACY_PLACEHOLDER_ADDRESS = "123 หมู่ 4 ต.เมืองใต้"
+
+
 def get_shipping_addresses(request):
     """Retrieves list of user shipping addresses from session (max 3)."""
+    # Start empty: never pre-fill an address the user did not enter
     addresses = request.session.get('shipping_addresses', None)
+    if addresses:
+        # Drop the placeholder address older versions injected into sessions
+        real = [a for a in addresses if a.get('address_line') != LEGACY_PLACEHOLDER_ADDRESS]
+        if len(real) != len(addresses):
+            addresses = real
+            request.session['shipping_addresses'] = addresses
+            request.session['selected_address_idx'] = 0
+            request.session.modified = True
     if addresses is None:
-        if request.user.is_authenticated:
-            # Prepopulate with user default info if available
-            default_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.email.split('@')[0]
-            addresses = [{
-                'recipient_name': default_name,
-                'phone_number': request.user.phone_number or "081-234-5678",
-                'address_line': "123 หมู่ 4 ต.เมืองใต้",
-                'district': "เมืองศรีสะเกษ",
-                'province': "ศรีสะเกษ",
-                'postal_code': "33000",
-                'label': "ที่อยู่หลัก (Default)",
-            }]
-        else:
-            addresses = []
+        addresses = []
         request.session['shipping_addresses'] = addresses
         request.session['selected_address_idx'] = 0
         request.session.modified = True
@@ -58,12 +58,17 @@ def get_selected_address(request):
     return addresses[0]
 
 
+def with_line_totals(cart):
+    """Copy of the session cart with each line's total, for display only."""
+    return [{**item, 'line_total': cart_line_total(item)} for item in cart]
+
+
 def calculate_cart_totals(request, cart):
     """
     Calculates subtotal, smart shipping fee (only for physical OTOP goods),
     and applies any validated discount voucher.
     """
-    subtotal = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+    subtotal = sum(cart_line_total(item) for item in cart)
 
     # Smart shipping: detect physical goods
     otop_items = [
@@ -71,7 +76,7 @@ def calculate_cart_totals(request, cart):
         if str(item.get('item_type')).upper() in ['OTOP', 'OTOP_PRODUCT', BookingItemType.OTOP]
     ]
     has_physical_items = len(otop_items) > 0
-    otop_subtotal = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in otop_items)
+    otop_subtotal = sum(cart_line_total(item) for item in otop_items)
 
     shipping_setting = ShippingSetting.get_settings()
     shipping_fee = Decimal("0.00")
@@ -152,7 +157,7 @@ def cart_view(request):
     ).order_by('min_purchase')[:4]
 
     return render(request, 'bookings/cart.html', {
-        'cart': cart,
+        'cart': with_line_totals(cart),
         'totals': totals,
         'total_amount': totals['final_total'],
         'subtotal': totals['subtotal'],
@@ -165,6 +170,7 @@ def cart_view(request):
         'selected_idx': selected_idx,
         'selected_address': get_selected_address(request),
         'can_add_address': len(shipping_addresses) < 3,
+        'has_physical_goods': any(str(i.get('item_type')).upper() == BookingItemType.OTOP for i in cart),
         'sisaket_districts': sisaket_districts,
     })
 
@@ -259,17 +265,27 @@ def cart_add_view(request):
     """Adds a multi-vendor item to session cart via standard form or HTMX."""
     cart = get_cart(request)
 
-    item_type = request.POST.get('item_type')
-    entity_id = request.POST.get('entity_id')
-    title = request.POST.get('title', 'สินค้า/บริการ')
-    price = request.POST.get('price', '0.00')
-    quantity = int(request.POST.get('quantity', 1))
-    item_date = request.POST.get('date', '') or request.POST.get('check_in', '')
+    item_type = (request.POST.get('item_type') or '').upper()
+    entity_id = request.POST.get('entity_id', '')
+    try:
+        quantity = max(1, int(request.POST.get('quantity', 1)))
+    except (TypeError, ValueError):
+        quantity = 1
 
-    # Check if duplicate item already in cart (for non-dated items)
+    # Title and price always come from the database, never from the posted form
+    resolved = resolve_cart_item(
+        item_type, entity_id,
+        check_in=request.POST.get('check_in') or request.POST.get('date', ''),
+        check_out=request.POST.get('check_out', ''),
+    )
+    if resolved.error:
+        messages.error(request, resolved.error)
+        return redirect(request.META.get('HTTP_REFERER') or 'bookings:cart')
+
     found = False
     for item in cart:
-        if item.get('entity_id') == entity_id and item.get('item_type') == item_type and item.get('date') == item_date:
+        if (item.get('entity_id') == entity_id and item.get('item_type') == item_type
+                and item.get('date') == resolved.date and item.get('nights', 1) == resolved.nights):
             item['quantity'] = int(item.get('quantity', 1)) + quantity
             found = True
             break
@@ -278,22 +294,15 @@ def cart_add_view(request):
         cart.append({
             'item_type': item_type,
             'entity_id': entity_id,
-            'title': title,
-            'price': str(price),
+            'title': resolved.title,
+            'price': str(resolved.unit_price),
             'quantity': quantity,
-            'date': item_date,
+            'date': resolved.date,
+            'nights': resolved.nights,
         })
 
     save_cart(request, cart)
-    messages.success(request, f"เพิ่ม '{title}' ลงตะกร้าเรียบร้อยแล้ว")
-
-    if request.headers.get('HX-Request'):
-        total_amount = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
-        return render(request, 'bookings/partials/cart_drawer.html', {
-            'cart': cart,
-            'total_amount': total_amount,
-        })
-
+    messages.success(request, f"เพิ่ม '{resolved.title}' ลงตะกร้าเรียบร้อยแล้ว")
     return redirect('bookings:cart')
 
 
@@ -327,7 +336,7 @@ def coupon_apply_view(request):
         code = (request.POST.get("coupon_code") or request.POST.get("code") or "").strip().upper()
 
     cart = get_cart(request)
-    subtotal = sum(Decimal(str(item.get('price', 0))) * int(item.get('quantity', 1)) for item in cart)
+    subtotal = sum(cart_line_total(item) for item in cart)
 
     is_ajax = (
         request.headers.get("X-Requested-With") == "XMLHttpRequest"
@@ -423,7 +432,7 @@ def review_view(request):
     shipping_address = get_selected_address(request)
 
     return render(request, 'bookings/review.html', {
-        'cart': cart,
+        'cart': with_line_totals(cart),
         'totals': totals,
         'total_amount': totals['final_total'],
         'subtotal': totals['subtotal'],
@@ -450,6 +459,11 @@ def checkout_view(request):
     shipping_address = get_selected_address(request)
 
     if request.method == "POST":
+        has_physical_goods = any(str(item.get('item_type')).upper() == BookingItemType.OTOP for item in cart)
+        if has_physical_goods and not shipping_address:
+            messages.error(request, "กรุณาเพิ่มที่อยู่จัดส่งสำหรับสินค้า OTOP ก่อนยืนยันคำสั่งซื้อ")
+            return redirect('bookings:cart')
+
         customer_notes = request.POST.get('customer_notes', '').strip()
         if shipping_address:
             addr_str = f"ที่อยู่จัดส่ง: {shipping_address.get('recipient_name')} ({shipping_address.get('phone_number')}) {shipping_address.get('address_line')} อ.{shipping_address.get('district')} จ.{shipping_address.get('province')} {shipping_address.get('postal_code')}"

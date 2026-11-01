@@ -1,108 +1,63 @@
 {% extends "layouts/public.html" %}
-{% load static %}
 
-{% block title %}สมุดพาสปอร์ตท่องเที่ยวสุขภาวะดิจิทัล - WellTrip Sisaket{% endblock %}
+{% block title %}พาสปอร์ตท่องเที่ยวดิจิทัล - WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-  
-  <!-- Passport Cover Banner -->
-  <div class="rounded-3xl bg-gradient-to-br from-[#2b3832] to-[#1f2925] text-white p-8 sm:p-10 relative overflow-hidden shadow-xl border border-[#c49a45]/40">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
-      <div class="space-y-3 text-center sm:text-left">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 text-xs text-[#c49a45] font-bold border border-white/20">
-          <i data-lucide="award" class="w-3.5 h-3.5"></i>
-          <span>ระดับนักเดินทาง: {{ badge.name|default:"ผู้แสวงหาความสงบธรรมชาติ" }}</span>
+<section class="wt-section-sm">
+  <div class="container-xl">
+    <div class="wt-panel-green p-4 p-md-5">
+      <div class="row align-items-center g-4">
+        <div class="col-md-8">
+          {% if badge %}<span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-3"><i data-lucide="award" class="me-1"></i>ระดับนักเดินทาง: {{ badge.name }}</span>{% endif %}
+          <h1 class="fw-bold mb-2">Digital Cultural Passport</h1>
+          <p class="opacity-75 mb-0">สมุดบันทึกการเดินทางวิถีสุขภาวะและภูมิปัญญา 4 ชนเผ่า สแกน QR ที่จุดเช็คอินในชุมชนเพื่อสะสมตราประทับ</p>
         </div>
-        <h1 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white">
-          Digital Cultural Passport
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-300 max-w-md leading-relaxed font-light">
-          สมุดบันทึกการเดินทางวิถีสุขภาวะและภูมิปัญญา 4 ชนเผ่า สะสมตราประทับดิจิทัลเพื่อรับสิทธิประโยชน์และของที่ระลึกชุมชน
-        </p>
+        <div class="col-md-4 text-md-end">
+          <div class="d-inline-flex flex-column align-items-center justify-content-center rounded-circle bg-white text-green shadow" style="width: 8rem; height: 8rem;">
+            <span class="display-5 fw-bold lh-1">{{ stamp_count }}</span>
+            <small class="fw-semibold">ตราประทับ</small>
+          </div>
+        </div>
       </div>
-
-      <!-- Passport Stamp Counter Seal -->
-      <div class="w-32 h-32 rounded-full border-4 border-[#c49a45]/50 bg-white/5 backdrop-blur-md flex flex-col items-center justify-center text-center p-4 shadow-lg shrink-0">
-        <span class="text-4xl font-serif font-bold text-[#c49a45]">{{ stamp_count|default:"0" }}</span>
-        <span class="text-[10px] text-slate-200 uppercase tracking-widest font-bold">ตราประทับ</span>
-      </div>
-    </div>
-
-    <!-- Progress bar -->
-    <div class="pt-6 mt-6 border-t border-white/10 space-y-2 relative z-10">
-      <div class="flex justify-between text-xs text-slate-300">
-        <span>เป้าหมายการเดินทางในชุมชน</span>
-        <span class="font-bold text-[#c49a45]">{{ stamp_count|default:"0" }} / {{ all_locations|default:"10" }} แห่ง</span>
-      </div>
-      <div class="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
-        <div class="bg-[#c49a45] h-2.5 rounded-full transition-all duration-500" 
-             style="width: {% if all_locations %}{% widthratio stamp_count all_locations 100 %}{% else %}0{% endif %}%;"></div>
-      </div>
+      {% if all_locations %}
+        <div class="mt-4">
+          <div class="d-flex justify-content-between small fw-semibold mb-1"><span>ความคืบหน้า</span><span>{{ stamp_count }} / {{ all_locations }} แห่ง</span></div>
+          <div class="progress bg-white bg-opacity-25" role="progressbar" aria-valuenow="{{ stamp_count }}" aria-valuemin="0" aria-valuemax="{{ all_locations }}" style="height: .6rem;">
+            <div class="progress-bar bg-warning" style="width: {% widthratio stamp_count all_locations 100 %}%"></div>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
+</section>
 
-  <!-- Stamps Grid Section -->
-  <div class="space-y-4">
-    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-      <h2 class="font-serif text-2xl font-bold text-[#1f2925]">
-        ตราประทับที่สะสมแล้ว ({{ stamp_count|default:"0" }} ดวง)
-      </h2>
-      <a 
-        href="{% url 'community:map' %}" 
-        class="inline-flex items-center gap-1.5 text-xs font-bold text-[#c49a45] hover:underline"
-      >
-        <span>ค้นหาจุดเช็คอินบนแผนที่</span>
-        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-      </a>
-    </div>
-
-    {% if stamps %}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for s in stamps %}
-          <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs flex flex-col items-center text-center space-y-3 relative overflow-hidden group hover:border-[#c49a45]/50 transition-all">
-            
-            <!-- Circular Seal -->
-            <div class="w-24 h-24 rounded-full border-4 border-dashed border-[#c49a45]/40 bg-[#faf9f6] flex flex-col items-center justify-center p-2 transform group-hover:rotate-6 transition-transform">
-              <div class="w-16 h-16 rounded-full bg-[#1f2925] text-[#c49a45] flex items-center justify-center shadow-md">
-                <i data-lucide="check" class="w-8 h-8"></i>
-              </div>
-            </div>
-
-            <div class="space-y-1">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2925]/10 text-[#1f2925]">
-                {{ s.location.get_category_display }}
-              </span>
-              <h3 class="text-sm font-bold text-[#1f2925]">{{ s.location.title }}</h3>
-              <p class="text-[11px] text-slate-400">ประทับเมื่อ {{ s.stamped_at|date:"d M Y, H:i" }} น.</p>
-            </div>
-
-            <div class="text-[10px] text-emerald-700 font-bold uppercase tracking-wider pt-1 flex items-center gap-1">
-              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-              <span>Verified Cultural Check-In</span>
+<section class="container-xl pb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h5 fw-bold mb-0">ตราประทับที่สะสมแล้ว</h2>
+    <a href="{% url 'community:map' %}" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="map" class="me-1"></i>ดูจุดเช็คอินบนแผนที่</a>
+  </div>
+  {% if stamps %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+      {% for s in stamps %}
+        <div class="col">
+          <div class="wt-card p-4 h-100 d-flex gap-3 align-items-center">
+            <span class="wt-stat-icon rounded-circle" style="--c:#fff;--bg:var(--wt-green);width:3.5rem;height:3.5rem"><i data-lucide="stamp" class="icon-lg"></i></span>
+            <div class="min-w-0">
+              <span class="badge badge-green mb-1">{{ s.location.get_category_display }}</span>
+              <div class="fw-bold">{{ s.location.title }}</div>
+              <small class="text-secondary">{{ s.stamped_at|date:"d M Y, H:i" }} น.</small>
             </div>
           </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="bg-white rounded-3xl border border-slate-200 p-14 text-center space-y-4 shadow-xs">
-        <div class="w-16 h-16 rounded-2xl bg-slate-100 text-[#c49a45] mx-auto flex items-center justify-center">
-          <i data-lucide="stamp" class="w-8 h-8"></i>
         </div>
-        <h3 class="text-base font-bold text-[#1f2925]">ยังไม่มีตราประทับในสมุดพาสปอร์ต</h3>
-        <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-          เปิดแผนที่ท่องเที่ยว เดินทางไปยังจุดเช็คอินชุมชน และสแกนป้าย QR เพื่อรับตราประทับดิจิทัลดวงแรกของคุณ!
-        </p>
-        <a 
-          href="{% url 'community:map' %}" 
-          class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1f2925] text-[#faf9f6] text-xs font-bold hover:bg-[#2b3832] transition shadow-md"
-        >
-          <span>เปิดดูแผนที่ท่องเที่ยว</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45]"></i>
-        </a>
-      </div>
-    {% endif %}
-  </div>
-
-</div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="wt-card wt-empty">
+      <span class="wt-icon-pill"><i data-lucide="stamp"></i></span>
+      <div class="fw-bold">ยังไม่มีตราประทับ</div>
+      <p class="small text-secondary">เดินทางไปยังจุดเช็คอินในชุมชน แล้วสแกนป้าย QR เพื่อรับตราประทับดวงแรกของคุณ</p>
+      <a href="{% url 'community:map' %}" class="btn btn-green rounded-pill btn-sm px-3">เปิดแผนที่</a>
+    </div>
+  {% endif %}
+</section>
 {% endblock %}

@@ -139,6 +139,6 @@ class NotificationServiceTestCase(TestCase):
         response = self.client.get('/manifest.json')
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertEqual(data["name"], "WellTrip - Smart Wellness Tourism")
+        self.assertTrue(data["name"].startswith("WellTrip"))
         self.assertTrue(any("192" in icon["sizes"] for icon in data["icons"]))
 

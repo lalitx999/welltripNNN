@@ -4,261 +4,113 @@
 {% block title %}หน้าหลักนักท่องเที่ยว — WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 pb-16">
-
-  <!-- ============================================================================== -->
-  <!-- 1. PERSONALIZED TOURIST WELCOME BANNER                                         -->
-  <!-- ============================================================================== -->
-  <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#1F2925] via-[#2B3832] to-[#1F2925] text-white p-6 sm:p-8 shadow-lg border border-[#C49A45]/30">
-    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-      
-      <div class="space-y-2 max-w-xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-[#C49A45]/60 text-[#C49A45] text-xs font-bold uppercase tracking-wider">
-          <i data-lucide="compass" class="w-3.5 h-3.5 text-[#C49A45]"></i>
-          <span>TOURIST DASHBOARD · จ.ศรีสะเกษ</span>
-        </div>
-        
-        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
+<section class="wt-section-sm">
+  <div class="container-xl">
+    <div class="wt-panel-green p-4 p-md-5">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-3"><i data-lucide="compass" class="me-1"></i>Tourist dashboard</span>
+          <h1 class="fw-bold mb-2">{% if user.is_authenticated %}สวัสดีคุณ {{ user.first_name|default:user.email }}{% else %}ยินดีต้อนรับสู่ศรีสะเกษ{% endif %}</h1>
+          <p class="opacity-75 mb-3">วางแผนที่พัก อาหารสุขภาพ สปา และสะสมตราประทับพาสปอร์ตชุมชน</p>
           {% if user.is_authenticated %}
-            สวัสดีคุณ {{ user.first_name|default:user.username }}
-          {% else %}
-            ยินดีต้อนรับสู่วิถีสุขภาวะศรีสะเกษ
+            <div class="d-flex flex-wrap gap-2">
+              <span class="wt-chip"><i data-lucide="calendar"></i>การจอง {{ total_bookings_count }} รายการ</span>
+              <span class="wt-chip"><i data-lucide="stamp"></i>ตราประทับ {{ stamps_count }} ดวง</span>
+            </div>
           {% endif %}
-        </h1>
-        <p class="text-xs sm:text-sm text-stone-300 font-light leading-relaxed">
-          วางแผนการพักผ่อน โฮมสเตย์ธรรมชาติ อาหารสุขภาพ 5 นิเวศน์ นวดสปาสมุนไพรสด และสะสมตราประทับพาสปอร์ตชุมชน
-        </p>
-
-        <!-- Fast Stats Badges -->
-        <div class="flex flex-wrap items-center gap-3 pt-2 text-xs">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15 text-stone-200">
-            <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#C49A45]"></i>
-            <span>ทริปที่จอง: <strong class="text-white">{{ total_bookings_count|default:"0" }}</strong> รายการ</span>
-          </div>
-          <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 backdrop-blur-xs border border-white/15 text-stone-200">
-            <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>ตราประทับพาสปอร์ต: <strong class="text-white">{{ stamps_count|default:"0" }}</strong> ดวง</span>
-          </div>
+        </div>
+        <div class="col-lg-4 d-grid gap-2">
+          {% if user.is_authenticated %}
+            <a href="{% url 'bookings:my_bookings' %}" class="btn btn-gold rounded-pill"><i data-lucide="ticket" class="me-1"></i>การจองของฉัน</a>
+            <a href="{% url 'community:passport' %}" class="btn btn-light rounded-pill"><i data-lucide="stamp" class="me-1"></i>พาสปอร์ตของฉัน</a>
+          {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-gold rounded-pill">เข้าสู่ระบบ</a>
+            <a href="{% url 'accounts:register' %}" class="btn btn-light rounded-pill">สมัครสมาชิก</a>
+          {% endif %}
         </div>
       </div>
-
-      <!-- Quick Action Buttons -->
-      <div class="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0">
-        <a href="{% url 'bookings:my_bookings' %}" class="px-5 py-2.5 rounded-2xl bg-[#C49A45] hover:bg-[#b0873a] text-[#1F2925] font-bold text-xs transition shadow-md flex items-center justify-center gap-2">
-          <i data-lucide="ticket" class="w-4 h-4"></i>
-          <span>การจอง & เวาเชอร์ของฉัน</span>
-        </a>
-        <a href="{% url 'community:my_location_events' %}" class="px-5 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold text-xs transition flex items-center justify-center gap-2">
-          <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
-          <span>ดิจิทัลพาสปอร์ต & สิทธิ์ PDPA</span>
-        </a>
-      </div>
-
-    </div>
-
-    <!-- Decorative watermark logo in background -->
-    <div class="absolute -right-8 -bottom-8 opacity-10 pointer-events-none select-none">
-      <img src="{% static 'images/logoWelltrip.jpg' %}" alt="" class="w-64 h-64 rounded-full object-cover">
     </div>
   </div>
+</section>
 
-
-  <!-- ============================================================================== -->
-  <!-- 2. ACTIVE BOOKINGS ALERT (If Tourist has pending or confirmed trip)             -->
-  <!-- ============================================================================== -->
-  {% if active_bookings %}
-    <div class="space-y-3">
-      <div class="flex items-center justify-between">
-        <h2 class="text-base font-bold text-stone-900 flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>ทริปที่กำลังดำเนินการ</span>
-        </h2>
-        <a href="{% url 'bookings:my_bookings' %}" class="text-xs font-bold text-[#C49A45] hover:underline flex items-center gap-1">
-          <span>ดูทั้งหมด</span>
-          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-        </a>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% for b in active_bookings %}
-          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200/90 shadow-xs flex flex-col justify-between gap-3">
-            <div class="flex items-start justify-between gap-3">
+{% if active_bookings %}
+  <section class="container-xl pb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 fw-bold mb-0 d-flex align-items-center gap-2"><span class="pulse-dot bg-warning"></span>ทริปที่กำลังดำเนินการ</h2>
+      <a href="{% url 'bookings:my_bookings' %}" class="small fw-semibold text-green">ดูทั้งหมด <i data-lucide="chevron-right"></i></a>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+      {% for b in active_bookings %}
+        <div class="col">
+          <div class="wt-card p-3 h-100 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
               <div>
-                <span class="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">BOOKING REF</span>
-                <span class="font-bold text-sm text-[#1F2925]">{{ b.booking_code }}</span>
-                <div class="text-xs text-stone-500 mt-0.5">
-                  {{ b.items.count }} รายการ · ฿{{ b.total_amount|floatformat:0 }}
-                </div>
+                <small class="text-secondary">รหัสการจอง</small>
+                <div class="fw-bold font-monospace">{{ b.booking_code }}</div>
               </div>
-              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold
-                {% if b.status == 'CONFIRMED' %} bg-emerald-100 text-emerald-800
-                {% elif b.status == 'AWAITING_PAYMENT' %} bg-amber-100 text-amber-800 animate-pulse
-                {% else %} bg-stone-100 text-stone-700 {% endif %}">
-                {{ b.get_status_display }}
-              </span>
+              <span class="badge {% if b.status == 'CONFIRMED' %}badge-green{% elif b.status == 'AWAITING_PAYMENT' %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ b.get_status_display }}</span>
             </div>
-
-            <div class="flex items-center justify-between pt-2 border-t border-stone-100">
-              <span class="text-[11px] text-stone-400">
-                สั่งซื้อ: {{ b.created_at|date:"d M Y" }}
-              </span>
-              <a href="{% url 'bookings:detail' b.id %}" class="text-xs font-bold text-[#1F2925] hover:text-[#C49A45] inline-flex items-center gap-1">
-                <span>ดูรายละเอียด / เวาเชอร์</span>
-                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
-              </a>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-  {% endif %}
-
-
-  <!-- ============================================================================== -->
-  <!-- 3. SIX CORE EXPLORATION SHORTCUTS (Mobile-First Tourist Grid)                   -->
-  <!-- ============================================================================== -->
-  <div class="space-y-3">
-    <h2 class="text-base font-bold text-stone-900 flex items-center gap-2">
-      <i data-lucide="sparkles" class="w-4 h-4 text-[#C49A45]"></i>
-      <span>บริการและกิจกรรมสุขภาพศรีสะเกษ</span>
-    </h2>
-
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-      
-      <!-- 1. Stays -->
-      <a href="{% url 'accommodations:list' %}" class="group bg-white p-4 rounded-2xl border border-stone-200/90 shadow-2xs hover:shadow-md hover:border-[#C49A45]/50 transition text-center flex flex-col items-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-          <i data-lucide="hotel" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <span class="font-bold text-xs sm:text-sm text-stone-800 block">ที่พักชุมชน</span>
-          <span class="text-[10px] text-stone-400">โฮมสเตย์ & วิวทุ่งนา</span>
-        </div>
-      </a>
-
-      <!-- 2. Foods -->
-      <a href="/services/?category=FOOD" class="group bg-white p-4 rounded-2xl border border-stone-200/90 shadow-2xs hover:shadow-md hover:border-[#C49A45]/50 transition text-center flex flex-col items-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-          <i data-lucide="utensils" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <span class="font-bold text-xs sm:text-sm text-stone-800 block">อาหารสุขภาพ</span>
-          <span class="text-[10px] text-stone-400">ปลาแม่น้ำ & ผักอินทรีย์</span>
-        </div>
-      </a>
-
-      <!-- 3. Wellness / Spa -->
-      <a href="/services/?category=SPA" class="group bg-white p-4 rounded-2xl border border-stone-200/90 shadow-2xs hover:shadow-md hover:border-[#C49A45]/50 transition text-center flex flex-col items-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-          <i data-lucide="flower-2" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <span class="font-bold text-xs sm:text-sm text-stone-800 block">นวด & สปา</span>
-          <span class="text-[10px] text-stone-400">สปาสมุนไพรสด</span>
-        </div>
-      </a>
-
-      <!-- 4. OTOP -->
-      <a href="{% url 'otop:list' %}" class="group bg-white p-4 rounded-2xl border border-stone-200/90 shadow-2xs hover:shadow-md hover:border-[#C49A45]/50 transition text-center flex flex-col items-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-          <i data-lucide="shopping-bag" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <span class="font-bold text-xs sm:text-sm text-stone-800 block">ของฝาก OTOP</span>
-          <span class="text-[10px] text-stone-400">ผ้าทอ & กาแฟภูเขาไฟ</span>
-        </div>
-      </a>
-
-      <!-- 5. AI Health Check -->
-      <a href="{% url 'health_alias' %}" class="group bg-white p-4 rounded-2xl border border-stone-200/90 shadow-2xs hover:shadow-md hover:border-[#C49A45]/50 transition text-center flex flex-col items-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-          <i data-lucide="heart-pulse" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <span class="font-bold text-xs sm:text-sm text-stone-800 block">ประเมินสุขภาพ AI</span>
-          <span class="text-[10px] text-stone-400">แผนสุขภาวะเฉพาะคุณ</span>
-        </div>
-      </a>
-
-      <!-- 6. Digital Passport -->
-      <a href="{% url 'community:my_location_events' %}" class="group bg-white p-4 rounded-2xl border border-stone-200/90 shadow-2xs hover:shadow-md hover:border-[#C49A45]/50 transition text-center flex flex-col items-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-          <i data-lucide="map" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <span class="font-bold text-xs sm:text-sm text-stone-800 block">พาสปอร์ตท่องเที่ยว</span>
-          <span class="text-[10px] text-stone-400">เช็คอินพิกัด 4 ชนเผ่า</span>
-        </div>
-      </a>
-
-    </div>
-  </div>
-
-
-  <!-- ============================================================================== -->
-  <!-- 4. RECOMMENDED EXPERIENCES FOR TOURIST                                         -->
-  <!-- ============================================================================== -->
-  <div class="space-y-4">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-bold text-stone-900">โฮมสเตย์และบริการแนะนำ</h2>
-        <p class="text-xs text-stone-500">คัดสรรสถานที่พักผ่อนและบำบัดฟื้นฟูสุขภาวะที่ดีที่สุด</p>
-      </div>
-      <a href="{% url 'accommodations:list' %}" class="text-xs font-bold text-[#C49A45] hover:underline">สำรวจทั้งหมด ➔</a>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      {% for stay in featured_stays %}
-        <div class="bg-white rounded-3xl overflow-hidden border border-stone-200/90 shadow-xs hover:shadow-md transition flex flex-col justify-between">
-          <div>
-            <div class="relative h-44 overflow-hidden">
-              <img src="{{ stay.hero_image.url|default:'/static/images/banner1.jpeg' }}" alt="{{ stay.name }}" class="w-full h-full object-cover">
-              <span class="absolute top-3 left-3 bg-[#1F2925]/85 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-full border border-white/20">
-                {{ stay.district|default:'ศรีสะเกษ' }}
-              </span>
-            </div>
-            <div class="p-4 space-y-1.5">
-              <h3 class="font-bold text-sm text-stone-900 truncate">{{ stay.name }}</h3>
-              <p class="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                {{ stay.description|default:'โฮมสเตย์ชุมชน บรรยากาศเงียบสงบ ใกล้ชิดธรรมชาติและวิถีท้องถิ่น' }}
-              </p>
-            </div>
-          </div>
-          <div class="p-4 pt-0 border-t border-stone-100 flex items-center justify-between mt-2">
-            <div>
-              <span class="text-[10px] text-stone-400 block">เริ่มต้น</span>
-              <span class="font-bold text-sm text-[#C49A45]">฿{{ stay.min_price_per_night|floatformat:0 }}</span>
-              <span class="text-[10px] text-stone-400">/ คืน</span>
-            </div>
-            <a href="{% url 'accommodations:detail' stay.slug|default:stay.id %}" class="px-4 py-2 rounded-xl bg-[#1F2925] hover:bg-[#2B3832] text-white text-xs font-bold transition">
-              ดูรายละเอียด
-            </a>
+            <div class="small text-secondary flex-grow-1">{{ b.items.count }} รายการ · ฿{{ b.total_amount|floatformat:"0g" }} · {{ b.created_at|date:"d M Y" }}</div>
+            <a href="{% url 'bookings:detail' b.id %}" class="btn btn-outline-ink btn-sm rounded-pill mt-3">ดูรายละเอียด</a>
           </div>
         </div>
       {% endfor %}
     </div>
+  </section>
+{% endif %}
+
+<section class="container-xl pb-4">
+  <h2 class="h5 fw-bold mb-3">บริการและกิจกรรม</h2>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+    <div class="col"><a href="{% url 'accommodations:list' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="house" class="icon-lg"></i></span><div class="fw-bold small">ที่พักชุมชน</div></a></div>
+    <div class="col"><a href="/services/?category=FOOD" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="utensils" class="icon-lg"></i></span><div class="fw-bold small">อาหารสุขภาพ</div></a></div>
+    <div class="col"><a href="/services/?category=SPA" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#c2255c;--bg:#fdebf1"><i data-lucide="flower-2" class="icon-lg"></i></span><div class="fw-bold small">นวดและสปา</div></a></div>
+    <div class="col"><a href="{% url 'otop:list' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shopping-basket" class="icon-lg"></i></span><div class="fw-bold small">ของฝาก OTOP</div></a></div>
+    <div class="col"><a href="{% url 'ai_recommendations:assessment' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#6741d9;--bg:#f0ebff"><i data-lucide="heart-pulse" class="icon-lg"></i></span><div class="fw-bold small">ประเมินสุขภาพ AI</div></a></div>
+    <div class="col"><a href="{% url 'community:map' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map" class="icon-lg"></i></span><div class="fw-bold small">แผนที่ชุมชน</div></a></div>
   </div>
+</section>
 
-
-  <!-- ============================================================================== -->
-  <!-- 5. LOCATION CONSENT & PDPA CARD                                                -->
-  <!-- ============================================================================== -->
-  <div class="rounded-3xl bg-amber-50/80 border border-amber-200 p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-    <div class="flex items-start gap-3.5">
-      <div class="w-10 h-10 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 shrink-0">
-        <i data-lucide="shield-check" class="w-5 h-5"></i>
+<section class="wt-section bg-mint">
+  <div class="container-xl">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <h2 class="wt-section-title mb-0">ที่พักแนะนำ</h2>
+      <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink btn-sm rounded-pill">ดูทั้งหมด</a>
+    </div>
+    {% if featured_stays %}
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+        {% for stay in featured_stays %}
+          <div class="col">
+            <article class="card wt-card wt-card-hover h-100 overflow-hidden">
+              <div class="wt-card-img">
+                <img src="{% if stay.hero_image %}{{ stay.hero_image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ stay.name }}" loading="lazy">
+                {% if stay.min_price_per_night %}<span class="wt-price-tag">฿{{ stay.min_price_per_night|floatformat:"0g" }} <small>/ คืน</small></span>{% endif %}
+              </div>
+              <div class="card-body">
+                <div class="small text-secondary mb-1"><i data-lucide="map-pin" class="text-green me-1"></i>{{ stay.district|default:stay.province }}</div>
+                <h3 class="h6 fw-bold mb-1"><a href="{% url 'accommodations:detail' stay.slug|default:stay.id %}" class="stretched-link">{{ stay.name }}</a></h3>
+                {% if stay.description %}<p class="small text-secondary mb-0 line-clamp-2">{{ stay.description }}</p>{% endif %}
+              </div>
+            </article>
+          </div>
+        {% endfor %}
       </div>
-      <div class="space-y-1">
-        <h3 class="text-xs sm:text-sm font-bold text-stone-900">คุ้มครองข้อมูลส่วนบุคคลและตำแหน่ง (PDPA)</h3>
-        <p class="text-[11px] sm:text-xs text-stone-600 leading-relaxed max-w-xl">
-          ท่านสามารถจัดการสิทธิ์การเข้าถึงพิกัด GPS สำหรับดิจิทัลพาสปอร์ต หรือขอลบข้อมูลประวัติการเดินทางได้ตลอดเวลาตามสิทธิ์ Right to be Forgotten
-        </p>
+    {% else %}
+      <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="house"></i></span><div class="fw-bold">ยังไม่มีที่พักในระบบ</div></div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="container-xl py-4">
+  <div class="wt-consent p-4 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+    <div class="d-flex gap-3">
+      <span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="shield-check" class="icon-lg"></i></span>
+      <div>
+        <div class="fw-bold">ข้อมูลส่วนบุคคลและตำแหน่ง (PDPA)</div>
+        <small class="text-secondary">ดูและลบประวัติตำแหน่งของคุณได้ตลอดเวลา</small>
       </div>
     </div>
-    <a href="{% url 'community:my_location_events' %}" class="px-5 py-2.5 rounded-2xl bg-white hover:bg-stone-50 border border-amber-300 text-stone-800 text-xs font-bold shadow-2xs whitespace-nowrap">
-      จัดการสิทธิ์ PDPA
-    </a>
+    <a href="{% url 'community:my_location_events' %}" class="btn btn-outline-ink rounded-pill flex-shrink-0">จัดการความเป็นส่วนตัว</a>
   </div>
-
-</div>
+</section>
 {% endblock %}

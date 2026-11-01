@@ -2,8 +2,10 @@ import time
 from django.test import TestCase, Client
 from django.urls import reverse
 from apps.accounts.models import User, UserRoles, AuditLog
+from apps.accounts.models import MerchantApprovalStatus, MerchantProfile
 from apps.accounts.permissions import can_edit_object, can_delete_object
 
+MERCHANT_ROLES = [UserRoles.HOMESTAY_OWNER, UserRoles.RESTAURANT_OWNER, UserRoles.WELLNESS_OWNER, UserRoles.OTOP_OWNER]
 
 class MockOwnedObject:
     def __init__(self, owner_id, status="DRAFT"):
@@ -48,6 +50,13 @@ class AccountsSecurityTestCase(TestCase):
             first_name="Wichai",
             last_name="Admin"
         )
+
+        # Partner Studio requires an approved KYC profile
+        for merchant in User.objects.filter(role__in=MERCHANT_ROLES):
+            MerchantProfile.objects.get_or_create(
+                user=merchant,
+                defaults={"business_name": merchant.email, "status": MerchantApprovalStatus.APPROVED},
+            )
 
     def test_user_registration_argon2_password(self):
         """Verifies new user passwords are saved with Argon2 hasher."""

@@ -1,148 +1,55 @@
 {% extends "layouts/admin.html" %}
 
-{% block admin_heading %}ตรวจสอบและอนุมัติสลิป {{ payment.booking.booking_code }}{% endblock %}
+{% block title %}ตรวจสลิป {{ payment.booking.booking_code }} - Admin Center{% endblock %}
+{% block page_heading %}ตรวจสลิป <span class="font-monospace">{{ payment.booking.booking_code }}</span>{% endblock %}
 
 {% block content %}
-<div class="space-y-6 max-w-4xl pb-12">
-  
-  <div class="flex items-center justify-between">
-    <a href="{% url 'payments:admin_list' %}" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-[#1B2A24] transition-colors">
-      <i data-lucide="arrow-left" class="w-4 h-4"></i>
-      <span>กลับไปยังรายการสลิปทั้งหมด</span>
-    </a>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    
-    <!-- Left: Slip Image Inspection -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <div class="flex items-center space-x-2">
-          <i data-lucide="image" class="w-4 h-4 text-emerald-600"></i>
-          <h3 class="text-sm font-bold text-[#1B2A24]">รูปภาพสลิปที่แนบมา</h3>
-        </div>
-        <span class="text-[10px] text-slate-400 font-mono">JPG/PNG/WEBP</span>
-      </div>
-      
+<a href="{% url 'accounts:admin_dashboard' %}?tab=payments" class="small fw-semibold text-green d-inline-block mb-3"><i data-lucide="arrow-left" class="me-1"></i>รายการสลิปทั้งหมด</a>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="wt-card p-3 h-100">
+      <div class="fw-bold mb-2"><i data-lucide="image" class="text-green me-1"></i>สลิปที่แนบมา</div>
       {% if slip and slip.image %}
-        <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center max-h-[500px] p-2">
-          <img src="{{ slip.image.url }}" alt="Slip image" class="max-h-[480px] w-auto object-contain rounded-lg shadow-xs">
-        </div>
-        <div class="text-center pt-2">
-          <a href="{{ slip.image.url }}" target="_blank" class="inline-flex items-center space-x-1.5 text-xs text-[#D97706] hover:underline font-semibold transition-colors">
-            <span>เปิดดูภาพขนาดเต็ม (แท็บใหม่)</span>
-            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-          </a>
-        </div>
+        <a href="{{ slip.image.url }}" target="_blank" rel="noopener"><img src="{{ slip.image.url }}" alt="สลิป" class="img-fluid rounded-4 border w-100" style="max-height: 70vh; object-fit: contain;"></a>
+        <div class="small text-secondary mt-2">แตะรูปเพื่อเปิดขนาดเต็ม</div>
       {% else %}
-        <div class="p-16 text-center text-xs text-slate-400 space-y-2">
-          <i data-lucide="image-off" class="w-8 h-8 text-slate-300 mx-auto"></i>
-          <p>ไม่พบไฟล์รูปภาพสลิป</p>
-        </div>
+        <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="image-off"></i></span><div class="small text-secondary">ไม่มีไฟล์สลิป</div></div>
       {% endif %}
     </div>
-
-    <!-- Right: Order Details & Approval Actions -->
-    <div class="space-y-6">
-      
-      <div class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
-        <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
-          <i data-lucide="file-text" class="w-4 h-4 text-[#D97706]"></i>
-          <h3 class="text-sm font-bold text-[#1B2A24]">รายละเอียดการสั่งซื้อ</h3>
-        </div>
-        
-        <div class="space-y-3 text-xs">
-          <div class="flex justify-between py-1 border-b border-slate-100">
-            <span class="text-slate-500">รหัสการจอง</span>
-            <span class="font-mono font-bold text-[#1B2A24]">{{ payment.booking.booking_code }}</span>
-          </div>
-          <div class="flex justify-between py-1 border-b border-slate-100">
-            <span class="text-slate-500">ชื่อลูกค้า</span>
-            <span class="font-medium text-slate-800">{{ payment.booking.customer.first_name }} {{ payment.booking.customer.last_name }}</span>
-          </div>
-          <div class="flex justify-between py-1 border-b border-slate-100">
-            <span class="text-slate-500">อีเมล</span>
-            <span class="font-mono text-slate-700">{{ payment.booking.customer.email }}</span>
-          </div>
-          <div class="flex justify-between py-1 border-b border-slate-100">
-            <span class="text-slate-500">เบอร์โทรศัพท์</span>
-            <span class="font-mono text-slate-700">{{ payment.booking.customer.phone_number|default:"-" }}</span>
-          </div>
-          <div class="flex justify-between py-1 border-b border-slate-100">
-            <span class="text-slate-500">ยอดที่ต้องชำระ</span>
-            <span class="font-bold text-base text-[#1B2A24]">฿{{ payment.amount|floatformat:2 }}</span>
-          </div>
-          {% if slip %}
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-500">รหัสอ้างอิงธุรกรรม</span>
-              <span class="font-mono font-bold text-[#D97706]">{{ slip.provider_reference|default:"ไม่ระบุ" }}</span>
-            </div>
-            <div class="flex justify-between py-1 border-b border-slate-100">
-              <span class="text-slate-500">เวลาที่อัปโหลด</span>
-              <span class="text-slate-700">{{ slip.uploaded_at|date:"d/m/Y H:i" }} น.</span>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-
-      <!-- Action Form -->
-      <div class="bg-white rounded-2xl border border-slate-200/80 p-6 space-y-4 shadow-xs">
-        <h3 class="text-sm font-bold text-[#1B2A24]">ผลการตรวจสอบสลิป</h3>
-
-        <form method="POST" action="{% url 'payments:admin_review' payment.id %}" class="space-y-4">
-          {% csrf_token %}
-          
-          <div>
-            <label for="verification_notes" class="block text-xs font-semibold text-slate-700 mb-1">
-              บันทึกการตรวจสอบ / เหตุผล (ระบุถ้าปฏิเสธ)
-            </label>
-            <textarea 
-              name="verification_notes" 
-              id="verification_notes" 
-              rows="2" 
-              placeholder="เช่น ยอดเงินตรงตามบัญชี หรือ สลิปไม่พบยอดใน K-Shop..."
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#1B2A24]"
-            ></textarea>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 pt-2">
-            <button 
-              type="submit" 
-              name="action" 
-              value="REJECT" 
-              onclick="return confirm('ยืนยันปฏิเสธสลิปนี้?')"
-              class="w-full py-2.5 px-4 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition shadow-2xs"
-            >
-              ปฏิเสธสลิป
-            </button>
-            <button 
-              type="submit" 
-              name="action" 
-              value="APPROVE" 
-              class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-xs flex items-center justify-center gap-1.5"
-            >
-              <i data-lucide="check" class="w-4 h-4"></i>
-              <span>อนุมัติการชำระเงิน</span>
-          <div class="mt-4 pt-4 border-t border-slate-100 flex justify-end">
-            <button 
-              type="submit" 
-              form="delete-payment-form"
-              class="text-xs text-rose-600 hover:text-rose-700 font-semibold hover:underline flex items-center gap-1"
-            >
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-              <span>ลบรายการชำระเงินนี้</span>
-            </button>
-          </div>
-        </form>
-
-        <form id="delete-payment-form" method="POST" action="{% url 'accounts:admin_payment_delete' payment.id %}" onsubmit="return confirm('ยืนยันลบรายการชำระเงินและคำสั่งจองรหัส {{ payment.booking.booking_code }} หรือไม่? ข้อมูลจะถูกลบถาวร')">
-          {% csrf_token %}
-        </form>
-      </div>
-
+  </div>
+  <div class="col-lg-6 d-grid gap-4 align-content-start">
+    <div class="wt-card p-4">
+      <div class="fw-bold mb-3"><i data-lucide="file-text" class="text-green me-1"></i>ข้อมูลคำสั่งซื้อ</div>
+      <dl class="row small mb-0">
+        <dt class="col-5 text-secondary fw-normal">ลูกค้า</dt><dd class="col-7">{{ payment.booking.customer.first_name }} {{ payment.booking.customer.last_name }}</dd>
+        <dt class="col-5 text-secondary fw-normal">อีเมล</dt><dd class="col-7 text-break">{{ payment.booking.customer.email }}</dd>
+        <dt class="col-5 text-secondary fw-normal">เบอร์โทร</dt><dd class="col-7">{{ payment.booking.customer.phone_number|default:"-" }}</dd>
+        <dt class="col-5 text-secondary fw-normal">ยอดที่ต้องชำระ</dt><dd class="col-7 fs-5 fw-bold text-green">฿{{ payment.amount|floatformat:"2g" }}</dd>
+        {% if slip %}
+          <dt class="col-5 text-secondary fw-normal">เลขอ้างอิง</dt><dd class="col-7 font-monospace">{{ slip.provider_reference|default:"ไม่ระบุ" }}</dd>
+          <dt class="col-5 text-secondary fw-normal">อัปโหลดเมื่อ</dt><dd class="col-7 mb-0">{{ slip.uploaded_at|date:"d/m/Y H:i" }} น.</dd>
+        {% endif %}
+      </dl>
     </div>
 
+    <div class="wt-card p-4">
+      <div class="fw-bold mb-3"><i data-lucide="clipboard-check" class="text-green me-1"></i>ผลการตรวจสอบ</div>
+      <form method="post" action="{% url 'payments:admin_review' payment.id %}" class="d-grid gap-3">
+        {% csrf_token %}
+        <div>
+          <label for="verification_notes" class="form-label small fw-semibold">บันทึก / เหตุผล (ระบุเมื่อไม่อนุมัติ)</label>
+          <textarea name="verification_notes" id="verification_notes" rows="2" class="form-control" placeholder="เช่น ยอดเงินไม่ตรง หรือไม่พบรายการในบัญชี"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" name="action" value="REJECT" class="btn btn-outline-danger rounded-pill flex-grow-1" onclick="return confirm('ยืนยันไม่อนุมัติสลิปนี้?')">ไม่อนุมัติ</button>
+          <button type="submit" name="action" value="APPROVE" class="btn btn-green rounded-pill flex-grow-1"><i data-lucide="check" class="me-1"></i>อนุมัติการชำระเงิน</button>
+        </div>
+      </form>
+      <form method="post" action="{% url 'accounts:admin_payment_delete' payment.id %}" class="border-top mt-3 pt-3" onsubmit="return confirm('ลบรายการชำระเงินและคำสั่งซื้อ {{ payment.booking.booking_code|escapejs }} ถาวร?')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-link text-danger btn-sm p-0"><i data-lucide="trash-2" class="me-1"></i>ลบรายการชำระเงินนี้</button>
+      </form>
+    </div>
   </div>
-
 </div>
 {% endblock %}

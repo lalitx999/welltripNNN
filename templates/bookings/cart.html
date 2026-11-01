@@ -1,604 +1,179 @@
 {% extends "layouts/public.html" %}
-{% load static %}
 
-{% block title %}ตะกร้าบริการและการสั่งซื้อ - WellTrip Sisaket{% endblock %}
+{% block title %}ตะกร้าของฉัน - WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-  
-  <!-- 3-Step Checkout Stepper Header -->
-  <div class="bg-white p-4 sm:p-6 rounded-3xl border border-slate-200/90 shadow-xs">
-    <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-      <!-- Step 1 (Active) -->
-      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-xs">
-          1
-        </div>
-        <div class="min-w-0">
-          <div class="text-[10px] sm:text-xs font-bold text-[#c49a45] uppercase tracking-wider">ขั้นตอนที่ 1</div>
-          <div class="text-xs sm:text-sm font-bold text-[#1f2925] truncate">ตะกร้า & ที่อยู่จัดส่ง</div>
-        </div>
-      </div>
-
-      <!-- Step 2 -->
-      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left opacity-60">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
-          2
-        </div>
-        <div class="min-w-0">
-          <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">ขั้นตอนที่ 2</div>
-          <div class="text-xs sm:text-sm font-semibold text-slate-600 truncate">ทวนรายละเอียด</div>
-        </div>
-      </div>
-
-      <!-- Step 3 -->
-      <div class="flex items-center gap-2 sm:gap-3 justify-center text-left opacity-60">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs sm:text-sm shrink-0">
-          3
-        </div>
-        <div class="min-w-0">
-          <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">ขั้นตอนที่ 3</div>
-          <div class="text-xs sm:text-sm font-semibold text-slate-600 truncate">ยืนยัน & ชำระเงิน</div>
-        </div>
-      </div>
+<section class="wt-page-head pb-3">
+  <div class="container-xl">
+    {% include "bookings/partials/checkout_steps.html" with step=1 %}
+    <div class="d-flex align-items-end justify-content-between">
+      <h1 class="mb-0">ตะกร้าของฉัน</h1>
+      <span class="badge badge-green fs-6">{{ item_count }} รายการ</span>
     </div>
   </div>
+</section>
 
-  <!-- Page Title & Overview -->
-  <div class="space-y-2 border-b border-slate-200 pb-4">
-    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
-      <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
-      <span>STEP 1 / 3: CART & SHIPPING ADDRESS</span>
-    </div>
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-      <h1 class="font-serif text-2xl sm:text-4xl font-bold text-[#1f2925]">ตะกร้าบริการและการสั่งซื้อ</h1>
-      <span class="text-xs font-bold text-[#c49a45] bg-[#c49a45]/10 px-3 py-1.5 rounded-full border border-[#c49a45]/20 w-fit">
-        {{ item_count|default:"0" }} รายการในตะกร้า
-      </span>
-    </div>
-    <p class="text-xs sm:text-sm text-slate-500">
-      ตรวจสอบรายการสินค้า/บริการ และจัดการข้อมูลที่อยู่สำหรับการจัดส่งสินค้า (บันทึกได้สูงสุด 3 ที่อยู่)
-    </p>
-  </div>
-
+<div class="container-xl pb-5">
   {% if cart %}
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      
-      <!-- Items List & Shipping Addresses (8 cols) -->
-      <div class="lg:col-span-8 space-y-6">
-        
-        <!-- Cart Items Section -->
-        <div class="space-y-3">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <i data-lucide="package-check" class="w-4 h-4 text-[#c49a45]"></i>
-            <span>รายการสินค้าและบริการที่คุณเลือก</span>
-          </h2>
+    <div class="row g-4">
+      <div class="col-lg-8 d-grid gap-4">
 
-          <div class="space-y-3">
+        <div class="wt-card p-3 p-sm-4">
+          <h2 class="h6 fw-bold mb-3"><i data-lucide="package-check" class="text-green me-1"></i>รายการที่เลือก</h2>
+          <div class="list-group list-group-flush">
             {% for item in cart %}
-              <div class="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-[#c49a45]/40">
-                <div class="space-y-1.5 min-w-0 flex-1">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2925] text-[#faf9f6]">
-                      {{ item.item_type|default:"บริการชุมชน" }}
-                    </span>
-                    {% if item.date %}
-                      <span class="text-[11px] text-slate-400 font-medium">
-                        <i data-lucide="calendar" class="w-3 h-3 inline"></i> {{ item.date }}
-                      </span>
-                    {% endif %}
+              <div class="list-group-item px-0 py-3">
+                <div class="d-flex flex-column flex-sm-row justify-content-between gap-3">
+                  <div class="min-w-0">
+                    <div class="d-flex flex-wrap gap-2 mb-1">
+                      <span class="badge badge-green">{% if item.item_type == 'ROOM' %}ที่พัก{% elif item.item_type == 'FOOD' %}อาหาร{% elif item.item_type == 'WELLNESS' %}สปา{% elif item.item_type == 'OTOP' %}OTOP{% else %}{{ item.item_type }}{% endif %}</span>
+                      {% if item.date %}<span class="small text-secondary"><i data-lucide="calendar" class="me-1"></i>{{ item.date }}{% if item.item_type == 'ROOM' %} · {{ item.nights|default:1 }} คืน{% endif %}</span>{% endif %}
+                    </div>
+                    <div class="fw-bold">{{ item.title }}</div>
+                    <small class="text-secondary">฿{{ item.price|floatformat:"0g" }}{% if item.item_type == 'ROOM' %} / คืน / ห้อง{% else %} / หน่วย{% endif %}</small>
                   </div>
-                  <h3 class="text-sm sm:text-base font-bold text-[#1f2925]">{{ item.title }}</h3>
-                  <div class="text-xs text-slate-500 font-medium">
-                    ราคาต่อหน่วย: ฿{{ item.price|floatformat:0 }}
+                  <div class="d-flex align-items-center gap-3 flex-shrink-0">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="จำนวน">
+                      <form method="post" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">{% csrf_token %}<input type="hidden" name="action" value="decrease"><button type="submit" class="btn btn-outline-ink rounded-end-0" aria-label="ลดจำนวน">−</button></form>
+                      <span class="btn btn-outline-ink disabled fw-bold rounded-0" style="min-width: 2.5rem;">{{ item.quantity|default:1 }}</span>
+                      <form method="post" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">{% csrf_token %}<input type="hidden" name="action" value="increase"><button type="submit" class="btn btn-outline-ink rounded-start-0" aria-label="เพิ่มจำนวน">+</button></form>
+                    </div>
+                    <span class="fw-bold text-green text-nowrap" style="min-width: 5rem; text-align: right;">฿{{ item.line_total|floatformat:"0g" }}</span>
+                    <form method="post" action="{% url 'bookings:cart_remove' forloop.counter0 %}">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2 lh-1" aria-label="ลบออกจากตะกร้า"><i data-lucide="trash-2"></i></button></form>
                   </div>
-                </div>
-
-                <!-- Quantity Controls & Subtotal -->
-                <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                  <!-- +/- Buttons -->
-                  <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200/80">
-                    <form method="POST" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">
-                      {% csrf_token %}
-                      <input type="hidden" name="action" value="decrease">
-                      <button 
-                        type="submit" 
-                        class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm shadow-xs transition cursor-pointer"
-                        title="ลดจำนวน"
-                      >
-                        -
-                      </button>
-                    </form>
-                    <span class="w-8 text-center text-xs font-bold font-mono text-[#1f2925]">
-                      {{ item.quantity|default:"1" }}
-                    </span>
-                    <form method="POST" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">
-                      {% csrf_token %}
-                      <input type="hidden" name="action" value="increase">
-                      <button 
-                        type="submit" 
-                        class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm shadow-xs transition cursor-pointer"
-                        title="เพิ่มจำนวน"
-                      >
-                        +
-                      </button>
-                    </form>
-                  </div>
-
-                  <!-- Item Total -->
-                  <div class="text-right min-w-[70px]">
-                    <span class="text-base font-serif font-bold text-[#c49a45]">
-                      ฿{% widthratio item.price 1 item.quantity %}
-                    </span>
-                  </div>
-
-                  <!-- Remove Button -->
-                  <form method="POST" action="{% url 'bookings:cart_remove' forloop.counter0 %}">
-                    {% csrf_token %}
-                    <button 
-                      type="submit" 
-                      class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition cursor-pointer" 
-                      title="ลบออกจากตะกร้า"
-                    >
-                      <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                  </form>
                 </div>
               </div>
             {% endfor %}
           </div>
         </div>
 
-        <!-- Section: Shipping Address (Max 3 Addresses) - Redesigned Luxury Style -->
-        <div class="bg-gradient-to-br from-white via-[#faf9f6] to-white p-6 sm:p-8 rounded-3xl border border-[#c49a45]/30 shadow-xs space-y-6" x-data="{ showAddForm: false }">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200/80 pb-4">
+        <div class="wt-card p-3 p-sm-4" x-data="{ showAddForm: {% if not shipping_addresses %}true{% else %}false{% endif %} }">
+          <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 mb-3">
             <div>
-              <div class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#c49a45]">
-                <i data-lucide="truck" class="w-3.5 h-3.5"></i>
-                <span>SHIPPING & DELIVERY ADDRESS</span>
-              </div>
-              <h2 class="text-sm sm:text-base font-bold text-[#1f2925] flex items-center gap-2 mt-0.5">
-                <span>ข้อมูลที่อยู่ในการจัดส่งสินค้า (สำหรับสินค้า OTOP & ของที่ระลึก)</span>
-              </h2>
-              <p class="text-xs text-stone-500 font-light mt-0.5">เลือกที่อยู่จัดส่งที่บันทึกไว้ หรือเพิ่มที่อยู่ใหม่ (บันทึกได้สูงสุด 3 ที่อยู่)</p>
+              <h2 class="h6 fw-bold mb-1"><i data-lucide="truck" class="text-green me-1"></i>ที่อยู่จัดส่ง (สำหรับสินค้า OTOP)</h2>
+              <small class="text-secondary">บันทึกได้สูงสุด 3 ที่อยู่ · ใช้อยู่ {{ shipping_addresses|length }}/3</small>
             </div>
-            <div class="flex items-center gap-2.5 shrink-0">
-              <span class="text-[11px] font-bold px-3 py-1 rounded-full bg-stone-100 text-stone-700 border border-stone-200">
-                {{ shipping_addresses|length }}/3 ที่อยู่
-              </span>
-              {% if can_add_address %}
-                <button 
-                  type="button" 
-                  @click="showAddForm = !showAddForm"
-                  class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#1f2925] text-white hover:bg-[#2b3832] transition cursor-pointer flex items-center gap-1.5 shadow-xs"
-                >
-                  <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-                  <span x-text="showAddForm ? 'ปิดแบบฟอร์ม' : 'เพิ่มที่อยู่ใหม่'">เพิ่มที่อยู่ใหม่</span>
-                </button>
-              {% endif %}
-            </div>
+            {% if can_add_address and shipping_addresses %}
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-pill align-self-start" @click="showAddForm = !showAddForm"><i data-lucide="plus" class="me-1"></i><span x-text="showAddForm ? 'ปิดแบบฟอร์ม' : 'เพิ่มที่อยู่'">เพิ่มที่อยู่</span></button>
+            {% endif %}
           </div>
 
-          <!-- Address Cards Grid -->
+          {% if not shipping_addresses %}
+            <div class="small text-secondary mb-2"><i data-lucide="info" class="me-1"></i>ยังไม่มีที่อยู่จัดส่ง {% if has_physical_goods %}<strong class="text-danger">จำเป็นต้องกรอกเพราะมีสินค้า OTOP ในตะกร้า</strong>{% else %}(จำเป็นเฉพาะเมื่อสั่งสินค้า OTOP){% endif %}</div>
+          {% endif %}
           {% if shipping_addresses %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <div class="row g-2 mb-3">
               {% for addr in shipping_addresses %}
-                <div class="p-4 sm:p-5 rounded-2xl border transition-all relative flex flex-col justify-between 
-                            {% if forloop.counter0 == selected_idx %}
-                              border-[#c49a45] bg-white ring-2 ring-[#c49a45]/20 shadow-sm
-                            {% else %}
-                              border-stone-200/90 bg-white hover:border-stone-300 shadow-2xs
-                            {% endif %}">
-                  <div class="space-y-2.5">
-                    <div class="flex items-center justify-between">
-                      <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full 
-                                  {% if forloop.counter0 == selected_idx %}
-                                    bg-[#1f2925] text-[#faf9f6]
-                                  {% else %}
-                                    bg-stone-100 text-stone-600
-                                  {% endif %}">
-                        {{ addr.label|default:"ที่อยู่จัดส่ง" }}
-                      </span>
-                      {% if forloop.counter0 == selected_idx %}
-                        <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
-                          <i data-lucide="check-circle-2" class="w-3 h-3"></i> ใช้งานอยู่
-                        </span>
+                <div class="col-md-6">
+                  <div class="border rounded-4 p-3 h-100 {% if forloop.counter0 == selected_idx %}border-success bg-mint{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                      <span class="badge {% if forloop.counter0 == selected_idx %}bg-success{% else %}bg-light text-secondary border{% endif %}">{{ addr.label|default:"ที่อยู่จัดส่ง" }}</span>
+                      {% if shipping_addresses|length > 1 %}
+                        <form method="post" action="{% url 'bookings:address_delete' forloop.counter0 %}" onsubmit="return confirm('ลบที่อยู่นี้หรือไม่?')">{% csrf_token %}<button type="submit" class="btn btn-link btn-sm text-danger p-0" aria-label="ลบที่อยู่"><i data-lucide="trash-2"></i></button></form>
                       {% endif %}
                     </div>
-
-                    <div>
-                      <div class="text-xs font-bold text-[#1f2925] flex items-center gap-1.5">
-                        <i data-lucide="user" class="w-3.5 h-3.5 text-stone-400"></i>
-                        <span>{{ addr.recipient_name }}</span>
-                      </div>
-                      <div class="text-[11px] font-mono text-stone-500 pl-5">
-                        {{ addr.phone_number }}
-                      </div>
-                    </div>
-
-                    <p class="text-xs text-stone-600 leading-relaxed pl-5 border-l-2 border-[#c49a45]/40 line-clamp-3">
-                      {{ addr.address_line }} อ.{{ addr.district }} จ.{{ addr.province }} {{ addr.postal_code }}
-                    </p>
-                  </div>
-
-                  <div class="pt-3 border-t border-stone-100 mt-3.5 flex items-center justify-between gap-2">
+                    <div class="fw-semibold small">{{ addr.recipient_name }} · {{ addr.phone_number }}</div>
+                    <div class="small text-secondary">{{ addr.address_line }} อ.{{ addr.district }} จ.{{ addr.province }} {{ addr.postal_code }}</div>
                     {% if forloop.counter0 != selected_idx %}
-                      <form method="POST" action="{% url 'bookings:address_select' forloop.counter0 %}">
-                        {% csrf_token %}
-                        <button type="submit" class="text-xs font-bold text-[#1f2925] hover:text-[#c49a45] transition flex items-center gap-1 cursor-pointer">
-                          <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                          <span>เลือกที่อยู่นี้</span>
-                        </button>
-                      </form>
+                      <form method="post" action="{% url 'bookings:address_select' forloop.counter0 %}" class="mt-2">{% csrf_token %}<button type="submit" class="btn btn-outline-ink btn-sm rounded-pill">ใช้ที่อยู่นี้</button></form>
                     {% else %}
-                      <span class="text-[11px] font-bold text-[#c49a45] flex items-center gap-1">
-                        <i data-lucide="sparkles" class="w-3 h-3"></i> ที่อยู่จัดส่งหลัก
-                      </span>
-                    {% endif %}
-
-                    {% if shipping_addresses|length > 1 %}
-                      <form method="POST" action="{% url 'bookings:address_delete' forloop.counter0 %}" onsubmit="return confirm('ต้องการลบที่อยู่จัดส่งนี้หรือไม่?')">
-                        {% csrf_token %}
-                        <button type="submit" class="text-stone-400 hover:text-rose-600 transition p-1 cursor-pointer" title="ลบที่อยู่นี้">
-                          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                      </form>
+                      <div class="small fw-semibold text-green mt-2"><i data-lucide="check-circle-2" class="me-1"></i>ใช้ที่อยู่นี้</div>
                     {% endif %}
                   </div>
                 </div>
               {% endfor %}
             </div>
-          {% else %}
-            <div class="p-6 rounded-2xl bg-amber-50/70 border border-amber-200 text-center space-y-2">
-              <i data-lucide="info" class="w-6 h-6 text-amber-600 mx-auto"></i>
-              <p class="text-xs font-bold text-amber-900">ยังไม่มีข้อมูลที่อยู่สำหรับจัดส่งสินค้า</p>
-              <p class="text-[11px] text-amber-700">กรุณากรอกข้อมูลที่อยู่จัดส่งด้านล่างเพื่อความสะดวกในการรับสินค้า OTOP</p>
-            </div>
           {% endif %}
 
-          <!-- Add Address Form (Redesigned Luxury Card with Sisaket 22 Districts Dropdown) -->
           {% if can_add_address %}
-            <div x-show="showAddForm || {{ shipping_addresses|length }} === 0" 
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 -translate-y-2"
-                 x-transition:enter-end="opacity-100 translate-y-0"
-                 class="pt-5 border-t border-stone-200/80 space-y-4">
-              
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#c49a45]"></span>
-                  <h3 class="text-xs font-bold text-[#1f2925] uppercase tracking-wider">
-                    กรอกข้อมูลที่อยู่จัดส่งใหม่ (เพิ่มได้อีก {{ 3|add:"-"|add:shipping_addresses|length }} ที่อยู่)
-                  </h3>
+            <form method="post" action="{% url 'bookings:address_add' %}" x-show="showAddForm" {% if shipping_addresses %}x-cloak{% endif %} class="bg-mint rounded-4 p-3">
+              {% csrf_token %}
+              <div class="row g-2">
+                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_label">ชื่อเรียก</label><input id="a_label" type="text" name="label" placeholder="บ้าน, ที่ทำงาน" required class="form-control"></div>
+                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_name">ชื่อผู้รับ</label><input id="a_name" type="text" name="recipient_name" required class="form-control" autocomplete="name"></div>
+                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_phone">เบอร์โทร</label><input id="a_phone" type="tel" name="phone_number" required class="form-control" autocomplete="tel-national"></div>
+                <div class="col-12"><label class="form-label small fw-semibold" for="a_line">ที่อยู่ (บ้านเลขที่ หมู่ ถนน ตำบล)</label><input id="a_line" type="text" name="address_line" required class="form-control" autocomplete="street-address"></div>
+                <div class="col-sm-5"><label class="form-label small fw-semibold" for="a_dist">อำเภอ</label>
+                  <select id="a_dist" name="district" required class="form-select">{% for dist in sisaket_districts %}<option value="{{ dist }}" {% if dist == 'เมืองศรีสะเกษ' %}selected{% endif %}>{{ dist }}</option>{% endfor %}</select>
                 </div>
-                <span class="text-[10px] text-stone-400">ระบบจะบันทึกอัตโนมัติสำหรับการสั่งซื้อครั้งถัดไป</span>
+                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_prov">จังหวัด</label><input id="a_prov" type="text" name="province" value="ศรีสะเกษ" required class="form-control"></div>
+                <div class="col-sm-3"><label class="form-label small fw-semibold" for="a_zip">รหัสไปรษณีย์</label><input id="a_zip" type="text" name="postal_code" inputmode="numeric" required class="form-control" autocomplete="postal-code"></div>
               </div>
-
-              <form method="POST" action="{% url 'bookings:address_add' %}" class="space-y-4 bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/90 shadow-xs">
-                {% csrf_token %}
-                
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                  <div>
-                    <label class="block text-[11px] font-bold text-stone-700 mb-1.5 flex items-center gap-1">
-                      <i data-lucide="tag" class="w-3 h-3 text-[#c49a45]"></i>
-                      <span>ป้ายกำกับที่อยู่</span>
-                    </label>
-                    <input type="text" name="label" placeholder="เช่น ที่อยู่บ้าน, คอนโด, ที่ทำงาน" required 
-                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-[#faf9f6] text-xs text-stone-800 placeholder:text-stone-400 focus:bg-white focus:border-[#c49a45] focus:ring-2 focus:ring-[#c49a45]/20 transition outline-none">
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-stone-700 mb-1.5 flex items-center gap-1">
-                      <i data-lucide="user" class="w-3 h-3 text-[#c49a45]"></i>
-                      <span>ชื่อ-นามสกุล ผู้รับ</span>
-                    </label>
-                    <input type="text" name="recipient_name" placeholder="ระบุชื่อและนามสกุลผู้รับ" required 
-                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-[#faf9f6] text-xs text-stone-800 placeholder:text-stone-400 focus:bg-white focus:border-[#c49a45] focus:ring-2 focus:ring-[#c49a45]/20 transition outline-none">
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-stone-700 mb-1.5 flex items-center gap-1">
-                      <i data-lucide="phone" class="w-3 h-3 text-[#c49a45]"></i>
-                      <span>เบอร์โทรศัพท์ติดต่อ</span>
-                    </label>
-                    <input type="tel" name="phone_number" placeholder="08X-XXX-XXXX" required 
-                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-[#faf9f6] text-xs font-mono text-stone-800 placeholder:text-stone-400 focus:bg-white focus:border-[#c49a45] focus:ring-2 focus:ring-[#c49a45]/20 transition outline-none">
-                  </div>
-                </div>
-
-                <div>
-                  <label class="block text-[11px] font-bold text-stone-700 mb-1.5 flex items-center gap-1">
-                    <i data-lucide="home" class="w-3 h-3 text-[#c49a45]"></i>
-                    <span>รายละเอียดที่อยู่ (บ้านเลขที่, หมู่, ซอย, ถนน, ตำบล)</span>
-                  </label>
-                  <input type="text" name="address_line" placeholder="เช่น 123/4 หมู่ 5 ซอยริมคลอง ต.เมืองใต้" required 
-                         class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-[#faf9f6] text-xs text-stone-800 placeholder:text-stone-400 focus:bg-white focus:border-[#c49a45] focus:ring-2 focus:ring-[#c49a45]/20 transition outline-none">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                  <!-- Sisaket District Dropdown (22 Districts) -->
-                  <div>
-                    <label class="block text-[11px] font-bold text-stone-700 mb-1.5 flex items-center gap-1">
-                      <i data-lucide="map-pin" class="w-3 h-3 text-[#c49a45]"></i>
-                      <span>อำเภอ (ศรีสะเกษ)</span>
-                    </label>
-                    <select name="district" required 
-                            class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-[#faf9f6] text-xs font-bold text-stone-800 focus:bg-white focus:border-[#c49a45] focus:ring-2 focus:ring-[#c49a45]/20 transition outline-none cursor-pointer">
-                      {% for dist in sisaket_districts %}
-                        <option value="{{ dist }}" {% if dist == 'เมืองศรีสะเกษ' %}selected{% endif %}>{{ dist }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-stone-700 mb-1.5 flex items-center gap-1">
-                      <i data-lucide="map" class="w-3 h-3 text-[#c49a45]"></i>
-                      <span>จังหวัด</span>
-                    </label>
-                    <input type="text" name="province" value="ศรีสะเกษ" required 
-                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-stone-100/80 text-xs font-bold text-stone-700 focus:outline-none">
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-stone-700 mb-1.5 flex items-center gap-1">
-                      <i data-lucide="mail" class="w-3 h-3 text-[#c49a45]"></i>
-                      <span>รหัสไปรษณีย์</span>
-                    </label>
-                    <input type="text" name="postal_code" value="33000" required 
-                           class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-[#faf9f6] text-xs font-mono font-bold text-stone-800 focus:bg-white focus:border-[#c49a45] focus:ring-2 focus:ring-[#c49a45]/20 transition outline-none">
-                  </div>
-                </div>
-
-                <div class="pt-2 flex items-center justify-end gap-2.5">
-                  <button 
-                    type="button" 
-                    @click="showAddForm = false"
-                    class="px-4 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-stone-600 text-xs font-semibold transition cursor-pointer"
-                  >
-                    ยกเลิก
-                  </button>
-                  <button 
-                    type="submit" 
-                    class="px-5 py-2.5 rounded-xl bg-[#1f2925] hover:bg-[#2b3832] text-white text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
-                  >
-                    <i data-lucide="save" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-                    <span>บันทึกที่อยู่นี้</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-          {% else %}
-            <div class="p-3.5 rounded-2xl bg-stone-100/80 border border-stone-200 text-center text-xs text-stone-500">
-              <i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600 mr-1"></i>
-              บันทึกที่อยู่จัดส่งครบตามโควตาสูงสุด 3 ข้อมูลแล้ว (หากต้องการเพิ่มที่อยู่ใหม่ กรุณาลบที่อยู่อันใดอันหนึ่งออกก่อน)
-            </div>
+              <div class="d-flex justify-content-end gap-2 mt-3">
+                {% if shipping_addresses %}<button type="button" class="btn btn-outline-ink btn-sm rounded-pill" @click="showAddForm = false">ยกเลิก</button>{% endif %}
+                <button type="submit" class="btn btn-green btn-sm rounded-pill px-3"><i data-lucide="save" class="me-1"></i>บันทึกที่อยู่</button>
+              </div>
+            </form>
           {% endif %}
         </div>
 
-        <div class="pt-2">
-          <a 
-            href="{% url 'accommodations:list' %}" 
-            class="inline-flex items-center gap-1.5 text-xs font-bold text-[#1f2925] hover:text-[#c49a45] transition"
-          >
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            <span>เลือกบริการชุมชนเพิ่มเติม</span>
-          </a>
-        </div>
+        <a href="{% url 'accommodations:list' %}" class="small fw-semibold text-green"><i data-lucide="arrow-left" class="me-1"></i>เลือกบริการเพิ่มเติม</a>
       </div>
 
-      <!-- Order Summary Card (4 cols) with AJAX Gift Voucher & Shipping Engine -->
-      <div class="lg:col-span-4 bg-white p-6 sm:p-7 rounded-3xl border border-stone-200/90 shadow-md space-y-5 sticky top-24"
-           x-data="cartVoucherApp()">
-        
-        <h3 class="text-sm font-bold text-[#1f2925] border-b border-stone-100 pb-3 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <i data-lucide="receipt" class="w-4 h-4 text-[#c49a45]"></i>
-            <span>สรุปรายการสั่งซื้อ</span>
-          </div>
-          <span class="text-[11px] text-stone-400 font-mono">3-STEP CHECKOUT</span>
-        </h3>
-        
-        <!-- Price Breakdown -->
-        <div class="space-y-2.5 text-xs">
-          <div class="flex justify-between text-stone-600">
-            <span>ยอดรวมสินค้าและบริการ</span>
-            <span class="font-bold text-[#1f2925]">฿{{ totals.subtotal|floatformat:0 }}</span>
-          </div>
-
-          <!-- Dynamic Shipping Fee -->
-          <div class="flex justify-between items-center text-stone-600">
-            <span class="flex items-center gap-1">
-              <i data-lucide="truck" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-              <span>ค่าจัดส่งสินค้า OTOP</span>
-            </span>
-            <span class="font-bold {% if totals.shipping_fee == 0 %}text-emerald-700{% else %}text-[#1f2925]{% endif %}">
-              {{ totals.shipping_status_text }}
-            </span>
-          </div>
-
-          <!-- Platform fee -->
-          <div class="flex justify-between text-emerald-700 font-semibold">
-            <span>ค่าธรรมเนียมแพลตฟอร์ม</span>
-            <span>ฟรี (สนับสนุนชุมชน 100%)</span>
-          </div>
-
-          <!-- Voucher Discount (AJAX Dynamic) -->
-          <template x-if="discountAmount > 0">
-            <div class="flex justify-between text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200/80 animate-in fade-in">
-              <span class="flex items-center gap-1">
-                <i data-lucide="ticket-percent" class="w-3.5 h-3.5 text-emerald-600"></i>
-                <span>ส่วนลดคูปอง (<span x-text="couponCode"></span>)</span>
-              </span>
-              <span>-฿<span x-text="Number(discountAmount).toLocaleString()"></span></span>
-            </div>
-          </template>
-          {% if totals.discount_amount > 0 %}
-            <div x-show="!discountAmount" class="flex justify-between text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200/80">
-              <span class="flex items-center gap-1">
-                <i data-lucide="ticket-percent" class="w-3.5 h-3.5 text-emerald-600"></i>
-                <span>ส่วนลดคูปอง ({{ totals.coupon_code }})</span>
-              </span>
-              <span>-฿{{ totals.discount_amount|floatformat:0 }}</span>
-            </div>
-          {% endif %}
-
-          <div class="flex justify-between text-stone-400 text-[11px] pt-1 border-t border-stone-100">
-            <span>ภาษีและค่าบำรุงท้องถิ่น</span>
-            <span>รวมในราคาแล้ว</span>
-          </div>
-        </div>
-
-        <!-- ==================================================================== -->
-        <!-- AJAX GIFT VOUCHER & PROMO CODE BOX (ปู่ AJAX)                        -->
-        <!-- ==================================================================== -->
-        <div class="p-4 rounded-2xl bg-gradient-to-r from-[#faf9f6] to-white border border-[#c49a45]/40 space-y-3">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-bold text-[#1f2925] flex items-center gap-1.5">
-              <i data-lucide="ticket" class="w-4 h-4 text-[#c49a45]"></i>
-              <span>Gift Voucher / โค้ดส่วนลด</span>
-            </label>
-            <template x-if="couponCode">
-              <button 
-                type="button" 
-                @click="removeCoupon()" 
-                class="text-xs font-bold text-rose-600 hover:text-rose-800 underline cursor-pointer"
-              >
-                ยกเลิกโค้ด
-              </button>
+      <div class="col-lg-4">
+        <div class="wt-card p-4 position-sticky" style="top: 6rem;" x-data="cartVoucherApp()">
+          <h2 class="h6 fw-bold mb-3"><i data-lucide="receipt" class="text-green me-1"></i>สรุปคำสั่งซื้อ</h2>
+          <div class="d-grid gap-2 small">
+            <div class="d-flex justify-content-between"><span class="text-secondary">ยอดรวม</span><span class="fw-semibold">฿{{ totals.subtotal|floatformat:"0g" }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-secondary"><i data-lucide="truck" class="me-1"></i>ค่าจัดส่ง</span><span>{{ totals.shipping_status_text }}</span></div>
+            <template x-if="discountAmount > 0">
+              <div class="d-flex justify-content-between text-success"><span>ส่วนลด (<span x-text="couponCode"></span>)</span><span>-฿<span x-text="Number(discountAmount).toLocaleString()"></span></span></div>
             </template>
           </div>
 
-          <!-- Active applied coupon badge -->
-          <div x-show="couponCode" style="display: none;" class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
-            <div class="flex items-center gap-1.5 text-xs text-emerald-900 font-bold">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>ใช้งานโค้ด: <span class="font-mono text-emerald-700" x-text="couponCode"></span></span>
-              <span class="text-[11px] bg-white text-emerald-800 px-2 py-0.5 rounded-md border border-emerald-200 font-bold">-฿<span x-text="discountAmount"></span></span>
-            </div>
-            <button type="button" @click="removeCoupon()" class="text-xs text-rose-600 hover:text-rose-800 underline cursor-pointer font-bold">
-              ลบโค้ด
-            </button>
-          </div>
+          <div class="border-top my-3"></div>
 
-          <!-- Form Input -->
-          <form id="cart-voucher-form" @submit.prevent="applyCoupon()" method="POST" action="{% url 'bookings:coupon_apply' %}" class="space-y-2">
+          <form id="cart-voucher-form" @submit.prevent="applyCoupon()" method="post" action="{% url 'bookings:coupon_apply' %}">
             {% csrf_token %}
-            <div class="flex items-center gap-1.5">
-              <input 
-                type="text" 
-                name="coupon_code"
-                id="cart-coupon-input"
-                x-model="inputCode" 
-                placeholder="เช่น OPENWT, WELCOME50" 
-                autocomplete="off"
-                class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 bg-white text-xs font-mono font-bold uppercase tracking-wider text-stone-800 placeholder:text-stone-400 focus:border-[#c49a45] focus:ring-1 focus:ring-[#c49a45] outline-none"
-              >
-              <button 
-                type="submit" 
-                id="btn-apply-coupon"
-                class="px-4 py-2.5 rounded-xl bg-[#1f2925] hover:bg-[#2b3832] text-white text-xs font-bold transition shadow-xs shrink-0 cursor-pointer flex items-center justify-center gap-1 min-w-[70px]"
-              >
-                <span x-text="loading ? 'กำลังตรวจ...' : 'ใช้โค้ด'">ใช้โค้ด</span>
-              </button>
+            <label for="cart-coupon-input" class="form-label small fw-semibold"><i data-lucide="ticket" class="me-1"></i>โค้ดส่วนลด</label>
+            <div x-show="couponCode" x-cloak>
+              <div class="alert alert-success py-2 px-3 small d-flex justify-content-between align-items-center rounded-4 mb-2">
+                <span>ใช้โค้ด <strong x-text="couponCode"></strong></span>
+                <button type="button" class="btn btn-link btn-sm text-danger p-0" @click="removeCoupon()">ยกเลิก</button>
+              </div>
             </div>
+            <div class="input-group">
+              <input type="text" name="coupon_code" id="cart-coupon-input" x-model="inputCode" placeholder="กรอกโค้ด" autocomplete="off" class="form-control">
+              <button type="submit" class="btn btn-outline-ink" id="btn-apply-coupon"><span x-text="loading ? 'กำลังตรวจ...' : 'ใช้โค้ด'">ใช้โค้ด</span></button>
+            </div>
+            {% if active_coupons %}
+              <div class="d-flex flex-wrap gap-1 mt-2">
+                {% for ac in active_coupons %}
+                  <button type="button" class="badge badge-gold border-0" @click="fillAndApply('{{ ac.code|escapejs }}')">{{ ac.code }} (-฿{{ ac.discount_amount|floatformat:"0g" }})</button>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div x-show="message" x-cloak x-text="message" class="small mt-2" :class="success ? 'text-success' : 'text-danger'"></div>
           </form>
 
-          <!-- Quick Coupon Chips -->
-          <div class="pt-0.5 flex flex-wrap items-center gap-1.5 text-[11px]">
-            <span class="text-stone-400 text-[10px]">กดเพื่อใช้ทันที:</span>
-            {% for ac in active_coupons %}
-              <button type="button" 
-                      @click="fillAndApply('{{ ac.code }}')"
-                      class="px-2 py-0.5 rounded-md bg-[#c49a45]/10 hover:bg-[#c49a45]/20 text-[#1f2925] font-mono font-bold text-[10px] border border-[#c49a45]/30 cursor-pointer transition">
-                {{ ac.code }} (-฿{{ ac.discount_amount|floatformat:0 }})
-              </button>
-            {% empty %}
-              <button type="button" 
-                      @click="fillAndApply('OPENWT')"
-                      class="px-2 py-0.5 rounded-md bg-[#c49a45]/10 hover:bg-[#c49a45]/20 text-[#1f2925] font-mono font-bold text-[10px] border border-[#c49a45]/30 cursor-pointer transition">
-                OPENWT (-฿50)
-              </button>
-            {% endfor %}
-          </div>
-
-          <!-- Instant Feedback Message -->
-          <div x-show="message" 
-               x-text="message" 
-               :class="success ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-rose-700 bg-rose-50 border-rose-200'"
-               class="text-xs p-2.5 rounded-xl border font-medium"
-               style="display: none;">
-          </div>
-        </div>
-
-        <!-- Selected Address Preview -->
-        {% if selected_address %}
-          <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 text-xs space-y-1">
-            <div class="text-[10px] font-bold text-stone-400 uppercase tracking-wider flex items-center gap-1">
-              <i data-lucide="map-pin" class="w-3 h-3 text-[#c49a45]"></i>
-              <span>จัดส่งสินค้าไปที่:</span>
+          {% if selected_address %}
+            <div class="bg-mint rounded-4 p-3 small mt-3">
+              <div class="fw-semibold"><i data-lucide="map-pin" class="text-green me-1"></i>ส่งไปที่ {{ selected_address.recipient_name }} ({{ selected_address.label }})</div>
+              <div class="text-secondary">{{ selected_address.address_line }} อ.{{ selected_address.district }} จ.{{ selected_address.province }}</div>
             </div>
-            <div class="font-bold text-[#1f2925] truncate">
-              {{ selected_address.recipient_name }} ({{ selected_address.label }})
-            </div>
-            <div class="text-[11px] text-stone-500 truncate">
-              {{ selected_address.address_line }} อ.{{ selected_address.district }} จ.{{ selected_address.province }}
-            </div>
-          </div>
-        {% endif %}
+          {% endif %}
 
-        <!-- Net Total Price -->
-        <div class="pt-3 border-t border-stone-100 flex justify-between items-baseline">
-          <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-stone-500">ยอดชำระสุทธิ</span>
-            <div class="text-[10px] text-stone-400">รวมค่าส่งและหักส่วนลดแล้ว</div>
+          <div class="d-flex justify-content-between align-items-baseline border-top mt-3 pt-3">
+            <span class="fw-bold">ยอดชำระสุทธิ</span>
+            <span class="fs-3 fw-bold text-green">฿<span x-text="Number(finalTotal).toLocaleString()">{{ totals.final_total|floatformat:"0g" }}</span></span>
           </div>
-          <span class="text-2xl sm:text-3xl font-serif font-bold text-[#c49a45]">
-            ฿<span x-text="Number(finalTotal).toLocaleString()">{{ totals.final_total|floatformat:0 }}</span>
-          </span>
-        </div>
 
-        <div class="pt-2">
           {% if user.is_authenticated %}
-            <a 
-              href="{% url 'bookings:review' %}" 
-              class="w-full min-h-[50px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer group"
-            >
-              <span>ไปขั้นตอนที่ 2: ทวนรายละเอียดคำสั่งซื้อ</span>
-              <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45] group-hover:translate-x-1 transition-transform"></i>
-            </a>
+            <a href="{% url 'bookings:review' %}" class="btn btn-gold btn-lg rounded-pill w-100 mt-3">ตรวจสอบคำสั่งซื้อ <i data-lucide="arrow-right"></i></a>
           {% else %}
-            <a 
-              href="{% url 'accounts:login' %}?next={% url 'bookings:cart' %}" 
-              class="w-full min-h-[50px] rounded-2xl bg-[#c49a45] hover:bg-[#a88034] text-[#1f2925] text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>เข้าสู่ระบบเพื่อสั่งซื้อ</span>
-              <i data-lucide="log-in" class="w-4 h-4"></i>
-            </a>
+            <a href="{% url 'accounts:login' %}?next={% url 'bookings:cart' %}" class="btn btn-gold btn-lg rounded-pill w-100 mt-3"><i data-lucide="log-in" class="me-1"></i>เข้าสู่ระบบเพื่อสั่งซื้อ</a>
           {% endif %}
         </div>
-
-        <div class="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 pt-2 border-t border-stone-100">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-          <span>รับประกันความปลอดภัย ชุมชนดูแล 100%</span>
-        </div>
       </div>
-
     </div>
   {% else %}
-    <div class="bg-white rounded-3xl border border-slate-200 p-14 text-center space-y-4 shadow-xs">
-      <div class="w-16 h-16 rounded-2xl bg-slate-100 text-[#c49a45] mx-auto flex items-center justify-center">
-        <i data-lucide="shopping-bag" class="w-8 h-8"></i>
-      </div>
-      <h3 class="text-base font-bold text-[#1f2925]">ตะกร้าของคุณยังว่างอยู่</h3>
-      <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-        ร่วมสนับสนุนเศรษฐกิจชุมชน เลือกจองที่พัก ลิ้มลองอาหารสุขภาพ หรือสั่งซื้อสินค้า OTOP ได้เลย
-      </p>
-      <a 
-        href="{% url 'accommodations:list' %}" 
-        class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#1f2925] text-[#faf9f6] text-xs font-bold hover:bg-[#2b3832] transition shadow-md"
-      >
-        <span>เลือกชมบริการ</span>
-        <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45]"></i>
-      </a>
+    <div class="wt-card wt-empty">
+      <span class="wt-icon-pill"><i data-lucide="shopping-bag"></i></span>
+      <h2 class="h5 fw-bold">ตะกร้ายังว่างอยู่</h2>
+      <p class="text-secondary">เลือกที่พัก อาหารสุขภาพ สปา หรือสินค้า OTOP ได้เลย</p>
+      <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill px-4">เริ่มเลือกบริการ</a>
     </div>
   {% endif %}
-
 </div>
 {% endblock %}
 

@@ -1,82 +1,30 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}การเข้าถึงถูกระงับชั่วคราว - WellTrip Security{% endblock %}
+{% block title %}ระงับการเข้าสู่ระบบชั่วคราว - WellTrip{% endblock %}
 
 {% block content %}
-<div class="min-h-[75vh] flex items-center justify-center py-16 px-4">
-  <div class="bg-white rounded-3xl border border-rose-200/80 max-w-lg w-full p-8 sm:p-10 text-center space-y-6 shadow-2xl relative overflow-hidden"
+<section class="container-xl py-5">
+  <div class="wt-card wt-empty mx-auto py-5 px-4" style="max-width: 36rem;"
        x-data="{
          timeLeft: 900,
-         timer: null,
          get formattedTime() {
-           const minutes = Math.floor(this.timeLeft / 60);
-           const seconds = this.timeLeft % 60;
-           return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+           const m = Math.floor(this.timeLeft / 60), s = this.timeLeft % 60;
+           return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
          },
-         init() {
-           this.timer = setInterval(() => {
-             if (this.timeLeft > 0) {
-               this.timeLeft--;
-             } else {
-               clearInterval(this.timer);
-             }
-           }, 1000);
-         }
+         init() { const t = setInterval(() => { this.timeLeft > 0 ? this.timeLeft-- : clearInterval(t); }, 1000); }
        }">
-    
-    <!-- Background glow effect -->
-    <div class="absolute -right-16 -top-16 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-    <!-- Security Lock Icon -->
-    <div class="w-20 h-20 rounded-3xl bg-rose-50 text-rose-600 mx-auto flex items-center justify-center ring-1 ring-rose-200 shadow-inner">
-      <i data-lucide="shield-alert" class="w-10 h-10 text-rose-600"></i>
+    <span class="wt-stat-icon mb-3" style="--c:#c92a2a;--bg:#fff0f0;width:4.5rem;height:4.5rem;border-radius:1.5rem"><i data-lucide="shield-alert" style="width:2rem;height:2rem"></i></span>
+    <h1 class="h4 fw-bold">ระงับการเข้าสู่ระบบชั่วคราว</h1>
+    <p class="text-secondary">มีการใส่รหัสผ่านผิดเกิน 5 ครั้งติดต่อกัน ระบบจึงระงับการเข้าสู่ระบบ 15 นาทีเพื่อปกป้องบัญชีของคุณ</p>
+    <div class="bg-mint rounded-4 p-3 mb-4">
+      <small class="text-secondary d-block">ลองใหม่ได้ในอีก</small>
+      <span class="display-6 fw-bold font-monospace" x-text="formattedTime">15:00</span>
     </div>
-
-    <!-- Header Text -->
-    <div class="space-y-2">
-      <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-bold uppercase tracking-wider">
-        <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-        <span>ระบบความปลอดภัย: ระงับการเข้าถึงชั่วคราว</span>
-      </div>
-      <h1 class="text-xl sm:text-2xl font-bold text-forest">การเข้าสู่ระบบถูกระงับ (Security Lockout)</h1>
-      <p class="text-xs text-earth/70 leading-relaxed max-w-sm mx-auto">
-        ตรวจพบการพยายามเข้าสู่ระบบไม่ถูกต้องเกิน 5 ครั้งต่อเนื่อง เพื่อปกป้องบัญชีและข้อมูลของคุณ ระบบได้ทำการระงับการเข้าใช้งานเป็นเวลา 15 นาที
-      </p>
+    <p class="small text-secondary">ถ้าลืมรหัสผ่านหรือสงสัยว่ามีคนพยายามเข้าบัญชีของคุณ กรุณาติดต่อทีมงาน</p>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      <a href="{% url 'core:contact' %}" class="btn btn-green rounded-pill px-4">ติดต่อทีมงาน</a>
+      <a href="{% url 'core:landing' %}" class="btn btn-outline-ink rounded-pill px-4">กลับหน้าแรก</a>
     </div>
-
-    <!-- Countdown Box -->
-    <div class="p-5 rounded-2xl bg-stone-50 border border-stone-200/90 text-center space-y-1.5 shadow-inner">
-      <span class="text-[11px] font-semibold text-earth/60 uppercase tracking-wider block">เวลาที่เหลือจนกว่าจะปลดล็อค</span>
-      <div class="font-mono text-3xl font-extrabold text-rose-600 tracking-wider" x-text="formattedTime">15:00</div>
-      <p class="text-[10px] text-earth/50">ระบบจะรีเซ็ตการตรวจสอบโดยอัตโนมัติเมื่อครบกำหนดเวลา</p>
-    </div>
-
-    <!-- Recommendations -->
-    <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/70 text-left text-xs text-amber-900 space-y-1.5">
-      <div class="font-bold flex items-center space-x-1.5 text-amber-800">
-        <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0"></i>
-        <span>คำแนะนำด้านความปลอดภัย:</span>
-      </div>
-      <ul class="text-[11px] text-amber-800/80 list-disc list-inside space-y-0.5 pl-1">
-        <li>โปรดรอจนกว่าเวลานับถอยหลังจะหมดลงก่อนลองเข้าสู่ระบบใหม่อีกครั้ง</li>
-        <li>ตรวจสอบความถูกต้องของอีเมลและรหัสผ่านก่อนกดยืนยัน</li>
-        <li>หากลืมรหัสผ่านหรือสงสัยว่าบัญชีถูกเข้าถึงโดยไม่ได้รับอนุญาต โปรดติดต่อผู้ดูแลชุมชน</li>
-      </ul>
-    </div>
-
-    <!-- Action Links -->
-    <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-      <a href="{% url 'core:home' %}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md">
-        <i data-lucide="home" class="w-4 h-4 text-gold"></i>
-        <span>กลับสู่หน้าหลัก</span>
-      </a>
-      <a href="{% url 'accounts:login' %}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-full border border-stone-200 bg-stone-50 hover:bg-stone-100 text-xs font-bold text-forest transition-colors">
-        <i data-lucide="log-in" class="w-4 h-4"></i>
-        <span>ไปยังหน้าล็อกอิน</span>
-      </a>
-    </div>
-
   </div>
-</div>
+</section>
 {% endblock %}

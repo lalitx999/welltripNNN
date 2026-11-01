@@ -8,6 +8,8 @@ from django.db import models, transaction, IntegrityError
 from django.db.models import Sum, Count, Q
 from django.core.paginator import Paginator
 from django.utils import timezone
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from apps.accounts.models import User, UserRoles, AuditLog, MerchantProfile, MerchantApprovalStatus
 from apps.accounts.permissions import role_required
@@ -18,6 +20,7 @@ from apps.otop.models import OTOPProduct
 from apps.payments.models import Payment, PaymentStatus, PaymentSlip, SlipVerificationStatus
 from apps.bookings.models import Booking, BookingStatus
 from apps.community.models import MapLocation, MapLocationCategory, PassportStamp, LocationEvent, EditorialEntry
+from apps.core.services.media import sanitize_and_strip_image
 from apps.core.services.notifications import send_merchant_kyc_decision
 
 
@@ -165,7 +168,7 @@ def admin_command_center_view(request):
         context['users_page'] = paginator.get_page(request.GET.get('page'))
         context['user_query'] = query
         context['user_role_filter'] = role_filter
-        context['role_choices'] = UserRoles.choices
+        context['role_choices'] = [c for c in UserRoles.choices if c[0] in _assignable_roles(request.user)]
 
     # TAB 6: LOCATIONS & PASSPORT
     elif active_tab == 'locations':
@@ -272,34 +275,9 @@ def admin_reject_merchant_view(request, user_id):
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 def admin_users_view(request):
-    """
-    Enterprise User Management View:
-    Displays user registry with search by email/name and role filtering.
-    """
-    query = request.GET.get('q', '').strip()
-    role_filter = request.GET.get('role', '').strip()
+    """Legacy URL: users are managed in the Admin Center tab."""
+    return redirect('/accounts/admin-center/?tab=users')
 
-    users_qs = User.objects.all().order_by('-date_joined')
-    if query:
-        users_qs = users_qs.filter(
-            models.Q(email__icontains=query) |
-            models.Q(first_name__icontains=query) |
-            models.Q(last_name__icontains=query) |
-            models.Q(phone_number__icontains=query)
-        )
-    if role_filter:
-        users_qs = users_qs.filter(role=role_filter)
-
-    paginator = Paginator(users_qs, 25)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    return render(request, 'admin/users.html', {
-        'page_obj': page_obj,
-        'query': query,
-        'role_filter': role_filter,
-        'role_choices': UserRoles.choices,
-    })
 
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
@@ -367,22 +345,9 @@ def admin_delete_user_view(request, user_id):
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 def admin_catalog_view(request):
-    """
-    Unified Catalog Audit View:
-    Displays all accommodations, food menus, wellness services, and OTOP products
-    with real owner contact details (Name, Email, Phone).
-    """
-    accommodations = Accommodation.objects.select_related('owner').order_by('-created_at')[:20]
-    menus = FoodMenu.objects.select_related('owner').order_by('-created_at')[:20]
-    spas = WellnessService.objects.select_related('owner').order_by('-created_at')[:20]
-    otop_items = OTOPProduct.objects.select_related('owner').order_by('-created_at')[:20]
+    """Legacy URL: the catalog is managed in the Admin Center tab."""
+    return redirect('/accounts/admin-center/?tab=catalog')
 
-    return render(request, 'admin/catalog.html', {
-        'accommodations': accommodations,
-        'menus': menus,
-        'spas': spas,
-        'otop_items': otop_items,
-    })
 
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
@@ -418,7 +383,10 @@ def admin_catalog_add_view(request):
     title = request.POST.get('title', '').strip()
     price_val = request.POST.get('price', '0').strip()
     description = request.POST.get('description', '').strip()
-    image_file = request.FILES.get('image')
+    image_file, image_error = _sanitized_upload(request)
+    if image_error:
+        messages.error(request, image_error)
+        return redirect('/accounts/admin-center/?tab=catalog')
 
     try:
         price = Decimal(price_val)
@@ -528,7 +496,10 @@ def admin_catalog_edit_view(request, item_type, item_id):
     description = request.POST.get('description', '').strip()
     raw_active = request.POST.get('is_active') or request.POST.get('is_available')
     is_active_val = str(raw_active).lower() in ('1', 'true', 'on')
-    image_file = request.FILES.get('image')
+    image_file, image_error = _sanitized_upload(request)
+    if image_error:
+        messages.error(request, image_error)
+        return redirect('/accounts/admin-center/?tab=catalog')
 
     try:
         with transaction.atomic():
@@ -691,7 +662,7 @@ def admin_partner_add_view(request):
     category = request.POST.get('business_category', 'HOMESTAY').strip()
     phone = request.POST.get('phone_number', '').strip()
     description = request.POST.get('description', '').strip()
-    password = request.POST.get('password', 'WellTrip2026!').strip()
+    password = request.POST.get('password', '').strip()
 
     role_map = {
         'HOMESTAY': UserRoles.HOMESTAY_OWNER,
@@ -703,6 +674,11 @@ def admin_partner_add_view(request):
 
     if not email or not business_name:
         messages.error(request, "กรุณาระบุอีเมลและชื่อสถานประกอบการ")
+        return redirect('/accounts/admin-center/?tab=approvals')
+
+    problem = _password_problem(password)
+    if problem:
+        messages.error(request, f"รหัสผ่านไม่ผ่านเกณฑ์: {problem}")
         return redirect('/accounts/admin-center/?tab=approvals')
 
     if User.objects.filter(email=email).exists():
@@ -813,12 +789,49 @@ def admin_partner_delete_view(request, user_id):
 # FULL ADMIN CRUD: 3. USERS MANAGEMENT
 # ==============================================================================
 
+def _sanitized_upload(request, field='image'):
+    """Re-encodes an uploaded image (strips EXIF and embedded payloads) like the partner forms do."""
+    upload = request.FILES.get(field)
+    if not upload:
+        return None, ""
+    try:
+        return sanitize_and_strip_image(upload), ""
+    except ValidationError as exc:
+        return None, " ".join(exc.messages)
+
+
+def _assignable_roles(actor):
+    """Roles an admin may grant: only super admins can create or promote super admins."""
+    roles = set(dict(UserRoles.choices))
+    if not (actor.is_superuser or actor.role == UserRoles.SUPER_ADMIN):
+        roles.discard(UserRoles.SUPER_ADMIN)
+    return roles
+
+
+def _can_manage(actor, target):
+    """Community admins may not change, reset or suspend super admin accounts."""
+    if actor.is_superuser or actor.role == UserRoles.SUPER_ADMIN:
+        return True
+    return not (target.is_superuser or target.role == UserRoles.SUPER_ADMIN)
+
+
+def _password_problem(password, user=None):
+    """Returns a Thai error message if the admin-supplied password is missing or weak."""
+    if not password:
+        return "กรุณากำหนดรหัสผ่าน"
+    try:
+        validate_password(password, user)
+    except ValidationError as exc:
+        return " ".join(exc.messages)
+    return ""
+
+
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 @require_http_methods(["POST"])
 def admin_user_add_view(request):
     """Admin creates a new user account."""
     email = request.POST.get('email', '').strip().lower()
-    password = request.POST.get('password', '').strip() or 'WellTrip2026!'
+    password = request.POST.get('password', '').strip()
     role = request.POST.get('role', UserRoles.TOURIST).strip()
     first_name = request.POST.get('first_name', '').strip()
     last_name = request.POST.get('last_name', '').strip()
@@ -826,6 +839,15 @@ def admin_user_add_view(request):
 
     if not email:
         messages.error(request, "กรุณาระบุอีเมลผู้ใช้งาน")
+        return redirect('/accounts/admin-center/?tab=users')
+
+    if role not in _assignable_roles(request.user):
+        messages.error(request, "ไม่มีสิทธิ์กำหนดบทบาทนี้")
+        return redirect('/accounts/admin-center/?tab=users')
+
+    problem = _password_problem(password)
+    if problem:
+        messages.error(request, f"รหัสผ่านไม่ผ่านเกณฑ์: {problem}")
         return redirect('/accounts/admin-center/?tab=users')
 
     if User.objects.filter(email=email).exists():
@@ -852,7 +874,7 @@ def admin_user_add_view(request):
             changes={"email": email, "role": role},
             user=request.user,
         )
-        messages.success(request, f"สร้างบัญชีผู้ใช้ {email} (บทบาท: {user.get_role_display()}) สำเร็จ (รหัสผ่าน: {password})")
+        messages.success(request, f"สร้างบัญชีผู้ใช้ {email} (บทบาท: {user.get_role_display()}) สำเร็จ")
     except Exception as exc:
         messages.error(request, f"เกิดข้อผิดพลาดในการสร้างบัญชี: {str(exc)}")
 
@@ -865,8 +887,7 @@ def admin_user_edit_view(request, user_id):
     """Admin updates user profile and role."""
     target_user = get_object_or_404(User, id=user_id)
 
-    # Community admin cannot promote/demote super admin
-    if request.user.role == UserRoles.COMMUNITY_ADMIN and target_user.role == UserRoles.SUPER_ADMIN:
+    if not _can_manage(request.user, target_user):
         messages.error(request, "ไม่มีสิทธิ์แก้ไขบัญชี Super Admin")
         return redirect('/accounts/admin-center/?tab=users')
 
@@ -878,7 +899,7 @@ def admin_user_edit_view(request, user_id):
     target_user.first_name = first_name
     target_user.last_name = last_name
     target_user.phone_number = phone
-    if role and role in dict(UserRoles.choices):
+    if role and role in _assignable_roles(request.user):
         target_user.role = role
     target_user.save()
 
@@ -902,6 +923,9 @@ def admin_user_toggle_view(request, user_id):
     if request.user.id == target_user.id:
         messages.error(request, "ไม่สามารถระงับบัญชีของตนเองได้")
         return redirect('/accounts/admin-center/?tab=users')
+    if not _can_manage(request.user, target_user):
+        messages.error(request, "ไม่มีสิทธิ์ระงับบัญชี Super Admin")
+        return redirect('/accounts/admin-center/?tab=users')
 
     target_user.is_active = not target_user.is_active
     target_user.save(update_fields=['is_active'])
@@ -924,7 +948,15 @@ def admin_user_toggle_view(request, user_id):
 def admin_user_reset_password_view(request, user_id):
     """Admin resets a user password."""
     target_user = get_object_or_404(User, id=user_id)
-    new_password = request.POST.get('new_password', '').strip() or 'WellTrip2026!'
+    if not _can_manage(request.user, target_user):
+        messages.error(request, "ไม่มีสิทธิ์รีเซ็ตรหัสผ่านของ Super Admin")
+        return redirect('/accounts/admin-center/?tab=users')
+
+    new_password = request.POST.get('new_password', '').strip()
+    problem = _password_problem(new_password, target_user)
+    if problem:
+        messages.error(request, f"รหัสผ่านไม่ผ่านเกณฑ์: {problem}")
+        return redirect('/accounts/admin-center/?tab=users')
 
     target_user.set_password(new_password)
     target_user.save(update_fields=['password'])
@@ -937,7 +969,7 @@ def admin_user_reset_password_view(request, user_id):
         changes={"action": "PASSWORD_RESET_BY_ADMIN"},
         user=request.user,
     )
-    messages.success(request, f"รีเซ็ตรหัสผ่านสำหรับ {target_user.email} เป็น '{new_password}' เรียบร้อยแล้ว")
+    messages.success(request, f"รีเซ็ตรหัสผ่านสำหรับ {target_user.email} เรียบร้อยแล้ว")
     return redirect('/accounts/admin-center/?tab=users')
 
 
@@ -1099,7 +1131,10 @@ def admin_content_add_view(request):
     body = request.POST.get('body', '').strip()
     location = request.POST.get('location', '').strip()
     google_maps_url = request.POST.get('google_maps_url', '').strip()
-    image_file = request.FILES.get('image')
+    image_file, image_error = _sanitized_upload(request)
+    if image_error:
+        messages.error(request, image_error)
+        return redirect('/accounts/admin-center/?tab=content')
     is_published = request.POST.get('is_published') == '1'
 
     if not title:
@@ -1147,7 +1182,10 @@ def admin_content_edit_view(request, entry_id):
     body = request.POST.get('body', '').strip()
     location = request.POST.get('location', '').strip()
     google_maps_url = request.POST.get('google_maps_url', '').strip()
-    image_file = request.FILES.get('image')
+    image_file, image_error = _sanitized_upload(request)
+    if image_error:
+        messages.error(request, image_error)
+        return redirect('/accounts/admin-center/?tab=content')
     is_published = request.POST.get('is_published') == '1'
 
     if title:

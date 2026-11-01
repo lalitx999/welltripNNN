@@ -5,19 +5,24 @@ Meets Security Requirement #8:
 - Logs: login/logout, create/update/delete, permission denied, admin actions
 - Sensitive data filtering: passwords, tokens, full PII are NEVER logged.
 """
+import json
+
+from django.core.serializers.json import DjangoJSONEncoder
+
 from apps.accounts.models import AuditLog
 
 
 def get_client_ip(request):
-    """Safely retrieves client IP address from request headers."""
+    """
+    Real client IP for audit logs, rate limiting and axes lockouts.
+
+    Our nginx overwrites X-Real-IP with the client address (restored from
+    Cloudflare's CF-Connecting-IP), so it is trusted; X-Forwarded-For is not,
+    because a client can append to it. Falls back to REMOTE_ADDR in dev.
+    """
     if not request:
         return None
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0].strip()
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+    return request.META.get('HTTP_X_REAL_IP') or request.META.get('REMOTE_ADDR')
 
 
 def record_audit_log(
@@ -43,6 +48,9 @@ def record_audit_log(
             filtered_changes[k] = '***REDACTED***'
         else:
             filtered_changes[k] = v
+
+    # Form data can hold dates, Decimals, files or model instances; store them as JSON-safe values
+    filtered_changes = json.loads(json.dumps(filtered_changes, cls=DjangoJSONEncoder, default=str))
 
     actor = user
     ip_address = None

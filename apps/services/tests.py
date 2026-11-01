@@ -3,8 +3,10 @@ from decimal import Decimal
 from django.test import TestCase, Client
 from django.urls import reverse
 from apps.accounts.models import User, UserRoles
+from apps.accounts.models import MerchantApprovalStatus, MerchantProfile
 from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot, FoodWellnessCategory
 
+MERCHANT_ROLES = [UserRoles.HOMESTAY_OWNER, UserRoles.RESTAURANT_OWNER, UserRoles.WELLNESS_OWNER, UserRoles.OTOP_OWNER]
 
 class ServicesStudioSecurityTestCase(TestCase):
     """
@@ -57,6 +59,13 @@ class ServicesStudioSecurityTestCase(TestCase):
             capacity_total=2,
             capacity_available=2,
         )
+
+        # Partner Studio requires an approved KYC profile
+        for merchant in User.objects.filter(role__in=MERCHANT_ROLES):
+            MerchantProfile.objects.get_or_create(
+                user=merchant,
+                defaults={"business_name": merchant.email, "status": MerchantApprovalStatus.APPROVED},
+            )
 
     def test_restaurant_food_delete_idor_blocked(self):
         """Restaurant Owner 2 cannot delete Restaurant Owner 1's food menu."""

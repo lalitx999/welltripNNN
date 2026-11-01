@@ -60,7 +60,7 @@ class Accommodation(models.Model):
     @property
     def min_price_per_night(self):
         first_room = self.rooms.filter(is_active=True).order_by('base_price_per_night').first()
-        return first_room.base_price_per_night if first_room else Decimal("650.00")
+        return first_room.base_price_per_night if first_room else None
 
     @property
     def hero_image(self):

@@ -1,248 +1,99 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}โฮมสเตย์และที่พักชุมชนนิเวศ - WellTrip Sisaket{% endblock %}
+{% block title %}โฮมสเตย์และที่พักชุมชน - WellTrip Sisaket{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-  
-  <!-- Page Heading -->
-  <div class="space-y-2">
-    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
-      <span class="w-2 h-2 rounded-full bg-[#c49a45] animate-pulse"></span>
-      <span>STAY CLOSE TO NATURE</span>
-    </div>
-    <h1 class="font-serif text-3xl sm:text-5xl font-bold text-[#1f2925] tracking-tight">
-      โฮมสเตย์และที่พักชุมชนนิเวศ
-    </h1>
-    <p class="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
-      ค้นหาและกรองที่พักตามสเปก สัมผัสวิถีชีวิต 4 ชนเผ่า และอุดหนุนวิสาหกิจชุมชนศรีสะเกษ 100%
-    </p>
-  </div>
+<section class="wt-page-head">
+  <div class="container-xl">
+    <span class="wt-eyebrow"><i data-lucide="house"></i>Stay close to nature</span>
+    <h1 class="mb-2">โฮมสเตย์และที่พักชุมชน</h1>
+    <p class="text-secondary mb-4" style="max-width: 40rem;">ค้นหาที่พักตามอำเภอและงบประมาณ สัมผัสวิถีชีวิต 4 ชนเผ่า และอุดหนุนผู้ประกอบการชุมชนศรีสะเกษโดยตรง</p>
 
-  <!-- Primary Filter Pill (Capsule Filter Bar) with ปู่ AJAX / HTMX Live Filtering -->
-  <div class="bg-white rounded-3xl p-3 sm:p-4 border border-slate-200/90 shadow-md space-y-3">
-    <form method="GET" action="{% url 'accommodations:list' %}"
+    <form method="get" action="{% url 'accommodations:list' %}" class="wt-filter-bar"
           hx-get="{% url 'accommodations:list' %}"
           hx-target="#accommodations-container"
           hx-select="#accommodations-container"
-          hx-trigger="input delay:250ms from:input[name='q'], change from:select[name='district'], change from:select[name='priceRange']"
+          hx-swap="outerHTML"
+          hx-trigger="input delay:300ms from:input[name='q'], change from:select"
           hx-push-url="true"
-          hx-indicator="#search-spinner"
-          class="flex flex-col md:flex-row items-center gap-3">
-      
-      <!-- Search Keyword Input -->
-      <div class="flex-1 w-full flex items-center gap-3 px-4 py-2 border-b md:border-b-0 md:border-r border-slate-200">
-        <i data-lucide="search" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-        <div class="flex flex-col w-full text-left">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-[#c49a45]">คำค้นหา (Live Filter)</span>
-            <!-- Live Indicator -->
-            <div id="search-spinner" class="htmx-indicator">
-              <svg class="animate-spin w-3 h-3 text-[#c49a45]" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-              </svg>
-            </div>
+          hx-indicator="#search-spinner">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-5">
+          <div class="position-relative">
+            <i data-lucide="search" class="position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
+            <input type="text" name="q" value="{{ query }}" class="form-control ps-5" placeholder="ชื่อที่พัก หมู่บ้าน หรือคำค้น" aria-label="คำค้นหา">
           </div>
-          <input 
-            type="text" 
-            name="q" 
-            value="{{ query }}" 
-            placeholder="พิมพ์เพื่อค้นหาทันที เช่น ขุนหาญ, มออีแดง, ริมห้วย..." 
-            class="w-full bg-transparent text-xs text-[#1f2925] placeholder-slate-400 font-medium focus:outline-none"
-          >
         </div>
-      </div>
-
-      <!-- District Selector Dropdown -->
-      <div class="flex-1 w-full flex items-center gap-3 px-4 py-2 border-b md:border-b-0 md:border-r border-slate-200">
-        <i data-lucide="map-pin" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-        <div class="flex flex-col w-full text-left">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-[#c49a45]">อำเภอ</span>
-          <select 
-            name="district" 
-            class="w-full bg-transparent text-xs font-bold text-[#1f2925] focus:outline-none cursor-pointer"
-          >
-            <option value="">ทุกอำเภอในศรีสะเกษ</option>
+        <div class="col-6 col-md-3">
+          <select name="district" class="form-select" aria-label="อำเภอ">
+            <option value="">ทุกอำเภอ</option>
             {% for d in districts %}
               <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
             {% endfor %}
           </select>
         </div>
-      </div>
-
-      <!-- Price Range Selector Dropdown -->
-      <div class="flex-1 w-full flex items-center gap-3 px-4 py-2">
-        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-        <div class="flex flex-col w-full text-left">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-[#c49a45]">ช่วงราคาต่อคืน</span>
-          <select 
-            name="priceRange" 
-            class="w-full bg-transparent text-xs font-bold text-[#1f2925] focus:outline-none cursor-pointer"
-          >
-            <option value="">ทุกช่วงราคา</option>
-            <option value="budget" {% if selected_price == 'budget' %}selected{% endif %}>ต่ำกว่า ฿800</option>
-            <option value="mid" {% if selected_price == 'mid' %}selected{% endif %}>฿800 - ฿1,500</option>
+        <div class="col-6 col-md-2">
+          <select name="priceRange" class="form-select" aria-label="ช่วงราคาต่อคืน">
+            <option value="">ทุกราคา</option>
+            <option value="budget" {% if selected_price == 'budget' or selected_price == 'economy' %}selected{% endif %}>ต่ำกว่า ฿800</option>
+            <option value="mid" {% if selected_price == 'mid' or selected_price == 'moderate' %}selected{% endif %}>฿800 - ฿1,500</option>
             <option value="luxury" {% if selected_price == 'luxury' %}selected{% endif %}>มากกว่า ฿1,500</option>
           </select>
         </div>
+        <div class="col-md-2 d-flex gap-2">
+          <button type="submit" class="btn btn-green rounded-pill flex-grow-1 d-flex align-items-center justify-content-center gap-1">
+            <span id="search-spinner" class="htmx-indicator spinner-border spinner-border-sm"></span>ค้นหา
+          </button>
+          {% if query or selected_district or selected_price %}
+            <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink rounded-pill" title="ล้างตัวกรอง" aria-label="ล้างตัวกรอง"><i data-lucide="rotate-ccw"></i></a>
+          {% endif %}
+        </div>
       </div>
-
-      <div class="flex items-center gap-2 w-full md:w-auto shrink-0">
-        <button 
-          type="submit" 
-          class="w-full md:w-auto px-6 py-3.5 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition-all shadow-md inline-flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <span>กรองที่พัก</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45]"></i>
-        </button>
-
-        {% if query or selected_district or selected_price %}
-          <a 
-            href="{% url 'accommodations:list' %}" 
-            class="p-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold transition-colors shrink-0 flex items-center justify-center"
-            title="ล้างตัวกรอง"
-          >
-            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-          </a>
-        {% endif %}
-      </div>
-
     </form>
   </div>
+</section>
 
-  <!-- Live Dynamic Results Container (HTMX Target) -->
-  <div id="accommodations-container" class="space-y-6">
-
-  <!-- Category Chips Filter Row -->
-  <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none text-xs font-bold">
-    <a href="{% url 'accommodations:list' %}" class="px-4 py-2 rounded-full transition-all shrink-0 {% if not selected_district and not selected_price %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-white text-slate-600 border border-slate-200 hover:bg-slate-50{% endif %}">
-      ที่พักทั้งหมด ({{ total_count }})
-    </a>
-    <a href="?district=กันทรลักษ์" class="px-4 py-2 rounded-full transition-all shrink-0 {% if selected_district == 'กันทรลักษ์' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-white text-slate-600 border border-slate-200 hover:bg-slate-50{% endif %}">
-      วิวผามออีแดง (กันทรลักษ์)
-    </a>
-    <a href="?district=ขุนหาญ" class="px-4 py-2 rounded-full transition-all shrink-0 {% if selected_district == 'ขุนหาญ' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-white text-slate-600 border border-slate-200 hover:bg-slate-50{% endif %}">
-      วิถีสวนผลไม้ภูเขาไฟ (ขุนหาญ)
-    </a>
-    <a href="?district=เมืองศรีสะเกษ" class="px-4 py-2 rounded-full transition-all shrink-0 {% if selected_district == 'เมืองศรีสะเกษ' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-white text-slate-600 border border-slate-200 hover:bg-slate-50{% endif %}">
-      ใจกลางเมืองศรีสะเกษ
-    </a>
-    <a href="?district=อุทุมพรพิสัย" class="px-4 py-2 rounded-full transition-all shrink-0 {% if selected_district == 'อุทุมพรพิสัย' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-white text-slate-600 border border-slate-200 hover:bg-slate-50{% endif %}">
-      วัฒนธรรมปราสาทสระกำแพงใหญ่
-    </a>
+<section class="container-xl pb-5" id="accommodations-container">
+  <div class="wt-pills my-3">
+    <a href="{% url 'accommodations:list' %}" class="wt-pill {% if not selected_district and not selected_price and not query %}active{% endif %}">ทั้งหมด ({{ total_count }})</a>
+    <a href="?district=กันทรลักษ์" class="wt-pill {% if selected_district == 'กันทรลักษ์' %}active{% endif %}">กันทรลักษ์ · ผามออีแดง</a>
+    <a href="?district=ขุนหาญ" class="wt-pill {% if selected_district == 'ขุนหาญ' %}active{% endif %}">ขุนหาญ · สวนภูเขาไฟ</a>
+    <a href="?district=เมืองศรีสะเกษ" class="wt-pill {% if selected_district == 'เมืองศรีสะเกษ' %}active{% endif %}">ในเมืองศรีสะเกษ</a>
+    <a href="?district=อุทุมพรพิสัย" class="wt-pill {% if selected_district == 'อุทุมพรพิสัย' %}active{% endif %}">อุทุมพรพิสัย · ปราสาทสระกำแพงใหญ่</a>
   </div>
 
-  <!-- Real Grid of Homestays from Database -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
     {% for acc in accommodations %}
-      <article class="rounded-3xl bg-white border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group p-3">
-        
-        <div>
-          <!-- Image & Tags Frame -->
-          <div class="relative overflow-hidden rounded-2xl mb-3 aspect-[4/3] bg-slate-100">
-            {% if acc.hero_image %}
-              <img src="{{ acc.hero_image.url }}" alt="{{ acc.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-            {% else %}
-              <img src="{% static 'images/banner1.jpeg' %}" alt="{{ acc.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+      <div class="col">
+        <article class="card wt-card wt-card-hover h-100 overflow-hidden">
+          <div class="wt-card-img">
+            <img src="{% if acc.hero_image %}{{ acc.hero_image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ acc.name }}" loading="lazy">
+            {% if acc.min_price_per_night %}
+              <span class="wt-price-tag">฿{{ acc.min_price_per_night|floatformat:"0g" }} <small>/ คืน</small></span>
             {% endif %}
-            
-            <!-- Top Badge -->
-            <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold bg-[#1f2925]/90 text-[#c49a45] backdrop-blur-md border border-[#c49a45]/30">
-              โฮมสเตย์นิเวศ
-            </span>
-
-            <!-- Wishlist Heart Button -->
-            <button 
-              type="button" 
-              aria-label="บันทึกรายการโปรด"
-              class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-slate-600 hover:text-rose-500 flex items-center justify-center backdrop-blur-md transition-colors cursor-pointer"
-            >
-              <i data-lucide="heart" class="w-3.5 h-3.5"></i>
-            </button>
-
-            <!-- Price Tag Overlay -->
-            <div class="absolute bottom-3 left-3 bg-[#1f2925]/90 text-white px-3 py-1.5 rounded-xl backdrop-blur-md flex items-baseline gap-1">
-              <span class="text-sm font-bold text-[#c49a45]">฿{{ acc.min_price_per_night|default:"650"|floatformat:0 }}</span>
-              <span class="text-[10px] text-slate-300">/ คืน</span>
-            </div>
           </div>
-
-          <!-- Content Details -->
-          <div class="space-y-1.5 px-1">
-            <div class="flex items-center justify-between text-xs text-slate-500">
-              <span class="font-semibold text-[#c49a45]">ศรีสะเกษ</span>
-              <span class="flex items-center gap-1 font-bold text-[#1f2925]">
-                <i data-lucide="star" class="w-3.5 h-3.5 text-[#c49a45] fill-[#c49a45]"></i>
-                <span>4.9 (12 รีวิว)</span>
-              </span>
-            </div>
-
-            <h3 class="font-bold text-base text-[#1f2925] group-hover:text-[#c49a45] transition-colors line-clamp-1">
-              {{ acc.name }}
-            </h3>
-
-            <p class="flex items-center gap-1 text-xs text-slate-500">
-              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-              <span>{{ acc.district|default:"ศรีสะเกษ" }}, {{ acc.province|default:"ศรีสะเกษ" }}</span>
-            </p>
-
-            <!-- Amenities Badges -->
-            <div class="pt-2 flex flex-wrap gap-1.5 text-[11px] text-slate-600">
-              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/60">
-                <i data-lucide="wifi" class="w-3 h-3 text-[#c49a45]"></i>
-                <span>Wi-Fi</span>
-              </span>
-              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/60">
-                <i data-lucide="coffee" class="w-3 h-3 text-[#c49a45]"></i>
-                <span>อาหารเช้า</span>
-              </span>
-              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/60">
-                <i data-lucide="sparkles" class="w-3 h-3 text-[#c49a45]"></i>
-                <span>วิถีธรรมชาติ</span>
-              </span>
-            </div>
+          <div class="card-body">
+            <div class="small text-secondary d-flex align-items-center gap-1 mb-1"><i data-lucide="map-pin" class="text-green"></i>{% if acc.district %}อ.{{ acc.district }}, {% endif %}{{ acc.province }}</div>
+            <h2 class="h6 fw-bold mb-2 line-clamp-2"><a href="{% url 'accommodations:detail' acc.slug|default:acc.id %}" class="stretched-link">{{ acc.name }}</a></h2>
+            {% if acc.description %}<p class="small text-secondary mb-0 line-clamp-2">{{ acc.description }}</p>{% endif %}
           </div>
-        </div>
-
-        <!-- Detail CTA Button -->
-        <a 
-          href="{% url 'accommodations:detail' acc.slug|default:acc.id %}" 
-          class="mt-4 flex items-center justify-between w-full h-11 px-4 rounded-2xl bg-[#faf9f6] text-[#1f2925] font-bold text-xs hover:bg-[#1f2925] hover:text-[#faf9f6] transition-all border border-slate-200 cursor-pointer"
-        >
-          <span>ดูรายละเอียด & จองห้องพัก</span>
-          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-        </a>
-
-      </article>
+          <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex align-items-center justify-content-between">
+            <span class="small fw-semibold text-green">ดูห้องพักและจอง</span>
+            <span class="wt-icon-pill rounded-circle"><i data-lucide="arrow-up-right"></i></span>
+          </div>
+        </article>
+      </div>
     {% empty %}
-      <div class="col-span-3 py-16 bg-white rounded-3xl border border-slate-200 text-center p-8 space-y-3">
-        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-[#c49a45] mx-auto flex items-center justify-center">
-          <i data-lucide="search-x" class="w-6 h-6"></i>
+      <div class="col-12">
+        <div class="wt-card wt-empty">
+          <span class="wt-icon-pill"><i data-lucide="search-x"></i></span>
+          <h2 class="h6 fw-bold">ไม่พบที่พักตามเงื่อนไขที่ค้นหา</h2>
+          <p class="small text-secondary">ลองเปลี่ยนคำค้นหา ปรับช่วงราคา หรือเลือกดูทุกอำเภอ</p>
+          <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill btn-sm px-3">ล้างตัวกรองทั้งหมด</a>
         </div>
-        <h3 class="font-bold text-base text-[#1f2925]">ไม่พบโฮมสเตย์ตามเงื่อนไขที่ค้นหา</h3>
-        <p class="text-xs text-slate-500 max-w-sm mx-auto">
-          ลองเปลี่ยนคำค้นหา ปรับช่วงราคา หรือเลือกดูทุกอำเภอในจังหวัดศรีสะเกษ
-        </p>
-        <a 
-          href="{% url 'accommodations:list' %}" 
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1f2925] text-white text-xs font-bold hover:bg-[#2b3832] transition"
-        >
-          <span>ล้างตัวกรองทั้งหมด</span>
-        </a>
       </div>
     {% endfor %}
   </div>
-  </div> <!-- /#accommodations-container -->
-
-</div>
-
-<script>
-  document.addEventListener('htmx:afterSwap', function() {
-    if (window.lucide) {
-      window.lucide.createIcons();
-    }
-  });
-</script>
+</section>
 {% endblock %}

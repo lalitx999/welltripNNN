@@ -1,0 +1,42 @@
+<div class="wt-card">
+  <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <span class="small text-secondary">ตรวจยอดโอนให้ตรงกับคำสั่งซื้อ ก่อนยืนยันการจอง</span>
+    <div class="wt-pills">
+      <a href="?tab=payments" class="wt-pill {% if not selected_status %}active{% endif %}">ทั้งหมด</a>
+      <a href="?tab=payments&status=PENDING" class="wt-pill {% if selected_status == 'PENDING' %}active{% endif %}">รอตรวจ ({{ pending_slips_count }})</a>
+      <a href="?tab=payments&status=SUCCESS" class="wt-pill {% if selected_status == 'SUCCESS' %}active{% endif %}">สำเร็จ</a>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table wt-table mb-0">
+      <thead><tr><th>คำสั่งซื้อ</th><th>ลูกค้า</th><th class="text-end">ยอด</th><th>สลิป</th><th>สถานะ</th><th class="text-end">จัดการ</th></tr></thead>
+      <tbody>
+        {% for pay in payments_page %}
+          <tr>
+            <td><div class="font-monospace small fw-semibold">{{ pay.booking.booking_code }}</div><small class="text-secondary">{{ pay.created_at|date:"d/m/Y H:i" }}</small></td>
+            <td class="small"><div class="text-truncate" style="max-width: 12rem;">{{ pay.booking.customer.email }}</div><span class="text-secondary">{{ pay.booking.customer.phone_number|default:"-" }}</span></td>
+            <td class="text-end fw-semibold small">฿{{ pay.amount|floatformat:"2g" }}</td>
+            <td>
+              {% with latest_slip=pay.slips.first %}
+                {% if latest_slip and latest_slip.image %}
+                  <a href="{{ latest_slip.image.url }}" target="_blank" rel="noopener"><img src="{{ latest_slip.image.url }}" alt="สลิป" width="44" height="44" class="rounded-3 object-fit-cover border"></a>
+                {% else %}<small class="text-secondary">ยังไม่แนบ</small>{% endif %}
+              {% endwith %}
+            </td>
+            <td>{% if pay.status == 'SUCCESS' %}<span class="badge badge-green">สำเร็จ</span>{% elif pay.status == 'PENDING' %}<span class="badge badge-gold">รอตรวจ</span>{% else %}<span class="badge bg-light text-secondary border">{{ pay.get_status_display }}</span>{% endif %}</td>
+            <td class="text-end text-nowrap">
+              <a href="{% url 'payments:admin_review' pay.id %}" class="btn btn-green btn-sm rounded-pill">ตรวจสลิป</a>
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="แก้สถานะ" aria-label="แก้สถานะ"
+                      @click="open('payment', { id: '{{ pay.id }}', code: '{{ pay.booking.booking_code }}', amount: '{{ pay.amount }}', status: '{{ pay.status }}' }, 'paymentModal')"><i data-lucide="pencil"></i></button>
+              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="ลบ" aria-label="ลบรายการ"
+                      @click="confirmDelete('{% url 'accounts:admin_payment_delete' pay.id %}', 'รายการชำระเงิน {{ pay.booking.booking_code }}')"><i data-lucide="trash-2"></i></button>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" class="text-center text-secondary small py-4">ไม่พบรายการ</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "admin/tabs/pager.html" with page_obj=payments_page query_prefix="tab=payments&status="|add:selected_status|add:"&" %}
+</div>

@@ -1,214 +1,96 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}อาหารสุขภาพและบริการสปาชุมชนศรีสะเกษ - WellTrip{% endblock %}
+{% block title %}อาหารสุขภาพและสปาชุมชนศรีสะเกษ - WellTrip{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-  
-  <!-- Page Header -->
-  <div class="space-y-2">
-    <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
-      <span class="w-2 h-2 rounded-full bg-[#c49a45] animate-pulse"></span>
-      <span>AUTHENTIC WELLNESS & GASTRONOMY</span>
-    </div>
-    <h1 class="font-serif text-3xl sm:text-5xl font-bold text-[#1f2925] tracking-tight">
-      อาหารสุขภาพ 5 นิเวศน์ & สปาแผนไทย
-    </h1>
-    <p class="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
-      คัดสรรวัตถุดิบพื้นบ้านปลอดสารพิษ เมนูแคลอรี่ต่ำคำนวณตามหลักโภชนาการ และการบำบัดกล้ามเนื้อด้วยสมุนไพรสด
-    </p>
-  </div>
+<section class="wt-page-head">
+  <div class="container-xl">
+    <span class="wt-eyebrow"><i data-lucide="leaf"></i>Wellness &amp; gastronomy</span>
+    <h1 class="mb-2">อาหารสุขภาพ &amp; นวดสปาสมุนไพร</h1>
+    <p class="text-secondary mb-4" style="max-width: 40rem;">เมนูจากวัตถุดิบท้องถิ่น และบริการนวดแผนไทยจากผู้ประกอบการชุมชนศรีสะเกษ</p>
 
-  <!-- Search & Tab Filter Bar -->
-  <div class="bg-white p-3 sm:p-4 rounded-3xl border border-slate-200/90 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-    
-    <!-- Category Tabs -->
-    <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto text-xs font-bold scrollbar-none">
-      <a 
-        href="?category=all{% if query %}&q={{ query }}{% endif %}" 
-        class="px-4 py-2.5 rounded-full transition-all shrink-0 {% if active_category == 'all' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}"
-      >
-        บริการทั้งหมด
-      </a>
-      <a 
-        href="?category=FOOD{% if query %}&q={{ query }}{% endif %}" 
-        class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all shrink-0 {% if active_category == 'FOOD' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}"
-      >
-        <i data-lucide="utensils" class="w-3.5 h-3.5"></i>
-        <span>อาหารสุขภาพ ({{ total_menus }})</span>
-      </a>
-      <a 
-        href="?category=SPA{% if query %}&q={{ query }}{% endif %}" 
-        class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all shrink-0 {% if active_category == 'SPA' %}bg-[#1f2925] text-[#faf9f6] shadow-sm{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}"
-      >
-        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-        <span>นวดแผนไทย & สปา ({{ total_services }})</span>
-      </a>
-    </div>
-
-    <!-- Search Form -->
-    <form method="GET" action="{% url 'services:list' %}" class="flex items-center gap-2 w-full md:w-80">
-      <input type="hidden" name="category" value="{{ active_category }}">
-      <div class="relative flex-1">
-        <input 
-          type="text" 
-          name="q" 
-          value="{{ query }}" 
-          placeholder="ค้นหาชื่อเมนู, สมุนไพร, สปา..." 
-          class="w-full pl-9 pr-3 py-2.5 rounded-2xl border border-slate-200 text-xs text-[#1f2925] placeholder-slate-400 focus:outline-none focus:border-[#1f2925]"
-        >
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+    <div class="wt-filter-bar d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-between">
+      <div class="wt-pills">
+        <a href="?category=all{% if query %}&q={{ query|urlencode }}{% endif %}" class="wt-pill {% if active_category == 'all' %}active{% endif %}">ทั้งหมด</a>
+        <a href="?category=FOOD{% if query %}&q={{ query|urlencode }}{% endif %}" class="wt-pill {% if active_category == 'FOOD' %}active{% endif %}"><i data-lucide="utensils" class="me-1"></i>อาหารสุขภาพ ({{ total_menus }})</a>
+        <a href="?category=SPA{% if query %}&q={{ query|urlencode }}{% endif %}" class="wt-pill {% if active_category == 'SPA' %}active{% endif %}"><i data-lucide="flower-2" class="me-1"></i>นวดและสปา ({{ total_services }})</a>
       </div>
-      <button 
-        type="submit" 
-        class="px-5 py-2.5 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-white text-xs font-bold transition shadow-sm shrink-0 cursor-pointer"
-      >
-        ค้นหา
-      </button>
-      {% if query %}
-        <a href="?category={{ active_category }}" class="p-2 text-xs text-slate-400 hover:text-slate-600">ล้าง</a>
-      {% endif %}
-    </form>
-
+      <form method="get" action="{% url 'services:list' %}" class="d-flex gap-2" style="min-width: min(100%, 22rem);">
+        <input type="hidden" name="category" value="{{ active_category }}">
+        <div class="position-relative flex-grow-1">
+          <i data-lucide="search" class="position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
+          <input type="text" name="q" value="{{ query }}" class="form-control ps-5" placeholder="ชื่อเมนู สมุนไพร หรือบริการ" aria-label="ค้นหา">
+        </div>
+        <button type="submit" class="btn btn-green rounded-pill px-3">ค้นหา</button>
+        {% if query %}<a href="?category={{ active_category }}" class="btn btn-outline-ink rounded-pill" aria-label="ล้างคำค้น"><i data-lucide="x"></i></a>{% endif %}
+      </form>
+    </div>
   </div>
+</section>
 
-  <!-- Section 1: Healthy Dining Menus -->
+<div class="container-xl pb-5 d-grid gap-5">
   {% if active_category == 'all' or active_category == 'FOOD' %}
-    <div class="space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-[#c49a45]/20 text-[#c49a45] flex items-center justify-center">
-            <i data-lucide="utensils" class="w-4 h-4"></i>
-          </div>
-          <h2 class="font-serif text-2xl font-bold text-[#1f2925]">เมนูอาหารอินทรีย์เพื่อสุขภาพ</h2>
-        </div>
-        <span class="text-xs text-slate-400 font-semibold">{{ food_menus.count }} เมนู</span>
+    <section>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="h4 fw-bold mb-0 d-flex align-items-center gap-2"><span class="wt-stat-icon" style="--c:#e8590c;--bg:#fff0e6;width:2.4rem;height:2.4rem"><i data-lucide="utensils"></i></span>อาหารเพื่อสุขภาพ</h2>
+        <span class="small text-secondary">{{ food_menus|length }} เมนู</span>
       </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
         {% for menu in food_menus %}
-          <article class="rounded-3xl bg-white border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group p-3">
-            <div>
-              <div class="relative overflow-hidden rounded-2xl mb-3 aspect-[4/3] bg-slate-100">
-                {% if menu.image %}
-                  <img src="{{ menu.image.url }}" alt="{{ menu.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                {% else %}
-                  <img src="{% static 'images/organic_community_food.jpg' %}" alt="{{ menu.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                {% endif %}
-
-                <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold bg-[#1f2925]/90 text-[#c49a45] backdrop-blur-md border border-[#c49a45]/30">
-                  วัตถุดิบชุมชน
-                </span>
-
-                <div class="absolute bottom-3 left-3 bg-[#1f2925]/90 text-white px-3 py-1.5 rounded-xl backdrop-blur-md flex items-baseline gap-1">
-                  <span class="text-sm font-bold text-[#c49a45]">฿{{ menu.price|floatformat:0 }}</span>
-                  <span class="text-[10px] text-slate-300">/ ชุด</span>
-                </div>
+          <div class="col">
+            <article class="card wt-card wt-card-hover h-100 overflow-hidden">
+              <div class="wt-card-img">
+                <img src="{% if menu.image %}{{ menu.image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ menu.name }}" loading="lazy">
+                <span class="wt-price-tag">฿{{ menu.price|floatformat:"0g" }}</span>
               </div>
-
-              <div class="space-y-1.5 px-1">
-                <h3 class="font-bold text-base text-[#1f2925] group-hover:text-[#c49a45] transition-colors">
-                  {{ menu.name }}
-                </h3>
-                <p class="text-xs text-slate-500 line-clamp-2">
-                  {{ menu.description|default:"อาหารปรุงสดใหม่ด้วยวัตถุดิบอินทรีย์จากสวนชุมชนโซเดียมต่ำ ปลอดสารเคมี" }}
-                </p>
-
-                <!-- Nutrition pills -->
-                <div class="pt-2 flex flex-wrap gap-1.5 text-[10px] font-bold">
-                  <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    โซเดียมต่ำ
-                  </span>
-                  <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
-                    อินทรีย์ 100%
-                  </span>
-                </div>
+              <div class="card-body">
+                <span class="badge badge-gold mb-2">{{ menu.get_wellness_category_display }}</span>
+                <h3 class="h6 fw-bold mb-1"><a href="{% url 'services:detail' 'food' menu.id %}" class="stretched-link">{{ menu.name }}</a></h3>
+                {% if menu.description %}<p class="small text-secondary mb-0 line-clamp-2">{{ menu.description }}</p>{% endif %}
               </div>
-            </div>
-
-            <a 
-              href="{% url 'services:detail' 'food' menu.id %}" 
-              class="mt-4 flex items-center justify-between w-full h-11 px-4 rounded-2xl bg-[#faf9f6] text-[#1f2925] font-bold text-xs hover:bg-[#1f2925] hover:text-[#faf9f6] transition-all border border-slate-200 cursor-pointer"
-            >
-              <span>ดูข้อมูลโภชนาการ & สั่งจอง</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-            </a>
-          </article>
-        {% empty %}
-          <div class="col-span-3 py-10 text-center text-xs text-slate-400 bg-white rounded-3xl border border-slate-200">
-            ยังไม่มีรายการเมนูอาหารในหมวดนี้
+              <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex justify-content-between align-items-center">
+                <small class="text-secondary">{% if menu.calorie_estimate %}<i data-lucide="flame" class="text-amber me-1"></i>~{{ menu.calorie_estimate }} kcal{% endif %}</small>
+                <span class="wt-icon-pill rounded-circle"><i data-lucide="arrow-up-right"></i></span>
+              </div>
+            </article>
           </div>
+        {% empty %}
+          <div class="col-12"><div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="utensils"></i></span><div class="fw-bold">ยังไม่มีเมนูอาหาร</div><small class="text-secondary">ลองค้นหาด้วยคำอื่น หรือกลับมาดูใหม่เร็ว ๆ นี้</small></div></div>
         {% endfor %}
       </div>
-    </div>
+    </section>
   {% endif %}
 
-  <!-- Section 2: Thai Traditional Herbal Massage & Spa -->
   {% if active_category == 'all' or active_category == 'SPA' %}
-    <div class="space-y-4 pt-6">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-[#c49a45]/20 text-[#c49a45] flex items-center justify-center">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
-          </div>
-          <h2 class="font-serif text-2xl font-bold text-[#1f2925]">นวดแผนไทย & สปาสมุนไพรสด</h2>
-        </div>
-        <span class="text-xs text-slate-400 font-semibold">{{ wellness_services.count }} บริการ</span>
+    <section>
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="h4 fw-bold mb-0 d-flex align-items-center gap-2"><span class="wt-stat-icon" style="--c:#c2255c;--bg:#fdebf1;width:2.4rem;height:2.4rem"><i data-lucide="flower-2"></i></span>นวดแผนไทยและสปา</h2>
+        <span class="small text-secondary">{{ wellness_services|length }} บริการ</span>
       </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
         {% for s in wellness_services %}
-          <article class="rounded-3xl bg-white border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group p-3">
-            <div>
-              <div class="relative overflow-hidden rounded-2xl mb-3 aspect-[4/3] bg-slate-100">
-                {% if s.image %}
-                  <img src="{{ s.image.url }}" alt="{{ s.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                {% else %}
-                  <img src="{% static 'images/eco_wellness_spa.jpg' %}" alt="{{ s.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                {% endif %}
-
-                <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold bg-[#1f2925]/90 text-[#c49a45] backdrop-blur-md border border-[#c49a45]/30">
-                  สปาสมุนไพรสด
-                </span>
-
-                <div class="absolute bottom-3 left-3 bg-[#1f2925]/90 text-white px-3 py-1.5 rounded-xl backdrop-blur-md flex items-baseline gap-1">
-                  <span class="text-sm font-bold text-[#c49a45]">฿{{ s.price|floatformat:0 }}</span>
-                  <span class="text-[10px] text-slate-300">/ {{ s.duration_minutes }} นาที</span>
-                </div>
+          <div class="col">
+            <article class="card wt-card wt-card-hover h-100 overflow-hidden">
+              <div class="wt-card-img">
+                <img src="{% if s.image %}{{ s.image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ s.name }}" loading="lazy">
+                <span class="wt-price-tag">฿{{ s.price|floatformat:"0g" }}</span>
               </div>
-
-              <div class="space-y-1.5 px-1">
-                <h3 class="font-bold text-base text-[#1f2925] group-hover:text-[#c49a45] transition-colors">
-                  {{ s.name }}
-                </h3>
-                <p class="text-xs text-slate-500 line-clamp-2">
-                  {{ s.description|default:"ผ่อนคลายกล้ามเนื้อ ฟื้นฟูอาการออฟฟิศซินโดรม ด้วยลูกประคบสมุนไพรสดและศาสตร์แผนไทย" }}
-                </p>
-
-                <div class="pt-2 flex items-center gap-1.5 text-xs text-slate-500">
-                  <i data-lucide="clock" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-                  <span>ระยะเวลา {{ s.duration_minutes }} นาที · ให้บริการโดยแพทย์แผนไทยชุมชน</span>
-                </div>
+              <div class="card-body">
+                <h3 class="h6 fw-bold mb-1"><a href="{% url 'services:detail' 'wellness' s.id %}" class="stretched-link">{{ s.name }}</a></h3>
+                {% if s.description %}<p class="small text-secondary mb-0 line-clamp-2">{{ s.description }}</p>{% endif %}
               </div>
-            </div>
-
-            <a 
-              href="{% url 'services:detail' 'wellness' s.id %}" 
-              class="mt-4 flex items-center justify-between w-full h-11 px-4 rounded-2xl bg-[#faf9f6] text-[#1f2925] font-bold text-xs hover:bg-[#1f2925] hover:text-[#faf9f6] transition-all border border-slate-200 cursor-pointer"
-            >
-              <span>ดูรายละเอียดบริการ & จองเวลา</span>
-              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-            </a>
-          </article>
-        {% empty %}
-          <div class="col-span-3 py-10 text-center text-xs text-slate-400 bg-white rounded-3xl border border-slate-200">
-            ยังไม่มีรายการบริการสปาในหมวดนี้
+              <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex justify-content-between align-items-center">
+                <small class="text-secondary"><i data-lucide="clock" class="text-green me-1"></i>{{ s.duration_minutes }} นาที</small>
+                <span class="wt-icon-pill rounded-circle"><i data-lucide="arrow-up-right"></i></span>
+              </div>
+            </article>
           </div>
+        {% empty %}
+          <div class="col-12"><div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="flower-2"></i></span><div class="fw-bold">ยังไม่มีบริการสปา</div><small class="text-secondary">ลองค้นหาด้วยคำอื่น หรือกลับมาดูใหม่เร็ว ๆ นี้</small></div></div>
         {% endfor %}
       </div>
-    </div>
+    </section>
   {% endif %}
-
 </div>
 {% endblock %}

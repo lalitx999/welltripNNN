@@ -2,8 +2,10 @@ from decimal import Decimal
 from django.test import TestCase, Client
 from django.urls import reverse
 from apps.accounts.models import User, UserRoles, AuditLog
+from apps.accounts.models import MerchantApprovalStatus, MerchantProfile
 from apps.otop.models import OTOPProduct, OTOPCategory
 
+MERCHANT_ROLES = [UserRoles.HOMESTAY_OWNER, UserRoles.RESTAURANT_OWNER, UserRoles.WELLNESS_OWNER, UserRoles.OTOP_OWNER]
 
 class OTOPStudioSecurityTestCase(TestCase):
     """
@@ -33,6 +35,13 @@ class OTOPStudioSecurityTestCase(TestCase):
             price=Decimal("1500.00"),
             stock_quantity=5,
         )
+
+        # Partner Studio requires an approved KYC profile
+        for merchant in User.objects.filter(role__in=MERCHANT_ROLES):
+            MerchantProfile.objects.get_or_create(
+                user=merchant,
+                defaults={"business_name": merchant.email, "status": MerchantApprovalStatus.APPROVED},
+            )
 
     def test_otop_htmx_stock_increment(self):
         """Owner can increment stock via HTMX and action is logged to AuditLog."""

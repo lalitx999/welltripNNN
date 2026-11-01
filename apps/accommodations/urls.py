@@ -8,6 +8,8 @@ urlpatterns = [
     path('studio/', views.homestay_studio_view, name='homestay_studio'),
     path('studio/room/create/', views.room_create_view, name='room_create'),
     path('studio/room/delete/<uuid:room_id>/', views.room_delete_view, name='room_delete'),
+    path('studio/room/<uuid:room_id>/image/', views.room_image_add_view, name='room_image_add'),
+    path('studio/image/<int:image_id>/delete/', views.room_image_delete_view, name='room_image_delete'),
     path('studio/calendar/', views.calendar_view, name='calendar'),
     path('<str:identifier>/', views.detail_view, name='detail'),
 ]

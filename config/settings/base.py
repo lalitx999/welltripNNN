@@ -89,6 +89,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'apps.bookings.context_processors.cart_context',
+                'apps.core.context_processors.asset_version',
             ],
             'autoescape': True,  # ⚠️ Never disable autoescaping
         },
@@ -205,44 +206,34 @@ AXES_RESET_ON_SUCCESS = True           # Reset counter on successful login
 AXES_LOCKOUT_TEMPLATE = 'accounts/lockout.html'
 AXES_LOCKOUT_URL = None
 AXES_VERBOSE = True
+# Behind nginx every request comes from the proxy; use the real client IP
+AXES_CLIENT_IP_CALLABLE = 'apps.accounts.services.audit.get_client_ip'
 
 # Content Security Policy (django-csp 4.0+)
 CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
+        # Every script, style and font is self-hosted under /static/
         'default-src': ("'self'",),
         'script-src': (
             "'self'",
-            "'unsafe-inline'",  # Needed for dynamic script reactivity
-            "'unsafe-eval'",    # Required for Alpine.js dynamic expression evaluation
-            "https://cdn.jsdelivr.net",
-            "https://unpkg.com",
-            "https://cdn.tailwindcss.com",
+            "'unsafe-inline'",  # inline page scripts and Alpine attributes
+            "'unsafe-eval'",    # Alpine.js evaluates x-* expressions with Function()
         ),
-        'style-src': (
-            "'self'",
-            "'unsafe-inline'",
-            "https://fonts.googleapis.com",
-            "https://unpkg.com",
-            "https://cdn.tailwindcss.com",
-        ),
-        'font-src': (
-            "'self'",
-            "https://fonts.gstatic.com",
-            "data:",
-        ),
-        'img-src': (
-            "'self'",
-            "data:",
-            "https:",
-        ),
+        'style-src': ("'self'", "'unsafe-inline'"),
+        'font-src': ("'self'", "data:"),
+        'img-src': ("'self'", "data:", "blob:", "https:"),  # map tiles, story image URLs, slip previews
         'connect-src': ("'self'",),
         'frame-ancestors': ("'none'",),
+        'form-action': ("'self'",),
+        'base-uri': ("'self'",),
+        'object-src': ("'none'",),
     }
 }
 
 # Rate Limiting
 RATELIMIT_ENABLE = True
 RATELIMIT_USE_CACHE = 'default'
+RATELIMIT_IP_META_KEY = 'apps.accounts.services.audit.get_client_ip'
 
 # ==============================================================================
 # Hostinger SMTP & Centralized Notifications Suite

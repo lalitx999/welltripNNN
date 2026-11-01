@@ -1,16 +1,14 @@
 {% extends "layouts/public.html" %}
-{% load static humanize %}
+{% load static %}
 
-{% block title %}[WT-ACC-{{ accommodation.id|stringformat:".8s"|upper }}] {{ accommodation.name }} — โฮมสเตย์ศรีสะเกษ WellTrip{% endblock %}
-{% block meta_description %}{{ accommodation.name }} ที่พักโฮมสเตย์ชุมชน อ.{{ accommodation.district }} จ.{{ accommodation.province }} ราคาเริ่มต้น ฿{{ accommodation.min_price_per_night|floatformat:0 }} ต่อคืน สัมผัสวิถีชีวิตธรรมชาติและอาหารพื้นถิ่น{% endblock %}
+{% block title %}{{ accommodation.name }} — ที่พักชุมชนศรีสะเกษ WellTrip{% endblock %}
 
 {% block content %}
-<div 
-  x-data="{
-    activePhoto: '{% if accommodation.hero_image %}{{ accommodation.hero_image.url }}{% else %}{% static 'images/hero_lanna_homestay.jpg' %}{% endif %}',
-    selectedRoomId: '{% if rooms.first %}{{ rooms.first.id }}{% else %}{{ accommodation.id }}{% endif %}',
-    selectedRoomTitle: '{% if rooms.first %}{{ rooms.first.name }}{% else %}{{ accommodation.name }}{% endif %}',
-    pricePerNight: {{ accommodation.min_price_per_night|default:650 }},
+<div x-data="{
+    activePhoto: '{% if accommodation.hero_image %}{{ accommodation.hero_image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}',
+    selectedRoomId: '{% if rooms.first %}{{ rooms.first.id }}{% endif %}',
+    selectedRoomTitle: '{% if rooms.first %}{{ rooms.first.name|escapejs }}{% endif %}',
+    pricePerNight: {% if rooms.first %}{{ rooms.first.base_price_per_night }}{% else %}0{% endif %},
     rooms: 1,
     guests: 2,
     checkIn: '',
@@ -20,10 +18,7 @@
       this.selectedRoomId = id;
       this.selectedRoomTitle = title;
       this.pricePerNight = price;
-      // Smooth scroll to booking widget on mobile
-      if (window.innerWidth < 1024) {
-        document.getElementById('booking-card')?.scrollIntoView({ behavior: 'smooth' });
-      }
+      if (window.innerWidth < 992) document.getElementById('booking-card')?.scrollIntoView({ behavior: 'smooth' });
     },
     copyLink() {
       navigator.clipboard.writeText(window.location.href);
@@ -32,739 +27,253 @@
     },
     get nights() {
       if (!this.checkIn || !this.checkOut) return 1;
-      const d1 = new Date(this.checkIn);
-      const d2 = new Date(this.checkOut);
-      const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+      const diff = Math.round((new Date(this.checkOut) - new Date(this.checkIn)) / 86400000);
       return diff > 0 ? diff : 1;
     },
-    get total() {
-      return this.pricePerNight * this.nights * this.rooms;
-    }
-  }" 
-  class="min-h-screen bg-[#faf8f5] pb-24"
->
+    get total() { return this.pricePerNight * this.nights * this.rooms; }
+  }">
 
-  <!-- 1. Header Banner & Property Meta (สไตล์ เซ้งร้านด่วน / Sengran Proptech) -->
-  <div class="relative bg-neutral-900 text-white py-8 sm:py-10 overflow-hidden">
-    <!-- Subtle Hero Background Image with Gradient Overlay -->
-    <img 
-      src="{% if accommodation.hero_image %}{{ accommodation.hero_image.url }}{% else %}{% static 'images/village.webp' %}{% endif %}" 
-      alt="{{ accommodation.name }}" 
-      class="absolute inset-0 w-full h-full object-cover object-center opacity-25"
-    >
-    <div class="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-900/95 to-neutral-950/70"></div>
-
-    <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      
-      <!-- Top Action Bar: Back Button, Ref Code, Status, Share -->
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <a 
-          href="{% url 'accommodations:list' %}"
-          class="inline-flex items-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-1.5 text-xs font-bold text-white transition border border-white/10"
-        >
-          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-          <span>กลับหน้ารวมที่พักชุมชน</span>
-        </a>
-
-        <div class="flex items-center gap-2 flex-wrap">
-          <!-- Verified Community Homestay Badge -->
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/90 text-white text-xs font-bold shadow-sm backdrop-blur-md">
-            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-white"></i>
-            <span>มาตรฐานโฮมสเตย์ WellTrip</span>
+  <!-- Header -->
+  <section class="wt-page-head pb-4">
+    <div class="container-xl">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small mb-3">
+          <li class="breadcrumb-item"><a href="{% url 'accommodations:list' %}" class="text-green">ที่พักชุมชน</a></li>
+          {% if accommodation.district %}<li class="breadcrumb-item"><a href="{% url 'accommodations:list' %}?district={{ accommodation.district|urlencode }}" class="text-green">อ.{{ accommodation.district }}</a></li>{% endif %}
+          <li class="breadcrumb-item active text-truncate" aria-current="page" style="max-width: 16rem;">{{ accommodation.name }}</li>
+        </ol>
+      </nav>
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
+        <div>
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            {% if accommodation.status == 'ACTIVE' %}
+              <span class="badge badge-green"><span class="pulse-dot bg-success me-1"></span>เปิดรับจอง</span>
+            {% else %}
+              <span class="badge text-bg-warning">{{ accommodation.get_status_display }}</span>
+            {% endif %}
+            <span class="badge bg-light text-secondary border font-monospace">WT-ACC-{{ accommodation.id|stringformat:".8s"|upper }}</span>
           </div>
-
-          <!-- Reference Code (รหัสประกาศ/รหัสที่พัก) -->
-          <span class="rounded-full bg-white/15 border border-white/20 backdrop-blur-md px-3 py-1 text-xs font-mono font-bold text-white shadow-xs">
-            รหัสที่พัก: WT-ACC-{{ accommodation.id|stringformat:".8s"|upper }}
-          </span>
-
-          <!-- Status Badge -->
-          {% if accommodation.status == 'ACTIVE' %}
-            <span class="rounded-full px-3 py-1 text-xs font-bold bg-[#c49a45] text-white shadow-xs flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-              <span>เปิดรับจอง / พร้อมเข้าพัก</span>
-            </span>
-          {% else %}
-            <span class="rounded-full px-3 py-1 text-xs font-bold bg-amber-500/90 text-white shadow-xs">
-              {{ accommodation.get_status_display }}
-            </span>
-          {% endif %}
-
-          <!-- Facebook Share Pill -->
-          <a 
-            href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 rounded-full bg-[#1877F2] hover:bg-[#166fe5] px-3 py-1 text-xs font-bold text-white shadow-xs transition cursor-pointer"
-            title="แชร์ที่พักนี้ไปที่ Facebook"
-          >
-            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            <span>แชร์</span>
-          </a>
-
-          <!-- Copy Link Pill -->
-          <button 
-            type="button" 
-            @click="copyLink()"
-            class="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1 text-xs font-bold text-white transition cursor-pointer"
-          >
-            <i data-lucide="share-2" class="w-3.5 h-3.5" x-show="!copied"></i>
-            <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400" x-show="copied"></i>
-            <span x-text="copied ? 'คัดลอกลิงก์แล้ว!' : 'คัดลอกลิงก์'"></span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Title, Category & Location -->
-      <div class="space-y-3 max-w-4xl">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="rounded-lg bg-[#c49a45] px-2.5 py-1 text-xs font-bold text-white shadow-xs">
-            โฮมสเตย์ชุมชน
-          </span>
-          <span class="rounded-lg bg-white/20 backdrop-blur-md px-2.5 py-1 text-xs font-semibold text-neutral-200">
-            อ.{{ accommodation.district|default:"เมืองศรีสะเกษ" }}
-          </span>
-          <span class="rounded-lg bg-white/20 backdrop-blur-md px-2.5 py-1 text-xs font-semibold text-neutral-200">
-            จ.{{ accommodation.province|default:"ศรีสะเกษ" }}
-          </span>
-          <span class="rounded-lg bg-emerald-500/80 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-white inline-flex items-center gap-1">
-            <i data-lucide="coffee" class="w-3.5 h-3.5"></i>
-            <span>รวมอาหารเช้าอินทรีย์</span>
-          </span>
-        </div>
-
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-serif font-black text-white tracking-tight leading-tight">
-          {{ accommodation.name }}
-        </h1>
-
-        <div class="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs sm:text-sm text-neutral-300 pt-1">
-          <p class="flex items-center gap-1.5">
-            <i data-lucide="map-pin" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-            <span>{{ accommodation.address|default:"ต.หนองไฮ" }} {{ accommodation.subdistrict }} {{ accommodation.district }} {{ accommodation.province }} {{ accommodation.postal_code }}</span>
+          <h1 class="mb-1">{{ accommodation.name }}</h1>
+          <p class="text-secondary mb-0 d-flex align-items-start gap-1">
+            <i data-lucide="map-pin" class="text-green mt-1"></i>
+            <span>{{ accommodation.address }} {{ accommodation.subdistrict }} {% if accommodation.district %}อ.{{ accommodation.district }}{% endif %} จ.{{ accommodation.province }} {{ accommodation.postal_code }}</span>
           </p>
-
-          {% if accommodation.google_maps_url %}
-            <a 
-              href="{{ accommodation.google_maps_url }}" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 text-xs font-bold text-[#c49a45] hover:text-amber-300 underline underline-offset-4 decoration-[#c49a45]/50 transition"
-            >
-              <span>เปิดนำทางใน Google Maps</span>
-              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-            </a>
-          {% endif %}
+        </div>
+        <div class="d-flex gap-2 flex-shrink-0">
+          <button type="button" class="btn btn-outline-ink rounded-pill btn-sm" @click="copyLink()">
+            <i data-lucide="link" class="me-1"></i><span x-text="copied ? 'คัดลอกแล้ว' : 'คัดลอกลิงก์'"></span>
+          </button>
+          <a class="btn btn-outline-ink rounded-pill btn-sm" target="_blank" rel="noopener noreferrer"
+             href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}">
+            <i data-lucide="share-2" class="me-1"></i>แชร์
+          </a>
         </div>
       </div>
-
     </div>
-  </div>
+  </section>
 
-  <!-- 2. Main Content Grid (8 cols Left / 4 cols Right Sticky Sidebar) -->
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <div class="container-xl pb-5">
+    <div class="row g-4 g-lg-5">
 
-      <!-- LEFT COLUMN: Details, Highlights, Rooms, Amenities, Map (8 cols) -->
-      <div class="lg:col-span-8 space-y-6 sm:space-y-8">
+      <!-- Left column -->
+      <div class="col-lg-8 d-grid gap-4">
 
-        <!-- 2.1 Photo Gallery Showcase (Hero Image + Thumbnails Strip) -->
-        <div class="rounded-3xl border border-slate-200/90 bg-white p-3 sm:p-4 shadow-xs space-y-3">
-          <!-- Main Selected Preview -->
-          <div class="relative h-72 sm:h-[460px] w-full rounded-2xl overflow-hidden bg-neutral-900 group">
-            <img 
-              :src="activePhoto" 
-              alt="{{ accommodation.name }}" 
-              class="w-full h-full object-cover transition-all duration-500 group-hover:scale-102"
-            >
-            <div class="absolute bottom-3 left-3 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-[11px] font-bold text-white flex items-center gap-1.5">
-              <i data-lucide="camera" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-              <span>ภาพถ่ายบรรยากาศที่พักจริง</span>
-            </div>
+        <!-- Gallery -->
+        <div>
+          <div class="ratio ratio-16x9 rounded-4 overflow-hidden bg-light">
+            <img :src="activePhoto" alt="{{ accommodation.name }}" class="object-fit-cover">
           </div>
-
-          <!-- Thumbnails Strip -->
-          <div class="flex gap-2.5 overflow-x-auto pb-1">
-            <button 
-              type="button" 
-              @click="activePhoto = '{% if accommodation.hero_image %}{{ accommodation.hero_image.url }}{% else %}{% static 'images/hero_lanna_homestay.jpg' %}{% endif %}'"
-              :class="activePhoto.includes('hero_lanna_homestay') || activePhoto.includes('accommodations') ? 'border-[#c49a45] ring-2 ring-[#c49a45]/40 opacity-100' : 'border-transparent opacity-70 hover:opacity-100'"
-              class="relative h-16 w-24 sm:w-28 shrink-0 overflow-hidden rounded-xl border-2 transition cursor-pointer"
-            >
-              <img 
-                src="{% if accommodation.hero_image %}{{ accommodation.hero_image.url }}{% else %}{% static 'images/hero_lanna_homestay.jpg' %}{% endif %}" 
-                alt="ภาพหลัก" 
-                class="h-full w-full object-cover"
-              >
-            </button>
-
-            <button 
-              type="button" 
-              @click="activePhoto = '{% static 'images/banner1.jpeg' %}'"
-              :class="activePhoto.includes('banner1') ? 'border-[#c49a45] ring-2 ring-[#c49a45]/40 opacity-100' : 'border-transparent opacity-70 hover:opacity-100'"
-              class="relative h-16 w-24 sm:w-28 shrink-0 overflow-hidden rounded-xl border-2 transition cursor-pointer"
-            >
-              <img src="{% static 'images/banner1.jpeg' %}" alt="บรรยากาศรอบที่พัก" class="h-full w-full object-cover">
-            </button>
-
-            <button 
-              type="button" 
-              @click="activePhoto = '{% static 'images/banner2.jpeg' %}'"
-              :class="activePhoto.includes('banner2') ? 'border-[#c49a45] ring-2 ring-[#c49a45]/40 opacity-100' : 'border-transparent opacity-70 hover:opacity-100'"
-              class="relative h-16 w-24 sm:w-28 shrink-0 overflow-hidden rounded-xl border-2 transition cursor-pointer"
-            >
-              <img src="{% static 'images/banner2.jpeg' %}" alt="เรือนพักกลางสวน" class="h-full w-full object-cover">
-            </button>
-
-            <button 
-              type="button" 
-              @click="activePhoto = '{% static 'images/organic_community_food.jpg' %}'"
-              :class="activePhoto.includes('organic_community_food') ? 'border-[#c49a45] ring-2 ring-[#c49a45]/40 opacity-100' : 'border-transparent opacity-70 hover:opacity-100'"
-              class="relative h-16 w-24 sm:w-28 shrink-0 overflow-hidden rounded-xl border-2 transition cursor-pointer"
-            >
-              <img src="{% static 'images/organic_community_food.jpg' %}" alt="อาหารเช้าชุมชน" class="h-full w-full object-cover">
-            </button>
-
-            <button 
-              type="button" 
-              @click="activePhoto = '{% static 'images/village.webp' %}'"
-              :class="activePhoto.includes('village') ? 'border-[#c49a45] ring-2 ring-[#c49a45]/40 opacity-100' : 'border-transparent opacity-70 hover:opacity-100'"
-              class="relative h-16 w-24 sm:w-28 shrink-0 overflow-hidden rounded-xl border-2 transition cursor-pointer"
-            >
-              <img src="{% static 'images/village.webp' %}" alt="วิถีชีวิตชุมชน" class="h-full w-full object-cover">
-            </button>
+          <div class="d-flex gap-2 overflow-auto mt-2 pb-1">
+            {% for room in rooms %}{% for img in room.images.all %}
+              <button type="button" class="btn p-0 border-2 rounded-3 overflow-hidden flex-shrink-0"
+                      :class="activePhoto === '{{ img.image.url }}' ? 'border-success' : 'border-0 opacity-75'"
+                      style="width: 6.5rem; height: 4.25rem;"
+                      @click="activePhoto = '{{ img.image.url }}'">
+                <img src="{{ img.image.url }}" alt="{{ room.name }}" class="w-100 h-100 object-fit-cover" loading="lazy">
+              </button>
+            {% endfor %}{% endfor %}
           </div>
         </div>
 
-        <!-- 2.2 Property Specs 4-Block Grid (สไตล์ Financial Transparency 4-Block Grid ของเซ้งร้านด่วน) -->
-        <div class="rounded-3xl border border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-stone-50/40 to-white p-5 sm:p-6 shadow-sm">
-          <div class="flex items-center gap-2 mb-4 pb-2 border-b border-amber-100">
-            <i data-lucide="sparkles" class="w-5 h-5 text-[#c49a45]"></i>
-            <h2 class="text-base font-bold text-neutral-900 font-serif">ข้อมูลจำเพาะและจุดเด่นของที่พัก (Property Highlights)</h2>
+        <!-- Key facts -->
+        <div class="row g-3">
+          <div class="col-6 col-md-4">
+            <div class="wt-card p-3 h-100">
+              <div class="small text-secondary">ราคาเริ่มต้น</div>
+              <div class="fs-4 fw-bold text-green">{% if accommodation.min_price_per_night %}฿{{ accommodation.min_price_per_night|floatformat:"0g" }}<small class="fs-6 fw-normal text-secondary"> / คืน</small>{% else %}<span class="fs-6 text-secondary">ยังไม่ระบุ</span>{% endif %}</div>
+            </div>
           </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 font-sans">
-            <!-- Block 1: ราคาเริ่มต้นต่อคืน -->
-            <div class="rounded-2xl bg-white p-3.5 border border-amber-100 shadow-2xs">
-              <span class="text-[10px] sm:text-xs font-semibold text-neutral-400 uppercase tracking-wider block">ราคาเริ่มต้นต่อคืน</span>
-              <div class="text-xl sm:text-2xl font-serif font-black text-[#c49a45] mt-0.5">
-                ฿{{ accommodation.min_price_per_night|default:"650"|floatformat:0 }}
-                <span class="text-[10px] font-normal text-neutral-400">/ คืน</span>
-              </div>
+          <div class="col-6 col-md-4">
+            <div class="wt-card p-3 h-100">
+              <div class="small text-secondary">ประเภทห้องพัก</div>
+              <div class="fs-4 fw-bold">{{ rooms|length }} <small class="fs-6 fw-normal text-secondary">แบบ</small></div>
             </div>
-
-            <!-- Block 2: ประเภทที่พัก -->
-            <div class="rounded-2xl bg-white p-3.5 border border-amber-100 shadow-2xs">
-              <span class="text-[10px] sm:text-xs font-semibold text-neutral-400 uppercase tracking-wider block">ประเภทที่พัก</span>
-              <div class="text-sm sm:text-base font-bold text-neutral-800 mt-1 line-clamp-1">
-                โฮมสเตย์เรือนไม้
-              </div>
-            </div>
-
-            <!-- Block 3: จำนวนห้องพัก & ความจุ -->
-            <div class="rounded-2xl bg-white p-3.5 border border-amber-100 shadow-2xs">
-              <span class="text-[10px] sm:text-xs font-semibold text-neutral-400 uppercase tracking-wider block">ตัวเลือกห้องพัก</span>
-              <div class="text-sm sm:text-base font-bold text-emerald-700 mt-1">
-                {{ rooms.count|default:"1" }} ประเภทห้อง
-              </div>
-            </div>
-
-            <!-- Block 4: เวลาเช็คอิน / เช็คเอาท์ -->
-            <div class="rounded-2xl bg-white p-3.5 border border-amber-100 shadow-2xs">
-              <span class="text-[10px] sm:text-xs font-semibold text-neutral-400 uppercase tracking-wider block">เช็คอิน / เช็คเอาท์</span>
-              <div class="text-sm sm:text-base font-bold text-neutral-800 mt-1">
-                14:00 / 12:00 น.
-              </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="wt-card p-3 h-100">
+              <div class="small text-secondary">อำเภอ</div>
+              <div class="fs-5 fw-bold">{{ accommodation.district|default:"-" }}</div>
             </div>
           </div>
         </div>
 
-        <!-- 2.3 Description & Story Section -->
-        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs space-y-4">
-          <h2 class="text-lg font-bold text-neutral-900 flex items-center gap-2 border-b border-neutral-100 pb-3 font-serif">
-            <i data-lucide="file-text" class="w-5 h-5 text-[#c49a45]"></i>
-            <span>รายละเอียดและเรื่องราวของที่พัก</span>
-          </h2>
-          <div class="text-xs sm:text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap break-words font-normal">
-            {{ accommodation.description|default:"สัมผัสอากาศบริสุทธิ์และวิถีโฮมสเตย์ชุมชนอีสานใต้ พักผ่อนบนเรือนไม้โปร่งสบาย อิ่มอร่อยกับอาหารเช้าอินทรีย์ที่เก็บสดจากสวน พร้อมเจ้าของบ้านที่คอยดูแลด้วยความอบอุ่นแบบครอบครัว" }}
+        <!-- Description -->
+        {% if accommodation.description %}
+          <div class="wt-card p-4">
+            <h2 class="h5 fw-bold d-flex align-items-center gap-2"><i data-lucide="file-text" class="text-green"></i>เกี่ยวกับที่พัก</h2>
+            <div class="text-secondary" style="white-space: pre-line;">{{ accommodation.description }}</div>
           </div>
-        </div>
+        {% endif %}
 
-        <!-- 2.4 Available Rooms Section (การ์ดเลือกประเภทห้องพัก) -->
-        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs space-y-5">
-          <div class="flex items-center justify-between border-b border-neutral-100 pb-3">
-            <h2 class="text-lg font-bold text-neutral-900 flex items-center gap-2 font-serif">
-              <i data-lucide="door-open" class="w-5 h-5 text-[#c49a45]"></i>
-              <span>ตัวเลือกห้องพักในโฮมสเตย์</span>
-            </h2>
-            <span class="text-xs text-slate-500 font-medium">
-              คลิก "เลือกห้องนี้" เพื่อคำนวณราคาจอง
-            </span>
+        <!-- Rooms -->
+        <div class="wt-card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h2 class="h5 fw-bold d-flex align-items-center gap-2 mb-0"><i data-lucide="door-open" class="text-green"></i>เลือกห้องพัก</h2>
+            {% if rooms %}<small class="text-secondary">กด "เลือกห้องนี้" เพื่อคำนวณราคา</small>{% endif %}
           </div>
-
-          <div class="space-y-4">
+          <div class="d-grid gap-3">
             {% for room in rooms %}
-              <div 
-                :class="selectedRoomId === '{{ room.id }}' ? 'border-[#c49a45] ring-2 ring-[#c49a45]/20 bg-amber-50/20' : 'border-slate-200 hover:border-slate-300 bg-white'"
-                class="p-5 sm:p-6 rounded-2xl border transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-5 shadow-2xs"
-              >
-                <div class="space-y-2 max-w-xl">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2925] text-[#faf9f6]">
-                      {{ room.room_type|default:"ห้องพักมาตรฐาน" }}
-                    </span>
-                    <span class="text-[11px] text-slate-500 font-medium inline-flex items-center gap-1">
-                      <i data-lucide="users" class="w-3.5 h-3.5 text-slate-400"></i>
-                      <span>รองรับได้สูงสุด {{ room.capacity_people|default:2 }} ท่าน</span>
-                    </span>
+              <div class="border rounded-4 p-3 p-sm-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3"
+                   :class="selectedRoomId === '{{ room.id }}' ? 'border-success bg-mint' : ''">
+                <div>
+                  <div class="d-flex flex-wrap gap-2 mb-1">
+                    <span class="badge badge-green">{{ room.room_type }}</span>
+                    <span class="small text-secondary"><i data-lucide="users" class="me-1"></i>สูงสุด {{ room.capacity_people }} ท่าน</span>
                   </div>
-
-                  <h3 class="font-bold text-base sm:text-lg text-[#1f2925] font-serif">
-                    {{ room.name }}
-                  </h3>
-
-                  <!-- Room Specs Pills -->
-                  <div class="flex flex-wrap gap-2 pt-1 text-[11px] text-slate-600 font-medium">
-                    <span class="px-2.5 py-1 rounded-lg bg-slate-100 inline-flex items-center gap-1">
-                      <i data-lucide="bed" class="w-3.5 h-3.5 text-slate-500"></i>
-                      <span>เตียงขนาดใหญ่</span>
-                    </span>
-                    <span class="px-2.5 py-1 rounded-lg bg-slate-100 inline-flex items-center gap-1">
-                      <i data-lucide="bath" class="w-3.5 h-3.5 text-slate-500"></i>
-                      <span>ห้องน้ำส่วนตัวพร้อมน้ำอุ่น</span>
-                    </span>
-                    <span class="px-2.5 py-1 rounded-lg bg-slate-100 inline-flex items-center gap-1">
-                      <i data-lucide="wifi" class="w-3.5 h-3.5 text-slate-500"></i>
-                      <span>Wi-Fi ความเร็วสูง</span>
-                    </span>
-                  </div>
+                  <h3 class="h6 fw-bold mb-0">{{ room.name }}</h3>
                 </div>
-
-                <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
-                  <div class="text-right">
-                    <span class="text-xl sm:text-2xl font-serif font-black text-[#c49a45]">
-                      ฿{{ room.base_price_per_night|floatformat:0 }}
-                    </span>
-                    <span class="text-[10px] text-slate-400 block font-normal">/ คืน รวมอาหารเช้า</span>
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                  <div class="text-md-end">
+                    <span class="fs-4 fw-bold text-green">฿{{ room.base_price_per_night|floatformat:"0g" }}</span>
+                    <small class="text-secondary d-block">/ คืน</small>
                   </div>
-
-                  <button 
-                    type="button" 
-                    @click="selectRoom('{{ room.id }}', '{{ room.name|escapejs }}', {{ room.base_price_per_night }})"
-                    :class="selectedRoomId === '{{ room.id }}' ? 'bg-[#c49a45] text-white ring-2 ring-[#c49a45]/50' : 'bg-[#1f2925] hover:bg-[#2b3832] text-white'"
-                    class="px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 cursor-pointer shrink-0"
-                  >
-                    <span x-text="selectedRoomId === '{{ room.id }}' ? '✓ เลือกห้องนี้แล้ว' : 'เลือกห้องนี้'"></span>
-                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-amber-300" x-show="selectedRoomId !== '{{ room.id }}'"></i>
+                  <button type="button" class="btn rounded-pill px-3"
+                          :class="selectedRoomId === '{{ room.id }}' ? 'btn-gold' : 'btn-green'"
+                          @click="selectRoom('{{ room.id }}', '{{ room.name|escapejs }}', {{ room.base_price_per_night }})">
+                    <span x-text="selectedRoomId === '{{ room.id }}' ? '✓ เลือกแล้ว' : 'เลือกห้องนี้'"></span>
                   </button>
                 </div>
               </div>
             {% empty %}
-              <!-- Fallback Default Room Card when no rooms registered yet -->
-              <div class="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-white transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-5 shadow-2xs">
-                <div class="space-y-2">
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2925] text-[#faf9f6]">
-                    ห้องพักมาตรฐานโฮมสเตย์
-                  </span>
-                  <h3 class="font-bold text-base text-[#1f2925] font-serif">
-                    เรือนพักมาตรฐานวิถีชุมชน
-                  </h3>
-                  <p class="text-xs text-slate-500">
-                    รองรับได้ 2 ท่าน · เตียงคู่ · เครื่องปรับอากาศ / พัดลม · ห้องน้ำในตัว
-                  </p>
-                </div>
-
-                <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-                  <div class="text-right">
-                    <span class="text-2xl font-serif font-black text-[#c49a45]">
-                      ฿{{ accommodation.min_price_per_night|default:"650"|floatformat:0 }}
-                    </span>
-                    <span class="text-[10px] text-slate-400 block font-normal">/ คืน รวมอาหารเช้า</span>
-                  </div>
-                  <button 
-                    type="button" 
-                    @click="selectRoom('{{ accommodation.id }}', '{{ accommodation.name|escapejs }}', {{ accommodation.min_price_per_night|default:650 }})"
-                    class="px-5 py-2.5 rounded-xl bg-[#1f2925] hover:bg-[#2b3832] text-white text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <span>เลือกห้องนี้</span>
-                  </button>
-                </div>
-              </div>
+              <div class="text-center text-secondary small py-4">ที่พักนี้ยังไม่เปิดให้จองห้องพักออนไลน์</div>
             {% endfor %}
           </div>
         </div>
 
-        <!-- 2.5 Amenities & Highlights (สิ่งอำนวยความสะดวก 12 รายการ) -->
-        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs space-y-4">
-          <h2 class="text-lg font-bold text-neutral-900 flex items-center gap-2 border-b border-neutral-100 pb-3 font-serif">
-            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
-            <span>สิ่งอำนวยความสะดวก & ไฮไลท์การเข้าพัก</span>
-          </h2>
-
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-semibold text-[#1f2925]">
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="wifi" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>ฟรีอินเทอร์เน็ต Wi-Fi</span>
-            </div>
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="coffee" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>อาหารเช้าอินทรีย์พื้นบ้าน</span>
-            </div>
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="car" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>ที่จอดรถสะดวกสบายฟรี</span>
-            </div>
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="wind" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>เครื่องปรับอากาศ / พัดลม</span>
-            </div>
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="bike" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>จักรยานปั่นชมสวนชุมชน</span>
-            </div>
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="shower-head" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>เครื่องทำน้ำอุ่น & ของใช้</span>
-            </div>
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="sparkles" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>ระเบียงพักผ่อนชมธรรมชาติ</span>
-            </div>
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="cup-soda" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>ชาสมุนไพร & กาแฟดริป</span>
-            </div>
-            <div class="flex items-center gap-2.5 p-3 rounded-2xl bg-[#faf9f6] border border-slate-200/60">
-              <i data-lucide="shield-check" class="w-4 h-4 text-[#c49a45] shrink-0"></i>
-              <span>ความปลอดภัยชุมชน 24 ชม.</span>
-            </div>
+        <!-- Location -->
+        <div class="wt-card p-4">
+          <h2 class="h5 fw-bold d-flex align-items-center gap-2"><i data-lucide="map" class="text-green"></i>ที่ตั้งและการเดินทาง</h2>
+          <p class="text-secondary">{{ accommodation.address }} {{ accommodation.subdistrict }} {% if accommodation.district %}อ.{{ accommodation.district }}{% endif %} จ.{{ accommodation.province }} {{ accommodation.postal_code }}</p>
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <a class="btn btn-green rounded-pill" target="_blank" rel="noopener noreferrer"
+               href="{% if accommodation.google_maps_url %}{{ accommodation.google_maps_url }}{% elif accommodation.latitude and accommodation.longitude %}https://maps.google.com/?q={{ accommodation.latitude }},{{ accommodation.longitude }}{% else %}https://maps.google.com/?q={{ accommodation.name|urlencode }}+{{ accommodation.province|urlencode }}{% endif %}">
+              <i data-lucide="navigation" class="me-1"></i>นำทางด้วย Google Maps
+            </a>
+            {% if accommodation.latitude and accommodation.longitude %}
+              <small class="text-secondary font-monospace">{{ accommodation.latitude }}, {{ accommodation.longitude }}</small>
+            {% endif %}
           </div>
         </div>
 
-        <!-- 2.6 Location & Google Maps Navigation Section -->
-        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs space-y-4">
-          <div class="flex items-center justify-between border-b border-neutral-100 pb-3 flex-wrap gap-2">
-            <h2 class="text-lg font-bold text-neutral-900 flex items-center gap-2 font-serif">
-              <i data-lucide="map-pin" class="w-5 h-5 text-rose-600"></i>
-              <span>พิกัดทำเล & การเดินทาง</span>
-            </h2>
+        <!-- Community guidelines (platform-wide) -->
+        <div class="wt-card p-4">
+          <h2 class="h5 fw-bold d-flex align-items-center gap-2"><i data-lucide="heart-handshake" class="text-green"></i>ข้อตกลงการเข้าพักในชุมชน</h2>
+          <div class="row g-3 small text-secondary">
+            <div class="col-sm-6 d-flex gap-2"><i data-lucide="volume-x" class="text-green mt-1"></i>งดส่งเสียงดังรบกวนชุมชนในเวลากลางคืน</div>
+            <div class="col-sm-6 d-flex gap-2"><i data-lucide="cigarette-off" class="text-danger mt-1"></i>งดสูบบุหรี่ภายในห้องพัก</div>
+            <div class="col-sm-6 d-flex gap-2"><i data-lucide="recycle" class="text-green mt-1"></i>ช่วยกันคัดแยกขยะและรักษาสิ่งแวดล้อม</div>
+            <div class="col-sm-6 d-flex gap-2"><i data-lucide="clock" class="text-green mt-1"></i>สอบถามเวลาเช็คอิน/เช็คเอาท์กับเจ้าของที่พักก่อนเดินทาง</div>
+          </div>
+        </div>
+      </div>
 
-            {% if accommodation.google_maps_url %}
-              <a 
-                href="{{ accommodation.google_maps_url }}" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer"
-              >
-                <i data-lucide="navigation" class="w-3.5 h-3.5"></i>
-                <span>เปิดนำทางด้วย Google Maps</span>
-              </a>
+      <!-- Right column: booking -->
+      <div class="col-lg-4">
+        <div class="position-sticky d-grid gap-3" style="top: 6rem;">
+          <div id="booking-card" class="wt-card p-4 shadow-sm">
+            {% if rooms %}
+              <div class="small text-secondary">ราคาต่อคืน</div>
+              <div class="d-flex align-items-baseline gap-1">
+                <span class="display-6 fw-bold text-green">฿<span x-text="Number(pricePerNight).toLocaleString()"></span></span>
+                <span class="text-secondary">/ คืน</span>
+              </div>
+              <div class="small text-secondary mb-3"><i data-lucide="check" class="text-success me-1"></i><span x-text="selectedRoomTitle"></span></div>
+
+              <form method="post" action="{% url 'bookings:cart_add' %}" class="d-grid gap-3">
+                {% csrf_token %}
+                <input type="hidden" name="item_type" value="ROOM">
+                <input type="hidden" name="entity_id" :value="selectedRoomId">
+                <input type="hidden" name="title" :value="selectedRoomTitle + ' ({{ accommodation.name|escapejs }})'">
+                <input type="hidden" name="price" :value="total">
+                <input type="hidden" name="quantity" :value="rooms">
+                <input type="hidden" name="guests" :value="guests">
+                <input type="hidden" name="nights" :value="nights">
+
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label small fw-semibold mb-1" for="check_in">เช็คอิน</label>
+                    <input type="date" id="check_in" name="check_in" x-model="checkIn" required class="form-control form-control-sm">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label small fw-semibold mb-1" for="check_out">เช็คเอาท์</label>
+                    <input type="date" id="check_out" name="check_out" x-model="checkOut" required class="form-control form-control-sm">
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="small fw-semibold">จำนวนห้อง</span>
+                  <div class="btn-group btn-group-sm" role="group" aria-label="จำนวนห้อง">
+                    <button type="button" class="btn btn-outline-ink" @click="if (rooms > 1) rooms--" :disabled="rooms <= 1" aria-label="ลด">−</button>
+                    <span class="btn btn-outline-ink disabled fw-bold" style="min-width: 2.5rem;" x-text="rooms"></span>
+                    <button type="button" class="btn btn-outline-ink" @click="if (rooms < 10) rooms++" aria-label="เพิ่ม">+</button>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="small fw-semibold">ผู้เข้าพัก</span>
+                  <div class="btn-group btn-group-sm" role="group" aria-label="จำนวนผู้เข้าพัก">
+                    <button type="button" class="btn btn-outline-ink" @click="if (guests > 1) guests--" :disabled="guests <= 1" aria-label="ลด">−</button>
+                    <span class="btn btn-outline-ink disabled fw-bold" style="min-width: 2.5rem;" x-text="guests"></span>
+                    <button type="button" class="btn btn-outline-ink" @click="if (guests < 30) guests++" aria-label="เพิ่ม">+</button>
+                  </div>
+                </div>
+
+                <div class="bg-mint rounded-4 p-3 small">
+                  <div class="d-flex justify-content-between text-secondary">
+                    <span x-text="'฿' + Number(pricePerNight).toLocaleString() + ' × ' + nights + ' คืน × ' + rooms + ' ห้อง'"></span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-baseline border-top mt-2 pt-2">
+                    <span class="fw-bold">ยอดรวม</span>
+                    <span class="fs-5 fw-bold text-green" x-text="'฿' + total.toLocaleString()"></span>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-gold btn-lg rounded-pill"><i data-lucide="shopping-bag" class="me-1"></i>เพิ่มลงตะกร้า</button>
+              </form>
+              <div class="small text-secondary mt-3 d-flex gap-2"><i data-lucide="landmark" class="text-green mt-1"></i>ชำระโดยโอนเงินและแนบสลิปผ่านหน้าเว็บ</div>
             {% else %}
-              <a 
-                href="https://maps.google.com/?q={{ accommodation.name|urlencode }}+{{ accommodation.district|urlencode }}+{{ accommodation.province|urlencode }}" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer"
-              >
-                <i data-lucide="navigation" class="w-3.5 h-3.5"></i>
-                <span>ค้นหาบน Google Maps</span>
-              </a>
+              <div class="wt-empty py-3">
+                <span class="wt-icon-pill"><i data-lucide="calendar-x"></i></span>
+                <div class="fw-bold">ยังไม่เปิดจองออนไลน์</div>
+                <small class="text-secondary">ติดต่อเจ้าของที่พักเพื่อสอบถามห้องว่าง</small>
+              </div>
             {% endif %}
           </div>
 
-          <div class="space-y-3">
-            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-              <strong>ที่อยู่:</strong> {{ accommodation.address|default:"ต.หนองไฮ" }} {{ accommodation.subdistrict }} อ.{{ accommodation.district }} จ.{{ accommodation.province }} {{ accommodation.postal_code }}
-            </p>
-
-            <!-- Location Map Container Box -->
-            <div class="p-6 rounded-2xl bg-gradient-to-br from-slate-50 to-[#faf9f6] border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-200">
-                  <i data-lucide="map" class="w-6 h-6"></i>
-                </div>
-                <div>
-                  <h4 class="font-bold text-xs sm:text-sm text-neutral-800">พิกัดทางภูมิศาสตร์ (GPS Coordinates)</h4>
-                  <p class="text-xs text-slate-500 font-mono mt-0.5">
-                    {% if accommodation.latitude and accommodation.longitude %}
-                      Lat: {{ accommodation.latitude }}, Long: {{ accommodation.longitude }}
-                    {% else %}
-                      พิกัดศูนย์กลาง อ.{{ accommodation.district|default:"เมืองศรีสะเกษ" }}
-                    {% endif %}
-                  </p>
-                </div>
-              </div>
-
-              <a 
-                href="{% if accommodation.google_maps_url %}{{ accommodation.google_maps_url }}{% else %}https://maps.google.com/?q={{ accommodation.name|urlencode }}{% endif %}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-slate-300 text-xs font-bold text-slate-700 transition shadow-2xs inline-flex items-center gap-1.5 shrink-0"
-              >
-                <i data-lucide="external-link" class="w-3.5 h-3.5 text-blue-600"></i>
-                <span>ดูตำแหน่งบนแผนที่</span>
-              </a>
+          <div class="wt-card p-3 d-flex align-items-center gap-3">
+            <span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="store" class="icon-lg"></i></span>
+            <div class="min-w-0 flex-grow-1">
+              <div class="small text-secondary">เจ้าของที่พัก</div>
+              <div class="fw-bold text-truncate">{{ accommodation.owner.full_name|default:accommodation.owner.email }}</div>
             </div>
+            {% if accommodation.owner.phone_number %}
+              <a href="tel:{{ accommodation.owner.phone_number }}" class="btn btn-green rounded-circle p-2 lh-1" aria-label="โทร {{ accommodation.owner.phone_number }}"><i data-lucide="phone"></i></a>
+            {% endif %}
           </div>
         </div>
-
-        <!-- 2.7 House Rules & Guidelines -->
-        <div class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs space-y-4">
-          <h2 class="text-lg font-bold text-neutral-900 flex items-center gap-2 border-b border-neutral-100 pb-3 font-serif">
-            <i data-lucide="clipboard-check" class="w-5 h-5 text-[#c49a45]"></i>
-            <span>ระเบียบการเข้าพัก & ข้อตกลงชุมชน</span>
-          </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-600">
-            <div class="flex items-start gap-2.5">
-              <i data-lucide="clock" class="w-4 h-4 text-[#c49a45] shrink-0 mt-0.5"></i>
-              <span>เวลาเช็คอิน 14:00 น. เป็นต้นไป และเช็คเอาท์ก่อน 12:00 น.</span>
-            </div>
-            <div class="flex items-start gap-2.5">
-              <i data-lucide="volume-x" class="w-4 h-4 text-[#c49a45] shrink-0 mt-0.5"></i>
-              <span>งดส่งเสียงดังรบกวนหลังเวลา 22:00 น. เพื่อความสงบสุขของชุมชน</span>
-            </div>
-            <div class="flex items-start gap-2.5">
-              <i data-lucide="cigarette-off" class="w-4 h-4 text-rose-500 shrink-0 mt-0.5"></i>
-              <span>ห้ามสูบบุหรี่ภายในห้องพักเรือนไม้ (มีพื้นที่สูบเฉพาะภายนอก)</span>
-            </div>
-            <div class="flex items-start gap-2.5">
-              <i data-lucide="heart" class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5"></i>
-              <span>ร่วมอนุรักษ์สิ่งแวดล้อม คัดแยกขยะ และสนับสนุนสินค้าชุมชน</span>
-            </div>
-          </div>
-        </div>
-
       </div>
-
-      <!-- RIGHT COLUMN: Sticky Booking & Fast Action Sidebar (4 cols - สไตล์ เซ้งร้านด่วน) -->
-      <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-20">
-
-        <!-- 2.8 Price Box & Interactive Reservation Card -->
-        <div id="booking-card" class="rounded-3xl border border-neutral-200/90 bg-white p-6 shadow-md space-y-5">
-          
-          <div>
-            <span class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider block">ราคาเข้าพักสุทธิต่อคืน</span>
-            <div class="flex items-baseline gap-1 mt-0.5">
-              <span class="text-3xl sm:text-4xl font-serif font-black text-[#c49a45] tracking-tight">
-                ฿<span x-text="pricePerNight.toLocaleString()"></span>
-              </span>
-              <span class="text-xs text-slate-400">/ คืน</span>
-            </div>
-            <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1 font-medium">
-              <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>
-              <span x-text="'ห้องที่เลือก: ' + selectedRoomTitle"></span>
-            </p>
-          </div>
-
-          <!-- Trust Guarantee Callout (เหมือนเซ้งร้านด่วน) -->
-          <div class="rounded-2xl bg-gradient-to-r from-emerald-50 via-white to-amber-50/40 border border-emerald-300/80 p-3.5 flex items-center gap-3.5 shadow-2xs">
-            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-              <i data-lucide="shield-check" class="w-5 h-5"></i>
-            </div>
-            <div class="text-xs">
-              <div class="font-black text-emerald-950 text-xs sm:text-sm">โฮมสเตย์รับรองมาตรฐาน WellTrip</div>
-              <div class="text-[11px] text-emerald-800 leading-relaxed mt-0.5">ผ่านการยืนยันตัวตนเจ้าของโฮมสเตย์และตรวจมาตรฐานความปลอดภัย ปลอดภัย 100%</div>
-            </div>
-          </div>
-
-          <!-- Booking Form with Dates, +/- Counters and Live Breakdown -->
-          <form method="POST" action="{% url 'bookings:cart_add' %}" class="space-y-4">
-            {% csrf_token %}
-            <input type="hidden" name="item_type" value="ROOM">
-            <input type="hidden" name="entity_id" :value="selectedRoomId">
-            <input type="hidden" name="title" :value="selectedRoomTitle + ' ({{ accommodation.name|escapejs }})'">
-            <input type="hidden" name="price" :value="total">
-            <input type="hidden" name="quantity" :value="rooms">
-            <input type="hidden" name="guests" :value="guests">
-            <input type="hidden" name="nights" :value="nights">
-
-            <!-- Check-in & Check-out Date Pickers -->
-            <div class="space-y-1.5">
-              <label class="block text-xs font-semibold text-[#1f2925]">วันที่เข้าพัก - วันที่ออก</label>
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <span class="text-[10px] text-slate-400 block mb-0.5">เช็คอิน</span>
-                  <input 
-                    type="date" 
-                    name="check_in" 
-                    x-model="checkIn"
-                    required 
-                    class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-[#1f2925]"
-                  >
-                </div>
-                <div>
-                  <span class="text-[10px] text-slate-400 block mb-0.5">เช็คเอาท์</span>
-                  <input 
-                    type="date" 
-                    name="check_out" 
-                    x-model="checkOut"
-                    required 
-                    class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-[#1f2925]"
-                  >
-                </div>
-              </div>
-            </div>
-
-            <!-- Room Counter with +/- buttons -->
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between text-xs font-semibold text-[#1f2925]">
-                <span>จำนวนห้องพัก</span>
-                <span class="text-slate-500 font-mono" x-text="rooms + ' ห้อง'"></span>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-2xl border border-slate-200 bg-slate-50/50">
-                <span class="text-xs text-slate-600 pl-2">เลือกจำนวนห้อง</span>
-                <div class="flex items-center gap-3">
-                  <button 
-                    type="button" 
-                    @click="if (rooms > 1) rooms--" 
-                    class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 flex items-center justify-center transition disabled:opacity-40 cursor-pointer"
-                    :disabled="rooms <= 1"
-                  >
-                    -
-                  </button>
-                  <span class="font-bold text-sm text-[#1B2A24] w-6 text-center" x-text="rooms"></span>
-                  <button 
-                    type="button" 
-                    @click="if (rooms < 10) rooms++" 
-                    class="w-8 h-8 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] flex items-center justify-center transition cursor-pointer"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Guests Counter with +/- buttons -->
-            <div class="space-y-1.5">
-              <div class="flex items-center justify-between text-xs font-semibold text-[#1f2925]">
-                <span>จำนวนผู้เข้าพัก</span>
-                <span class="text-slate-500 font-mono" x-text="guests + ' ท่าน'"></span>
-              </div>
-              <div class="flex items-center justify-between p-2 rounded-2xl border border-slate-200 bg-slate-50/50">
-                <span class="text-xs text-slate-600 pl-2">ผู้ใหญ่ / ผู้เข้าพัก</span>
-                <div class="flex items-center gap-3">
-                  <button 
-                    type="button" 
-                    @click="if (guests > 1) guests--" 
-                    class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 flex items-center justify-center transition disabled:opacity-40 cursor-pointer"
-                    :disabled="guests <= 1"
-                  >
-                    -
-                  </button>
-                  <span class="font-bold text-sm text-[#1B2A24] w-6 text-center" x-text="guests"></span>
-                  <button 
-                    type="button" 
-                    @click="if (guests < 30) guests++" 
-                    class="w-8 h-8 rounded-xl bg-[#1B2A24] text-white font-bold hover:bg-[#151d1a] flex items-center justify-center transition cursor-pointer"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Live Calculation Breakdown -->
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 text-xs">
-              <div class="flex justify-between text-slate-600">
-                <span x-text="'฿' + pricePerNight.toLocaleString() + ' x ' + nights + ' คืน x ' + rooms + ' ห้อง'"></span>
-                <span class="font-bold text-[#1B2A24]" x-text="'฿' + total.toLocaleString()"></span>
-              </div>
-              <div class="flex justify-between text-emerald-700 font-medium text-[11px]">
-                <span>รวมอาหารเช้าสุขภาพอินทรีย์</span>
-                <span>ฟรี</span>
-              </div>
-              <div class="pt-2 border-t border-slate-200 flex justify-between items-baseline">
-                <span class="font-bold text-slate-700">ยอดรวมคำนวณสุทธิ</span>
-                <span class="font-serif font-bold text-xl text-[#c49a45]" x-text="'฿' + total.toLocaleString()"></span>
-              </div>
-            </div>
-
-            <button 
-              type="submit" 
-              class="w-full min-h-[48px] rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>เพิ่มลงตะกร้าและดำเนินการ</span>
-              <i data-lucide="arrow-right" class="w-4 h-4 text-[#c49a45]"></i>
-            </button>
-          </form>
-
-          <!-- Action Buttons: Phone, LINE & Facebook Share (เหมือนเซ้งร้านด่วน) -->
-          <div class="space-y-2.5 pt-3 border-t border-neutral-100">
-            <a 
-              href="tel:{{ accommodation.owner.phone_number|default:'0812345679' }}"
-              class="flex w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 py-3 text-xs sm:text-sm font-bold text-white shadow-xs transition hover:scale-[1.01]"
-            >
-              <i data-lucide="phone" class="w-4 h-4 text-[#c49a45]"></i>
-              <span>โทรติดต่อ: {{ accommodation.owner.phone_number|default:"081-234-5679" }}</span>
-            </a>
-
-            <a 
-              href="https://line.me/R/ti/p/@welltrip"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#06C755] hover:bg-[#05b34c] py-3 text-xs sm:text-sm font-bold text-white shadow-xs transition hover:scale-[1.01]"
-            >
-              <i data-lucide="message-circle" class="w-4 h-4"></i>
-              <span>ทัก LINE สอบถามเจ้าของที่พัก</span>
-            </a>
-
-            <!-- Facebook Share Button -->
-            <a 
-              href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] py-2.5 text-xs font-bold text-white shadow-xs transition hover:scale-[1.01] cursor-pointer"
-            >
-              <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              <span>แชร์ที่พักนี้ไปที่ Facebook</span>
-            </a>
-
-            <!-- Copy Link -->
-            <button 
-              type="button"
-              @click="copyLink()"
-              class="flex w-full items-center justify-center gap-2 rounded-xl border border-neutral-300 hover:border-neutral-400 bg-white hover:bg-neutral-50 py-2.5 text-xs font-bold text-neutral-700 shadow-2xs transition active:scale-95 cursor-pointer"
-            >
-              <i data-lucide="share-2" class="w-3.5 h-3.5 text-neutral-500" x-show="!copied"></i>
-              <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600" x-show="copied"></i>
-              <span x-text="copied ? 'คัดลอกลิงก์เรียบร้อยแล้ว!' : 'คัดลอกลิงก์ที่พัก'"></span>
-            </button>
-          </div>
-
-          <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px] text-slate-400">
-            <div class="flex items-center gap-2">
-              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-              <span>ยืนยันห้องพักทันที ไม่ต้องรอตอบกลับ</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <i data-lucide="credit-card" class="w-4 h-4 text-[#c49a45]"></i>
-              <span>ชำระเงินสะดวกผ่าน PromptPay QR มาตรฐาน</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- 2.9 Verified Host Profile Card -->
-        <div class="rounded-3xl border border-slate-200/90 bg-white p-5 shadow-xs flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-[#1f2925] text-[#c49a45] flex items-center justify-center shrink-0 shadow-xs">
-            <i data-lucide="store" class="w-7 h-7"></i>
-          </div>
-          <div class="min-w-0">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 block">เจ้าของที่พักชุมชน</span>
-            <h3 class="font-bold text-sm text-[#1f2925] truncate">
-              {{ accommodation.owner.full_name|default:"กลุ่มวิสาหกิจชุมชนศรีสะเกษ" }}
-            </h3>
-            <p class="text-xs text-slate-500 mt-0.5">
-              เข้าร่วมโครงการโฮมสเตย์ท่องเที่ยวเชิงสุขภาพ จ.ศรีสะเกษ
-            </p>
-          </div>
-        </div>
-
-      </div>
-
     </div>
   </div>
 
-  <!-- Structured Data: LodgingBusiness (Schema.org) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -776,19 +285,12 @@
       "streetAddress": "{{ accommodation.address|escapejs }}",
       "addressLocality": "{{ accommodation.district|default:'Sisaket'|escapejs }}",
       "addressRegion": "Sisaket",
-      "postalCode": "{{ accommodation.postal_code|default:'33000' }}",
+      "postalCode": "{{ accommodation.postal_code }}",
       "addressCountry": "TH"
     }{% if accommodation.latitude and accommodation.longitude %},
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": {{ accommodation.latitude }},
-      "longitude": {{ accommodation.longitude }}
-    }{% endif %},
-    "priceRange": "฿{{ accommodation.min_price_per_night }}",
-    "checkinTime": "14:00",
-    "checkoutTime": "12:00"
+    "geo": { "@type": "GeoCoordinates", "latitude": {{ accommodation.latitude }}, "longitude": {{ accommodation.longitude }} }{% endif %}{% if accommodation.min_price_per_night %},
+    "priceRange": "฿{{ accommodation.min_price_per_night|floatformat:"0g" }}"{% endif %}
   }
   </script>
-
 </div>
 {% endblock %}

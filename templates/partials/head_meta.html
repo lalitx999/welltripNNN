@@ -1,0 +1,38 @@
+{% load static %}
+  <!-- PWA & Modern Browser Meta -->
+  <meta name="theme-color" content="#1F2925">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WellTrip">
+  <meta name="application-name" content="WellTrip">
+  <meta name="msapplication-TileColor" content="#1F2925">
+  <meta name="msapplication-TileImage" content="{% static 'icons/icon-192.png' %}">
+  <link rel="manifest" href="{% url 'core:manifest' %}">
+  
+  <meta name="description" content="WellTrip Sisaket (เวลทริป ศรีสะเกษ) แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟ จองโฮมสเตย์ อาหารสุขภาพ สปาสมุนไพร และสินค้า OTOP">
+  <meta name="keywords" content="WellTrip, ศรีสะเกษ, ท่องเที่ยวเชิงสุขภาพ, โฮมสเตย์ศรีสะเกษ, ดินภูเขาไฟ, 4 ชนเผ่า, กูย, ลาว, เขมร, เยอ, อาหารสุขภาพ, สปาสมุนไพร, ทุเรียนภูเขาไฟ, หอมแดงศรีสะเกษ GI, มรภ.ศรีสะเกษ">
+  <meta name="author" content="มหาวิทยาลัยราชภัฏศรีสะเกษ ร่วมกับ NIA, SIP UBU, บพท., กระทรวง อว.">
+  
+  <!-- OpenGraph & Social Sharing Meta -->
+  <meta property="og:site_name" content="WellTrip Sisaket">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="th_TH">
+  <meta property="og:title" content="WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน 4 เผ่าไท">
+  <meta property="og:description" content="สัมผัสเสน่ห์วิถีชีวิต 4 ชนเผ่า วัฒนธรรมสุขภาวะ อาหารอินทรีย์ และอัตลักษณ์ดินภูเขาไฟศรีสะเกษ">
+  <meta property="og:image" content="https://welltrip-sisaket.com{% static 'images/logoWelltrip.jpg' %}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="WellTrip Sisaket โลโก้โครงการท่องเที่ยวเชิงสุขภาวะ">
+  
+  <!-- Twitter Card Meta -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WellTrip Sisaket - การท่องเที่ยวเชิงสุขภาวะและมรดกชุมชน">
+  <meta name="twitter:description" content="Slow Days Sisaket: สัมผัสเสน่ห์โฮมสเตย์ อาหารอินทรีย์ สปาสมุนไพร และของดี 4 ชนเผ่า">
+  <meta name="twitter:image" content="https://welltrip-sisaket.com{% static 'images/logoWelltrip.jpg' %}">
+  
+  <!-- Favicon & Brand Icons -->
+  <link rel="icon" type="image/x-icon" href="{% static 'images/logoWelltrip.ico' %}">
+  <link rel="apple-touch-icon" sizes="192x192" href="{% static 'icons/icon-192.png' %}">
+  <link rel="apple-touch-icon" sizes="512x512" href="{% static 'icons/icon-512.png' %}">
+  

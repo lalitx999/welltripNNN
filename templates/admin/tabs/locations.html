@@ -1,0 +1,32 @@
+<div class="wt-card">
+  <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <span class="small text-secondary">จุดเช็คอินบนแผนที่ · รหัส QR ใช้พิมพ์ติดที่จุดจริงเท่านั้น ห้ามเผยแพร่ออนไลน์</span>
+    <button type="button" class="btn btn-green btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addLocationModal"><i data-lucide="plus" class="me-1"></i>เพิ่มจุดเช็คอิน</button>
+  </div>
+  <div class="table-responsive">
+    <table class="table wt-table mb-0">
+      <thead><tr><th>สถานที่</th><th>หมวด</th><th>ที่อยู่</th><th>ลิงก์ปั๊มตรา (สำหรับทำ QR)</th><th class="text-end">จัดการ</th></tr></thead>
+      <tbody>
+        {% for loc in map_locations %}
+          <tr>
+            <td class="small"><div class="fw-semibold">{{ loc.title }}</div><span class="text-secondary font-monospace">{{ loc.latitude }}, {{ loc.longitude }}</span>{% if not loc.is_active %} <span class="badge text-bg-secondary">ปิด</span>{% endif %}</td>
+            <td><span class="badge bg-light text-secondary border">{{ loc.get_category_display }}</span></td>
+            <td class="small">{{ loc.address|default:"-" }}</td>
+            <td x-data="{ copied: false }">
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-pill" @click="navigator.clipboard.writeText('{{ request.scheme }}://{{ request.get_host }}{% url 'community:claim_stamp' loc.qr_secret %}'); copied = true; setTimeout(() => copied = false, 2000)">
+                <i data-lucide="copy" class="me-1"></i><span x-text="copied ? 'คัดลอกแล้ว' : 'คัดลอกลิงก์'">คัดลอกลิงก์</span>
+              </button>
+            </td>
+            <td class="text-end text-nowrap">
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="แก้ไข" aria-label="แก้ไขสถานที่"
+                      @click="open('location', { id: '{{ loc.id }}', title: '{{ loc.title|escapejs }}', category: '{{ loc.category }}', google_maps_url: '{{ loc.google_maps_url|default:''|escapejs }}', address: '{{ loc.address|escapejs }}', is_active: {{ loc.is_active|yesno:'true,false' }} }, 'editLocationModal')"><i data-lucide="pencil"></i></button>
+              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="ลบ" aria-label="ลบสถานที่" @click="confirmDelete('{% url 'accounts:admin_location_delete' loc.id %}', 'จุด {{ loc.title|escapejs }}')"><i data-lucide="trash-2"></i></button>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-secondary small py-4">ยังไม่มีจุดเช็คอิน</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

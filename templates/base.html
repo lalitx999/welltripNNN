@@ -1,295 +1,68 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="th" class="h-full">
+<html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  
-  <!-- PWA & Modern Browser Meta -->
-  <meta name="theme-color" content="#1F2925">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="WellTrip">
-  <meta name="application-name" content="WellTrip">
-  <meta name="msapplication-TileColor" content="#1F2925">
-  <meta name="msapplication-TileImage" content="{% static 'icons/icon-192.png' %}">
-  <link rel="manifest" href="{% url 'core:manifest' %}">
-  
+
+  {% include 'partials/head_meta.html' %}
   <title>{% block title %}WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญา 4 ชนเผ่า{% endblock %}</title>
-  <meta name="description" content="WellTrip Sisaket (เวลทริป ศรีสะเกษ) แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟ จองโฮมสเตย์ อาหารสุขภาพ สปาสมุนไพร และสินค้า OTOP">
-  <meta name="keywords" content="WellTrip, ศรีสะเกษ, ท่องเที่ยวเชิงสุขภาพ, โฮมสเตย์ศรีสะเกษ, ดินภูเขาไฟ, 4 ชนเผ่า, กูย, ลาว, เขมร, เยอ, อาหารสุขภาพ, สปาสมุนไพร, ทุเรียนภูเขาไฟ, หอมแดงศรีสะเกษ GI, มรภ.ศรีสะเกษ">
-  <meta name="author" content="มหาวิทยาลัยราชภัฏศรีสะเกษ ร่วมกับ NIA, SIP UBU, บพท., กระทรวง อว.">
-  
-  <!-- OpenGraph & Social Sharing Meta -->
-  <meta property="og:site_name" content="WellTrip Sisaket">
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="th_TH">
-  <meta property="og:title" content="WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน 4 เผ่าไท">
-  <meta property="og:description" content="สัมผัสเสน่ห์วิถีชีวิต 4 ชนเผ่า วัฒนธรรมสุขภาวะ อาหารอินทรีย์ และอัตลักษณ์ดินภูเขาไฟศรีสะเกษ">
-  <meta property="og:image" content="https://welltrip-sisaket.com{% static 'images/logoWelltrip.jpg' %}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="WellTrip Sisaket โลโก้โครงการท่องเที่ยวเชิงสุขภาวะ">
-  
-  <!-- Twitter Card Meta -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="WellTrip Sisaket - การท่องเที่ยวเชิงสุขภาวะและมรดกชุมชน">
-  <meta name="twitter:description" content="Slow Days Sisaket: สัมผัสเสน่ห์โฮมสเตย์ อาหารอินทรีย์ สปาสมุนไพร และของดี 4 ชนเผ่า">
-  <meta name="twitter:image" content="https://welltrip-sisaket.com{% static 'images/logoWelltrip.jpg' %}">
-  
-  <!-- Favicon & Brand Icons -->
-  <link rel="icon" type="image/x-icon" href="{% static 'images/logoWelltrip.ico' %}">
-  <link rel="apple-touch-icon" sizes="192x192" href="{% static 'icons/icon-192.png' %}">
-  <link rel="apple-touch-icon" sizes="512x512" href="{% static 'icons/icon-512.png' %}">
-  
-  <!-- Core Web Vitals: Preconnect & DNS-Prefetch for Fonts & Scripts -->
-  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- High-Authority E-E-A-T Schema.org Organization & WebSite JSON-LD -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": "https://welltrip-sisaket.com/#organization",
-        "name": "WellTrip Sisaket",
-        "alternateName": ["เวลทริป ศรีสะเกษ", "Slow Days Sisaket"],
-        "legalName": "โครงการขับเคลื่อนการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญา 4 ชนเผ่า มหาวิทยาลัยราชภัฏศรีสะเกษ",
-        "url": "https://welltrip-sisaket.com/",
-        "logo": "https://welltrip-sisaket.com{% static 'images/logoWelltrip.jpg' %}",
-        "description": "แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟศรีสะเกษ",
-        "foundingDate": "2024",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "319 ถนนไทยพันทา ตำบลโพธิ์",
-          "addressLocality": "เมืองศรีสะเกษ",
-          "addressRegion": "ศรีสะเกษ",
-          "postalCode": "33000",
-          "addressCountry": "TH"
-        },
-        "founder": {
-          "@type": "EducationalOrganization",
-          "name": "มหาวิทยาลัยราชภัฏศรีสะเกษ (Sisaket Rajabhat University)"
-        },
-        "sponsor": [
-          {
-            "@type": "GovernmentOrganization",
-            "name": "สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) - NIA",
-            "url": "https://www.nia.or.th/"
-          },
-          {
-            "@type": "Organization",
-            "name": "อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)",
-            "url": "https://step.ubu.ac.th/"
-          },
-          {
-            "@type": "GovernmentOrganization",
-            "name": "หน่วยบริหารและจัดการทุนด้านการพัฒนาระดับพื้นที่ (บพท.)"
-          },
-          {
-            "@type": "GovernmentOrganization",
-            "name": "กระทรวงการอุดมศึกษา วิทยาศาสตร์ วิจัยและนวัตกรรม (อว.)"
-          }
-        ],
-        "knowsAbout": [
-          "Wellness Tourism",
-          "Community Based Tourism",
-          "Slow Days Travel",
-          "4 Ethnic Tribes Sisaket (Kuy, Lao, Khmer, Yoe)",
-          "Volcanic Soil Ecology",
-          "GI Geographical Indications Products"
-        ]
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://welltrip-sisaket.com/#website",
-        "url": "https://welltrip-sisaket.com/",
-        "name": "WellTrip Sisaket",
-        "description": "Slow Days Sisaket - นวัตกรรมการท่องเที่ยวเชิงสุขภาวะและมรดกวัฒนธรรม",
-        "inLanguage": "th",
-        "publisher": {
-          "@id": "https://welltrip-sisaket.com/#organization"
-        },
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://welltrip-sisaket.com/accommodations/?q={search_term_string}"
-          },
-          "query-input": "required name=search_term_string"
-        }
-      }
-    ]
-  }
-  </script>
-  
-  <!-- Tailwind CSS Play CDN with In-Memory JIT Engine -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ["'Plus Jakarta Sans'", "'Noto Sans Thai'", '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            display: ["'Plus Jakarta Sans'", "'Noto Sans Thai'", 'sans-serif'],
-          },
-          colors: {
-            forest: {
-              DEFAULT: '#193E30',
-              50: '#F2F7F4',
-              100: '#E2EDE6',
-              200: '#C4DBD0',
-              300: '#99C0AD',
-              400: '#5D9B7B',
-              500: '#27543E',
-              600: '#1E4431',
-              700: '#183728',
-              800: '#193E30',
-              900: '#12291E',
-              950: '#0B1A13',
-              dark: '#1F2925',
-            },
-            gold: {
-              DEFAULT: '#C5A059',
-              50: '#FAF6ED',
-              100: '#F3EBD6',
-              200: '#E7D6AC',
-              300: '#D6BF84',
-              400: '#CEAF6C',
-              500: '#C5A059',
-              600: '#D97706',
-              700: '#84652B',
-              800: '#634B20',
-            },
-            cream: {
-              DEFAULT: '#FAF9F6',
-              50: '#FFFFFF',
-              100: '#FAF9F6',
-              200: '#F4EFE6',
-              300: '#EAE3D5',
-              400: '#DDD4C3',
-              500: '#C5B8A3',
-            },
-            earth: {
-              DEFAULT: '#1F2925',
-              500: '#6E6862',
-              800: '#26221F',
-              900: '#111827',
-            },
-            surface: '#FFFFFF',
-          },
-          borderRadius: {
-            'luxury': '24px',
-            '2xl': '1rem',
-            '3xl': '1.5rem',
-          },
-        },
-      },
-    };
-  </script>
 
-  <!-- Lucide Icons & Scripts -->
-  <script defer src="https://unpkg.com/lucide@latest"></script>
-  <script src="{% static 'js/htmx.min.js' %}" defer></script>
-  <script src="{% static 'js/alpine.min.js' %}" defer></script>
+  {% include 'partials/seo_org_jsonld.html' %}
 
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #FAF9F6;
-    }
-    [data-lucide] {
-      display: inline-block;
-      vertical-align: middle;
-    }
-    /* HTMX indicator */
-    .htmx-indicator {
-      opacity: 0;
-      transition: opacity 200ms ease-in-out;
-    }
-    .htmx-request .htmx-indicator,
-    .htmx-request.htmx-indicator {
-      opacity: 1;
-    }
-  </style>
-  
+  <!-- All assets are self-hosted: no CDN -->
+  <link rel="preload" href="{% static 'fonts/noto-sans-thai-thai-wght-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/welltrip.css' %}?v={{ asset_version }}">
+  <script defer src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+  <script defer src="{% static 'vendor/lucide/lucide.min.js' %}"></script>
+  <script defer src="{% static 'js/htmx.min.js' %}"></script>
+  <script defer src="{% static 'js/alpine.min.js' %}"></script>
+
   {% block extra_css %}{% endblock %}
 </head>
-<body class="min-h-full flex flex-col bg-cream font-sans text-earth antialiased"
-      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-      x-data="{ mobileMenuOpen: false }">
+<body class="d-flex flex-column min-vh-100 {% block body_class %}{% endblock %}"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
-  <!-- HTMX Loading Indicator bar -->
-  <div id="loading-bar" class="htmx-indicator fixed top-0 left-0 right-0 h-1 bg-gold z-50"></div>
+  <div id="loading-bar" class="htmx-indicator position-fixed top-0 start-0 end-0"></div>
 
-  <!-- Main Content Layout Slot -->
   {% block layout %}
     {% block content %}{% endblock %}
   {% endblock %}
 
-  <!-- Global Toast Messages -->
+  <!-- Flash messages -->
   {% if messages %}
-    <div class="fixed bottom-5 right-5 z-50 flex flex-col space-y-3 max-w-sm w-full px-4">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
       {% for message in messages %}
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
-             class="p-4 rounded-2xl shadow-lg border text-sm font-medium transition-all duration-300
-                    {% if message.tags == 'error' %} bg-red-50 border-red-200 text-red-800
-                    {% elif message.tags == 'success' %} bg-emerald-50 border-emerald-200 text-emerald-800
-                    {% else %} bg-white border-gray-200 text-gray-800 {% endif %} flex items-center justify-between">
-          <span>{{ message }}</span>
-          <button @click="show = false" class="ml-3 text-gray-400 hover:text-gray-600 focus:outline-none">&times;</button>
+        <div class="toast align-items-center border-0 shadow {% if message.tags == 'error' %}text-bg-danger{% elif message.tags == 'success' %}text-bg-success{% else %}text-bg-light{% endif %}"
+             role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+          <div class="d-flex">
+            <div class="toast-body">{{ message }}</div>
+            <button type="button" class="btn-close {% if message.tags == 'error' or message.tags == 'success' %}btn-close-white{% endif %} me-2 m-auto" data-bs-dismiss="toast" aria-label="ปิด"></button>
+          </div>
         </div>
       {% endfor %}
     </div>
   {% endif %}
 
-  <!-- PWA Install Prompt Toast (App Install Banner) -->
-  <div id="pwa-install-banner" 
-       x-data="pwaInstallBanner()" 
-       x-show="showBanner" 
-       x-transition:enter="transition ease-out duration-300"
-       x-transition:enter-start="opacity-0 translate-y-4"
-       x-transition:enter-end="opacity-100 translate-y-0"
-       x-transition:leave="transition ease-in duration-200"
-       x-transition:leave-start="opacity-100 translate-y-0"
-       x-transition:leave-end="opacity-0 translate-y-4"
-       style="display: none;"
-       class="fixed bottom-20 sm:bottom-6 left-4 right-4 sm:left-auto sm:right-6 z-50 max-w-sm bg-[#1F2925] text-white p-4 rounded-2xl shadow-2xl border border-[#C49A45]/40 flex items-center justify-between gap-3 backdrop-blur-md">
-    <div class="flex items-center gap-3 min-w-0">
-      <img src="{% static 'icons/icon-192.png' %}" alt="WellTrip" class="w-10 h-10 rounded-xl shadow-xs shrink-0 border border-white/20">
-      <div class="min-w-0">
-        <h4 class="text-xs font-bold text-white flex items-center gap-1.5 truncate">
-          <span>ติดตั้งแอป WellTrip</span>
-          <span class="bg-[#C49A45] text-[#1F2925] text-[9px] font-extrabold px-1.5 py-0.2 rounded-full">PWA</span>
-        </h4>
-        <p class="text-[11px] text-stone-300 truncate">เปิดเร็ว ใช้งานได้แม้ออฟไลน์</p>
-      </div>
+  <!-- PWA install prompt -->
+  <!-- x-show must not share an element with d-* classes (they use !important) -->
+  <div x-data="pwaInstallBanner()" x-show="showBanner" x-cloak class="position-fixed bottom-0 end-0 m-3 mb-5 mb-lg-3" style="z-index: 1080; max-width: 22rem;">
+   <div class="p-3 rounded-4 shadow-lg bg-ink border border-gold d-flex align-items-center gap-3">
+    <img src="{% static 'icons/icon-192.png' %}" alt="WellTrip" width="40" height="40" class="rounded-3 border border-light border-opacity-25">
+    <div class="flex-grow-1 small">
+      <div class="fw-bold">ติดตั้งแอป WellTrip <span class="badge bg-warning text-dark">PWA</span></div>
+      <div class="text-white-50">เปิดเร็ว ใช้งานได้แม้ออฟไลน์</div>
     </div>
-    <div class="flex items-center gap-2 shrink-0">
-      <button type="button" @click="installApp()" class="px-3 py-1.5 rounded-xl bg-[#C49A45] hover:bg-[#D97706] text-[#1F2925] font-bold text-xs transition shadow-xs cursor-pointer">
-        ติดตั้ง
-      </button>
-      <button type="button" @click="dismiss()" class="p-1 text-stone-400 hover:text-white" aria-label="ปิด">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-    </div>
+    <button type="button" class="btn btn-gold btn-sm" @click="installApp()">ติดตั้ง</button>
+    <button type="button" class="btn-close btn-close-white" @click="dismiss()" aria-label="ปิด"></button>
+   </div>
   </div>
 
-  <!-- Register Service Worker (PWA) & PWA Install Logic -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('{% url "core:service_worker" %}')
-          .then((reg) => console.log('WellTrip SW registered'))
-          .catch((err) => console.warn('WellTrip SW registration failed:', err));
+        navigator.serviceWorker.register('{% url "core:service_worker" %}').catch(() => {});
       });
     }
 
@@ -297,57 +70,58 @@
       return {
         showBanner: false,
         deferredPrompt: null,
-
         init() {
-          if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-            return;
-          }
-          if (localStorage.getItem('pwa_dismissed')) {
-            const dismissedTime = parseInt(localStorage.getItem('pwa_dismissed'), 10);
-            if (Date.now() - dismissedTime < 86400000 * 3) return;
-          }
-
+          if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) return;
+          try {
+            const dismissed = parseInt(localStorage.getItem('pwa_dismissed') || '0', 10);
+            if (Date.now() - dismissed < 86400000 * 3) return;
+          } catch (e) {}
           window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
             this.showBanner = true;
           });
-
-          window.addEventListener('appinstalled', () => {
-            this.showBanner = false;
-            this.deferredPrompt = null;
-          });
+          window.addEventListener('appinstalled', () => { this.showBanner = false; });
         },
-
         async installApp() {
           if (!this.deferredPrompt) return;
           this.deferredPrompt.prompt();
           const { outcome } = await this.deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            this.showBanner = false;
-          }
+          if (outcome === 'accepted') this.showBanner = false;
           this.deferredPrompt = null;
         },
-
         dismiss() {
           this.showBanner = false;
-          localStorage.setItem('pwa_dismissed', Date.now().toString());
+          try { localStorage.setItem('pwa_dismissed', Date.now().toString()); } catch (e) {}
         }
       };
     }
-  </script>
 
-  <!-- Lucide Icon Auto-Rehydration for HTMX & DOM -->
-  <script>
     function refreshLucideIcons() {
-      if (typeof lucide !== 'undefined' && lucide.createIcons) {
-        lucide.createIcons();
-      }
+      if (window.lucide && lucide.createIcons) lucide.createIcons();
     }
-    document.addEventListener('DOMContentLoaded', refreshLucideIcons);
-    document.body.addEventListener('htmx:afterSwap', refreshLucideIcons);
-    // Double check after window load for deferred CDN scripts
-    window.addEventListener('load', refreshLucideIcons);
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshLucideIcons();
+      // Fade sections in as they scroll into view
+      const reveal = document.querySelectorAll('.wt-reveal');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+        }, { rootMargin: '0px 0px -10% 0px' });
+        reveal.forEach((el) => io.observe(el));
+      } else {
+        reveal.forEach((el) => el.classList.add('is-visible'));
+      }
+      // Navbar shadow once the page is scrolled
+      const nav = document.querySelector('.wt-navbar');
+      if (nav) {
+        const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 8);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+      document.querySelectorAll('.toast').forEach((el) => bootstrap.Toast.getOrCreateInstance(el).show());
+    });
+    document.addEventListener('htmx:afterSwap', refreshLucideIcons);
   </script>
 
   {% block extra_js %}{% endblock %}

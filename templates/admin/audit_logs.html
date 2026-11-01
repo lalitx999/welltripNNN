@@ -1,72 +1,39 @@
 {% extends "layouts/admin.html" %}
 
-{% block admin_heading %}บันทึกการตรวจสอบความปลอดภัย (Security Audit Logs){% endblock %}
+{% block title %}บันทึกการใช้งาน - Admin Center{% endblock %}
+{% block page_heading %}บันทึกการใช้งานระบบ{% endblock %}
 
 {% block content %}
-<div class="space-y-6 max-w-6xl pb-12">
-  
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
-    <div class="space-y-1">
-      <div class="flex items-center space-x-2">
-        <i data-lucide="activity" class="w-5 h-5 text-rose-500"></i>
-        <h2 class="text-base font-bold text-[#1B2A24]">ประวัติความเคลื่อนไหวสำคัญในระบบ (Security Events)</h2>
-      </div>
-      <p class="text-xs text-slate-500">เก็บบันทึกข้อมูลความปลอดภัยขั้นต่ำ 90 วัน ตามมาตรฐาน OWASP และ PDPA</p>
-    </div>
-
-    <!-- Filter by Action -->
-    <div class="flex items-center space-x-1.5 text-xs">
-      <a href="{% url 'accounts:admin_audit' %}" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold transition shadow-2xs">ทั้งหมด</a>
-      <a href="{% url 'accounts:admin_audit' %}?action=CREATE" class="px-3 py-1.5 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 font-semibold transition shadow-2xs">CREATE</a>
-      <a href="{% url 'accounts:admin_audit' %}?action=UPDATE" class="px-3 py-1.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-800 font-semibold transition shadow-2xs">UPDATE</a>
-      <a href="{% url 'accounts:admin_audit' %}?action=DELETE" class="px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 font-semibold transition shadow-2xs">DELETE</a>
+<div class="wt-card">
+  <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <span class="small text-secondary">100 รายการล่าสุด</span>
+    <div class="wt-pills">
+      <a href="{% url 'accounts:admin_audit' %}" class="wt-pill {% if not action_filter %}active{% endif %}">ทั้งหมด</a>
+      <a href="?action=CREATE" class="wt-pill {% if action_filter == 'CREATE' %}active{% endif %}">CREATE</a>
+      <a href="?action=UPDATE" class="wt-pill {% if action_filter == 'UPDATE' %}active{% endif %}">UPDATE</a>
+      <a href="?action=DELETE" class="wt-pill {% if action_filter == 'DELETE' %}active{% endif %}">DELETE</a>
+      <a href="?action=LOGIN" class="wt-pill {% if action_filter == 'LOGIN' %}active{% endif %}">LOGIN</a>
+      <a href="?action=PERMISSION_DENIED" class="wt-pill {% if action_filter == 'PERMISSION_DENIED' %}active{% endif %}">ถูกปฏิเสธสิทธิ์</a>
     </div>
   </div>
-
-  <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs">
-        <thead class="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase font-semibold text-[11px]">
+  <div class="table-responsive">
+    <table class="table wt-table mb-0">
+      <thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>การกระทำ</th><th>เป้าหมาย</th><th>IP</th><th>รายละเอียด</th></tr></thead>
+      <tbody>
+        {% for log in logs %}
           <tr>
-            <th class="p-4">วันและเวลา</th>
-            <th class="p-4">ผู้ดำเนินการ</th>
-            <th class="p-4">การกระทำ (Action)</th>
-            <th class="p-4">เป้าหมาย (Model / Object)</th>
-            <th class="p-4">IP Address</th>
-            <th class="p-4">รายละเอียด (Changes)</th>
+            <td class="small text-nowrap">{{ log.timestamp|date:"d/m/Y H:i:s" }}</td>
+            <td class="small text-truncate" style="max-width: 12rem;">{{ log.user.email|default:"ไม่ระบุตัวตน" }}</td>
+            <td><span class="badge {% if log.action == 'PERMISSION_DENIED' or log.action == 'DELETE' %}text-bg-danger{% elif log.action == 'CREATE' or log.action == 'LOGIN' %}badge-green{% elif log.action == 'UPDATE' %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ log.action }}</span></td>
+            <td class="small font-monospace">{{ log.model_name }}:{{ log.object_id|truncatechars:12 }}</td>
+            <td class="small font-monospace">{{ log.ip_address|default:"-" }}</td>
+            <td class="small text-secondary text-truncate" style="max-width: 18rem;" title="{{ log.changes }}">{{ log.changes }}</td>
           </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
-          {% for log in logs %}
-            <tr class="hover:bg-slate-50/80 transition-colors">
-              <td class="p-4 text-slate-500 font-sans whitespace-nowrap">{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
-              <td class="p-4 font-sans font-semibold text-slate-800">{{ log.user.email|default:"Anonymous" }}</td>
-              <td class="p-4">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold font-sans
-                             {% if log.action == 'PERMISSION_DENIED' or log.action == 'DELETE' %} bg-rose-50 text-rose-800 border border-rose-200
-                             {% elif log.action == 'CREATE' or log.action == 'LOGIN' %} bg-emerald-50 text-emerald-800 border border-emerald-200
-                             {% elif log.action == 'UPDATE' %} bg-amber-50 text-amber-800 border border-amber-200
-                             {% else %} bg-slate-100 text-slate-700 border border-slate-200 {% endif %}">
-                  {{ log.action }}
-                </span>
-              </td>
-              <td class="p-4 text-slate-600">{{ log.model_name }}:{{ log.object_id|truncatechars:12 }}</td>
-              <td class="p-4 text-slate-400">{{ log.ip_address|default:"127.0.0.1" }}</td>
-              <td class="p-4 text-slate-600 max-w-xs truncate" title="{{ log.changes }}">
-                {{ log.changes }}
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="6" class="p-12 text-center text-slate-400 font-sans text-xs">
-                ยังไม่มีประวัติการบันทึก Audit Logs ในช่วงเวลานี้
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+        {% empty %}
+          <tr><td colspan="6" class="text-center text-secondary small py-4">ยังไม่มีบันทึก</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-
 </div>
 {% endblock %}

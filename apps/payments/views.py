@@ -1,8 +1,9 @@
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseForbidden
-from django.views.decorators.http import require_http_methods
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseForbidden
+from django.views.decorators.http import require_GET, require_http_methods
 from django.utils import timezone
 
 from apps.accounts.models import UserRoles
@@ -34,9 +35,15 @@ def payment_instruction_view(request, booking_id):
         return redirect('bookings:detail', booking_id=booking.id)
 
     # Get or create payment record
+    # Payee details come from settings (.env), not the model's hard-coded defaults
     payment, created = Payment.objects.get_or_create(
         booking=booking,
-        defaults={'amount': booking.total_amount}
+        defaults={
+            'amount': booking.total_amount,
+            'payee_bank_name': settings.PAYEE_BANK_NAME,
+            'payee_account_name': settings.PAYEE_ACCOUNT_NAME,
+            'payee_account_number': settings.PAYEE_ACCOUNT_NUMBER,
+        }
     )
 
     if request.method == "POST":
@@ -65,7 +72,6 @@ def payment_instruction_view(request, booking_id):
 
             messages.success(request, "แนบสลิปเรียบร้อยแล้ว")
 
-            from django.conf import settings
             from apps.payments.services import verify_slip_automatically
 
             if getattr(settings, "EASYSLIP_API_KEY", ""):
@@ -103,14 +109,9 @@ def payment_instruction_view(request, booking_id):
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 def admin_payments_list_view(request):
-    """Admin center view listing pending payments awaiting slip checks."""
-    payments = Payment.objects.filter(
-        status=PaymentStatus.PENDING
-    ).select_related('booking__customer').order_by('-created_at')
+    """Legacy URL: payments are reviewed in the Admin Center tab."""
+    return redirect('/accounts/admin-center/?tab=payments')
 
-    return render(request, 'payments/admin_list.html', {
-        'payments': payments,
-    })
 
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
@@ -194,3 +195,22 @@ def admin_payment_review_view(request, payment_id):
         'payment': payment,
         'slip': latest_slip,
     })
+
+
+@require_GET
+def slip_image_view(request, path):
+    """
+    Serves payment slip images only to the booking's customer and admins.
+    Slips show bank account details, so they must never be public media.
+    """
+    if not request.user.is_authenticated:
+        raise Http404
+    slip = get_object_or_404(
+        PaymentSlip.objects.select_related('payment__booking'),
+        image=f"slips/{path}",
+    )
+    if not can_view_object(request.user, slip.payment.booking):
+        raise Http404
+    response = FileResponse(slip.image.open('rb'))
+    response['Cache-Control'] = 'private, no-store'
+    return response

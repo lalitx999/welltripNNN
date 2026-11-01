@@ -1,168 +1,107 @@
 {% extends "layouts/public.html" %}
 {% load static %}
 
-{% block title %}แผนที่ชุมชนสุขภาวะและจุดเช็คอิน 4 ชนเผ่า - WellTrip Sisaket{% endblock %}
+{% block title %}แผนที่ชุมชนและจุดเช็คอิน - WellTrip Sisaket{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
 <style>
-  .leaflet-popup-content-wrapper {
-    border-radius: 1.25rem;
-    padding: 0.25rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  #map { height: min(70vh, 540px); }
+  .wt-pin {
+    width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+    background: var(--wt-green); border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,.25);
   }
-  .leaflet-popup-content {
-    margin: 0.75rem;
-    font-family: 'Plus Jakarta Sans', 'Noto Sans Thai', sans-serif;
-  }
+  .leaflet-popup-content-wrapper { border-radius: 1rem; }
+  .leaflet-popup-content { margin: .85rem 1rem; font-family: var(--bs-body-font-family); }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-  
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
-    <div class="space-y-1.5">
-      <div class="inline-flex items-center gap-2 text-xs font-bold text-[#c49a45] uppercase tracking-widest">
-        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-        <span>SISAKET 4-ETHNIC CULTURAL HERITAGE MAP</span>
-      </div>
-      <h1 class="font-serif text-2xl sm:text-4xl font-bold text-[#1f2925]">
-        แผนที่ชุมชน & จุดเช็คอินพาสปอร์ต
-      </h1>
-      <p class="text-xs sm:text-sm text-slate-500">
-        สำรวจพิกัดวิถีสุขภาวะ 4 ชนเผ่า (ลาว, เขมร, ส่วย, เยอ) โฮมสเตย์ อาหาร สปา และสแกน QR รับตราประทับดิจิทัล
-      </p>
-    </div>
-
+<section class="wt-page-head">
+  <div class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
     <div>
-      <a 
-        href="{% url 'community:passport' %}" 
-        class="px-5 py-2.5 rounded-2xl bg-[#1f2925] hover:bg-[#2b3832] text-[#faf9f6] text-xs font-bold transition shadow-sm inline-flex items-center gap-2 cursor-pointer"
-      >
-        <i data-lucide="book-open" class="w-4 h-4 text-[#c49a45]"></i>
-        <span>เปิดสมุดพาสปอร์ตของฉัน</span>
-      </a>
+      <span class="wt-eyebrow"><i data-lucide="map"></i>Sisaket community map</span>
+      <h1 class="mb-2">แผนที่ชุมชนและจุดเช็คอิน</h1>
+      <p class="text-secondary mb-0" style="max-width: 40rem;">สำรวจสถานที่ท่องเที่ยว ที่พัก อาหาร และสปา แล้วสแกน QR ที่จุดเช็คอินจริงเพื่อสะสมตราประทับในพาสปอร์ต</p>
     </div>
+    <a href="{% url 'community:passport' %}" class="btn btn-green rounded-pill px-4 flex-shrink-0"><i data-lucide="stamp" class="me-1"></i>พาสปอร์ตของฉัน</a>
   </div>
+</section>
 
-  <!-- Category Filter Pills -->
-  <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none text-xs font-bold">
-    <a 
-      href="{% url 'community:map' %}" 
-      class="px-4 py-2 rounded-full transition-all shrink-0 whitespace-nowrap
-             {% if selected_category == 'ALL' %} bg-[#1f2925] text-[#faf9f6] shadow-sm {% else %} bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 {% endif %}"
-    >
-      พิกัดทั้งหมด ({{ total_locations }})
-    </a>
+<div class="container-xl pb-5">
+  <div class="wt-pills mb-3">
+    <a href="{% url 'community:map' %}" class="wt-pill {% if selected_category == 'ALL' %}active{% endif %}">ทั้งหมด ({{ total_locations }})</a>
     {% for cat_val, cat_label in categories %}
-      <a 
-        href="{% url 'community:map' %}?category={{ cat_val }}"
-        class="px-4 py-2 rounded-full transition-all shrink-0 whitespace-nowrap
-               {% if selected_category == cat_val %} bg-[#1f2925] text-[#faf9f6] shadow-sm {% else %} bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 {% endif %}"
-      >
-        {{ cat_label }}
-      </a>
+      <a href="{% url 'community:map' %}?category={{ cat_val }}" class="wt-pill {% if selected_category == cat_val %}active{% endif %}">{{ cat_label }}</a>
     {% endfor %}
   </div>
 
-  <!-- Map Container Card -->
-  <div class="bg-white p-3 rounded-3xl border border-slate-200/90 shadow-md overflow-hidden">
-    <div id="map" class="w-full h-[520px] rounded-2xl z-0 overflow-hidden border border-slate-200"></div>
+  <div class="wt-card p-2 mb-4">
+    <div id="map" class="rounded-4 w-100"></div>
   </div>
 
-  <!-- Locations Grid -->
-  <div class="space-y-4 pt-4">
-    <h2 class="font-serif text-2xl font-bold text-[#1f2925]">
-      สถานที่แนะนำในหมวดหมู่นี้ ({{ locations.count }} แห่ง)
-    </h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% for loc in locations %}
-        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between space-y-3 group">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1f2925]/10 text-[#1f2925]">
-                {{ loc.get_category_display }}
-              </span>
-              <span class="text-[10px] text-slate-400 font-mono">{{ loc.latitude }}, {{ loc.longitude }}</span>
-            </div>
-            <h3 class="text-base font-bold text-[#1f2925] group-hover:text-[#c49a45] transition-colors">{{ loc.title }}</h3>
-            <p class="text-xs text-slate-500 line-clamp-2 mt-1">{{ loc.address|default:"จังหวัดศรีสะเกษ" }}</p>
-          </div>
-
-          <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-            <a 
-              href="https://www.google.com/maps/search/?api=1&query={{ loc.latitude }},{{ loc.longitude }}" 
-              target="_blank" 
-              rel="noopener" 
-              class="text-[#1f2925] hover:text-[#c49a45] font-bold inline-flex items-center gap-1 transition"
-            >
-              <span>นำทาง</span>
-              <i data-lucide="navigation" class="w-3.5 h-3.5 text-[#c49a45]"></i>
-            </a>
-
-            <!-- Check-in button -->
-            <a 
-              href="{% url 'community:claim_stamp' loc.qr_secret %}"
-              class="px-3.5 py-1.5 rounded-full bg-[#c49a45]/15 text-[#1f2925] hover:bg-[#c49a45] hover:text-white font-bold text-[11px] border border-[#c49a45]/30 transition inline-flex items-center gap-1 cursor-pointer"
-            >
-              <span>ปั๊มตราประทับ</span>
-              <i data-lucide="stamp" class="w-3.5 h-3.5"></i>
-            </a>
+  <h2 class="h5 fw-bold mb-3">สถานที่ในหมวดนี้ <span class="text-secondary fw-normal">({{ locations|length }} แห่ง)</span></h2>
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+    {% for loc in locations %}
+      <div class="col">
+        <div class="wt-card wt-card-hover p-4 h-100 d-flex flex-column">
+          <span class="badge badge-green align-self-start mb-2">{{ loc.get_category_display }}</span>
+          <h3 class="h6 fw-bold mb-1">{{ loc.title }}</h3>
+          <p class="small text-secondary mb-3 flex-grow-1">{{ loc.address|default:"จังหวัดศรีสะเกษ" }}</p>
+          <div class="d-flex justify-content-between align-items-center border-top pt-3">
+            <a href="https://www.google.com/maps/search/?api=1&query={{ loc.latitude }},{{ loc.longitude }}" target="_blank" rel="noopener noreferrer" class="small fw-semibold text-green"><i data-lucide="navigation" class="me-1"></i>นำทาง</a>
+            <span class="small text-secondary"><i data-lucide="qr-code" class="me-1"></i>สแกน QR ที่จุดนี้เพื่อรับตรา</span>
           </div>
         </div>
-      {% endfor %}
-    </div>
+      </div>
+    {% empty %}
+      <div class="col-12"><div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="map-pin-off"></i></span><div class="fw-bold">ยังไม่มีสถานที่ในหมวดนี้</div></div></div>
+    {% endfor %}
   </div>
-
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="{% static 'vendor/leaflet/leaflet.js' %}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const defaultLat = 15.1186;
-    const defaultLng = 104.3228;
-
-    const map = L.map('map').setView([defaultLat, defaultLng], 11);
-
+    const map = L.map('map').setView([15.1186, 104.3228], 10);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors | WellTrip Community'
+      attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
 
-    fetch("{% url 'community:locations_api' %}{% if selected_category != 'ALL' %}?category={{ selected_category }}{% endif %}")
-      .then(res => res.json())
-      .then(data => {
-        if (!data.locations || data.locations.length === 0) return;
+    const pin = L.divIcon({ className: '', html: '<div class="wt-pin"></div>', iconSize: [30, 30], iconAnchor: [15, 30], popupAnchor: [0, -28] });
 
-        const bounds = [];
-        data.locations.forEach(loc => {
-          bounds.push([loc.lat, loc.lng]);
+    // Build popups with DOM nodes (textContent) so location data can never inject HTML
+    function popupFor(loc) {
+      const box = document.createElement('div');
+      const badge = box.appendChild(document.createElement('span'));
+      badge.className = 'badge badge-green';
+      badge.textContent = loc.category_label;
+      const title = box.appendChild(document.createElement('div'));
+      title.className = 'fw-bold mt-1';
+      title.textContent = loc.title;
+      const addr = box.appendChild(document.createElement('div'));
+      addr.className = 'small text-secondary';
+      addr.textContent = loc.address || 'ศรีสะเกษ';
+      const nav = box.appendChild(document.createElement('a'));
+      nav.className = 'small fw-semibold text-green d-inline-block mt-2';
+      nav.target = '_blank';
+      nav.rel = 'noopener noreferrer';
+      nav.href = 'https://www.google.com/maps/search/?api=1&query=' + loc.lat + ',' + loc.lng;
+      nav.textContent = 'นำทาง →';
+      return box;
+    }
 
-          const marker = L.marker([loc.lat, loc.lng]).addTo(map);
-          
-          const popupContent = `
-            <div class="space-y-1 p-1">
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800">${loc.category_label}</span>
-              <h4 class="font-bold text-sm text-[#1F2925]">${loc.title}</h4>
-              <p class="text-xs text-gray-500">${loc.address || 'ศรีสะเกษ'}</p>
-              <div class="pt-2 border-t border-gray-100 flex justify-between items-center text-xs">
-                <a href="https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lng}" target="_blank" class="text-[#C49A45] font-bold">นำทาง &rarr;</a>
-                <a href="/community/stamp/${loc.qr_secret}/" class="text-[#1F2925] font-bold underline">ปั๊มตราประทับ</a>
-              </div>
-            </div>
-          `;
-          marker.bindPopup(popupContent);
-        });
-
-        if (bounds.length > 0) {
-          map.fitBounds(bounds, { padding: [50, 50] });
-        }
+    fetch("{% url 'community:locations_api' %}{% if selected_category != 'ALL' %}?category={{ selected_category|urlencode }}{% endif %}")
+      .then((res) => res.json())
+      .then((data) => {
+        const locs = data.locations || [];
+        locs.forEach((loc) => L.marker([loc.lat, loc.lng], { icon: pin }).addTo(map).bindPopup(popupFor(loc)));
+        if (locs.length) map.fitBounds(locs.map((l) => [l.lat, l.lng]), { padding: [40, 40], maxZoom: 13 });
       })
-      .catch(err => console.error("Could not load map locations:", err));
+      .catch(() => {});
   });
 </script>
 {% endblock %}

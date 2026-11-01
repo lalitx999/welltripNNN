@@ -1,0 +1,67 @@
+<div class="row g-4">
+  <div class="col-xl-6">
+    <div class="wt-card p-4 h-100">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <h2 class="h6 fw-bold mb-0"><i data-lucide="truck" class="text-green me-1"></i>ค่าจัดส่งสินค้า OTOP</h2>
+        <span class="badge {% if shipping_settings.is_free_shipping_enabled %}badge-green{% else %}bg-light text-secondary border{% endif %}">{% if shipping_settings.is_free_shipping_enabled %}ส่งฟรีทุกออเดอร์{% else %}คิดตามเกณฑ์{% endif %}</span>
+      </div>
+      <form method="post" action="{% url 'accounts:admin_shipping_settings_update' %}" class="d-grid gap-3">
+        {% csrf_token %}
+        <div class="row g-2">
+          <div class="col-sm-6"><label class="form-label small fw-semibold" for="ship_base">ค่าส่งพื้นฐาน (บาท)</label><input id="ship_base" type="number" step="0.01" min="0" name="base_shipping_fee" value="{{ shipping_settings.base_shipping_fee }}" required class="form-control"></div>
+          <div class="col-sm-6"><label class="form-label small fw-semibold" for="ship_min">ยอดขั้นต่ำส่งฟรี (บาท)</label><input id="ship_min" type="number" step="0.01" min="0" name="free_shipping_min_order" value="{{ shipping_settings.free_shipping_min_order }}" class="form-control"></div>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="ship_free" name="is_free_shipping_enabled" {% if shipping_settings.is_free_shipping_enabled %}checked{% endif %}>
+          <label class="form-check-label small" for="ship_free">ส่งฟรีทุกออเดอร์ (โปรโมชัน)</label>
+        </div>
+        <p class="small text-secondary mb-0">คิดค่าส่งเฉพาะเมื่อมีสินค้า OTOP ในตะกร้า ที่พัก อาหาร และสปาไม่มีค่าส่ง</p>
+        <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="check" class="me-1"></i>บันทึก</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="wt-card p-4 h-100">
+      <h2 class="h6 fw-bold mb-3"><i data-lucide="ticket" class="text-green me-1"></i>สร้างคูปอง</h2>
+      <form method="post" action="{% url 'accounts:admin_coupon_create' %}" class="d-grid gap-3">
+        {% csrf_token %}
+        <div class="row g-2">
+          <div class="col-sm-6"><label class="form-label small fw-semibold" for="cp_code">รหัสคูปอง *</label><input id="cp_code" type="text" name="code" required class="form-control text-uppercase" placeholder="เช่น WELCOME50"></div>
+          <div class="col-sm-6"><label class="form-label small fw-semibold" for="cp_amt">ส่วนลด (บาท) *</label><input id="cp_amt" type="number" step="0.01" min="1" name="discount_amount" required class="form-control"></div>
+          <div class="col-sm-6"><label class="form-label small fw-semibold" for="cp_min">ยอดซื้อขั้นต่ำ (บาท)</label><input id="cp_min" type="number" step="0.01" min="0" name="min_purchase" value="0" class="form-control"></div>
+          <div class="col-sm-6"><label class="form-label small fw-semibold" for="cp_days">อายุคูปอง</label>
+            <select id="cp_days" name="days_valid" class="form-select"><option value="7">7 วัน</option><option value="15">15 วัน</option><option value="30" selected>30 วัน</option><option value="60">60 วัน</option><option value="90">90 วัน</option><option value="180">180 วัน</option><option value="365">1 ปี</option></select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="plus" class="me-1"></i>สร้างคูปอง</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="wt-card">
+      <div class="p-3 border-bottom fw-bold">คูปองทั้งหมด ({{ coupons|length }})</div>
+      <div class="table-responsive">
+        <table class="table wt-table mb-0">
+          <thead><tr><th>รหัส</th><th class="text-end">ส่วนลด</th><th class="text-end">ขั้นต่ำ</th><th>หมดอายุ</th><th>สถานะ</th><th class="text-end">จัดการ</th></tr></thead>
+          <tbody>
+            {% for cp in coupons %}
+              <tr>
+                <td class="font-monospace fw-semibold">{{ cp.code }}</td>
+                <td class="text-end">฿{{ cp.discount_amount|floatformat:"2g" }}</td>
+                <td class="text-end small">{% if cp.min_purchase > 0 %}฿{{ cp.min_purchase|floatformat:"2g" }}{% else %}<span class="text-secondary">ไม่มี</span>{% endif %}</td>
+                <td class="small">{{ cp.expires_at|date:"d/m/Y H:i" }}</td>
+                <td>{% if cp.is_active %}<span class="badge badge-green">เปิด</span>{% else %}<span class="badge text-bg-secondary">ปิด</span>{% endif %}</td>
+                <td class="text-end text-nowrap">
+                  <form method="post" action="{% url 'accounts:admin_coupon_toggle' cp.id %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-outline-ink btn-sm rounded-pill">{% if cp.is_active %}ปิด{% else %}เปิด{% endif %}</button></form>
+                  <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" aria-label="ลบคูปอง" @click="confirmDelete('{% url 'accounts:admin_coupon_delete' cp.id %}', 'คูปอง {{ cp.code|escapejs }}')"><i data-lucide="trash-2"></i></button>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="6" class="text-center text-secondary small py-4">ยังไม่มีคูปอง</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

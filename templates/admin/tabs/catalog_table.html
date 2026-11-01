@@ -1,0 +1,34 @@
+{# One catalog section. Expects: title, rows, kind, col_label #}
+<div class="wt-card">
+  <div class="p-3 border-bottom fw-bold">{{ title }} <span class="text-secondary fw-normal">({{ rows|length }})</span></div>
+  <div class="table-responsive">
+    <table class="table wt-table mb-0">
+      <thead><tr><th>ชื่อ</th><th>{{ col_label }}</th><th class="text-end">ราคา</th><th>สถานะ</th><th class="text-end">จัดการ</th></tr></thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td class="small fw-semibold">{{ row.name }}<div class="text-secondary fw-normal text-truncate" style="max-width: 14rem;">{{ row.owner.email }}</div></td>
+            <td class="small">
+              {% if kind == 'ACCOMMODATION' %}{{ row.district|default:"-" }}{% elif kind == 'FOOD' %}{{ row.get_wellness_category_display }}{% elif kind == 'WELLNESS' %}{{ row.duration_minutes }} นาที{% else %}คงเหลือ {{ row.stock_quantity }}{% endif %}
+            </td>
+            <td class="text-end small fw-semibold">{% if kind == 'ACCOMMODATION' %}{% if row.min_price_per_night %}฿{{ row.min_price_per_night|floatformat:"0g" }}{% else %}-{% endif %}{% else %}฿{{ row.price|floatformat:"0g" }}{% endif %}</td>
+            <td>
+              {% if kind == 'ACCOMMODATION' %}<span class="badge {% if row.status == 'ACTIVE' %}badge-green{% else %}bg-light text-secondary border{% endif %}">{{ row.get_status_display }}</span>
+              {% elif kind == 'FOOD' %}<span class="badge {% if row.is_available %}badge-green{% else %}bg-light text-secondary border{% endif %}">{% if row.is_available %}เปิดขาย{% else %}ปิด{% endif %}</span>
+              {% else %}<span class="badge {% if row.is_active %}badge-green{% else %}bg-light text-secondary border{% endif %}">{% if row.is_active %}เปิดขาย{% else %}ปิด{% endif %}</span>{% endif %}
+            </td>
+            <td class="text-end text-nowrap">
+              <form method="post" action="{% url 'accounts:admin_catalog_toggle' kind row.id %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-outline-ink btn-sm rounded-pill">เปิด/ปิด</button></form>
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="แก้ไข" aria-label="แก้ไข {{ row.name }}"
+                      @click="open('catalog', { id: '{{ row.id }}', type: '{{ kind }}', title: '{{ row.name|escapejs }}', price: '{% if kind == 'ACCOMMODATION' %}{{ row.min_price_per_night|default_if_none:'' }}{% else %}{{ row.price }}{% endif %}', description: '{{ row.description|escapejs }}', stock: '{{ row.stock_quantity|default:0 }}', is_active: {% if kind == 'ACCOMMODATION' %}{% if row.status == 'ACTIVE' %}true{% else %}false{% endif %}{% elif kind == 'FOOD' %}{{ row.is_available|yesno:'true,false' }}{% else %}{{ row.is_active|yesno:'true,false' }}{% endif %} }, 'editCatalogModal')"><i data-lucide="pencil"></i></button>
+              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="ลบ" aria-label="ลบ {{ row.name }}"
+                      @click="confirmDelete('{% url 'accounts:admin_catalog_delete' kind row.id %}', '{{ row.name|escapejs }}')"><i data-lucide="trash-2"></i></button>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-secondary small py-4">ยังไม่มีรายการ</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

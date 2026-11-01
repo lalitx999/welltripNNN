@@ -1,0 +1,39 @@
+<div class="wt-card">
+  <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <form method="get" class="d-flex flex-wrap gap-2">
+      <input type="hidden" name="tab" value="users">
+      <input type="text" name="q" value="{{ user_query }}" placeholder="ชื่อ อีเมล หรือเบอร์โทร" class="form-control form-control-sm" style="max-width: 16rem;" aria-label="ค้นหาผู้ใช้">
+      <select name="role" class="form-select form-select-sm" style="max-width: 14rem;" aria-label="บทบาท">
+        <option value="">ทุกบทบาท</option>
+        {% for r_code, r_label in role_choices %}<option value="{{ r_code }}" {% if user_role_filter == r_code %}selected{% endif %}>{{ r_label }}</option>{% endfor %}
+      </select>
+      <button type="submit" class="btn btn-outline-ink btn-sm rounded-pill">ค้นหา</button>
+    </form>
+    <button type="button" class="btn btn-green btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addUserModal"><i data-lucide="user-plus" class="me-1"></i>เพิ่มผู้ใช้</button>
+  </div>
+  <div class="table-responsive">
+    <table class="table wt-table mb-0">
+      <thead><tr><th>ผู้ใช้</th><th>บทบาท</th><th>เบอร์โทร</th><th>สถานะ</th><th class="text-end">จัดการ</th></tr></thead>
+      <tbody>
+        {% for u in users_page %}
+          <tr>
+            <td class="small"><div class="fw-semibold text-truncate" style="max-width: 16rem;">{{ u.email }}</div><span class="text-secondary">{{ u.first_name }} {{ u.last_name }}</span></td>
+            <td><span class="badge {% if u.role == 'SUPER_ADMIN' %}text-bg-danger{% elif u.role == 'COMMUNITY_ADMIN' %}text-bg-primary{% elif 'OWNER' in u.role %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ u.get_role_display }}</span></td>
+            <td class="small">{{ u.phone_number|default:"-" }}</td>
+            <td>{% if u.is_active %}<span class="badge badge-green">ใช้งาน</span>{% else %}<span class="badge text-bg-secondary">ระงับ</span>{% endif %}</td>
+            <td class="text-end text-nowrap">
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="รีเซ็ตรหัสผ่าน" aria-label="รีเซ็ตรหัสผ่าน" @click="open('reset', { id: '{{ u.id }}', email: '{{ u.email|escapejs }}' }, 'resetPasswordModal')"><i data-lucide="key-round"></i></button>
+              <form method="post" action="{% url 'accounts:admin_user_toggle' u.id %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="{% if u.is_active %}ระงับ{% else %}เปิดใช้งาน{% endif %}" aria-label="สลับสถานะ"><i data-lucide="power"></i></button></form>
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="แก้ไข" aria-label="แก้ไขผู้ใช้"
+                      @click="open('account', { id: '{{ u.id }}', email: '{{ u.email|escapejs }}', first_name: '{{ u.first_name|escapejs }}', last_name: '{{ u.last_name|escapejs }}', phone: '{{ u.phone_number|escapejs }}', role: '{{ u.role }}' }, 'editUserModal')"><i data-lucide="pencil"></i></button>
+              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="ลบ" aria-label="ลบผู้ใช้" @click="confirmDelete('{% url 'accounts:admin_delete_user' u.id %}', 'บัญชี {{ u.email|escapejs }}')"><i data-lucide="trash-2"></i></button>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-secondary small py-4">ไม่พบผู้ใช้</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "admin/tabs/pager.html" with page_obj=users_page query_prefix="tab=users&q="|add:user_query|add:"&role="|add:user_role_filter|add:"&" %}
+</div>

@@ -1,0 +1,259 @@
+{# Shared Admin Center modals. Edit modals read their values from the adminCenter() Alpine state. #}
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" :action="del.url" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-body text-center p-4">
+        <span class="wt-stat-icon mb-3" style="--c:#c92a2a;--bg:#fff0f0"><i data-lucide="trash-2" class="icon-lg"></i></span>
+        <h2 class="h6 fw-bold" id="deleteModalLabel">ยืนยันการลบ</h2>
+        <p class="small text-secondary mb-0">ลบ <strong x-text="del.title"></strong> ออกจากระบบ? ข้อมูลที่ลบจะกู้คืนไม่ได้</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pt-0">
+        <button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="submit" class="btn btn-danger rounded-pill">ลบ</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="addCatalogModal" tabindex="-1" aria-labelledby="addCatalogLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" action="{% url 'accounts:admin_catalog_add' %}" enctype="multipart/form-data" class="modal-content rounded-4 border-0" x-data="{ type: 'ACCOMMODATION' }">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="addCatalogLabel">เพิ่มรายการในแคตตาล็อก</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body d-grid gap-3">
+        <div><label class="form-label small fw-semibold" for="cat_type">หมวด *</label>
+          <select id="cat_type" name="item_type" x-model="type" class="form-select"><option value="ACCOMMODATION">ที่พัก</option><option value="FOOD">อาหารสุขภาพ</option><option value="WELLNESS">สปา / นวด</option><option value="OTOP">สินค้า OTOP</option></select>
+        </div>
+        <div><label class="form-label small fw-semibold" for="cat_title">ชื่อ *</label><input id="cat_title" type="text" name="title" required class="form-control"></div>
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold" for="cat_price">ราคา (บาท) *</label><input id="cat_price" type="number" step="0.01" min="0" name="price" required class="form-control"></div>
+          <div class="col-6" x-show="type === 'OTOP'"><label class="form-label small fw-semibold" for="cat_stock">สต็อก</label><input id="cat_stock" type="number" min="0" name="stock_quantity" value="0" class="form-control"></div>
+        </div>
+        <div><label class="form-label small fw-semibold" for="cat_desc">รายละเอียด</label><textarea id="cat_desc" name="description" rows="3" class="form-control"></textarea></div>
+        <div><label class="form-label small fw-semibold" for="cat_img">รูปภาพ</label><input id="cat_img" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="form-control"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editCatalogModal" tabindex="-1" aria-labelledby="editCatalogLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" :action="'/accounts/admin/catalog/' + catalog.type + '/' + catalog.id + '/edit/'" enctype="multipart/form-data" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="editCatalogLabel">แก้ไขรายการ</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body d-grid gap-3">
+        <div><label class="form-label small fw-semibold" for="ecat_title">ชื่อ *</label><input id="ecat_title" type="text" name="title" x-model="catalog.title" required class="form-control"></div>
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold" for="ecat_price">ราคา (บาท) *</label><input id="ecat_price" type="number" step="0.01" min="0" name="price" x-model="catalog.price" required class="form-control"></div>
+          <div class="col-6" x-show="catalog.type === 'OTOP'"><label class="form-label small fw-semibold" for="ecat_stock">สต็อก</label><input id="ecat_stock" type="number" min="0" name="stock_quantity" x-model="catalog.stock" class="form-control"></div>
+        </div>
+        <div><label class="form-label small fw-semibold" for="ecat_desc">รายละเอียด</label><textarea id="ecat_desc" name="description" rows="3" x-model="catalog.description" class="form-control"></textarea></div>
+        <div><label class="form-label small fw-semibold" for="ecat_active">สถานะ</label>
+          <select id="ecat_active" name="is_active" class="form-select"><option value="1" :selected="catalog.is_active">เปิดขาย / เปิดให้บริการ</option><option value="0" :selected="!catalog.is_active">ปิดชั่วคราว</option></select>
+        </div>
+        <div><label class="form-label small fw-semibold" for="ecat_img">เปลี่ยนรูป</label><input id="ecat_img" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="form-control"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="addPartnerModal" tabindex="-1" aria-labelledby="addPartnerLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" action="{% url 'accounts:admin_partner_add' %}" class="modal-content rounded-4 border-0" x-data="{ pw: '' }">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="addPartnerLabel">เพิ่มร้านค้า (อนุมัติทันที)</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body d-grid gap-3">
+        <div><label class="form-label small fw-semibold" for="ap_email">อีเมลเข้าสู่ระบบ *</label><input id="ap_email" type="email" name="email" required class="form-control"></div>
+        <div><label class="form-label small fw-semibold" for="ap_name">ชื่อร้าน *</label><input id="ap_name" type="text" name="business_name" required class="form-control"></div>
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold" for="ap_cat">ประเภท *</label><select id="ap_cat" name="business_category" class="form-select"><option value="HOMESTAY">ที่พัก</option><option value="RESTAURANT">ร้านอาหาร</option><option value="WELLNESS">สปา</option><option value="OTOP">OTOP</option></select></div>
+          <div class="col-6"><label class="form-label small fw-semibold" for="ap_phone">เบอร์โทร</label><input id="ap_phone" type="text" name="phone_number" class="form-control"></div>
+        </div>
+        <div><label class="form-label small fw-semibold" for="ap_desc">รายละเอียดร้าน</label><textarea id="ap_desc" name="description" rows="2" class="form-control"></textarea></div>
+        <div>
+          <label class="form-label small fw-semibold" for="ap_pw">รหัสผ่านเริ่มต้น *</label>
+          <div class="input-group"><input id="ap_pw" type="text" name="password" x-model="pw" required minlength="10" autocomplete="new-password" class="form-control font-monospace"><button type="button" class="btn btn-outline-ink" @click="pw = randomPassword()">สุ่ม</button></div>
+          <div class="form-text">ส่งรหัสให้ร้านค้าทางช่องทางส่วนตัว และให้เปลี่ยนหลังเข้าสู่ระบบ</div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">สร้างร้านค้า</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editPartnerModal" tabindex="-1" aria-labelledby="editPartnerLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" :action="'/accounts/admin/partners/' + partner.id + '/edit/'" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="editPartnerLabel">แก้ไขร้านค้า</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body d-grid gap-3">
+        <div><label class="form-label small fw-semibold" for="ep_name">ชื่อร้าน *</label><input id="ep_name" type="text" name="business_name" x-model="partner.name" required class="form-control"></div>
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold" for="ep_cat">ประเภท</label><select id="ep_cat" name="business_category" x-model="partner.category" class="form-select"><option value="HOMESTAY">ที่พัก</option><option value="RESTAURANT">ร้านอาหาร</option><option value="WELLNESS">สปา</option><option value="OTOP">OTOP</option></select></div>
+          <div class="col-6"><label class="form-label small fw-semibold" for="ep_phone">เบอร์โทร</label><input id="ep_phone" type="text" name="phone_number" x-model="partner.phone" class="form-control"></div>
+        </div>
+        <div><label class="form-label small fw-semibold" for="ep_desc">รายละเอียด</label><textarea id="ep_desc" name="description" rows="2" x-model="partner.description" class="form-control"></textarea></div>
+        <div class="row g-2">
+          <div class="col-sm-7"><label class="form-label small fw-semibold" for="ep_maps">Google Maps URL</label><input id="ep_maps" type="url" name="google_maps_url" x-model="partner.maps_url" class="form-control"></div>
+          <div class="col-sm-5"><label class="form-label small fw-semibold" for="ep_hours">เวลาทำการ</label><input id="ep_hours" type="text" name="opening_hours" x-model="partner.hours" class="form-control"></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" action="{% url 'accounts:admin_user_add' %}" class="modal-content rounded-4 border-0" x-data="{ pw: '' }">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="addUserLabel">เพิ่มผู้ใช้</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body d-grid gap-3">
+        <div><label class="form-label small fw-semibold" for="au_email">อีเมล *</label><input id="au_email" type="email" name="email" required class="form-control"></div>
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold" for="au_first">ชื่อ</label><input id="au_first" type="text" name="first_name" class="form-control"></div>
+          <div class="col-6"><label class="form-label small fw-semibold" for="au_last">นามสกุล</label><input id="au_last" type="text" name="last_name" class="form-control"></div>
+          <div class="col-6"><label class="form-label small fw-semibold" for="au_role">บทบาท *</label><select id="au_role" name="role" class="form-select">{% for r_code, r_label in role_choices %}<option value="{{ r_code }}">{{ r_label }}</option>{% endfor %}</select></div>
+          <div class="col-6"><label class="form-label small fw-semibold" for="au_phone">เบอร์โทร</label><input id="au_phone" type="text" name="phone_number" class="form-control"></div>
+        </div>
+        <div>
+          <label class="form-label small fw-semibold" for="au_pw">รหัสผ่านเริ่มต้น *</label>
+          <div class="input-group"><input id="au_pw" type="text" name="password" x-model="pw" required minlength="10" autocomplete="new-password" class="form-control font-monospace"><button type="button" class="btn btn-outline-ink" @click="pw = randomPassword()">สุ่ม</button></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">สร้างบัญชี</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" :action="'/accounts/admin/users/' + account.id + '/edit/'" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="editUserLabel">แก้ไขผู้ใช้ <span class="text-secondary fw-normal" x-text="account.email"></span></h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body row g-2">
+        <div class="col-6"><label class="form-label small fw-semibold" for="eu_first">ชื่อ</label><input id="eu_first" type="text" name="first_name" x-model="account.first_name" class="form-control"></div>
+        <div class="col-6"><label class="form-label small fw-semibold" for="eu_last">นามสกุล</label><input id="eu_last" type="text" name="last_name" x-model="account.last_name" class="form-control"></div>
+        <div class="col-6"><label class="form-label small fw-semibold" for="eu_role">บทบาท</label><select id="eu_role" name="role" x-model="account.role" class="form-select">{% for r_code, r_label in role_choices %}<option value="{{ r_code }}">{{ r_label }}</option>{% endfor %}</select></div>
+        <div class="col-6"><label class="form-label small fw-semibold" for="eu_phone">เบอร์โทร</label><input id="eu_phone" type="text" name="phone_number" x-model="account.phone" class="form-control"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" :action="'/accounts/admin/users/' + reset.id + '/reset-password/'" class="modal-content rounded-4 border-0" x-data="{ pw: '' }">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="resetPasswordLabel">รีเซ็ตรหัสผ่าน <span class="text-secondary fw-normal" x-text="reset.email"></span></h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body">
+        <label class="form-label small fw-semibold" for="rp_pw">รหัสผ่านใหม่ *</label>
+        <div class="input-group"><input id="rp_pw" type="text" name="new_password" x-model="pw" required minlength="10" autocomplete="new-password" class="form-control font-monospace"><button type="button" class="btn btn-outline-ink" @click="pw = randomPassword()">สุ่ม</button></div>
+        <div class="form-text">อย่างน้อย 10 ตัวอักษร ส่งให้เจ้าของบัญชีทางช่องทางส่วนตัว</div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">รีเซ็ต</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="addLocationModal" tabindex="-1" aria-labelledby="addLocationLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" action="{% url 'accounts:admin_location_add' %}" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="addLocationLabel">เพิ่มจุดเช็คอิน</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body d-grid gap-3">
+        <div><label class="form-label small fw-semibold" for="al_title">ชื่อสถานที่ *</label><input id="al_title" type="text" name="title" required class="form-control"></div>
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold" for="al_cat">หมวด</label><select id="al_cat" name="category" class="form-select"><option value="PHOTO_SPOT">จุดถ่ายรูป / ธรรมชาติ</option><option value="HOMESTAY">ที่พัก</option><option value="FOOD">ร้านอาหาร</option><option value="WELLNESS">นวดและสปา</option><option value="OTOP">ร้าน OTOP</option></select></div>
+          <div class="col-6"><label class="form-label small fw-semibold" for="al_addr">ที่อยู่ / อำเภอ</label><input id="al_addr" type="text" name="address" class="form-control"></div>
+        </div>
+        <div><label class="form-label small fw-semibold" for="al_maps">ลิงก์ Google Maps หรือพิกัด *</label><input id="al_maps" type="text" name="google_maps_url" required class="form-control" placeholder="https://maps.app.goo.gl/... หรือ 15.1186, 104.3225"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editLocationModal" tabindex="-1" aria-labelledby="editLocationLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" :action="'/accounts/admin/locations/' + location.id + '/edit/'" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="editLocationLabel">แก้ไขจุดเช็คอิน</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body d-grid gap-3">
+        <div><label class="form-label small fw-semibold" for="el_title">ชื่อสถานที่ *</label><input id="el_title" type="text" name="title" x-model="location.title" required class="form-control"></div>
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold" for="el_cat">หมวด</label><select id="el_cat" name="category" x-model="location.category" class="form-select"><option value="PHOTO_SPOT">จุดถ่ายรูป / ธรรมชาติ</option><option value="HOMESTAY">ที่พัก</option><option value="FOOD">ร้านอาหาร</option><option value="WELLNESS">นวดและสปา</option><option value="OTOP">ร้าน OTOP</option></select></div>
+          <div class="col-6"><label class="form-label small fw-semibold" for="el_addr">ที่อยู่ / อำเภอ</label><input id="el_addr" type="text" name="address" x-model="location.address" class="form-control"></div>
+        </div>
+        <div><label class="form-label small fw-semibold" for="el_maps">ลิงก์ Google Maps หรือพิกัด</label><input id="el_maps" type="text" name="google_maps_url" x-model="location.google_maps_url" class="form-control"></div>
+        <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" name="is_active" value="1" id="el_active" :checked="location.is_active"><label class="form-check-label small" for="el_active">เปิดใช้งานจุดนี้</label></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="addContentModal" tabindex="-1" aria-labelledby="addContentLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <form method="post" action="{% url 'accounts:admin_content_add' %}" enctype="multipart/form-data" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="addContentLabel">เขียนเรื่องใหม่</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body row g-3">
+        <div class="col-12"><label class="form-label small fw-semibold" for="ac_title">หัวข้อ *</label><input id="ac_title" type="text" name="title" required class="form-control"></div>
+        <div class="col-sm-4"><label class="form-label small fw-semibold" for="ac_kind">ประเภท</label><select id="ac_kind" name="kind" class="form-select"><option value="STORY">เรื่องเล่าชุมชน</option><option value="COMMUNITY">วิสาหกิจชุมชน</option><option value="ATTRACTION">แหล่งท่องเที่ยว</option></select></div>
+        <div class="col-sm-4"><label class="form-label small fw-semibold" for="ac_loc">สถานที่</label><input id="ac_loc" type="text" name="location" class="form-control"></div>
+        <div class="col-sm-4"><label class="form-label small fw-semibold" for="ac_pub">สถานะ</label><select id="ac_pub" name="is_published" class="form-select"><option value="1">เผยแพร่</option><option value="0">ฉบับร่าง</option></select></div>
+        <div class="col-sm-6"><label class="form-label small fw-semibold" for="ac_img">รูปประกอบ</label><input id="ac_img" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="form-control"></div>
+        <div class="col-sm-6"><label class="form-label small fw-semibold" for="ac_maps">ลิงก์ Google Maps หรือพิกัด</label><input id="ac_maps" type="text" name="google_maps_url" class="form-control"></div>
+        <div class="col-12"><label class="form-label small fw-semibold" for="ac_sum">สรุปย่อ</label><textarea id="ac_sum" name="summary" rows="2" class="form-control"></textarea></div>
+        <div class="col-12"><label class="form-label small fw-semibold" for="ac_body">เนื้อหา</label><textarea id="ac_body" name="body" rows="6" class="form-control"></textarea></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="editContentModal" tabindex="-1" aria-labelledby="editContentLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <form method="post" :action="'/accounts/admin/content/' + story.id + '/edit/'" enctype="multipart/form-data" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="editContentLabel">แก้ไขเรื่อง</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body row g-3">
+        <div class="col-12"><label class="form-label small fw-semibold" for="ec_title">หัวข้อ *</label><input id="ec_title" type="text" name="title" x-model="story.title" required class="form-control"></div>
+        <div class="col-sm-4"><label class="form-label small fw-semibold" for="ec_kind">ประเภท</label><select id="ec_kind" name="kind" x-model="story.kind" class="form-select"><option value="STORY">เรื่องเล่าชุมชน</option><option value="COMMUNITY">วิสาหกิจชุมชน</option><option value="ATTRACTION">แหล่งท่องเที่ยว</option></select></div>
+        <div class="col-sm-4"><label class="form-label small fw-semibold" for="ec_loc">สถานที่</label><input id="ec_loc" type="text" name="location" x-model="story.location" class="form-control"></div>
+        {# The server reads is_published == '1', so send 1/0 rather than true/false #}
+        <div class="col-sm-4"><label class="form-label small fw-semibold" for="ec_pub">สถานะ</label><select id="ec_pub" name="is_published" class="form-select"><option value="1" :selected="story.is_published">เผยแพร่</option><option value="0" :selected="!story.is_published">ฉบับร่าง</option></select></div>
+        <div class="col-sm-6"><label class="form-label small fw-semibold" for="ec_img">เปลี่ยนรูป</label><input id="ec_img" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="form-control"></div>
+        <div class="col-sm-6"><label class="form-label small fw-semibold" for="ec_maps">ลิงก์ Google Maps หรือพิกัด</label><input id="ec_maps" type="text" name="google_maps_url" x-model="story.google_maps_url" class="form-control"></div>
+        <div class="col-12"><label class="form-label small fw-semibold" for="ec_sum">สรุปย่อ</label><textarea id="ec_sum" name="summary" rows="2" x-model="story.summary" class="form-control"></textarea></div>
+        <div class="col-12"><label class="form-label small fw-semibold" for="ec_body">เนื้อหา</label><textarea id="ec_body" name="body" rows="6" x-model="story.body" class="form-control"></textarea></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="post" :action="'/accounts/admin/payments/' + payment.id + '/edit/'" class="modal-content rounded-4 border-0">
+      {% csrf_token %}
+      <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="paymentLabel">สถานะการชำระเงิน <span class="font-monospace text-secondary fw-normal" x-text="payment.code"></span></h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button></div>
+      <div class="modal-body">
+        <label class="form-label small fw-semibold" for="pm_status">สถานะ</label>
+        <select id="pm_status" name="status" x-model="payment.status" class="form-select">
+          <option value="PENDING">รอตรวจสลิป</option>
+          <option value="SUCCESS">ชำระสำเร็จ (ยืนยันการจอง)</option>
+          <option value="FAILED">ไม่ถูกต้อง</option>
+          <option value="EXPIRED">หมดเวลา</option>
+        </select>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button><button type="submit" class="btn btn-green rounded-pill">บันทึก</button></div>
+    </form>
+  </div>
+</div>

@@ -1,49 +1,17 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ออฟไลน์ - WellTrip Slow Days{% endblock %}
+{% block title %}ออฟไลน์ - WellTrip{% endblock %}
 
 {% block content %}
-<div class="min-h-[70vh] flex items-center justify-center py-16 px-4">
-  <div class="bg-white rounded-3xl border border-stone-200/90 max-w-md w-full p-8 sm:p-10 text-center space-y-6 shadow-xl relative overflow-hidden"
-       x-data="{ isChecking: false }">
-    
-    <!-- Subtle glow -->
-    <div class="absolute -right-12 -top-12 w-40 h-40 bg-forest/5 rounded-full blur-2xl pointer-events-none"></div>
-    <div class="absolute -left-12 -bottom-12 w-40 h-40 bg-gold/5 rounded-full blur-2xl pointer-events-none"></div>
-
-    <!-- Wifi Off Icon -->
-    <div class="w-20 h-20 rounded-3xl bg-forest/5 text-forest mx-auto flex items-center justify-center ring-1 ring-gold/20 shadow-inner">
-      <i data-lucide="wifi-off" class="w-10 h-10 text-gold"></i>
-    </div>
-
-    <!-- Header Text -->
-    <div class="space-y-2">
-      <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wider">
-        <span class="w-1.5 h-1.5 rounded-full bg-stone-400"></span>
-        <span>โหมดการทำงานออฟไลน์ (Offline Mode)</span>
-      </div>
-      <h1 class="text-xl sm:text-2xl font-bold text-forest">ไม่พบสัญญาณการเชื่อมต่ออินเทอร์เน็ต</h1>
-      <p class="text-xs text-earth/70 leading-relaxed max-w-xs mx-auto">
-        คุณกำลังอยู่ในโหมดออฟไลน์ ข้อมูลที่พัก แผนที่ท่องเที่ยว และจุดสแตมป์พาสปอร์ตที่เคยเปิดไว้ยังคงแสดงผลได้ผ่าน Service Worker Cache
-      </p>
-    </div>
-
-    <!-- Connection Retry Button -->
-    <div class="pt-2">
-      <button 
-        type="button"
-        @click="isChecking = true; setTimeout(() => window.location.reload(), 600)"
-        class="w-full inline-flex items-center justify-center space-x-2 py-3 px-6 rounded-full bg-forest text-white hover:bg-forest-dark text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
-      >
-        <i data-lucide="refresh-cw" class="w-4 h-4 text-gold" :class="isChecking ? 'animate-spin' : ''"></i>
-        <span x-text="isChecking ? 'กำลังตรวจสอบการเชื่อมต่อ...' : 'ลองเชื่อมต่อใหม่อีกครั้ง'"></span>
-      </button>
-    </div>
-
-    <div class="text-[11px] text-earth/50">
-      เมื่อสัญญาณกลับมา ระบบจะทำการซิงค์ข้อมูลการจองของคุณโดยอัตโนมัติ
-    </div>
-
+<section class="container-xl py-5">
+  <div class="wt-card wt-empty mx-auto py-5 px-4" style="max-width: 34rem;" x-data="{ isChecking: false }">
+    <span class="wt-stat-icon mb-3" style="--c:#5c6a63;--bg:#eef1ef;width:4.5rem;height:4.5rem;border-radius:1.5rem"><i data-lucide="wifi-off" style="width:2rem;height:2rem"></i></span>
+    <div class="wt-eyebrow justify-content-center mb-1">Offline mode</div>
+    <h1 class="h3 fw-bold">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</h1>
+    <p class="text-secondary mb-4">หน้าที่คุณเคยเปิดไว้ยังดูได้จากแคชในเครื่อง เมื่อสัญญาณกลับมาให้ลองโหลดหน้าใหม่อีกครั้ง</p>
+    <button type="button" class="btn btn-green rounded-pill px-4" @click="isChecking = true; setTimeout(() => window.location.reload(), 600)" :disabled="isChecking">
+      <i data-lucide="refresh-cw" class="me-1"></i><span x-text="isChecking ? 'กำลังตรวจสอบ...' : 'ลองเชื่อมต่อใหม่'">ลองเชื่อมต่อใหม่</span>
+    </button>
   </div>
-</div>
+</section>
 {% endblock %}

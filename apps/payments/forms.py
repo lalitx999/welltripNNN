@@ -13,7 +13,7 @@ class SlipUploadForm(forms.ModelForm):
         label="รหัสอ้างอิงธุรกรรมธนาคาร (Transaction Ref)",
         required=False,
         widget=forms.TextInput(attrs={
-            'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-forest font-mono',
+            'class': 'form-control',
             'placeholder': 'เช่น 20261027XXXXXX (ระบุเพื่อความรวดเร็วในการตรวจสอบ)',
         }),
         help_text="รหัสอ้างอิงที่ระบุบนสลิปของธนาคาร (ถ้ามี)"
@@ -23,7 +23,7 @@ class SlipUploadForm(forms.ModelForm):
         label="รูปภาพสลิปการโอนเงิน",
         required=True,
         widget=forms.FileInput(attrs={
-            'class': 'block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-forest file:text-white hover:file:bg-forest-dark cursor-pointer',
+            'class': 'form-control',
             'accept': 'image/jpeg,image/png,image/webp',
             '@change': 'previewImage($event)',
         })

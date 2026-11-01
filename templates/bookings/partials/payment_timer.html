@@ -1,0 +1,21 @@
+{# Countdown until the 15-minute hold expires. Needs remaining_seconds in context. #}
+<div x-data="{
+       timeLeft: {{ remaining_seconds }},
+       get expired() { return this.timeLeft <= 0; },
+       get clock() { const t = Math.max(0, this.timeLeft); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); },
+       init() { const id = setInterval(() => { this.timeLeft > 0 ? this.timeLeft-- : clearInterval(id); }, 1000); }
+     }">
+  <div x-show="!expired" class="alert alert-warning rounded-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-0">
+    <div>
+      <div class="fw-bold"><i data-lucide="clock" class="me-1"></i>เวลาที่เหลือในการชำระเงิน</div>
+      <small>หากเลยเวลานี้ ระบบจะปล่อยห้องพักและสินค้าคืนให้ผู้อื่นจองโดยอัตโนมัติ</small>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="display-6 fw-bold wt-timer" x-text="clock"></span>
+      {% if pay_url %}<a href="{{ pay_url }}" class="btn btn-gold rounded-pill">แนบสลิป</a>{% endif %}
+    </div>
+  </div>
+  <div x-show="expired" x-cloak class="alert alert-danger rounded-4 mb-0">
+    <i data-lucide="alert-circle" class="me-1"></i>หมดเวลาชำระเงินแล้ว ระบบปล่อยห้องพักและสินค้าคืนแล้ว
+  </div>
+</div>

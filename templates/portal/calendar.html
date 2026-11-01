@@ -1,320 +1,112 @@
 {% extends "layouts/merchant.html" %}
-{% load static %}
 
-{% block page_heading %}ปฏิทินราคาและห้องว่าง (Mini-PMS Calendar){% endblock %}
+{% block title %}ปฏิทินราคา - Partner Studio{% endblock %}
+{% block page_heading %}ปฏิทินราคาและห้องว่าง{% endblock %}
 
 {% block content %}
-<div class="space-y-6 max-w-7xl pb-16"
-     x-data="{
-       showEditModal: false,
-       editDate: '',
-       editPrice: '',
-       editCount: '',
-       editMaxCount: {{ selected_room.total_rooms_count|default:1 }},
+<div class="d-grid gap-4" x-data="{
+       editDate: '', editPrice: '', editCount: '', editMaxCount: {{ selected_room.total_rooms_count|default:1 }},
        openEdit(dateStr, price, count, maxCount) {
-         this.editDate = dateStr;
-         this.editPrice = price;
-         this.editCount = count;
-         this.editMaxCount = maxCount;
-         this.showEditModal = true;
+         this.editDate = dateStr; this.editPrice = price; this.editCount = count; this.editMaxCount = maxCount;
+         bootstrap.Modal.getOrCreateInstance(document.getElementById('editDayModal')).show();
        }
      }">
-  
-  <!-- Multiple Accommodations Switcher (if owner has > 1) -->
   {% if owner_accommodations|length > 1 %}
-    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <div class="flex items-center gap-2 text-xs font-bold text-[#1B2A24]">
-        <i data-lucide="layers" class="w-4 h-4 text-[#c49a45]"></i>
-        <span>เลือกที่พักที่คุณต้องการจัดการปฏิทิน:</span>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        {% for acc in owner_accommodations %}
-          <a 
-            href="{% url 'accommodations:calendar' %}?acc_id={{ acc.id }}" 
-            class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition {% if acc.id == accommodation.id %}bg-[#1B2A24] text-white shadow-xs{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}"
-          >
-            {{ acc.name|truncatechars:25 }}
-          </a>
-        {% endfor %}
-      </div>
+    <div class="wt-pills">
+      {% for acc in owner_accommodations %}
+        <a href="{% url 'accommodations:calendar' %}?acc_id={{ acc.id }}" class="wt-pill {% if acc.id == accommodation.id %}active{% endif %}">{{ acc.name|truncatechars:28 }}</a>
+      {% endfor %}
     </div>
   {% endif %}
 
-  <!-- Top Hero Banner (AdminCN Style) -->
-  <div class="bg-white rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border border-slate-200/90 shadow-xs">
-    <div class="space-y-2 max-w-2xl">
-      <div class="flex items-center gap-2">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-          <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#D97706]"></i>
-          <span>Mini-PMS Interactive Calendar</span>
-        </span>
-        <span class="text-xs text-slate-400">{{ accommodation.name }}</span>
-      </div>
-      <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#1B2A24] font-serif">
-        ตารางปฏิทินราคาและห้องว่างรายวัน (PMS)
-      </h1>
-      <p class="text-xs text-slate-500 font-light leading-relaxed">
-        คลิกที่ช่องวันที่ในปฏิทินเพื่อปรับราคาพิเศษหรือจำนวนห้องว่างรายวันได้ทันที
-      </p>
+  <div class="wt-card p-3 p-sm-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+      <div class="small text-secondary">{{ accommodation.name }}</div>
+      {% if selected_room %}<div class="fw-bold">{{ selected_room.name }} · ราคาปกติ ฿{{ selected_room.base_price_per_night|floatformat:"0g" }} · {{ selected_room.total_rooms_count }} ห้อง</div>{% endif %}
     </div>
-
-    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
-      <a 
-        href="{% url 'accommodations:homestay_studio' %}?acc_id={{ accommodation.id }}" 
-        class="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-[#1B2A24] text-xs font-semibold transition shadow-xs inline-flex items-center gap-1.5"
-      >
-        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-        <span>กลับไปสตูดิโอที่พัก</span>
-      </a>
+    <div class="d-flex gap-2">
+      {% if rooms %}
+        <form method="get" action="{% url 'accommodations:calendar' %}">
+          <input type="hidden" name="acc_id" value="{{ accommodation.id }}">
+          <input type="hidden" name="year" value="{{ year }}">
+          <input type="hidden" name="month" value="{{ month }}">
+          <select name="room_id" class="form-select form-select-sm" onchange="this.form.submit()" aria-label="เลือกห้อง">
+            {% for r in rooms %}<option value="{{ r.id }}" {% if selected_room and selected_room.id == r.id %}selected{% endif %}>{{ r.name }}</option>{% endfor %}
+          </select>
+        </form>
+      {% endif %}
+      <a href="{% url 'accommodations:homestay_studio' %}?acc_id={{ accommodation.id }}" class="btn btn-outline-ink btn-sm rounded-pill text-nowrap"><i data-lucide="arrow-left" class="me-1"></i>ที่พัก</a>
     </div>
-  </div>
-
-  <!-- Room Selection Bar -->
-  <div class="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-    <div class="flex items-start gap-3">
-      <div class="w-10 h-10 rounded-2xl bg-[#1B2A24] text-[#D97706] flex items-center justify-center shrink-0">
-        <i data-lucide="bed-double" class="w-5 h-5"></i>
-      </div>
-      <div>
-        <h2 class="text-sm font-bold text-[#1B2A24]">ห้องพักที่กำลังแสดงปฏิทิน</h2>
-        <p class="text-xs text-slate-400 mt-0.5">ราคามาตรฐาน: ฿{{ selected_room.base_price_per_night|floatformat:0 }}/คืน · ทั้งหมด {{ selected_room.total_rooms_count }} ห้อง</p>
-      </div>
-    </div>
-
-    <form method="GET" action="{% url 'accommodations:calendar' %}" class="w-full sm:w-auto">
-      <input type="hidden" name="acc_id" value="{{ accommodation.id }}">
-      <input type="hidden" name="year" value="{{ year }}">
-      <input type="hidden" name="month" value="{{ month }}">
-      <div class="relative">
-        <select 
-          name="room_id" 
-          onchange="this.form.submit()" 
-          class="w-full sm:w-72 pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-[#1B2A24] focus:ring-2 focus:ring-[#1B2A24] appearance-none shadow-xs cursor-pointer"
-        >
-          {% for r in rooms %}
-            <option value="{{ r.id }}" {% if selected_room and selected_room.id == r.id %}selected{% endif %}>
-              {{ r.name }} (฿{{ r.base_price_per_night|floatformat:0 }}/คืน)
-            </option>
-          {% endfor %}
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-          <i data-lucide="chevron-down" class="w-4 h-4"></i>
-        </div>
-      </div>
-    </form>
   </div>
 
   {% if selected_room %}
-    <!-- Month Navigation Bar -->
-    <div class="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-5 flex items-center justify-between shadow-xs">
-      <a 
-        href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}&year={{ prev_year }}&month={{ prev_month }}" 
-        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition"
-      >
-        <i data-lucide="chevron-left" class="w-4 h-4"></i>
-        <span class="hidden sm:inline">เดือนก่อนหน้า</span>
-      </a>
-
-      <div class="flex items-center gap-2">
-        <i data-lucide="calendar" class="w-5 h-5 text-[#D97706]"></i>
-        <span class="font-serif text-lg sm:text-xl font-bold text-[#1B2A24]">{{ month_name }}</span>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <a 
-          href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}" 
-          class="hidden md:inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-600 transition"
-        >
-          <span>เดือนปัจจุบัน</span>
-        </a>
-        <a 
-          href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}&year={{ next_year }}&month={{ next_month }}" 
-          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition"
-        >
-          <span class="hidden sm:inline">เดือนถัดไป</span>
-          <i data-lucide="chevron-right" class="w-4 h-4"></i>
-        </a>
-      </div>
-    </div>
-
-    <!-- Monthly Calendar Interactive Grid Table -->
-    <div class="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-6 shadow-xs overflow-hidden">
-      
-      <!-- Day Headers (Monday to Sunday) -->
-      <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-slate-500 uppercase tracking-wider pb-2 border-b border-slate-100">
-        <div>จันทร์</div>
-        <div>อังคาร</div>
-        <div>พุธ</div>
-        <div>พฤหัสบดี</div>
-        <div>ศุกร์</div>
-        <div class="text-[#D97706]">เสาร์</div>
-        <div class="text-rose-600">อาทิตย์</div>
-      </div>
-
-      <!-- Calendar Weeks & Days -->
-      <div class="space-y-2">
-        {% for week in calendar_weeks %}
-          <div class="grid grid-cols-7 gap-1.5 sm:gap-2">
-            {% for d in week %}
-              {% if d %}
-                <div 
-                  @click="openEdit('{{ d.date_str }}', '{{ d.price|floatformat:0 }}', '{{ d.available_count }}', '{{ d.total_count }}')"
-                  class="min-h-[90px] sm:min-h-[115px] p-2 sm:p-3 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group relative
-                    {% if d.is_today %}ring-2 ring-[#1B2A24] bg-amber-50/40 border-[#1B2A24]{% elif d.is_sold_out %}bg-rose-50/60 border-rose-200 hover:border-rose-400{% elif d.is_custom %}bg-[#FAF8F5] border-amber-300 hover:border-[#1B2A24] shadow-xs{% else %}bg-white border-slate-200 hover:border-[#1B2A24] hover:shadow-sm{% endif %}"
-                >
-                  <!-- Cell Header: Date Number & Badges -->
-                  <div class="flex items-center justify-between">
-                    <span class="text-xs sm:text-sm font-bold {% if d.is_today %}text-[#1B2A24] bg-white px-1.5 py-0.5 rounded-md shadow-xs{% else %}text-slate-700{% endif %}">
-                      {{ d.day }}
-                    </span>
-                    {% if d.is_custom %}
-                      <span class="w-1.5 h-1.5 rounded-full bg-[#D97706]" title="กำหนดราคาพิเศษ"></span>
-                    {% endif %}
-                  </div>
-
-                  <!-- Price & Quota in Cell -->
-                  <div class="space-y-1 text-center sm:text-left mt-1">
-                    <div class="font-serif font-bold text-xs sm:text-sm text-[#c49a45]">
-                      ฿{{ d.price|floatformat:0 }}
-                    </div>
-                    <div>
-                      {% if d.is_sold_out %}
-                        <span class="inline-block px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold bg-rose-100 text-rose-700">
-                          ห้องเต็ม
-                        </span>
-                      {% else %}
-                        <span class="inline-block px-1.5 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                          ว่าง {{ d.available_count }}
-                        </span>
-                      {% endif %}
-                    </div>
-                  </div>
-
-                  <!-- Quick Hover Edit Tooltip -->
-                  <div class="text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-end gap-1 mt-1">
-                    <i data-lucide="edit-3" class="w-2.5 h-2.5 text-[#D97706]"></i>
-                    <span class="hidden sm:inline">แก้ไข</span>
-                  </div>
-                </div>
-              {% else %}
-                <!-- Empty day placeholder -->
-                <div class="min-h-[90px] sm:min-h-[115px] p-2 rounded-2xl bg-slate-50/40 border border-slate-100 opacity-30 select-none"></div>
-              {% endif %}
-            {% endfor %}
-          </div>
-        {% endfor %}
-      </div>
-
-      <!-- Legend -->
-      <div class="pt-4 mt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
-        <div class="flex items-center gap-4 flex-wrap">
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded-md bg-white border border-slate-200"></span>
-            <span>ราคามาตรฐาน</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded-md bg-[#FAF8F5] border border-amber-300"></span>
-            <span>ราคาพิเศษรายวัน</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded-md bg-rose-50 border border-rose-200"></span>
-            <span>ห้องเต็ม</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded-md bg-amber-50 border-2 border-[#1B2A24]"></span>
-            <span>วันนี้</span>
-          </div>
+    <div class="wt-card p-3 p-sm-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}&year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="chevron-left"></i><span class="d-none d-sm-inline">ก่อนหน้า</span></a>
+        <div class="text-center">
+          <div class="fw-bold">{{ month_name }}</div>
+          <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}" class="small text-green">เดือนนี้</a>
         </div>
-        <span class="text-[11px] text-slate-400">* คลิกที่ช่องวันที่เพื่อแก้ไขราคาและจำนวนห้องว่างได้ทันที</span>
+        <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}&year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-ink btn-sm rounded-pill"><span class="d-none d-sm-inline">ถัดไป</span><i data-lucide="chevron-right"></i></a>
       </div>
 
+      <div class="wt-cal mb-2">
+        <div class="wt-cal-head">จ.</div><div class="wt-cal-head">อ.</div><div class="wt-cal-head">พ.</div><div class="wt-cal-head">พฤ.</div><div class="wt-cal-head">ศ.</div><div class="wt-cal-head">ส.</div><div class="wt-cal-head">อา.</div>
+      </div>
+      <div class="wt-cal">
+        {% for week in calendar_weeks %}{% for d in week %}
+          {% if d %}
+            <button type="button" class="wt-cal-day {% if d.is_today %}is-today{% endif %} {% if d.is_sold_out %}is-full{% elif d.is_custom %}is-custom{% endif %}"
+                    @click="openEdit('{{ d.date_str }}', '{{ d.price|floatformat:0 }}', '{{ d.available_count }}', '{{ d.total_count }}')">
+              <span class="fw-bold">{{ d.day }}</span>
+              <span>
+                <span class="d-block fw-semibold small">฿{{ d.price|floatformat:"0g" }}</span>
+                <span class="d-block small {% if d.is_sold_out %}text-danger{% else %}text-secondary{% endif %}">{% if d.is_sold_out %}เต็ม{% else %}ว่าง {{ d.available_count }}{% endif %}</span>
+              </span>
+            </button>
+          {% else %}
+            <div></div>
+          {% endif %}
+        {% endfor %}{% endfor %}
+      </div>
+      <div class="d-flex flex-wrap gap-3 small text-secondary mt-3">
+        <span><span class="d-inline-block rounded-2 border me-1 align-middle" style="width:.9rem;height:.9rem"></span>ราคาปกติ</span>
+        <span><span class="d-inline-block rounded-2 me-1 align-middle" style="width:.9rem;height:.9rem;background:#fff8ea;border:1px solid #ffd99a"></span>ราคาพิเศษ</span>
+        <span><span class="d-inline-block rounded-2 me-1 align-middle" style="width:.9rem;height:.9rem;background:#fff0f0;border:1px solid #ffc9c9"></span>ห้องเต็ม</span>
+        <span>แตะวันที่เพื่อแก้ราคาหรือจำนวนห้องว่าง</span>
+      </div>
     </div>
+
+    <div class="modal fade" id="editDayModal" tabindex="-1" aria-labelledby="editDayLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <form method="post" action="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}" class="modal-content rounded-4 border-0">
+          {% csrf_token %}
+          <input type="hidden" name="date" :value="editDate">
+          <div class="modal-header">
+            <h2 class="modal-title h6 fw-bold" id="editDayLabel">ราคาและห้องว่าง วันที่ <span x-text="editDate"></span></h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+          </div>
+          <div class="modal-body d-grid gap-3">
+            <div>
+              <label class="form-label small fw-semibold" for="cal_price">ราคาต่อคืน (บาท)</label>
+              <input type="number" id="cal_price" name="price" x-model="editPrice" step="0.01" min="1" required class="form-control">
+              <div class="form-text">ราคาปกติ ฿{{ selected_room.base_price_per_night|floatformat:"0g" }}</div>
+            </div>
+            <div>
+              <label class="form-label small fw-semibold" for="cal_count">ห้องว่างที่เปิดรับจอง</label>
+              <input type="number" id="cal_count" name="available_count" x-model="editCount" min="0" :max="editMaxCount" required class="form-control">
+              <div class="form-text">มีทั้งหมด <span x-text="editMaxCount"></span> ห้อง (ใส่ 0 เพื่อปิดรับจองวันนั้น)</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="check" class="me-1"></i>บันทึก</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="bed"></i></span><div class="fw-bold">ยังไม่มีห้องพัก</div><a href="{% url 'accommodations:homestay_studio' %}?acc_id={{ accommodation.id }}" class="btn btn-green btn-sm rounded-pill mt-2">เพิ่มห้องพัก</a></div>
   {% endif %}
-
-  <!-- Quick Edit Modal (AdminCN Modal Style) -->
-  <div 
-    x-show="showEditModal" 
-    style="display: none;"
-    class="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
-    @keydown.escape.window="showEditModal = false"
-  >
-    <div 
-      @click.away="showEditModal = false"
-      class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-200"
-    >
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#D97706] flex items-center justify-center">
-            <i data-lucide="sliders" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-bold text-[#1B2A24]">กำหนดราคาและห้องว่างรายวัน</h3>
-            <p class="text-[11px] text-slate-400">วันที่: <span class="font-mono font-bold text-[#D97706]" x-text="editDate"></span></p>
-          </div>
-        </div>
-        <button 
-          type="button" 
-          @click="showEditModal = false"
-          class="p-1 rounded-lg text-slate-400 hover:bg-slate-100 transition cursor-pointer"
-        >
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <form method="POST" action="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}" class="space-y-4">
-        {% csrf_token %}
-        <input type="hidden" name="date" :value="editDate">
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ราคาต่อคืน (บาท) <span class="text-rose-500">*</span></label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-slate-400">฿</span>
-            <input 
-              type="number" 
-              name="price" 
-              x-model="editPrice" 
-              step="0.01" 
-              min="1" 
-              required 
-              class="w-full pl-8 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#1B2A24] font-mono font-bold text-[#1B2A24]"
-            >
-          </div>
-          <p class="text-[11px] text-slate-400 mt-1">ราคามาตรฐานห้องนี้คือ ฿{{ selected_room.base_price_per_night|floatformat:0 }}</p>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">จำนวนห้องว่างที่เปิดรับจอง (ห้อง) <span class="text-rose-500">*</span></label>
-          <input 
-            type="number" 
-            name="available_count" 
-            x-model="editCount" 
-            min="0" 
-            :max="editMaxCount" 
-            required 
-            class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-[#1B2A24] font-mono font-bold text-[#1B2A24]"
-          >
-          <p class="text-[11px] text-slate-400 mt-1">จำนวนห้องทั้งหมดที่มี: <span x-text="editMaxCount"></span> ห้อง (ตั้งเป็น 0 เมื่อห้องเต็ม/งดรับจอง)</p>
-        </div>
-
-        <div class="pt-2 flex justify-end gap-2">
-          <button 
-            type="button" 
-            @click="showEditModal = false"
-            class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 text-xs font-semibold transition cursor-pointer"
-          >
-            ยกเลิก
-          </button>
-          <button 
-            type="submit" 
-            class="px-5 py-2 rounded-xl bg-[#1B2A24] hover:bg-[#151d1a] text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer"
-          >
-            <i data-lucide="check" class="w-4 h-4 text-[#D97706]"></i>
-            <span>บันทึกของวันนี้</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
 </div>
 {% endblock %}

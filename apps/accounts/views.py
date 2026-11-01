@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
 from django_ratelimit.decorators import ratelimit
 
@@ -51,7 +52,10 @@ def login_view(request):
             messages.success(request, f"ยินดีต้อนรับ {user.first_name or user.email}")
 
             next_url = request.GET.get('next')
-            if next_url and next_url.startswith('/'):
+            # Reject //evil.com and other off-site targets (open redirect)
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+            ):
                 return redirect(next_url)
 
             return redirect_after_auth(user)
@@ -144,7 +148,8 @@ def merchant_register_view(request):
     return render(request, 'accounts/register_merchant.html', {'form': form})
 
 
-@require_http_methods(["POST", "GET"])
+# POST only: a GET logout lets any page sign visitors out via a link or <img> (CSRF)
+@require_http_methods(["POST"])
 def logout_view(request):
     """
     Secure Logout View:
@@ -184,9 +189,26 @@ def redirect_after_auth(user):
     UserRoles.OTOP_OWNER,
 )
 def portal_dashboard_view(request):
-    """Partner Studio Landing Dashboard."""
+    """Partner Studio landing page with the merchant's real listing and order figures."""
+    from apps.accommodations.models import Accommodation
+    from apps.bookings.models import BookingItem, BookingStatus
+    from apps.otop.models import OTOPProduct
+    from apps.services.models import FoodMenu, WellnessService
+
+    user = request.user
+    listing_counts = {
+        UserRoles.HOMESTAY_OWNER: lambda: Accommodation.objects.filter(owner=user).count(),
+        UserRoles.RESTAURANT_OWNER: lambda: FoodMenu.objects.filter(owner=user).count(),
+        UserRoles.WELLNESS_OWNER: lambda: WellnessService.objects.filter(owner=user).count(),
+        UserRoles.OTOP_OWNER: lambda: OTOPProduct.objects.filter(owner=user).count(),
+    }
+    vendor_items = BookingItem.objects.filter(vendor=user).select_related('booking')
     return render(request, 'accounts/portal_dashboard.html', {
         'page_title': 'Partner Studio - ภาพรวมธุรกิจชุมชน',
+        'listing_count': listing_counts.get(user.role, lambda: 0)(),
+        'awaiting_count': vendor_items.filter(booking__status=BookingStatus.AWAITING_PAYMENT).count(),
+        'confirmed_count': vendor_items.filter(booking__status=BookingStatus.CONFIRMED).count(),
+        'recent_items': vendor_items.order_by('-booking__created_at')[:8],
     })
 
 

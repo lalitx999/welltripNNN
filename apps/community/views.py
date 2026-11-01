@@ -53,7 +53,7 @@ def locations_api_view(request):
             "lat": float(loc.latitude),
             "lng": float(loc.longitude),
             "address": loc.address,
-            "qr_secret": loc.qr_secret,
+            # qr_secret is deliberately omitted: it is the proof of a physical visit
         }
         for loc in locations
     ]

@@ -12,7 +12,7 @@ class LoginForm(forms.Form):
     email = forms.EmailField(
         label="อีเมล",
         widget=forms.EmailInput(attrs={
-            'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest',
+            'class': 'form-control',
             'placeholder': 'name@example.com',
             'autocomplete': 'email',
         })
@@ -20,7 +20,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(
         label="รหัสผ่าน",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest',
+            'class': 'form-control',
             'placeholder': '••••••••••',
             'autocomplete': 'current-password',
         })
@@ -61,7 +61,7 @@ class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(
         label="รหัสผ่าน",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest',
+            'class': 'form-control',
             'placeholder': 'อย่างน้อย 10 ตัวอักษร',
             'autocomplete': 'new-password',
         })
@@ -69,25 +69,22 @@ class UserRegistrationForm(forms.ModelForm):
     confirm_password = forms.CharField(
         label="ยืนยันรหัสผ่าน",
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest',
+            'class': 'form-control',
             'placeholder': 'กรอกรหัสผ่านซ้ำอีกครั้ง',
             'autocomplete': 'new-password',
         })
     )
 
+    # Merchants must sign up through MerchantRegistrationForm so they get a KYC profile
     ALLOWED_REGISTRATION_ROLES = [
         (UserRoles.TOURIST, "นักท่องเที่ยว (Tourist)"),
-        (UserRoles.HOMESTAY_OWNER, "เจ้าของที่พัก / โฮมสเตย์ (Homestay Owner)"),
-        (UserRoles.RESTAURANT_OWNER, "เจ้าของร้านอาหารสุขภาพ (Restaurant Owner)"),
-        (UserRoles.WELLNESS_OWNER, "เจ้าของบริการนวด / สปา (Wellness Owner)"),
-        (UserRoles.OTOP_OWNER, "เจ้าของสินค้าชุมชน OTOP (OTOP Owner)"),
     ]
 
     role = forms.ChoiceField(
         choices=ALLOWED_REGISTRATION_ROLES,
         label="ประเภทผู้ใช้งาน",
         widget=forms.Select(attrs={
-            'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest',
+            'class': 'form-select',
         })
     )
 
@@ -95,10 +92,10 @@ class UserRegistrationForm(forms.ModelForm):
         model = User
         fields = ['email', 'first_name', 'last_name', 'phone_number', 'role']
         widgets = {
-            'email': forms.EmailInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest', 'placeholder': 'name@example.com'}),
-            'first_name': forms.TextInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest'}),
-            'last_name': forms.TextInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest'}),
-            'phone_number': forms.TextInput(attrs={'class': 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-forest', 'placeholder': '0812345678'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'name@example.com'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '0812345678'}),
         }
 
     def clean_email(self):

@@ -49,9 +49,23 @@ def role_required(*allowed_roles):
                 )
                 return HttpResponseForbidden("Access Denied: You do not have permission to access this resource.")
 
+            # Merchants may only use Partner Studio after an admin approves their KYC
+            if request.user.is_merchant and not is_approved_merchant(request.user):
+                profile = getattr(request.user, "merchant_profile", None)
+                return TemplateResponse(
+                    request, "accounts/merchant_pending.html", {"profile": profile}, status=403
+                )
+
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
+
+
+def is_approved_merchant(user):
+    """True when the user's MerchantProfile has been approved by an admin."""
+    from apps.accounts.models import MerchantApprovalStatus, MerchantProfile
+
+    return MerchantProfile.objects.filter(user=user, status=MerchantApprovalStatus.APPROVED).exists()
 
 
 class RoleRequiredMixin:
