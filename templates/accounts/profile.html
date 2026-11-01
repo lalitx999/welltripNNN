@@ -1,12 +1,13 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}โปรไฟล์ส่วนตัว — WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "โปรไฟล์ส่วนตัว — WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head">
   <div class="container-xl">
     <span class="wt-eyebrow"><i data-lucide="user"></i>Account</span>
-    <h1 class="mb-0">โปรไฟล์ของฉัน</h1>
+    <h1 class="mb-0">{% translate "โปรไฟล์ของฉัน" %}</h1>
   </div>
 </section>
 
@@ -15,19 +16,19 @@
     <div class="col-md-4">
       <a href="{% url 'bookings:my_bookings' %}" class="wt-card wt-card-hover p-4 h-100 d-flex align-items-center gap-3">
         <span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="ticket" class="icon-lg"></i></span>
-        <div><div class="wt-stat-value">{{ total_bookings_count }}</div><small class="text-secondary">การจองทั้งหมด</small></div>
+        <div><div class="wt-stat-value">{{ total_bookings_count }}</div><small class="text-secondary">{% translate "การจองทั้งหมด" %}</small></div>
       </a>
     </div>
     <div class="col-md-4">
       <a href="{% url 'community:passport' %}" class="wt-card wt-card-hover p-4 h-100 d-flex align-items-center gap-3">
         <span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="stamp" class="icon-lg"></i></span>
-        <div><div class="wt-stat-value">{{ stamps_count }}</div><small class="text-secondary">ตราประทับพาสปอร์ต</small></div>
+        <div><div class="wt-stat-value">{{ stamps_count }}</div><small class="text-secondary">{% translate "ตราประทับพาสปอร์ต" %}</small></div>
       </a>
     </div>
     <div class="col-md-4">
       <div class="wt-card p-4 h-100 d-flex align-items-center gap-3">
         <span class="wt-stat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="badge-check" class="icon-lg"></i></span>
-        <div><div class="fw-bold">{{ user.get_role_display }}</div><small class="text-secondary">{% if user.email_verified %}ยืนยันอีเมลแล้ว{% else %}ยังไม่ยืนยันอีเมล{% endif %}</small></div>
+        <div><div class="fw-bold">{{ user.get_role_display }}</div><small class="text-secondary">{% if user.email_verified %}{% translate "ยืนยันอีเมลแล้ว" %}{% else %}{% translate "ยังไม่ยืนยันอีเมล" %}{% endif %}</small></div>
       </div>
     </div>
   </div>
@@ -45,19 +46,19 @@
         <form method="post" action="{% url 'accounts:profile' %}" class="d-grid gap-3">
           {% csrf_token %}
           <div class="row g-2">
-            <div class="col-sm-6"><label for="p_first" class="form-label small fw-semibold">ชื่อ</label><input id="p_first" type="text" name="first_name" value="{{ user.first_name }}" class="form-control" autocomplete="given-name"></div>
-            <div class="col-sm-6"><label for="p_last" class="form-label small fw-semibold">นามสกุล</label><input id="p_last" type="text" name="last_name" value="{{ user.last_name }}" class="form-control" autocomplete="family-name"></div>
+            <div class="col-sm-6"><label for="p_first" class="form-label small fw-semibold">{% translate "ชื่อ" %}</label><input id="p_first" type="text" name="first_name" value="{{ user.first_name }}" class="form-control" autocomplete="given-name"></div>
+            <div class="col-sm-6"><label for="p_last" class="form-label small fw-semibold">{% translate "นามสกุล" %}</label><input id="p_last" type="text" name="last_name" value="{{ user.last_name }}" class="form-control" autocomplete="family-name"></div>
           </div>
-          <div><label for="p_phone" class="form-label small fw-semibold">เบอร์โทรศัพท์</label><input id="p_phone" type="tel" name="phone_number" value="{{ user.phone_number }}" placeholder="08xxxxxxxx" class="form-control" autocomplete="tel-national"></div>
-          <div class="d-flex justify-content-end"><button type="submit" class="btn btn-green rounded-pill px-4"><i data-lucide="check" class="me-1"></i>บันทึก</button></div>
+          <div><label for="p_phone" class="form-label small fw-semibold">{% translate "เบอร์โทรศัพท์" %}</label><input id="p_phone" type="tel" name="phone_number" value="{{ user.phone_number }}" placeholder="08xxxxxxxx" class="form-control" autocomplete="tel-national"></div>
+          <div class="d-flex justify-content-end"><button type="submit" class="btn btn-green rounded-pill px-4"><i data-lucide="check" class="me-1"></i>{% translate "บันทึก" %}</button></div>
         </form>
       </div>
     </div>
     <div class="col-lg-4">
       <div class="wt-consent p-4">
-        <div class="fw-bold mb-1"><i data-lucide="shield-check" class="text-green me-1"></i>ข้อมูลส่วนบุคคล (PDPA)</div>
-        <p class="small text-secondary">ตรวจสอบหรือลบประวัติตำแหน่งที่ระบบบันทึกไว้ได้ตลอดเวลา</p>
-        <a href="{% url 'community:my_location_events' %}" class="btn btn-outline-ink btn-sm rounded-pill">จัดการความเป็นส่วนตัว</a>
+        <div class="fw-bold mb-1"><i data-lucide="shield-check" class="text-green me-1"></i>{% translate "ข้อมูลส่วนบุคคล (PDPA)" %}</div>
+        <p class="small text-secondary">{% translate "ตรวจสอบหรือลบประวัติตำแหน่งที่ระบบบันทึกไว้ได้ตลอดเวลา" %}</p>
+        <a href="{% url 'community:my_location_events' %}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "จัดการความเป็นส่วนตัว" %}</a>
       </div>
     </div>
   </div>

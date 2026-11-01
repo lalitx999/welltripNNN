@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from apps.accounts.models import User, UserRoles
+from django.utils.translation import gettext as _, gettext_lazy
 
 
 class LoginForm(forms.Form):
@@ -10,7 +11,7 @@ class LoginForm(forms.Form):
     Secure Login Form validating credentials through Django's authentication backend.
     """
     email = forms.EmailField(
-        label="อีเมล",
+        label=gettext_lazy("อีเมล"),
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'name@example.com',
@@ -18,7 +19,7 @@ class LoginForm(forms.Form):
         })
     )
     password = forms.CharField(
-        label="รหัสผ่าน",
+        label=gettext_lazy("รหัสผ่าน"),
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': '••••••••••',
@@ -44,9 +45,9 @@ class LoginForm(forms.Form):
                 password=password
             )
             if self.user_cache is None:
-                raise ValidationError("อีเมลหรือรหัสผ่านไม่ถูกต้อง โปรดตรวจสอบอีกครั้ง")
+                raise ValidationError(_("อีเมลหรือรหัสผ่านไม่ถูกต้อง โปรดตรวจสอบอีกครั้ง"))
             elif not self.user_cache.is_active:
-                raise ValidationError("บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ")
+                raise ValidationError(_("บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ"))
 
         return cleaned_data
 
@@ -59,30 +60,30 @@ class UserRegistrationForm(forms.ModelForm):
     User Registration Form with strict input validation and password checks.
     """
     password = forms.CharField(
-        label="รหัสผ่าน",
+        label=gettext_lazy("รหัสผ่าน"),
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
-            'placeholder': 'อย่างน้อย 10 ตัวอักษร',
+            'placeholder': gettext_lazy("อย่างน้อย 10 ตัวอักษร"),
             'autocomplete': 'new-password',
         })
     )
     confirm_password = forms.CharField(
-        label="ยืนยันรหัสผ่าน",
+        label=gettext_lazy("ยืนยันรหัสผ่าน"),
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
-            'placeholder': 'กรอกรหัสผ่านซ้ำอีกครั้ง',
+            'placeholder': gettext_lazy("กรอกรหัสผ่านซ้ำอีกครั้ง"),
             'autocomplete': 'new-password',
         })
     )
 
     # Merchants must sign up through MerchantRegistrationForm so they get a KYC profile
     ALLOWED_REGISTRATION_ROLES = [
-        (UserRoles.TOURIST, "นักท่องเที่ยว (Tourist)"),
+        (UserRoles.TOURIST, gettext_lazy("นักท่องเที่ยว (Tourist)")),
     ]
 
     role = forms.ChoiceField(
         choices=ALLOWED_REGISTRATION_ROLES,
-        label="ประเภทผู้ใช้งาน",
+        label=gettext_lazy("ประเภทผู้ใช้งาน"),
         widget=forms.Select(attrs={
             'class': 'form-select',
         })
@@ -101,7 +102,7 @@ class UserRegistrationForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data.get('email', '').lower().strip()
         if User.objects.filter(email=email).exists():
-            raise ValidationError("อีเมลนี้ถูกใช้งานแล้วในระบบ")
+            raise ValidationError(_("อีเมลนี้ถูกใช้งานแล้วในระบบ"))
         return email
 
     def clean_phone_number(self):
@@ -111,7 +112,7 @@ class UserRegistrationForm(forms.ModelForm):
         # Clean non-digits
         digits = ''.join(c for c in phone if c.isdigit())
         if digits and len(digits) < 9:
-            raise ValidationError("หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9-10 หลัก")
+            raise ValidationError(_("หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9-10 หลัก"))
         return digits
 
     def clean(self):
@@ -121,7 +122,7 @@ class UserRegistrationForm(forms.ModelForm):
 
         if password and confirm_password:
             if password != confirm_password:
-                self.add_error('confirm_password', "รหัสผ่านทั้งสองช่องไม่ตรงกัน")
+                self.add_error('confirm_password', _("รหัสผ่านทั้งสองช่องไม่ตรงกัน"))
             else:
                 try:
                     validate_password(password)
@@ -145,50 +146,50 @@ class MerchantRegistrationForm(forms.Form):
     and the associated MerchantProfile (status=PENDING for Admin KYC review).
     """
     CATEGORY_CHOICES = [
-        ("HOMESTAY", "โฮมสเตย์ / ที่พักชุมชน (บ้านพัก ที่พักนิเวศ รีสอร์ทชุมชน)"),
-        ("RESTAURANT", "ร้านอาหารเพื่อสุขภาพ (อาหารออร์แกนิก สมุนไพร อาหารพื้นบ้าน)"),
-        ("WELLNESS", "บริการสุขภาพ & สปา (นวดแผนไทย สปาอโรมา วารีบำบัด)"),
-        ("OTOP", "สินค้า OTOP ชุมชน (สินค้าชุมชน ผลิตภัณฑ์สมุนไพร หัตถกรรม)"),
+        ("HOMESTAY", gettext_lazy("โฮมสเตย์ / ที่พักชุมชน (บ้านพัก ที่พักนิเวศ รีสอร์ทชุมชน)")),
+        ("RESTAURANT", gettext_lazy("ร้านอาหารเพื่อสุขภาพ (อาหารออร์แกนิก สมุนไพร อาหารพื้นบ้าน)")),
+        ("WELLNESS", gettext_lazy("บริการสุขภาพ & สปา (นวดแผนไทย สปาอโรมา วารีบำบัด)")),
+        ("OTOP", gettext_lazy("สินค้า OTOP ชุมชน (สินค้าชุมชน ผลิตภัณฑ์สมุนไพร หัตถกรรม)")),
     ]
 
     # Step 1: Business Category
     business_category = forms.ChoiceField(
         choices=CATEGORY_CHOICES,
         initial="HOMESTAY",
-        label="ประเภทสถานประกอบการ",
+        label=gettext_lazy("ประเภทสถานประกอบการ"),
     )
 
     # Step 2: Personal Account Info
-    first_name = forms.CharField(max_length=150, label="ชื่อเจ้าของร้าน / ผู้ดูแล")
-    last_name = forms.CharField(max_length=150, label="นามสกุล")
-    phone_number = forms.CharField(max_length=20, label="เบอร์โทรศัพท์ติดต่อ")
-    email = forms.EmailField(label="อีเมลเข้าสู่ระบบ")
-    password = forms.CharField(label="รหัสผ่าน", widget=forms.PasswordInput)
-    confirm_password = forms.CharField(label="ยืนยันรหัสผ่าน", widget=forms.PasswordInput)
+    first_name = forms.CharField(max_length=150, label=gettext_lazy("ชื่อเจ้าของร้าน / ผู้ดูแล"))
+    last_name = forms.CharField(max_length=150, label=gettext_lazy("นามสกุล"))
+    phone_number = forms.CharField(max_length=20, label=gettext_lazy("เบอร์โทรศัพท์ติดต่อ"))
+    email = forms.EmailField(label=gettext_lazy("อีเมลเข้าสู่ระบบ"))
+    password = forms.CharField(label=gettext_lazy("รหัสผ่าน"), widget=forms.PasswordInput)
+    confirm_password = forms.CharField(label=gettext_lazy("ยืนยันรหัสผ่าน"), widget=forms.PasswordInput)
 
     # Step 3: Business Profile Info
-    business_name = forms.CharField(max_length=200, label="ชื่อสถานประกอบการ / ร้านค้า")
+    business_name = forms.CharField(max_length=200, label=gettext_lazy("ชื่อสถานประกอบการ / ร้านค้า"))
     opening_hours = forms.CharField(
-        max_length=150, required=False, initial="08:00 - 18:00 น.", label="วันและเวลาเปิดทำการ"
+        max_length=150, required=False, initial=gettext_lazy("08:00 - 18:00 น."), label=gettext_lazy("วันและเวลาเปิดทำการ")
     )
     google_maps_url = forms.URLField(
-        max_length=500, required=False, label="ลิงก์ Google Maps ของร้าน"
+        max_length=500, required=False, label=gettext_lazy("ลิงก์ Google Maps ของร้าน")
     )
     description = forms.CharField(
-        widget=forms.Textarea, required=False, label="คำอธิบายร้านค้า / จุดเด่นของบริการ"
+        widget=forms.Textarea, required=False, label=gettext_lazy("คำอธิบายร้านค้า / จุดเด่นของบริการ")
     )
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').lower().strip()
         if User.objects.filter(email=email).exists():
-            raise ValidationError("อีเมลนี้ถูกลงทะเบียนไว้ในระบบแล้ว กรุณาเข้าสู่ระบบ")
+            raise ValidationError(_("อีเมลนี้ถูกลงทะเบียนไว้ในระบบแล้ว กรุณาเข้าสู่ระบบ"))
         return email
 
     def clean_phone_number(self):
         phone = self.cleaned_data.get('phone_number', '').strip()
         digits = ''.join(c for c in phone if c.isdigit())
         if len(digits) < 9:
-            raise ValidationError("หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9-10 หลัก")
+            raise ValidationError(_("หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9-10 หลัก"))
         return digits
 
     def clean(self):
@@ -198,7 +199,7 @@ class MerchantRegistrationForm(forms.Form):
 
         if password and confirm_password:
             if password != confirm_password:
-                self.add_error('confirm_password', "รหัสผ่านทั้งสองช่องไม่ตรงกัน")
+                self.add_error('confirm_password', _("รหัสผ่านทั้งสองช่องไม่ตรงกัน"))
             else:
                 try:
                     validate_password(password)
@@ -234,7 +235,7 @@ class MerchantRegistrationForm(forms.Form):
             description=data.get('description', ''),
             google_maps_url=data.get('google_maps_url', ''),
             phone_number=data['phone_number'],
-            opening_hours=data.get('opening_hours', '08:00 - 18:00 น.'),
+            opening_hours=data.get('opening_hours', _("08:00 - 18:00 น.")),
             status=MerchantApprovalStatus.PENDING,
         )
 

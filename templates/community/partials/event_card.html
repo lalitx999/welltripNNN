@@ -1,0 +1,12 @@
+{% load static i18n welltrip_i18n %}
+<article class="wt-card wt-card-hover h-100 overflow-hidden d-flex flex-column">
+  <div class="wt-card-img">
+    <img src="{% if event.image %}{{ event.image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ event|loc:'title' }}" loading="lazy">
+    <span class="badge rounded-pill bg-white text-dark shadow-sm position-absolute top-0 start-0 m-3">{{ event.get_category_display }}</span>
+  </div>
+  <div class="p-3 d-flex flex-column flex-grow-1">
+    <div class="small fw-bold text-green mb-1"><i data-lucide="calendar-days" class="me-1"></i>{{ event|event_dates }}</div>
+    <h3 class="h6 fw-bold line-clamp-2 mb-1"><a href="{% url 'community:event_detail' event.id %}" class="stretched-link">{{ event|loc:'title' }}</a></h3>
+    {% with venue=event|loc:'venue' %}{% if venue %}<small class="text-secondary line-clamp-1"><i data-lucide="map-pin" class="me-1"></i>{{ venue }}</small>{% endif %}{% endwith %}
+  </div>
+</article>

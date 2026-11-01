@@ -12,6 +12,7 @@ from apps.otop.forms import OTOPProductForm, StockAdjustmentForm
 
 from django.db.models import Q
 from apps.otop.models import OTOPProduct, OTOPCategory
+from django.utils.translation import gettext as _
 
 
 def list_view(request):
@@ -72,10 +73,10 @@ def otop_studio_view(request):
                 object_id=str(product.id),
                 changes=form.cleaned_data,
             )
-            messages.success(request, f"เพิ่มสินค้า OTOP '{product.name}' สำเร็จ")
+            messages.success(request, _("เพิ่มสินค้า OTOP '{name}' สำเร็จ").format(name=product.name))
             return redirect('otop:otop_studio')
         else:
-            messages.error(request, "ข้อมูลสินค้าไม่ถูกต้อง กรุณาตรวจสอบ")
+            messages.error(request, _("ข้อมูลสินค้าไม่ถูกต้อง กรุณาตรวจสอบ"))
     else:
         form = OTOPProductForm()
 
@@ -103,7 +104,7 @@ def otop_stock_update_view(request, product_id):
 
         if new_quantity < 0:
             return HttpResponse(
-                f'<span class="text-xs text-rose-600 font-semibold">สต็อกไม่สามารถต่ำกว่า 0 ได้</span>',
+                _("<span class=\"text-xs text-rose-600 font-semibold\">สต็อกไม่สามารถต่ำกว่า 0 ได้</span>").format(),
                 status=400
             )
 

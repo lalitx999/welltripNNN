@@ -4,16 +4,17 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 from .managers import UserManager
+from django.utils.translation import gettext_lazy
 
 
 class UserRoles(models.TextChoices):
-    TOURIST = "TOURIST", "Tourist (นักท่องเที่ยว)"
-    HOMESTAY_OWNER = "HOMESTAY_OWNER", "Homestay Owner (เจ้าของที่พัก/โฮมสเตย์)"
-    RESTAURANT_OWNER = "RESTAURANT_OWNER", "Restaurant Owner (เจ้าของร้านอาหารสุขภาพ)"
-    WELLNESS_OWNER = "WELLNESS_OWNER", "Wellness Owner (เจ้าของสปา/นวดแผนไทย)"
-    OTOP_OWNER = "OTOP_OWNER", "OTOP Owner (เจ้าของสินค้าชุมชน OTOP)"
-    COMMUNITY_ADMIN = "COMMUNITY_ADMIN", "Community Admin (ผู้ดูแลระบบชุมชน)"
-    SUPER_ADMIN = "SUPER_ADMIN", "Super Admin (ผู้ดูแลระบบสูงสุด)"
+    TOURIST = "TOURIST", gettext_lazy("Tourist (นักท่องเที่ยว)")
+    HOMESTAY_OWNER = "HOMESTAY_OWNER", gettext_lazy("Homestay Owner (เจ้าของที่พัก/โฮมสเตย์)")
+    RESTAURANT_OWNER = "RESTAURANT_OWNER", gettext_lazy("Restaurant Owner (เจ้าของร้านอาหารสุขภาพ)")
+    WELLNESS_OWNER = "WELLNESS_OWNER", gettext_lazy("Wellness Owner (เจ้าของสปา/นวดแผนไทย)")
+    OTOP_OWNER = "OTOP_OWNER", gettext_lazy("OTOP Owner (เจ้าของสินค้าชุมชน OTOP)")
+    COMMUNITY_ADMIN = "COMMUNITY_ADMIN", gettext_lazy("Community Admin (ผู้ดูแลระบบชุมชน)")
+    SUPER_ADMIN = "SUPER_ADMIN", gettext_lazy("Super Admin (ผู้ดูแลระบบสูงสุด)")
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -124,9 +125,9 @@ class EmailVerificationOTP(models.Model):
 
 
 class MerchantApprovalStatus(models.TextChoices):
-    PENDING = "PENDING", "อยู่ระหว่างการตรวจสอบ (Pending Review)"
-    APPROVED = "APPROVED", "อนุมัติแล้ว (Approved)"
-    REJECTED = "REJECTED", "ไม่ผ่านการอนุมัติ (Rejected)"
+    PENDING = "PENDING", gettext_lazy("อยู่ระหว่างการตรวจสอบ (Pending Review)")
+    APPROVED = "APPROVED", gettext_lazy("อนุมัติแล้ว (Approved)")
+    REJECTED = "REJECTED", gettext_lazy("ไม่ผ่านการอนุมัติ (Rejected)")
 
 
 class MerchantProfile(models.Model):
@@ -141,10 +142,10 @@ class MerchantProfile(models.Model):
     business_category = models.CharField(
         max_length=50,
         choices=[
-            ("HOMESTAY", "โฮมสเตย์ / ที่พักชุมชน"),
-            ("RESTAURANT", "ร้านอาหารเพื่อสุขภาพ"),
-            ("WELLNESS", "บริการสุขภาพ & สปา"),
-            ("OTOP", "สินค้า OTOP ชุมชน"),
+            ("HOMESTAY", gettext_lazy("โฮมสเตย์ / ที่พักชุมชน")),
+            ("RESTAURANT", gettext_lazy("ร้านอาหารเพื่อสุขภาพ")),
+            ("WELLNESS", gettext_lazy("บริการสุขภาพ & สปา")),
+            ("OTOP", gettext_lazy("สินค้า OTOP ชุมชน")),
         ],
         default="HOMESTAY",
     )

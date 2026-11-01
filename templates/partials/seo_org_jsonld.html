@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
   <!-- High-Authority E-E-A-T Schema.org Organization & WebSite JSON-LD -->
   <script type="application/ld+json">
@@ -8,42 +9,42 @@
         "@type": "Organization",
         "@id": "https://welltrip-sisaket.com/#organization",
         "name": "WellTrip Sisaket",
-        "alternateName": ["เวลทริป ศรีสะเกษ", "Slow Days Sisaket"],
-        "legalName": "โครงการขับเคลื่อนการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญา 4 ชนเผ่า มหาวิทยาลัยราชภัฏศรีสะเกษ",
+        "alternateName": ["{{ _("เวลทริป ศรีสะเกษ")|escapejs }}", "Slow Days Sisaket"],
+        "legalName": "{{ _("โครงการขับเคลื่อนการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญา 4 ชนเผ่า มหาวิทยาลัยราชภัฏศรีสะเกษ")|escapejs }}",
         "url": "https://welltrip-sisaket.com/",
         "logo": "https://welltrip-sisaket.com{% static 'images/logoWelltrip.jpg' %}",
-        "description": "แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟศรีสะเกษ",
+        "description": "{{ _("แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟศรีสะเกษ")|escapejs }}",
         "foundingDate": "2024",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "319 ถนนไทยพันทา ตำบลโพธิ์",
-          "addressLocality": "เมืองศรีสะเกษ",
-          "addressRegion": "ศรีสะเกษ",
+          "streetAddress": "{{ _("319 ถนนไทยพันทา ตำบลโพธิ์")|escapejs }}",
+          "addressLocality": "{{ _("เมืองศรีสะเกษ")|escapejs }}",
+          "addressRegion": "{{ _("ศรีสะเกษ")|escapejs }}",
           "postalCode": "33000",
           "addressCountry": "TH"
         },
         "founder": {
           "@type": "EducationalOrganization",
-          "name": "มหาวิทยาลัยราชภัฏศรีสะเกษ (Sisaket Rajabhat University)"
+          "name": "{{ _("มหาวิทยาลัยราชภัฏศรีสะเกษ (Sisaket Rajabhat University)")|escapejs }}"
         },
         "sponsor": [
           {
             "@type": "GovernmentOrganization",
-            "name": "สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) - NIA",
+            "name": "{{ _("สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) - NIA")|escapejs }}",
             "url": "https://www.nia.or.th/"
           },
           {
             "@type": "Organization",
-            "name": "อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)",
+            "name": "{{ _("อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)")|escapejs }}",
             "url": "https://step.ubu.ac.th/"
           },
           {
             "@type": "GovernmentOrganization",
-            "name": "หน่วยบริหารและจัดการทุนด้านการพัฒนาระดับพื้นที่ (บพท.)"
+            "name": "{{ _("หน่วยบริหารและจัดการทุนด้านการพัฒนาระดับพื้นที่ (บพท.)")|escapejs }}"
           },
           {
             "@type": "GovernmentOrganization",
-            "name": "กระทรวงการอุดมศึกษา วิทยาศาสตร์ วิจัยและนวัตกรรม (อว.)"
+            "name": "{{ _("กระทรวงการอุดมศึกษา วิทยาศาสตร์ วิจัยและนวัตกรรม (อว.)")|escapejs }}"
           }
         ],
         "knowsAbout": [
@@ -60,7 +61,7 @@
         "@id": "https://welltrip-sisaket.com/#website",
         "url": "https://welltrip-sisaket.com/",
         "name": "WellTrip Sisaket",
-        "description": "Slow Days Sisaket - นวัตกรรมการท่องเที่ยวเชิงสุขภาวะและมรดกวัฒนธรรม",
+        "description": "{{ _("Slow Days Sisaket - นวัตกรรมการท่องเที่ยวเชิงสุขภาวะและมรดกวัฒนธรรม")|escapejs }}",
         "inLanguage": "th",
         "publisher": {
           "@id": "https://welltrip-sisaket.com/#organization"

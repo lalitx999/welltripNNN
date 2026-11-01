@@ -1,22 +1,24 @@
 {% extends "layouts/dashboard.html" %}
 
+{% load i18n %}
 {% block home_url %}{% url 'accounts:admin_dashboard' %}{% endblock %}
 {% block console_name %}Admin Center{% endblock %}
-{% block page_subheading %}ศูนย์ควบคุมระบบ WellTrip Sisaket{% endblock %}
+{% block page_subheading %}{% translate "ศูนย์ควบคุมระบบ WellTrip Sisaket" %}{% endblock %}
 
 {% block sidebar %}
 {% with tab=active_tab|default:'' current=request.resolver_match.url_name %}
-  <a class="nav-link {% if tab == 'overview' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=overview"><i data-lucide="layout-dashboard"></i>ภาพรวม</a>
-  <div class="wt-nav-label">การดำเนินงาน</div>
-  <a class="nav-link {% if tab == 'approvals' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=approvals"><i data-lucide="shield-check"></i>อนุมัติร้านค้า{% if total_pending_kyc %}<span class="badge text-bg-warning ms-auto">{{ total_pending_kyc }}</span>{% endif %}</a>
-  <a class="nav-link {% if tab == 'payments' or current == 'admin_review' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=payments"><i data-lucide="receipt"></i>ตรวจสลิป{% if pending_slips_count %}<span class="badge text-bg-warning ms-auto">{{ pending_slips_count }}</span>{% endif %}</a>
-  <div class="wt-nav-label">ข้อมูลในระบบ</div>
-  <a class="nav-link {% if tab == 'catalog' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=catalog"><i data-lucide="layers"></i>แคตตาล็อก</a>
-  <a class="nav-link {% if tab == 'users' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=users"><i data-lucide="users"></i>ผู้ใช้งาน</a>
-  <a class="nav-link {% if tab == 'locations' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=locations"><i data-lucide="map-pin"></i>จุดเช็คอิน</a>
-  <a class="nav-link {% if tab == 'content' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=content"><i data-lucide="book-open"></i>เรื่องเล่า</a>
-  <a class="nav-link {% if tab == 'vouchers' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=vouchers"><i data-lucide="ticket"></i>คูปองและค่าส่ง</a>
-  <div class="wt-nav-label">ความปลอดภัย</div>
-  <a class="nav-link {% if current == 'admin_audit' %}active{% endif %}" href="{% url 'accounts:admin_audit' %}"><i data-lucide="scroll-text"></i>บันทึกการใช้งาน</a>
+  <a class="nav-link {% if tab == 'overview' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=overview"><i data-lucide="layout-dashboard"></i>{% translate "ภาพรวม" %}</a>
+  <div class="wt-nav-label">{% translate "การดำเนินงาน" %}</div>
+  <a class="nav-link {% if tab == 'approvals' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=approvals"><i data-lucide="shield-check"></i>{% translate "อนุมัติร้านค้า" %}{% if total_pending_kyc %}<span class="badge text-bg-warning ms-auto">{{ total_pending_kyc }}</span>{% endif %}</a>
+  <a class="nav-link {% if tab == 'payments' or current == 'admin_review' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=payments"><i data-lucide="receipt"></i>{% translate "ตรวจสลิป" %}{% if pending_slips_count %}<span class="badge text-bg-warning ms-auto">{{ pending_slips_count }}</span>{% endif %}</a>
+  <div class="wt-nav-label">{% translate "ข้อมูลในระบบ" %}</div>
+  <a class="nav-link {% if tab == 'catalog' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=catalog"><i data-lucide="layers"></i>{% translate "แคตตาล็อก" %}</a>
+  <a class="nav-link {% if tab == 'users' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=users"><i data-lucide="users"></i>{% translate "ผู้ใช้งาน" %}</a>
+  <a class="nav-link {% if tab == 'locations' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=locations"><i data-lucide="map-pin"></i>{% translate "จุดเช็คอิน" %}</a>
+  <a class="nav-link {% if tab == 'content' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=content"><i data-lucide="book-open"></i>{% translate "เรื่องเล่า" %}</a>
+  <a class="nav-link {% if tab == 'events' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=events"><i data-lucide="calendar-days"></i>{% translate "ปฏิทินกิจกรรม" %}</a>
+  <a class="nav-link {% if tab == 'vouchers' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=vouchers"><i data-lucide="ticket"></i>{% translate "คูปองและค่าส่ง" %}</a>
+  <div class="wt-nav-label">{% translate "ความปลอดภัย" %}</div>
+  <a class="nav-link {% if current == 'admin_audit' %}active{% endif %}" href="{% url 'accounts:admin_audit' %}"><i data-lucide="scroll-text"></i>{% translate "บันทึกการใช้งาน" %}</a>
 {% endwith %}
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ตั้งค่าความเป็นส่วนตัว (PDPA) — WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ตั้งค่าความเป็นส่วนตัว (PDPA) — WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <div x-data="{
@@ -19,17 +20,17 @@
            this.confirmDelete = false;
            this.hasLocation = false;
            try { localStorage.removeItem('wt_location_handled'); localStorage.removeItem('wt_user_coords'); } catch (e) {}
-           this.message = { type: 'success', text: 'ลบประวัติตำแหน่งออกจากระบบเรียบร้อยแล้ว' };
+           this.message = { type: 'success', text: '{{ _("ลบประวัติตำแหน่งออกจากระบบเรียบร้อยแล้ว")|escapejs }}' };
          })
-         .catch(() => { this.message = { type: 'error', text: 'ลบข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง' }; })
+         .catch(() => { this.message = { type: 'error', text: '{{ _("ลบข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง")|escapejs }}' }; })
          .finally(() => { this.busy = false; });
        }
      }">
   <section class="wt-page-head">
     <div class="container-xl" style="max-width: 52rem;">
       <span class="wt-eyebrow"><i data-lucide="shield-check"></i>PDPA privacy controls</span>
-      <h1 class="mb-2">ความเป็นส่วนตัวและข้อมูลตำแหน่ง</h1>
-      <p class="text-secondary mb-0">ตรวจสอบข้อมูลตำแหน่งที่ระบบบันทึกไว้ และสั่งลบได้ทันทีตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</p>
+      <h1 class="mb-2">{% translate "ความเป็นส่วนตัวและข้อมูลตำแหน่ง" %}</h1>
+      <p class="text-secondary mb-0">{% translate "ตรวจสอบข้อมูลตำแหน่งที่ระบบบันทึกไว้ และสั่งลบได้ทันทีตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562" %}</p>
     </div>
   </section>
 
@@ -37,7 +38,7 @@
     <template x-if="message">
       <div class="alert rounded-4 d-flex justify-content-between align-items-center mb-0" :class="message.type === 'success' ? 'alert-success' : 'alert-danger'">
         <span x-text="message.text"></span>
-        <button type="button" class="btn-close" @click="message = null" aria-label="ปิด"></button>
+        <button type="button" class="btn-close" @click="message = null" aria-label="{% translate 'ปิด' %}"></button>
       </div>
     </template>
 
@@ -46,41 +47,41 @@
         <div class="d-flex gap-3">
           <span class="wt-stat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map-pin" class="icon-lg"></i></span>
           <div>
-            <h2 class="h6 fw-bold mb-1">ตำแหน่งที่บันทึกไว้ (แบบหยาบ)</h2>
-            <p class="small text-secondary mb-0">ความแม่นยำประมาณ 1.1 กม. ใช้แนะนำแหล่งท่องเที่ยวและคำนวณระยะทางเท่านั้น</p>
+            <h2 class="h6 fw-bold mb-1">{% translate "ตำแหน่งที่บันทึกไว้ (แบบหยาบ)" %}</h2>
+            <p class="small text-secondary mb-0">{% translate "ความแม่นยำประมาณ 1.1 กม. ใช้แนะนำแหล่งท่องเที่ยวและคำนวณระยะทางเท่านั้น" %}</p>
           </div>
         </div>
-        <span class="badge flex-shrink-0" :class="hasLocation ? 'badge-gold' : 'bg-light text-secondary border'" x-text="hasLocation ? 'มีข้อมูลบันทึกอยู่' : 'ไม่มีข้อมูล'">{% if latest_event %}มีข้อมูลบันทึกอยู่{% else %}ไม่มีข้อมูล{% endif %}</span>
+        <span class="badge flex-shrink-0" :class="hasLocation ? 'badge-gold' : 'bg-light text-secondary border'" x-text="hasLocation ? '{{ _("มีข้อมูลบันทึกอยู่")|escapejs }}' : '{{ _("ไม่มีข้อมูล")|escapejs }}'">{% if latest_event %}{% translate "มีข้อมูลบันทึกอยู่" %}{% else %}{% translate "ไม่มีข้อมูล" %}{% endif %}</span>
       </div>
 
       {% if latest_event %}
         <div x-show="hasLocation">
           <div class="row g-2 mb-3">
-            <div class="col-sm-4"><div class="bg-mint rounded-4 p-3"><small class="text-secondary d-block">ละติจูด</small><span class="fw-bold font-monospace">{{ latest_event.latitude }}</span></div></div>
-            <div class="col-sm-4"><div class="bg-mint rounded-4 p-3"><small class="text-secondary d-block">ลองจิจูด</small><span class="fw-bold font-monospace">{{ latest_event.longitude }}</span></div></div>
-            <div class="col-sm-4"><div class="bg-mint rounded-4 p-3"><small class="text-secondary d-block">บันทึกเมื่อ</small><span class="fw-bold">{{ latest_event.created_at|date:"d M Y H:i" }}</span></div></div>
+            <div class="col-sm-4"><div class="bg-mint rounded-4 p-3"><small class="text-secondary d-block">{% translate "ละติจูด" %}</small><span class="fw-bold font-monospace">{{ latest_event.latitude }}</span></div></div>
+            <div class="col-sm-4"><div class="bg-mint rounded-4 p-3"><small class="text-secondary d-block">{% translate "ลองจิจูด" %}</small><span class="fw-bold font-monospace">{{ latest_event.longitude }}</span></div></div>
+            <div class="col-sm-4"><div class="bg-mint rounded-4 p-3"><small class="text-secondary d-block">{% translate "บันทึกเมื่อ" %}</small><span class="fw-bold">{{ latest_event.created_at|date:"d M Y H:i" }}</span></div></div>
           </div>
           <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 border-top pt-3">
-            <small class="text-secondary">ลบประวัติตำแหน่งทั้งหมดออกจากเซิร์ฟเวอร์ โดยไม่เก็บสำเนา</small>
-            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" x-show="!confirmDelete" @click="confirmDelete = true"><i data-lucide="trash-2" class="me-1"></i>ลบประวัติตำแหน่ง</button>
+            <small class="text-secondary">{% translate "ลบประวัติตำแหน่งทั้งหมดออกจากเซิร์ฟเวอร์ โดยไม่เก็บสำเนา" %}</small>
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" x-show="!confirmDelete" @click="confirmDelete = true"><i data-lucide="trash-2" class="me-1"></i>{% translate "ลบประวัติตำแหน่ง" %}</button>
             <span x-show="confirmDelete" x-cloak>
-              <span class="small fw-semibold me-2">ยืนยันการลบ?</span>
-              <button type="button" class="btn btn-danger btn-sm rounded-pill" @click="deleteHistory()" :disabled="busy"><span x-text="busy ? 'กำลังลบ...' : 'ใช่ ลบเลย'"></span></button>
-              <button type="button" class="btn btn-outline-ink btn-sm rounded-pill" @click="confirmDelete = false">ยกเลิก</button>
+              <span class="small fw-semibold me-2">{% translate "ยืนยันการลบ?" %}</span>
+              <button type="button" class="btn btn-danger btn-sm rounded-pill" @click="deleteHistory()" :disabled="busy"><span x-text="busy ? '{{ _("กำลังลบ...")|escapejs }}' : '{{ _("ใช่ ลบเลย")|escapejs }}'"></span></button>
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-pill" @click="confirmDelete = false">{% translate "ยกเลิก" %}</button>
             </span>
           </div>
         </div>
       {% endif %}
-      <p class="small text-secondary mb-0" x-show="!hasLocation" {% if latest_event %}x-cloak{% endif %}>ยังไม่มีประวัติการบันทึกตำแหน่งในบัญชีของคุณ</p>
+      <p class="small text-secondary mb-0" x-show="!hasLocation" {% if latest_event %}x-cloak{% endif %}>{% translate "ยังไม่มีประวัติการบันทึกตำแหน่งในบัญชีของคุณ" %}</p>
     </div>
 
     <div class="wt-card p-4">
-      <h2 class="h6 fw-bold mb-3">หลักการคุ้มครองข้อมูลของ WellTrip</h2>
+      <h2 class="h6 fw-bold mb-3">{% translate "หลักการคุ้มครองข้อมูลของ WellTrip" %}</h2>
       <div class="d-grid gap-3">
-        <div class="d-flex gap-3"><i data-lucide="shield" class="text-green icon-lg"></i><div><div class="fw-semibold">ความปลอดภัยของบัญชี</div><small class="text-secondary">รหัสผ่านเข้ารหัสทางเดียวด้วย Argon2 และระบบป้องกันการเดารหัสผ่าน</small></div></div>
-        <div class="d-flex gap-3"><i data-lucide="lock" class="text-green icon-lg"></i><div><div class="fw-semibold">ไม่ส่งต่อข้อมูลแก่บุคคลภายนอก</div><small class="text-secondary">ข้อมูลการเดินทางและตำแหน่งใช้ภายในแพลตฟอร์มเท่านั้น ไม่นำไปจำหน่ายหรือใช้เชิงพาณิชย์อื่น</small></div></div>
+        <div class="d-flex gap-3"><i data-lucide="shield" class="text-green icon-lg"></i><div><div class="fw-semibold">{% translate "ความปลอดภัยของบัญชี" %}</div><small class="text-secondary">{% translate "รหัสผ่านเข้ารหัสทางเดียวด้วย Argon2 และระบบป้องกันการเดารหัสผ่าน" %}</small></div></div>
+        <div class="d-flex gap-3"><i data-lucide="lock" class="text-green icon-lg"></i><div><div class="fw-semibold">{% translate "ไม่ส่งต่อข้อมูลแก่บุคคลภายนอก" %}</div><small class="text-secondary">{% translate "ข้อมูลการเดินทางและตำแหน่งใช้ภายในแพลตฟอร์มเท่านั้น ไม่นำไปจำหน่ายหรือใช้เชิงพาณิชย์อื่น" %}</small></div></div>
       </div>
-      <a href="{% url 'core:terms' %}" class="small fw-semibold text-green d-inline-block mt-3">อ่านนโยบายคุ้มครองข้อมูลฉบับเต็ม <i data-lucide="arrow-right"></i></a>
+      <a href="{% url 'core:terms' %}" class="small fw-semibold text-green d-inline-block mt-3">{% translate "อ่านนโยบายคุ้มครองข้อมูลฉบับเต็ม" %} <i data-lucide="arrow-right"></i></a>
     </div>
   </div>
 </div>

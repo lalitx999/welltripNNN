@@ -164,3 +164,76 @@ class CommunityMapAndPassportSecurityTestCase(TestCase):
         self.assertEqual(resp.json()["deleted"], True)
         self.assertEqual(LocationEvent.objects.filter(user=self.tourist).count(), 0)
 
+
+
+class EventCalendarTestCase(TestCase):
+    """Events calendar: public listing hides past/draft events; only admins manage them."""
+
+    def setUp(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from apps.accounts.models import User, UserRoles
+        from apps.community.models import Event
+
+        today = timezone.localdate()
+        self.upcoming = Event.objects.create(
+            title="เทศกาลกาแฟ", title_en="Coffee Festival", start_date=today + timedelta(days=3),
+            end_date=today + timedelta(days=5), is_published=True,
+        )
+        self.past = Event.objects.create(
+            title="งานที่จบแล้ว", start_date=today - timedelta(days=10), end_date=today - timedelta(days=8), is_published=True,
+        )
+        self.draft = Event.objects.create(
+            title="ฉบับร่าง", start_date=today + timedelta(days=1), end_date=today + timedelta(days=1),
+        )
+        self.admin = User.objects.create_user(email="ev-admin@example.com", password="x", role=UserRoles.COMMUNITY_ADMIN)
+        self.tourist = User.objects.create_user(email="ev-t@example.com", password="x", role=UserRoles.TOURIST)
+
+    def test_list_shows_only_published_upcoming(self):
+        response = self.client.get("/community/events/")
+        self.assertContains(response, "เทศกาลกาแฟ")
+        self.assertNotContains(response, "งานที่จบแล้ว")
+        self.assertNotContains(response, "ฉบับร่าง")
+        self.assertEqual(self.client.get(f"/community/events/{self.draft.id}/").status_code, 404)
+
+    def test_english_site_uses_english_fields(self):
+        self.client.cookies["django_language"] = "en"
+        response = self.client.get(f"/community/events/{self.upcoming.id}/")
+        self.assertContains(response, "Coffee Festival")
+        self.assertContains(response, "calendar.google.com")
+
+    def test_only_admins_can_create_events(self):
+        payload = {"title": "ลอยกระทง", "category": "FESTIVAL", "start_date": "2026-11-23", "end_date": "2026-11-24", "is_published": "on"}
+        self.client.force_login(self.tourist)
+        self.assertEqual(self.client.post("/accounts/admin/events/add/", payload).status_code, 403)
+        self.client.force_login(self.admin)
+        self.assertEqual(self.client.post("/accounts/admin/events/add/", payload).status_code, 302)
+        self.assertTrue(_event_exists("ลอยกระทง"))
+
+    def test_end_before_start_is_rejected(self):
+        self.client.force_login(self.admin)
+        payload = {"title": "ผิดวัน", "category": "OTHER", "start_date": "2026-12-05", "end_date": "2026-12-01"}
+        response = self.client.post("/accounts/admin/events/add/", payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(_event_exists("ผิดวัน"))
+
+
+def _event_exists(title):
+    from apps.community.models import Event
+    return Event.objects.filter(title=title).exists()
+
+
+class LanguageSwitchTestCase(TestCase):
+    def test_switch_to_english_and_back(self):
+        self.assertContains(self.client.get("/"), "หน้าหลัก")
+        response = self.client.post("/i18n/setlang/", {"language": "en", "next": "/otop/"})
+        self.assertRedirects(response, "/otop/", fetch_redirect_response=False)
+        page = self.client.get("/")
+        self.assertContains(page, 'lang="en"')
+        self.assertContains(page, "Rest your mind in")
+        self.client.post("/i18n/setlang/", {"language": "th", "next": "/"})
+        self.assertContains(self.client.get("/"), "พักใจที่")
+
+    def test_switch_ignores_offsite_next(self):
+        response = self.client.post("/i18n/setlang/", {"language": "en", "next": "https://evil.example/"})
+        self.assertEqual(response["Location"], "/")

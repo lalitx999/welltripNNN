@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from . import admin_views
+from apps.community import admin_views as community_admin_views
 
 app_name = 'accounts'
 
@@ -39,6 +40,9 @@ urlpatterns = [
     path('admin/catalog/<str:item_type>/<uuid:item_id>/toggle/', admin_views.admin_catalog_toggle_view, name='admin_catalog_toggle'),
 
     # Locations CRUD
+    path('admin/events/add/', community_admin_views.event_form_view, name='admin_event_add'),
+    path('admin/events/<uuid:event_id>/edit/', community_admin_views.event_form_view, name='admin_event_edit'),
+    path('admin/events/<uuid:event_id>/delete/', community_admin_views.event_delete_view, name='admin_event_delete'),
     path('admin/locations/add/', admin_views.admin_location_add_view, name='admin_location_add'),
     path('admin/locations/<uuid:location_id>/edit/', admin_views.admin_location_edit_view, name='admin_location_edit'),
     path('admin/locations/<uuid:location_id>/delete/', admin_views.admin_location_delete_view, name='admin_location_delete'),

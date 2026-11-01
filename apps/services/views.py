@@ -11,6 +11,7 @@ from apps.services.forms import FoodMenuForm, WellnessServiceForm, WellnessTimeS
 
 
 from django.db.models import Q
+from django.utils.translation import gettext as _
 
 
 def list_view(request):
@@ -91,10 +92,10 @@ def restaurant_studio_view(request):
                 object_id=str(menu.id),
                 changes=form.cleaned_data,
             )
-            messages.success(request, f"เพิ่มเมนู '{menu.name}' สำเร็จ")
+            messages.success(request, _("เพิ่มเมนู '{name}' สำเร็จ").format(name=menu.name))
             return redirect('services:restaurant_studio')
         else:
-            messages.error(request, "ข้อมูลเมนูไม่ถูกต้อง กรุณาตรวจสอบ")
+            messages.error(request, _("ข้อมูลเมนูไม่ถูกต้อง กรุณาตรวจสอบ"))
     else:
         form = FoodMenuForm()
 
@@ -120,7 +121,7 @@ def food_delete_view(request, food_id):
         object_id=str(food_id),
         changes={"name": name},
     )
-    messages.success(request, f"ลบเมนู '{name}' เรียบร้อยแล้ว")
+    messages.success(request, _("ลบเมนู '{name}' เรียบร้อยแล้ว").format(name=name))
     return redirect('services:restaurant_studio')
 
 
@@ -146,7 +147,7 @@ def wellness_studio_view(request):
                 object_id=str(service.id),
                 changes=form.cleaned_data,
             )
-            messages.success(request, f"เพิ่มบริการ '{service.name}' สำเร็จ")
+            messages.success(request, _("เพิ่มบริการ '{name}' สำเร็จ").format(name=service.name))
             return redirect('services:wellness_studio')
     else:
         form = WellnessServiceForm()
@@ -186,9 +187,9 @@ def wellness_slot_create_view(request):
             object_id=str(slot.id),
             changes=form.cleaned_data,
         )
-        messages.success(request, f"เพิ่มรอบเวลา {slot.start_time.strftime('%H:%M')} สำเร็จ")
+        messages.success(request, _("เพิ่มรอบเวลา {strftime} สำเร็จ").format(strftime=slot.start_time.strftime('%H:%M')))
     else:
-        messages.error(request, "ข้อมูลรอบเวลาไม่ถูกต้อง")
+        messages.error(request, _("ข้อมูลรอบเวลาไม่ถูกต้อง"))
 
     return redirect('services:wellness_studio')
 
@@ -206,5 +207,5 @@ def wellness_slot_delete_view(request, slot_id):
         model_name="WellnessTimeSlot",
         object_id=str(slot_id),
     )
-    messages.success(request, "ลบรอบบริการเรียบร้อยแล้ว")
+    messages.success(request, _("ลบรอบบริการเรียบร้อยแล้ว"))
     return redirect('services:wellness_studio')

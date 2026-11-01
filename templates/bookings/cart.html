@@ -1,14 +1,15 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ตะกร้าของฉัน - WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ตะกร้าของฉัน - WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head pb-3">
   <div class="container-xl">
     {% include "bookings/partials/checkout_steps.html" with step=1 %}
     <div class="d-flex align-items-end justify-content-between">
-      <h1 class="mb-0">ตะกร้าของฉัน</h1>
-      <span class="badge badge-green fs-6">{{ item_count }} รายการ</span>
+      <h1 class="mb-0">{% translate "ตะกร้าของฉัน" %}</h1>
+      <span class="badge badge-green fs-6">{% blocktranslate trimmed with item_count=item_count %}{{ item_count }} รายการ{% endblocktranslate %}</span>
     </div>
   </div>
 </section>
@@ -19,27 +20,27 @@
       <div class="col-lg-8 d-grid gap-4">
 
         <div class="wt-card p-3 p-sm-4">
-          <h2 class="h6 fw-bold mb-3"><i data-lucide="package-check" class="text-green me-1"></i>รายการที่เลือก</h2>
+          <h2 class="h6 fw-bold mb-3"><i data-lucide="package-check" class="text-green me-1"></i>{% translate "รายการที่เลือก" %}</h2>
           <div class="list-group list-group-flush">
             {% for item in cart %}
               <div class="list-group-item px-0 py-3">
                 <div class="d-flex flex-column flex-sm-row justify-content-between gap-3">
                   <div class="min-w-0">
                     <div class="d-flex flex-wrap gap-2 mb-1">
-                      <span class="badge badge-green">{% if item.item_type == 'ROOM' %}ที่พัก{% elif item.item_type == 'FOOD' %}อาหาร{% elif item.item_type == 'WELLNESS' %}สปา{% elif item.item_type == 'OTOP' %}OTOP{% else %}{{ item.item_type }}{% endif %}</span>
-                      {% if item.date %}<span class="small text-secondary"><i data-lucide="calendar" class="me-1"></i>{{ item.date }}{% if item.item_type == 'ROOM' %} · {{ item.nights|default:1 }} คืน{% endif %}</span>{% endif %}
+                      <span class="badge badge-green">{% if item.item_type == 'ROOM' %}{% translate "ที่พัก" %}{% elif item.item_type == 'FOOD' %}{% translate "อาหาร" %}{% elif item.item_type == 'WELLNESS' %}{% translate "สปา" %}{% elif item.item_type == 'OTOP' %}OTOP{% else %}{{ item.item_type }}{% endif %}</span>
+                      {% if item.date %}<span class="small text-secondary"><i data-lucide="calendar" class="me-1"></i>{{ item.date }}{% if item.item_type == 'ROOM' %} {% blocktranslate trimmed with nights=item.nights|default:1 %}· {{ nights }} คืน{% endblocktranslate %}{% endif %}</span>{% endif %}
                     </div>
                     <div class="fw-bold">{{ item.title }}</div>
-                    <small class="text-secondary">฿{{ item.price|floatformat:"0g" }}{% if item.item_type == 'ROOM' %} / คืน / ห้อง{% else %} / หน่วย{% endif %}</small>
+                    <small class="text-secondary">฿{{ item.price|floatformat:"0g" }}{% if item.item_type == 'ROOM' %} {% translate "/ คืน / ห้อง" %}{% else %} {% translate "/ หน่วย" %}{% endif %}</small>
                   </div>
                   <div class="d-flex align-items-center gap-3 flex-shrink-0">
-                    <div class="btn-group btn-group-sm" role="group" aria-label="จำนวน">
-                      <form method="post" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">{% csrf_token %}<input type="hidden" name="action" value="decrease"><button type="submit" class="btn btn-outline-ink rounded-end-0" aria-label="ลดจำนวน">−</button></form>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="{% translate 'จำนวน' %}">
+                      <form method="post" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">{% csrf_token %}<input type="hidden" name="action" value="decrease"><button type="submit" class="btn btn-outline-ink rounded-end-0" aria-label="{% translate 'ลดจำนวน' %}">−</button></form>
                       <span class="btn btn-outline-ink disabled fw-bold rounded-0" style="min-width: 2.5rem;">{{ item.quantity|default:1 }}</span>
-                      <form method="post" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">{% csrf_token %}<input type="hidden" name="action" value="increase"><button type="submit" class="btn btn-outline-ink rounded-start-0" aria-label="เพิ่มจำนวน">+</button></form>
+                      <form method="post" action="{% url 'bookings:cart_update_quantity' forloop.counter0 %}">{% csrf_token %}<input type="hidden" name="action" value="increase"><button type="submit" class="btn btn-outline-ink rounded-start-0" aria-label="{% translate 'เพิ่มจำนวน' %}">+</button></form>
                     </div>
                     <span class="fw-bold text-green text-nowrap" style="min-width: 5rem; text-align: right;">฿{{ item.line_total|floatformat:"0g" }}</span>
-                    <form method="post" action="{% url 'bookings:cart_remove' forloop.counter0 %}">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2 lh-1" aria-label="ลบออกจากตะกร้า"><i data-lucide="trash-2"></i></button></form>
+                    <form method="post" action="{% url 'bookings:cart_remove' forloop.counter0 %}">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2 lh-1" aria-label="{% translate 'ลบออกจากตะกร้า' %}"><i data-lucide="trash-2"></i></button></form>
                   </div>
                 </div>
               </div>
@@ -50,16 +51,16 @@
         <div class="wt-card p-3 p-sm-4" x-data="{ showAddForm: {% if not shipping_addresses %}true{% else %}false{% endif %} }">
           <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 mb-3">
             <div>
-              <h2 class="h6 fw-bold mb-1"><i data-lucide="truck" class="text-green me-1"></i>ที่อยู่จัดส่ง (สำหรับสินค้า OTOP)</h2>
-              <small class="text-secondary">บันทึกได้สูงสุด 3 ที่อยู่ · ใช้อยู่ {{ shipping_addresses|length }}/3</small>
+              <h2 class="h6 fw-bold mb-1"><i data-lucide="truck" class="text-green me-1"></i>{% translate "ที่อยู่จัดส่ง (สำหรับสินค้า OTOP)" %}</h2>
+              <small class="text-secondary">{% blocktranslate trimmed with shipping_addresses=shipping_addresses|length %}บันทึกได้สูงสุด 3 ที่อยู่ · ใช้อยู่ {{ shipping_addresses }}/3{% endblocktranslate %}</small>
             </div>
             {% if can_add_address and shipping_addresses %}
-              <button type="button" class="btn btn-outline-ink btn-sm rounded-pill align-self-start" @click="showAddForm = !showAddForm"><i data-lucide="plus" class="me-1"></i><span x-text="showAddForm ? 'ปิดแบบฟอร์ม' : 'เพิ่มที่อยู่'">เพิ่มที่อยู่</span></button>
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-pill align-self-start" @click="showAddForm = !showAddForm"><i data-lucide="plus" class="me-1"></i><span x-text="showAddForm ? '{{ _("ปิดแบบฟอร์ม")|escapejs }}' : '{{ _("เพิ่มที่อยู่")|escapejs }}'">{% translate "เพิ่มที่อยู่" %}</span></button>
             {% endif %}
           </div>
 
           {% if not shipping_addresses %}
-            <div class="small text-secondary mb-2"><i data-lucide="info" class="me-1"></i>ยังไม่มีที่อยู่จัดส่ง {% if has_physical_goods %}<strong class="text-danger">จำเป็นต้องกรอกเพราะมีสินค้า OTOP ในตะกร้า</strong>{% else %}(จำเป็นเฉพาะเมื่อสั่งสินค้า OTOP){% endif %}</div>
+            <div class="small text-secondary mb-2"><i data-lucide="info" class="me-1"></i>{% translate "ยังไม่มีที่อยู่จัดส่ง" %} {% if has_physical_goods %}<strong class="text-danger">{% translate "จำเป็นต้องกรอกเพราะมีสินค้า OTOP ในตะกร้า" %}</strong>{% else %}{% translate "(จำเป็นเฉพาะเมื่อสั่งสินค้า OTOP)" %}{% endif %}</div>
           {% endif %}
           {% if shipping_addresses %}
             <div class="row g-2 mb-3">
@@ -67,17 +68,17 @@
                 <div class="col-md-6">
                   <div class="border rounded-4 p-3 h-100 {% if forloop.counter0 == selected_idx %}border-success bg-mint{% endif %}">
                     <div class="d-flex justify-content-between align-items-start mb-1">
-                      <span class="badge {% if forloop.counter0 == selected_idx %}bg-success{% else %}bg-light text-secondary border{% endif %}">{{ addr.label|default:"ที่อยู่จัดส่ง" }}</span>
+                      <span class="badge {% if forloop.counter0 == selected_idx %}bg-success{% else %}bg-light text-secondary border{% endif %}">{{ addr.label|default:_("ที่อยู่จัดส่ง") }}</span>
                       {% if shipping_addresses|length > 1 %}
-                        <form method="post" action="{% url 'bookings:address_delete' forloop.counter0 %}" onsubmit="return confirm('ลบที่อยู่นี้หรือไม่?')">{% csrf_token %}<button type="submit" class="btn btn-link btn-sm text-danger p-0" aria-label="ลบที่อยู่"><i data-lucide="trash-2"></i></button></form>
+                        <form method="post" action="{% url 'bookings:address_delete' forloop.counter0 %}" onsubmit="return confirm('{{ _("ลบที่อยู่นี้หรือไม่?")|escapejs }}')">{% csrf_token %}<button type="submit" class="btn btn-link btn-sm text-danger p-0" aria-label="{% translate 'ลบที่อยู่' %}"><i data-lucide="trash-2"></i></button></form>
                       {% endif %}
                     </div>
                     <div class="fw-semibold small">{{ addr.recipient_name }} · {{ addr.phone_number }}</div>
-                    <div class="small text-secondary">{{ addr.address_line }} อ.{{ addr.district }} จ.{{ addr.province }} {{ addr.postal_code }}</div>
+                    <div class="small text-secondary">{% blocktranslate trimmed with address_line=addr.address_line district=addr.district province=addr.province postal_code=addr.postal_code %}{{ address_line }} อ.{{ district }} จ.{{ province }} {{ postal_code }}{% endblocktranslate %}</div>
                     {% if forloop.counter0 != selected_idx %}
-                      <form method="post" action="{% url 'bookings:address_select' forloop.counter0 %}" class="mt-2">{% csrf_token %}<button type="submit" class="btn btn-outline-ink btn-sm rounded-pill">ใช้ที่อยู่นี้</button></form>
+                      <form method="post" action="{% url 'bookings:address_select' forloop.counter0 %}" class="mt-2">{% csrf_token %}<button type="submit" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ใช้ที่อยู่นี้" %}</button></form>
                     {% else %}
-                      <div class="small fw-semibold text-green mt-2"><i data-lucide="check-circle-2" class="me-1"></i>ใช้ที่อยู่นี้</div>
+                      <div class="small fw-semibold text-green mt-2"><i data-lucide="check-circle-2" class="me-1"></i>{% translate "ใช้ที่อยู่นี้" %}</div>
                     {% endif %}
                   </div>
                 </div>
@@ -89,35 +90,35 @@
             <form method="post" action="{% url 'bookings:address_add' %}" x-show="showAddForm" {% if shipping_addresses %}x-cloak{% endif %} class="bg-mint rounded-4 p-3">
               {% csrf_token %}
               <div class="row g-2">
-                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_label">ชื่อเรียก</label><input id="a_label" type="text" name="label" placeholder="บ้าน, ที่ทำงาน" required class="form-control"></div>
-                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_name">ชื่อผู้รับ</label><input id="a_name" type="text" name="recipient_name" required class="form-control" autocomplete="name"></div>
-                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_phone">เบอร์โทร</label><input id="a_phone" type="tel" name="phone_number" required class="form-control" autocomplete="tel-national"></div>
-                <div class="col-12"><label class="form-label small fw-semibold" for="a_line">ที่อยู่ (บ้านเลขที่ หมู่ ถนน ตำบล)</label><input id="a_line" type="text" name="address_line" required class="form-control" autocomplete="street-address"></div>
-                <div class="col-sm-5"><label class="form-label small fw-semibold" for="a_dist">อำเภอ</label>
+                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_label">{% translate "ชื่อเรียก" %}</label><input id="a_label" type="text" name="label" placeholder="{% translate 'บ้าน, ที่ทำงาน' %}" required class="form-control"></div>
+                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_name">{% translate "ชื่อผู้รับ" %}</label><input id="a_name" type="text" name="recipient_name" required class="form-control" autocomplete="name"></div>
+                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_phone">{% translate "เบอร์โทร" %}</label><input id="a_phone" type="tel" name="phone_number" required class="form-control" autocomplete="tel-national"></div>
+                <div class="col-12"><label class="form-label small fw-semibold" for="a_line">{% translate "ที่อยู่ (บ้านเลขที่ หมู่ ถนน ตำบล)" %}</label><input id="a_line" type="text" name="address_line" required class="form-control" autocomplete="street-address"></div>
+                <div class="col-sm-5"><label class="form-label small fw-semibold" for="a_dist">{% translate "อำเภอ" %}</label>
                   <select id="a_dist" name="district" required class="form-select">{% for dist in sisaket_districts %}<option value="{{ dist }}" {% if dist == 'เมืองศรีสะเกษ' %}selected{% endif %}>{{ dist }}</option>{% endfor %}</select>
                 </div>
-                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_prov">จังหวัด</label><input id="a_prov" type="text" name="province" value="ศรีสะเกษ" required class="form-control"></div>
-                <div class="col-sm-3"><label class="form-label small fw-semibold" for="a_zip">รหัสไปรษณีย์</label><input id="a_zip" type="text" name="postal_code" inputmode="numeric" required class="form-control" autocomplete="postal-code"></div>
+                <div class="col-sm-4"><label class="form-label small fw-semibold" for="a_prov">{% translate "จังหวัด" %}</label><input id="a_prov" type="text" name="province" value="ศรีสะเกษ" required class="form-control"></div>
+                <div class="col-sm-3"><label class="form-label small fw-semibold" for="a_zip">{% translate "รหัสไปรษณีย์" %}</label><input id="a_zip" type="text" name="postal_code" inputmode="numeric" required class="form-control" autocomplete="postal-code"></div>
               </div>
               <div class="d-flex justify-content-end gap-2 mt-3">
-                {% if shipping_addresses %}<button type="button" class="btn btn-outline-ink btn-sm rounded-pill" @click="showAddForm = false">ยกเลิก</button>{% endif %}
-                <button type="submit" class="btn btn-green btn-sm rounded-pill px-3"><i data-lucide="save" class="me-1"></i>บันทึกที่อยู่</button>
+                {% if shipping_addresses %}<button type="button" class="btn btn-outline-ink btn-sm rounded-pill" @click="showAddForm = false">{% translate "ยกเลิก" %}</button>{% endif %}
+                <button type="submit" class="btn btn-green btn-sm rounded-pill px-3"><i data-lucide="save" class="me-1"></i>{% translate "บันทึกที่อยู่" %}</button>
               </div>
             </form>
           {% endif %}
         </div>
 
-        <a href="{% url 'accommodations:list' %}" class="small fw-semibold text-green"><i data-lucide="arrow-left" class="me-1"></i>เลือกบริการเพิ่มเติม</a>
+        <a href="{% url 'accommodations:list' %}" class="small fw-semibold text-green"><i data-lucide="arrow-left" class="me-1"></i>{% translate "เลือกบริการเพิ่มเติม" %}</a>
       </div>
 
       <div class="col-lg-4">
         <div class="wt-card p-4 position-sticky" style="top: 6rem;" x-data="cartVoucherApp()">
-          <h2 class="h6 fw-bold mb-3"><i data-lucide="receipt" class="text-green me-1"></i>สรุปคำสั่งซื้อ</h2>
+          <h2 class="h6 fw-bold mb-3"><i data-lucide="receipt" class="text-green me-1"></i>{% translate "สรุปคำสั่งซื้อ" %}</h2>
           <div class="d-grid gap-2 small">
-            <div class="d-flex justify-content-between"><span class="text-secondary">ยอดรวม</span><span class="fw-semibold">฿{{ totals.subtotal|floatformat:"0g" }}</span></div>
-            <div class="d-flex justify-content-between"><span class="text-secondary"><i data-lucide="truck" class="me-1"></i>ค่าจัดส่ง</span><span>{{ totals.shipping_status_text }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-secondary">{% translate "ยอดรวม" %}</span><span class="fw-semibold">฿{{ totals.subtotal|floatformat:"0g" }}</span></div>
+            <div class="d-flex justify-content-between"><span class="text-secondary"><i data-lucide="truck" class="me-1"></i>{% translate "ค่าจัดส่ง" %}</span><span>{{ totals.shipping_status_text }}</span></div>
             <template x-if="discountAmount > 0">
-              <div class="d-flex justify-content-between text-success"><span>ส่วนลด (<span x-text="couponCode"></span>)</span><span>-฿<span x-text="Number(discountAmount).toLocaleString()"></span></span></div>
+              <div class="d-flex justify-content-between text-success"><span>{% translate "ส่วนลด (" %}<span x-text="couponCode"></span>)</span><span>-฿<span x-text="Number(discountAmount).toLocaleString()"></span></span></div>
             </template>
           </div>
 
@@ -125,16 +126,16 @@
 
           <form id="cart-voucher-form" @submit.prevent="applyCoupon()" method="post" action="{% url 'bookings:coupon_apply' %}">
             {% csrf_token %}
-            <label for="cart-coupon-input" class="form-label small fw-semibold"><i data-lucide="ticket" class="me-1"></i>โค้ดส่วนลด</label>
+            <label for="cart-coupon-input" class="form-label small fw-semibold"><i data-lucide="ticket" class="me-1"></i>{% translate "โค้ดส่วนลด" %}</label>
             <div x-show="couponCode" x-cloak>
               <div class="alert alert-success py-2 px-3 small d-flex justify-content-between align-items-center rounded-4 mb-2">
-                <span>ใช้โค้ด <strong x-text="couponCode"></strong></span>
-                <button type="button" class="btn btn-link btn-sm text-danger p-0" @click="removeCoupon()">ยกเลิก</button>
+                <span>{% translate "ใช้โค้ด" %} <strong x-text="couponCode"></strong></span>
+                <button type="button" class="btn btn-link btn-sm text-danger p-0" @click="removeCoupon()">{% translate "ยกเลิก" %}</button>
               </div>
             </div>
             <div class="input-group">
-              <input type="text" name="coupon_code" id="cart-coupon-input" x-model="inputCode" placeholder="กรอกโค้ด" autocomplete="off" class="form-control">
-              <button type="submit" class="btn btn-outline-ink" id="btn-apply-coupon"><span x-text="loading ? 'กำลังตรวจ...' : 'ใช้โค้ด'">ใช้โค้ด</span></button>
+              <input type="text" name="coupon_code" id="cart-coupon-input" x-model="inputCode" placeholder="{% translate 'กรอกโค้ด' %}" autocomplete="off" class="form-control">
+              <button type="submit" class="btn btn-outline-ink" id="btn-apply-coupon"><span x-text="loading ? '{{ _("กำลังตรวจ...")|escapejs }}' : '{{ _("ใช้โค้ด")|escapejs }}'">{% translate "ใช้โค้ด" %}</span></button>
             </div>
             {% if active_coupons %}
               <div class="d-flex flex-wrap gap-1 mt-2">
@@ -148,20 +149,20 @@
 
           {% if selected_address %}
             <div class="bg-mint rounded-4 p-3 small mt-3">
-              <div class="fw-semibold"><i data-lucide="map-pin" class="text-green me-1"></i>ส่งไปที่ {{ selected_address.recipient_name }} ({{ selected_address.label }})</div>
-              <div class="text-secondary">{{ selected_address.address_line }} อ.{{ selected_address.district }} จ.{{ selected_address.province }}</div>
+              <div class="fw-semibold"><i data-lucide="map-pin" class="text-green me-1"></i>{% blocktranslate trimmed with recipient_name=selected_address.recipient_name label=selected_address.label %}ส่งไปที่ {{ recipient_name }} ({{ label }}){% endblocktranslate %}</div>
+              <div class="text-secondary">{% blocktranslate trimmed with address_line=selected_address.address_line district=selected_address.district province=selected_address.province %}{{ address_line }} อ.{{ district }} จ.{{ province }}{% endblocktranslate %}</div>
             </div>
           {% endif %}
 
           <div class="d-flex justify-content-between align-items-baseline border-top mt-3 pt-3">
-            <span class="fw-bold">ยอดชำระสุทธิ</span>
+            <span class="fw-bold">{% translate "ยอดชำระสุทธิ" %}</span>
             <span class="fs-3 fw-bold text-green">฿<span x-text="Number(finalTotal).toLocaleString()">{{ totals.final_total|floatformat:"0g" }}</span></span>
           </div>
 
           {% if user.is_authenticated %}
-            <a href="{% url 'bookings:review' %}" class="btn btn-gold btn-lg rounded-pill w-100 mt-3">ตรวจสอบคำสั่งซื้อ <i data-lucide="arrow-right"></i></a>
+            <a href="{% url 'bookings:review' %}" class="btn btn-gold btn-lg rounded-pill w-100 mt-3">{% translate "ตรวจสอบคำสั่งซื้อ" %} <i data-lucide="arrow-right"></i></a>
           {% else %}
-            <a href="{% url 'accounts:login' %}?next={% url 'bookings:cart' %}" class="btn btn-gold btn-lg rounded-pill w-100 mt-3"><i data-lucide="log-in" class="me-1"></i>เข้าสู่ระบบเพื่อสั่งซื้อ</a>
+            <a href="{% url 'accounts:login' %}?next={% url 'bookings:cart' %}" class="btn btn-gold btn-lg rounded-pill w-100 mt-3"><i data-lucide="log-in" class="me-1"></i>{% translate "เข้าสู่ระบบเพื่อสั่งซื้อ" %}</a>
           {% endif %}
         </div>
       </div>
@@ -169,9 +170,9 @@
   {% else %}
     <div class="wt-card wt-empty">
       <span class="wt-icon-pill"><i data-lucide="shopping-bag"></i></span>
-      <h2 class="h5 fw-bold">ตะกร้ายังว่างอยู่</h2>
-      <p class="text-secondary">เลือกที่พัก อาหารสุขภาพ สปา หรือสินค้า OTOP ได้เลย</p>
-      <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill px-4">เริ่มเลือกบริการ</a>
+      <h2 class="h5 fw-bold">{% translate "ตะกร้ายังว่างอยู่" %}</h2>
+      <p class="text-secondary">{% translate "เลือกที่พัก อาหารสุขภาพ สปา หรือสินค้า OTOP ได้เลย" %}</p>
+      <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill px-4">{% translate "เริ่มเลือกบริการ" %}</a>
     </div>
   {% endif %}
 </div>
@@ -206,7 +207,7 @@
       async applyCoupon() {
         const code = (this.inputCode || '').trim();
         if (!code) {
-          this.message = 'กรุณากรอกหรือเลือกรหัสคูปอง';
+          this.message = '{{ _("กรุณากรอกหรือเลือกรหัสคูปอง")|escapejs }}';
           this.success = false;
           return;
         }
@@ -248,7 +249,7 @@
             form.submit();
           } else {
             this.success = false;
-            this.message = 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง';
+            this.message = '{{ _("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง")|escapejs }}';
           }
         }
       },
@@ -279,7 +280,7 @@
           this.shippingFee = data.shipping_fee;
           this.finalTotal = data.final_total;
           this.success = true;
-          this.message = 'ยกเลิกการใช้คูปองแล้ว';
+          this.message = '{{ _("ยกเลิกการใช้คูปองแล้ว")|escapejs }}';
           setTimeout(() => { this.message = ''; }, 3000);
         } catch (err) {
           this.loading = false;

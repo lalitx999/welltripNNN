@@ -1,36 +1,37 @@
+{% load i18n %}
 <div class="wt-card">
   <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
     <div class="wt-pills">
-      <a href="?tab=approvals" class="wt-pill {% if not selected_kyc_status %}active{% endif %}">ทั้งหมด</a>
+      <a href="?tab=approvals" class="wt-pill {% if not selected_kyc_status %}active{% endif %}">{% translate "ทั้งหมด" %}</a>
       {% for code, label in approval_statuses %}<a href="?tab=approvals&status={{ code }}" class="wt-pill {% if selected_kyc_status == code %}active{% endif %}">{{ label }}</a>{% endfor %}
     </div>
-    <button type="button" class="btn btn-green btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addPartnerModal"><i data-lucide="plus" class="me-1"></i>เพิ่มร้านค้า</button>
+    <button type="button" class="btn btn-green btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addPartnerModal"><i data-lucide="plus" class="me-1"></i>{% translate "เพิ่มร้านค้า" %}</button>
   </div>
   <div class="table-responsive">
     <table class="table wt-table mb-0">
-      <thead><tr><th>ร้านค้า</th><th>ประเภท</th><th>ติดต่อ</th><th>สถานะ</th><th class="text-end">จัดการ</th></tr></thead>
+      <thead><tr><th>{% translate "ร้านค้า" %}</th><th>{% translate "ประเภท" %}</th><th>{% translate "ติดต่อ" %}</th><th>{% translate "สถานะ" %}</th><th class="text-end">{% translate "จัดการ" %}</th></tr></thead>
       <tbody>
         {% for prof in profiles_page %}
           <tr>
             <td><div class="fw-semibold small">{{ prof.business_name }}</div><small class="text-secondary line-clamp-1">{{ prof.description }}</small></td>
             <td><span class="badge bg-light text-secondary border">{{ prof.get_business_category_display }}</span></td>
             <td class="small"><div class="text-truncate" style="max-width: 12rem;">{{ prof.user.email }}</div><span class="text-secondary">{{ prof.phone_number|default:"-" }}</span></td>
-            <td>{% if prof.status == 'APPROVED' %}<span class="badge badge-green">อนุมัติแล้ว</span>{% elif prof.status == 'REJECTED' %}<span class="badge text-bg-danger">ไม่ผ่าน</span>{% else %}<span class="badge badge-gold">รอตรวจ</span>{% endif %}</td>
+            <td>{% if prof.status == 'APPROVED' %}<span class="badge badge-green">{% translate "อนุมัติแล้ว" %}</span>{% elif prof.status == 'REJECTED' %}<span class="badge text-bg-danger">{% translate "ไม่ผ่าน" %}</span>{% else %}<span class="badge badge-gold">{% translate "รอตรวจ" %}</span>{% endif %}</td>
             <td class="text-end text-nowrap">
               {% if prof.status != 'APPROVED' %}
-                <form method="post" action="{% url 'accounts:admin_approve_merchant' prof.user.id %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-green btn-sm rounded-pill">อนุมัติ</button></form>
+                <form method="post" action="{% url 'accounts:admin_approve_merchant' prof.user.id %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-green btn-sm rounded-pill">{% translate "อนุมัติ" %}</button></form>
               {% endif %}
               {% if prof.status == 'PENDING' %}
-                <form method="post" action="{% url 'accounts:admin_reject_merchant' prof.user.id %}" class="d-inline" onsubmit="const r = prompt('เหตุผลที่ไม่อนุมัติ'); if (r === null) return false; this.reason.value = r;">{% csrf_token %}<input type="hidden" name="reason"><button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">ไม่อนุมัติ</button></form>
+                <form method="post" action="{% url 'accounts:admin_reject_merchant' prof.user.id %}" class="d-inline" onsubmit="const r = prompt('{{ _("เหตุผลที่ไม่อนุมัติ")|escapejs }}'); if (r === null) return false; this.reason.value = r;">{% csrf_token %}<input type="hidden" name="reason"><button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">{% translate "ไม่อนุมัติ" %}</button></form>
               {% endif %}
-              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="แก้ไข" aria-label="แก้ไขร้านค้า"
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="{% translate 'แก้ไข' %}" aria-label="{% translate 'แก้ไขร้านค้า' %}"
                       @click="open('partner', { id: '{{ prof.user.id }}', name: '{{ prof.business_name|escapejs }}', category: '{{ prof.business_category }}', phone: '{{ prof.phone_number|escapejs }}', description: '{{ prof.description|escapejs }}', maps_url: '{{ prof.google_maps_url|escapejs }}', hours: '{{ prof.opening_hours|escapejs }}' }, 'editPartnerModal')"><i data-lucide="pencil"></i></button>
-              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="ลบ" aria-label="ลบร้านค้า"
-                      @click="confirmDelete('{% url 'accounts:admin_partner_delete' prof.user.id %}', 'ร้าน {{ prof.business_name|escapejs }}')"><i data-lucide="trash-2"></i></button>
+              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="{% translate 'ลบ' %}" aria-label="{% translate 'ลบร้านค้า' %}"
+                      @click="confirmDelete('{% url 'accounts:admin_partner_delete' prof.user.id %}', '{{ _("ร้าน")|escapejs }} {{ prof.business_name|escapejs }}')"><i data-lucide="trash-2"></i></button>
             </td>
           </tr>
         {% empty %}
-          <tr><td colspan="5" class="text-center text-secondary small py-4">ไม่พบร้านค้า</td></tr>
+          <tr><td colspan="5" class="text-center text-secondary small py-4">{% translate "ไม่พบร้านค้า" %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

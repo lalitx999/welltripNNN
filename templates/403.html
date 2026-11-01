@@ -1,17 +1,18 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ไม่มีสิทธิ์เข้าถึงหน้านี้ - WellTrip{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ไม่มีสิทธิ์เข้าถึงหน้านี้ - WellTrip" %}{% endblock %}
 
 {% block content %}
 <section class="container-xl py-5">
   <div class="wt-card wt-empty mx-auto py-5 px-4" style="max-width: 34rem;">
     <span class="wt-stat-icon mb-3" style="--c:#c92a2a;--bg:#fff0f0;width:4.5rem;height:4.5rem;border-radius:1.5rem"><i data-lucide="shield-alert" style="width:2rem;height:2rem"></i></span>
     <div class="wt-eyebrow justify-content-center mb-1">403 Access denied</div>
-    <h1 class="h3 fw-bold">ไม่มีสิทธิ์เข้าถึงหน้านี้</h1>
-    <p class="text-secondary mb-4">คุณไม่มีสิทธิ์เข้าถึงหน้านี้ ระบบได้บันทึกการเข้าถึงไว้เพื่อความปลอดภัย</p>
+    <h1 class="h3 fw-bold">{% translate "ไม่มีสิทธิ์เข้าถึงหน้านี้" %}</h1>
+    <p class="text-secondary mb-4">{% translate "คุณไม่มีสิทธิ์เข้าถึงหน้านี้ ระบบได้บันทึกการเข้าถึงไว้เพื่อความปลอดภัย" %}</p>
     <div class="d-flex flex-wrap justify-content-center gap-2">
-      <a href="{% url 'core:landing' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="home" class="me-1"></i>กลับหน้าแรก</a>
-      <a href="{% url 'accounts:login' %}" class="btn btn-outline-ink rounded-pill px-4"><i data-lucide="log-in" class="me-1"></i>เข้าสู่ระบบ</a>
+      <a href="{% url 'core:landing' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="home" class="me-1"></i>{% translate "กลับหน้าแรก" %}</a>
+      <a href="{% url 'accounts:login' %}" class="btn btn-outline-ink rounded-pill px-4"><i data-lucide="log-in" class="me-1"></i>{% translate "เข้าสู่ระบบ" %}</a>
     </div>
   </div>
 </section>

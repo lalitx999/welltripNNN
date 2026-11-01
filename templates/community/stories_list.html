@@ -1,16 +1,17 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}เรื่องเล่าชุมชนและภูมิปัญญาท้องถิ่นศรีสะเกษ - WellTrip Sisaket{% endblock %}
+{% block title %}{% translate "เรื่องเล่าชุมชนและภูมิปัญญาท้องถิ่นศรีสะเกษ - WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head">
   <div class="container-xl">
     <span class="wt-eyebrow"><i data-lucide="book-open"></i>Wisdom &amp; cultural stories</span>
-    <h1 class="mb-2">เรื่องเล่าวิถีชุมชนศรีสะเกษ</h1>
-    <p class="text-secondary mb-4" style="max-width: 40rem;">ภูมิปัญญาผ้าย้อมมะเกลือ เกษตรอินทรีย์ดินภูเขาไฟ และเทศกาลประเพณีของ 4 ชนเผ่า</p>
+    <h1 class="mb-2">{% translate "เรื่องเล่าวิถีชุมชนศรีสะเกษ" %}</h1>
+    <p class="text-secondary mb-4" style="max-width: 40rem;">{% translate "ภูมิปัญญาผ้าย้อมมะเกลือ เกษตรอินทรีย์ดินภูเขาไฟ และเทศกาลประเพณีของ 4 ชนเผ่า" %}</p>
     <div class="wt-pills">
-      <a href="{% url 'community:stories_list' %}" class="wt-pill {% if selected_kind == 'ALL' %}active{% endif %}">ทั้งหมด</a>
+      <a href="{% url 'community:stories_list' %}" class="wt-pill {% if selected_kind == 'ALL' %}active{% endif %}">{% translate "ทั้งหมด" %}</a>
       {% for code, label in kinds %}
         <a href="?kind={{ code }}" class="wt-pill {% if selected_kind == code %}active{% endif %}">{{ label }}</a>
       {% endfor %}
@@ -32,7 +33,7 @@
               <h2 class="h6 fw-bold line-clamp-2"><a href="{% url 'community:story_detail' story.id %}" class="stretched-link">{{ story.title }}</a></h2>
               <p class="small text-secondary mb-0 line-clamp-2">{{ story.summary|default:story.body|striptags|truncatewords:24 }}</p>
             </div>
-            <div class="card-footer bg-white border-0 pt-0 pb-3 small fw-semibold text-green">อ่านต่อ <i data-lucide="arrow-right"></i></div>
+            <div class="card-footer bg-white border-0 pt-0 pb-3 small fw-semibold text-green">{% translate "อ่านต่อ" %} <i data-lucide="arrow-right"></i></div>
           </article>
         </div>
       {% endfor %}
@@ -40,8 +41,8 @@
   {% else %}
     <div class="wt-card wt-empty">
       <span class="wt-icon-pill"><i data-lucide="book-open"></i></span>
-      <div class="fw-bold">ยังไม่มีเรื่องเล่าในหมวดนี้</div>
-      <small class="text-secondary">ทีมงานกำลังเตรียมเรื่องราวจากชุมชน</small>
+      <div class="fw-bold">{% translate "ยังไม่มีเรื่องเล่าในหมวดนี้" %}</div>
+      <small class="text-secondary">{% translate "ทีมงานกำลังเตรียมเรื่องราวจากชุมชน" %}</small>
     </div>
   {% endif %}
 </div>

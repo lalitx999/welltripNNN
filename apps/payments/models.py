@@ -5,6 +5,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q, UniqueConstraint
 from apps.core.services.media import secure_upload_path
+from django.utils.translation import gettext_lazy
 
 
 def slip_image_path(instance, filename):
@@ -12,20 +13,20 @@ def slip_image_path(instance, filename):
 
 
 class PaymentChannel(models.TextChoices):
-    BANK_TRANSFER = "BANK_TRANSFER", "โอนเงินผ่านบัญชีธนาคาร (Slip Check)"
+    BANK_TRANSFER = "BANK_TRANSFER", gettext_lazy("โอนเงินผ่านบัญชีธนาคาร (Slip Check)")
 
 
 class PaymentStatus(models.TextChoices):
-    PENDING = "PENDING", "รอการตรวจสอบสลิป (Pending)"
-    SUCCESS = "SUCCESS", "ชำระเงินสำเร็จ (Success)"
-    FAILED = "FAILED", "การชำระเงินไม่ถูกต้อง (Failed)"
-    EXPIRED = "EXPIRED", "หมดเวลาชำระเงิน (Expired)"
+    PENDING = "PENDING", gettext_lazy("รอการตรวจสอบสลิป (Pending)")
+    SUCCESS = "SUCCESS", gettext_lazy("ชำระเงินสำเร็จ (Success)")
+    FAILED = "FAILED", gettext_lazy("การชำระเงินไม่ถูกต้อง (Failed)")
+    EXPIRED = "EXPIRED", gettext_lazy("หมดเวลาชำระเงิน (Expired)")
 
 
 class SlipVerificationStatus(models.TextChoices):
-    PENDING_CHECK = "PENDING_CHECK", "รอเจ้าหน้าที่ตรวจสอบ (Pending Check)"
-    VERIFIED = "VERIFIED", "ตรวจสอบผ่านแล้ว (Verified)"
-    REJECTED = "REJECTED", "ปฏิเสธ / สลิปไม่ถูกต้อง (Rejected)"
+    PENDING_CHECK = "PENDING_CHECK", gettext_lazy("รอเจ้าหน้าที่ตรวจสอบ (Pending Check)")
+    VERIFIED = "VERIFIED", gettext_lazy("ตรวจสอบผ่านแล้ว (Verified)")
+    REJECTED = "REJECTED", gettext_lazy("ปฏิเสธ / สลิปไม่ถูกต้อง (Rejected)")
 
 
 class Payment(models.Model):
@@ -95,7 +96,7 @@ class PaymentSlip(models.Model):
         blank=True,
         null=True,
         db_index=True,
-        help_text="รหัสอ้างอิงธุรกรรมธนาคารจากสลิป (Bank Transfer Ref Number)",
+        help_text=gettext_lazy("รหัสอ้างอิงธุรกรรมธนาคารจากสลิป (Bank Transfer Ref Number)"),
     )
     provider_response_log = models.JSONField(default=dict, blank=True)
     verification_status = models.CharField(

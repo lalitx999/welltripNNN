@@ -14,6 +14,7 @@ from datetime import datetime
 from PIL import Image
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils.translation import gettext as _
 
 ALLOWED_IMAGE_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
 ALLOWED_DOC_EXTENSIONS = {'pdf'}
@@ -55,16 +56,16 @@ def validate_magic_bytes(file_obj, ext):
 
     if ext in ('jpg', 'jpeg'):
         if not header.startswith(MAGIC_BYTES['jpg']):
-            raise ValidationError("รูปแบบไฟล์ JPEG ไม่ถูกต้อง (Magic Byte Mismatch)")
+            raise ValidationError(_("รูปแบบไฟล์ JPEG ไม่ถูกต้อง (Magic Byte Mismatch)"))
     elif ext == 'png':
         if not header.startswith(MAGIC_BYTES['png']):
-            raise ValidationError("รูปแบบไฟล์ PNG ไม่ถูกต้อง (Magic Byte Mismatch)")
+            raise ValidationError(_("รูปแบบไฟล์ PNG ไม่ถูกต้อง (Magic Byte Mismatch)"))
     elif ext == 'webp':
         if not (header.startswith(b'RIFF') and b'WEBP' in header[:16]):
-            raise ValidationError("รูปแบบไฟล์ WEBP ไม่ถูกต้อง (Magic Byte Mismatch)")
+            raise ValidationError(_("รูปแบบไฟล์ WEBP ไม่ถูกต้อง (Magic Byte Mismatch)"))
     elif ext == 'pdf':
         if not header.startswith(MAGIC_BYTES['pdf']):
-            raise ValidationError("รูปแบบไฟล์ PDF ไม่ถูกต้อง (Magic Byte Mismatch)")
+            raise ValidationError(_("รูปแบบไฟล์ PDF ไม่ถูกต้อง (Magic Byte Mismatch)"))
 
 
 def sanitize_and_strip_image(uploaded_file):
@@ -77,10 +78,10 @@ def sanitize_and_strip_image(uploaded_file):
     ext = uploaded_file.name.split('.')[-1].lower() if '.' in uploaded_file.name else 'jpg'
 
     if ext not in ALLOWED_IMAGE_EXTENSIONS:
-        raise ValidationError(f"นามสกุลไฟล์ไม่ได้รับอนุญาต (อนุญาตเฉพาะ: {', '.join(ALLOWED_IMAGE_EXTENSIONS)})")
+        raise ValidationError(_("นามสกุลไฟล์ไม่ได้รับอนุญาต (อนุญาตเฉพาะ: {join})").format(join=', '.join(ALLOWED_IMAGE_EXTENSIONS)))
 
     if uploaded_file.size > MAX_IMAGE_SIZE:
-        raise ValidationError(f"ขนาดไฟล์รูปภาพเกินกำหนด (สูงสุด {MAX_IMAGE_SIZE // (1024*1024)}MB)")
+        raise ValidationError(_("ขนาดไฟล์รูปภาพเกินกำหนด (สูงสุด {value}MB)").format(value=MAX_IMAGE_SIZE // (1024*1024)))
 
     # Validate Magic Bytes first
     validate_magic_bytes(uploaded_file, ext)
@@ -128,4 +129,4 @@ def sanitize_and_strip_image(uploaded_file):
             charset=None,
         )
     except Exception as e:
-        raise ValidationError(f"ไม่สามารถประมวลผลรูปภาพได้ รูปภาพอาจชำรุดหรือมีรูปแบบผิดปกติ: {str(e)}")
+        raise ValidationError(_("ไม่สามารถประมวลผลรูปภาพได้ รูปภาพอาจชำรุดหรือมีรูปแบบผิดปกติ: {str}").format(str=str(e)))

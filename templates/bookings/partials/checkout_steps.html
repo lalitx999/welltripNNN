@@ -1,5 +1,6 @@
-<ol class="list-unstyled d-flex gap-2 gap-sm-4 small mb-3" aria-label="ขั้นตอนการสั่งซื้อ">
-  <li class="d-flex align-items-center gap-2 {% if step >= 1 %}fw-bold text-green{% else %}text-secondary{% endif %}"><span class="wt-num {% if step < 1 %}bg-secondary{% endif %}">1</span>ตะกร้า</li>
-  <li class="d-flex align-items-center gap-2 {% if step >= 2 %}fw-bold text-green{% else %}text-secondary{% endif %}"><span class="wt-num {% if step < 2 %}bg-secondary bg-opacity-50{% endif %}">2</span>ตรวจสอบ</li>
-  <li class="d-flex align-items-center gap-2 {% if step >= 3 %}fw-bold text-green{% else %}text-secondary{% endif %}"><span class="wt-num {% if step < 3 %}bg-secondary bg-opacity-50{% endif %}">3</span>ชำระเงิน</li>
+{% load i18n %}
+<ol class="list-unstyled d-flex gap-2 gap-sm-4 small mb-3" aria-label="{% translate 'ขั้นตอนการสั่งซื้อ' %}">
+  <li class="d-flex align-items-center gap-2 {% if step >= 1 %}fw-bold text-green{% else %}text-secondary{% endif %}"><span class="wt-num {% if step < 1 %}bg-secondary{% endif %}">1</span>{% translate "ตะกร้า" %}</li>
+  <li class="d-flex align-items-center gap-2 {% if step >= 2 %}fw-bold text-green{% else %}text-secondary{% endif %}"><span class="wt-num {% if step < 2 %}bg-secondary bg-opacity-50{% endif %}">2</span>{% translate "ตรวจสอบ" %}</li>
+  <li class="d-flex align-items-center gap-2 {% if step >= 3 %}fw-bold text-green{% else %}text-secondary{% endif %}"><span class="wt-num {% if step < 3 %}bg-secondary bg-opacity-50{% endif %}">3</span>{% translate "ชำระเงิน" %}</li>
 </ol>

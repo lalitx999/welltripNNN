@@ -1,6 +1,7 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}AI Wellness Assistant - วิเคราะห์สุขภาพและจัดทริปเฉพาะบุคคล | WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "AI Wellness Assistant - วิเคราะห์สุขภาพและจัดทริปเฉพาะบุคคล | WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <div x-data="{
@@ -22,18 +23,18 @@
        },
        get bmiBadge() {
          const b = parseFloat(this.bmi);
-         if (!b) return { label: 'กรอกน้ำหนักและส่วนสูง', cls: 'bg-light text-secondary' };
-         if (b < 18.5) return { label: 'น้ำหนักน้อยกว่าเกณฑ์', cls: 'bg-info-subtle text-info-emphasis' };
-         if (b < 23.0) return { label: 'สมส่วนตามเกณฑ์เอเชีย', cls: 'bg-success-subtle text-success-emphasis' };
-         if (b < 25.0) return { label: 'น้ำหนักเกินเกณฑ์', cls: 'bg-warning-subtle text-warning-emphasis' };
-         return { label: 'ภาวะอ้วน ควรควบคุม', cls: 'bg-danger-subtle text-danger-emphasis' };
+         if (!b) return { label: '{{ _("กรอกน้ำหนักและส่วนสูง")|escapejs }}', cls: 'bg-light text-secondary' };
+         if (b < 18.5) return { label: '{{ _("น้ำหนักน้อยกว่าเกณฑ์")|escapejs }}', cls: 'bg-info-subtle text-info-emphasis' };
+         if (b < 23.0) return { label: '{{ _("สมส่วนตามเกณฑ์เอเชีย")|escapejs }}', cls: 'bg-success-subtle text-success-emphasis' };
+         if (b < 25.0) return { label: '{{ _("น้ำหนักเกินเกณฑ์")|escapejs }}', cls: 'bg-warning-subtle text-warning-emphasis' };
+         return { label: '{{ _("ภาวะอ้วน ควรควบคุม")|escapejs }}', cls: 'bg-danger-subtle text-danger-emphasis' };
        }
      }">
   <section class="wt-page-head">
     <div class="container-xl">
       <span class="wt-eyebrow"><i data-lucide="heart-pulse"></i>AI wellness curator</span>
-      <h1 class="mb-2">วางแผนทริปสุขภาวะศรีสะเกษ<br class="d-none d-sm-inline"> ด้วยการประเมินสุขภาพ</h1>
-      <p class="text-secondary mb-0" style="max-width: 42rem;">คำนวณดัชนีมวลกาย (BMI) อัตราการเผาผลาญ (BMR) แล้วจับคู่ที่พัก อาหารสุขภาพ และสปาที่เหมาะกับคุณ</p>
+      <h1 class="mb-2">{% translate "วางแผนทริปสุขภาวะศรีสะเกษ" %}<br class="d-none d-sm-inline"> {% translate "ด้วยการประเมินสุขภาพ" %}</h1>
+      <p class="text-secondary mb-0" style="max-width: 42rem;">{% translate "คำนวณดัชนีมวลกาย (BMI) อัตราการเผาผลาญ (BMR) แล้วจับคู่ที่พัก อาหารสุขภาพ และสปาที่เหมาะกับคุณ" %}</p>
     </div>
   </section>
 
@@ -41,7 +42,7 @@
     <div class="row g-4">
       <div class="col-lg-5">
         <div class="wt-card p-4">
-          <h2 class="h5 fw-bold d-flex align-items-center gap-2 mb-3"><i data-lucide="clipboard-list" class="text-green"></i>ข้อมูลร่างกายและเป้าหมาย</h2>
+          <h2 class="h5 fw-bold d-flex align-items-center gap-2 mb-3"><i data-lucide="clipboard-list" class="text-green"></i>{% translate "ข้อมูลร่างกายและเป้าหมาย" %}</h2>
 
           <div class="bg-mint rounded-4 p-3 mb-3">
             <div class="row text-center g-2">
@@ -54,33 +55,33 @@
           <form hx-post="{% url 'ai_recommendations:assess_htmx' %}" hx-target="#ai-results-container" hx-indicator="#ai-spinner" class="d-grid gap-3">
             {% csrf_token %}
             <div class="row g-2">
-              <div class="col-6"><label class="form-label small fw-semibold" for="weight_kg">น้ำหนัก (กก.)</label><input type="number" id="weight_kg" name="weight_kg" x-model.number="weight" min="30" max="250" step="0.5" required class="form-control" placeholder="เช่น 60"></div>
-              <div class="col-6"><label class="form-label small fw-semibold" for="height_cm">ส่วนสูง (ซม.)</label><input type="number" id="height_cm" name="height_cm" x-model.number="height" min="100" max="230" required class="form-control" placeholder="เช่น 165"></div>
-              <div class="col-6"><label class="form-label small fw-semibold" for="age">อายุ (ปี)</label><input type="number" id="age" name="age" x-model.number="age" min="12" max="100" required class="form-control" placeholder="เช่น 35"></div>
-              <div class="col-6"><label class="form-label small fw-semibold" for="gender">เพศ</label>
-                <select id="gender" name="gender" x-model="gender" class="form-select"><option value="female">หญิง</option><option value="male">ชาย</option><option value="other">ไม่ระบุ</option></select>
+              <div class="col-6"><label class="form-label small fw-semibold" for="weight_kg">{% translate "น้ำหนัก (กก.)" %}</label><input type="number" id="weight_kg" name="weight_kg" x-model.number="weight" min="30" max="250" step="0.5" required class="form-control" placeholder="{% translate 'เช่น 60' %}"></div>
+              <div class="col-6"><label class="form-label small fw-semibold" for="height_cm">{% translate "ส่วนสูง (ซม.)" %}</label><input type="number" id="height_cm" name="height_cm" x-model.number="height" min="100" max="230" required class="form-control" placeholder="{% translate 'เช่น 165' %}"></div>
+              <div class="col-6"><label class="form-label small fw-semibold" for="age">{% translate "อายุ (ปี)" %}</label><input type="number" id="age" name="age" x-model.number="age" min="12" max="100" required class="form-control" placeholder="{% translate 'เช่น 35' %}"></div>
+              <div class="col-6"><label class="form-label small fw-semibold" for="gender">{% translate "เพศ" %}</label>
+                <select id="gender" name="gender" x-model="gender" class="form-select"><option value="female">{% translate "หญิง" %}</option><option value="male">{% translate "ชาย" %}</option><option value="other">{% translate "ไม่ระบุ" %}</option></select>
               </div>
             </div>
 
             <div>
-              <div class="form-label small fw-semibold">เป้าหมายหลัก</div>
+              <div class="form-label small fw-semibold">{% translate "เป้าหมายหลัก" %}</div>
               <input type="hidden" name="health_goal" :value="selectedGoal">
               <div class="row g-2">
-                <div class="col-6"><button type="button" class="btn w-100 rounded-4 small" :class="selectedGoal === 'STRESS_RELIEF' ? 'btn-green' : 'btn-outline-ink'" @click="selectedGoal = 'STRESS_RELIEF'">🌿 คลายเครียด</button></div>
-                <div class="col-6"><button type="button" class="btn w-100 rounded-4 small" :class="selectedGoal === 'DETOX' ? 'btn-green' : 'btn-outline-ink'" @click="selectedGoal = 'DETOX'">✨ ดีท็อกซ์</button></div>
-                <div class="col-6"><button type="button" class="btn w-100 rounded-4 small" :class="selectedGoal === 'WEIGHT_MANAGEMENT' ? 'btn-green' : 'btn-outline-ink'" @click="selectedGoal = 'WEIGHT_MANAGEMENT'">🏃 ควบคุมน้ำหนัก</button></div>
-                <div class="col-6"><button type="button" class="btn w-100 rounded-4 small" :class="selectedGoal === 'SENIOR_WELLNESS' ? 'btn-green' : 'btn-outline-ink'" @click="selectedGoal = 'SENIOR_WELLNESS'">🍵 ผู้สูงอายุ</button></div>
+                <div class="col-6"><button type="button" class="btn w-100 rounded-4 small" :class="selectedGoal === 'STRESS_RELIEF' ? 'btn-green' : 'btn-outline-ink'" @click="selectedGoal = 'STRESS_RELIEF'">{% translate "🌿 คลายเครียด" %}</button></div>
+                <div class="col-6"><button type="button" class="btn w-100 rounded-4 small" :class="selectedGoal === 'DETOX' ? 'btn-green' : 'btn-outline-ink'" @click="selectedGoal = 'DETOX'">{% translate "✨ ดีท็อกซ์" %}</button></div>
+                <div class="col-6"><button type="button" class="btn w-100 rounded-4 small" :class="selectedGoal === 'WEIGHT_MANAGEMENT' ? 'btn-green' : 'btn-outline-ink'" @click="selectedGoal = 'WEIGHT_MANAGEMENT'">{% translate "🏃 ควบคุมน้ำหนัก" %}</button></div>
+                <div class="col-6"><button type="button" class="btn w-100 rounded-4 small" :class="selectedGoal === 'SENIOR_WELLNESS' ? 'btn-green' : 'btn-outline-ink'" @click="selectedGoal = 'SENIOR_WELLNESS'">{% translate "🍵 ผู้สูงอายุ" %}</button></div>
               </div>
             </div>
 
             <div>
-              <div class="form-label small fw-semibold">ข้อจำกัดด้านอาหาร</div>
-              <div class="form-check"><input class="form-check-input" type="checkbox" name="dietary_restrictions" value="LOW_SODIUM" id="diet1"><label class="form-check-label small" for="diet1">โซเดียมต่ำ</label></div>
-              <div class="form-check"><input class="form-check-input" type="checkbox" name="dietary_restrictions" value="ORGANIC" id="diet2"><label class="form-check-label small" for="diet2">เกษตรอินทรีย์</label></div>
-              <div class="form-check"><input class="form-check-input" type="checkbox" name="dietary_restrictions" value="VEGAN" id="diet3"><label class="form-check-label small" for="diet3">มังสวิรัติ / เจ</label></div>
+              <div class="form-label small fw-semibold">{% translate "ข้อจำกัดด้านอาหาร" %}</div>
+              <div class="form-check"><input class="form-check-input" type="checkbox" name="dietary_restrictions" value="LOW_SODIUM" id="diet1"><label class="form-check-label small" for="diet1">{% translate "โซเดียมต่ำ" %}</label></div>
+              <div class="form-check"><input class="form-check-input" type="checkbox" name="dietary_restrictions" value="ORGANIC" id="diet2"><label class="form-check-label small" for="diet2">{% translate "เกษตรอินทรีย์" %}</label></div>
+              <div class="form-check"><input class="form-check-input" type="checkbox" name="dietary_restrictions" value="VEGAN" id="diet3"><label class="form-check-label small" for="diet3">{% translate "มังสวิรัติ / เจ" %}</label></div>
             </div>
 
-            <button type="submit" class="btn btn-gold btn-lg rounded-pill"><i data-lucide="sparkles" class="me-1"></i>ให้ AI วิเคราะห์และจัดทริป</button>
+            <button type="submit" class="btn btn-gold btn-lg rounded-pill"><i data-lucide="sparkles" class="me-1"></i>{% translate "ให้ AI วิเคราะห์และจัดทริป" %}</button>
           </form>
         </div>
       </div>
@@ -88,14 +89,14 @@
       <div class="col-lg-7">
         <div id="ai-spinner" class="wt-loading-panel wt-card wt-empty mb-3">
           <div class="spinner-border text-success mb-3" role="status"></div>
-          <div class="fw-bold">AI กำลังวิเคราะห์...</div>
-          <small class="text-secondary">กำลังค้นหาที่พัก เมนูอาหาร และสปาที่ตรงกับเป้าหมายของคุณ</small>
+          <div class="fw-bold">{% translate "AI กำลังวิเคราะห์..." %}</div>
+          <small class="text-secondary">{% translate "กำลังค้นหาที่พัก เมนูอาหาร และสปาที่ตรงกับเป้าหมายของคุณ" %}</small>
         </div>
         <div id="ai-results-container">
           <div class="wt-card wt-empty h-100">
             <span class="wt-icon-pill"><i data-lucide="sparkles"></i></span>
-            <div class="fw-bold">รอข้อมูลของคุณ</div>
-            <p class="small text-secondary mb-0">กรอกน้ำหนัก ส่วนสูง และเลือกเป้าหมาย แล้วกด <strong>"ให้ AI วิเคราะห์และจัดทริป"</strong></p>
+            <div class="fw-bold">{% translate "รอข้อมูลของคุณ" %}</div>
+            <p class="small text-secondary mb-0">{% translate "กรอกน้ำหนัก ส่วนสูง และเลือกเป้าหมาย แล้วกด" %} <strong>{% translate '"ให้ AI วิเคราะห์และจัดทริป"' %}</strong></p>
           </div>
         </div>
       </div>

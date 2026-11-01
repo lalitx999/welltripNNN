@@ -1,47 +1,48 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ข้อตกลงการใช้งานและนโยบายความเป็นส่วนตัว (PDPA) — WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ข้อตกลงการใช้งานและนโยบายความเป็นส่วนตัว (PDPA) — WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head">
   <div class="container-xl" style="max-width: 52rem;">
     <span class="wt-eyebrow"><i data-lucide="shield-check"></i>Legal &amp; PDPA</span>
-    <h1 class="mb-2">ข้อตกลงการใช้งานและนโยบายความเป็นส่วนตัว</h1>
-    <p class="text-secondary mb-0">อัปเดตล่าสุด: ตุลาคม 2569 · แพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะจังหวัดศรีสะเกษ</p>
+    <h1 class="mb-2">{% translate "ข้อตกลงการใช้งานและนโยบายความเป็นส่วนตัว" %}</h1>
+    <p class="text-secondary mb-0">{% translate "อัปเดตล่าสุด: ตุลาคม 2569 · แพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะจังหวัดศรีสะเกษ" %}</p>
   </div>
 </section>
 
 <div class="container-xl pb-5" style="max-width: 52rem;">
   <div class="wt-card p-4 p-md-5 d-grid gap-4 text-secondary">
     <section>
-      <h2 class="h5 fw-bold text-ink">1. บทนำและวัตถุประสงค์</h2>
-      <p class="mb-0">แพลตฟอร์ม WellTrip พัฒนาขึ้นภายใต้โครงการวิจัยนวัตกรรมการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาชุมชน มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) เพื่อส่งเสริมการท่องเที่ยวชุมชน กระจายรายได้สู่ผู้ประกอบการท้องถิ่น และสนับสนุนการดูแลสุขภาพแบบองค์รวม</p>
+      <h2 class="h5 fw-bold text-ink">{% translate "1. บทนำและวัตถุประสงค์" %}</h2>
+      <p class="mb-0">{% translate "แพลตฟอร์ม WellTrip พัฒนาขึ้นภายใต้โครงการวิจัยนวัตกรรมการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาชุมชน มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) เพื่อส่งเสริมการท่องเที่ยวชุมชน กระจายรายได้สู่ผู้ประกอบการท้องถิ่น และสนับสนุนการดูแลสุขภาพแบบองค์รวม" %}</p>
     </section>
     <section>
-      <h2 class="h5 fw-bold text-ink">2. การเก็บรวบรวมข้อมูลส่วนบุคคลตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)</h2>
-      <p>เรายึดหลักการจำกัดข้อมูลให้เพียงพอต่อความจำเป็น (Data Minimization):</p>
+      <h2 class="h5 fw-bold text-ink">{% translate "2. การเก็บรวบรวมข้อมูลส่วนบุคคลตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)" %}</h2>
+      <p>{% translate "เรายึดหลักการจำกัดข้อมูลให้เพียงพอต่อความจำเป็น (Data Minimization):" %}</p>
       <ul class="d-grid gap-2 mb-0">
-        <li><strong class="text-ink">ข้อมูลบัญชีผู้ใช้:</strong> ชื่อ นามสกุล เบอร์โทรศัพท์ และอีเมล สำหรับการติดต่อ ยืนยันการจอง และการชำระเงิน</li>
-        <li><strong class="text-ink">ข้อมูลตำแหน่งที่ตั้ง (Coarse GPS):</strong> บันทึกเฉพาะเมื่อได้รับความยินยอมเท่านั้น โดยปัดทศนิยมพิกัดเหลือ 2 ตำแหน่ง (~1.1 กิโลเมตร) และใช้เฉพาะคำนวณระยะทางสู่สถานที่ท่องเที่ยวในจังหวัดศรีสะเกษ</li>
-        <li><strong class="text-ink">รหัสผ่าน:</strong> เข้ารหัสทางเดียวด้วยมาตรฐานความปลอดภัยสากล ไม่มีการจัดเก็บรหัสผ่านเป็นข้อความธรรมดา</li>
+        <li><strong class="text-ink">{% translate "ข้อมูลบัญชีผู้ใช้:" %}</strong> {% translate "ชื่อ นามสกุล เบอร์โทรศัพท์ และอีเมล สำหรับการติดต่อ ยืนยันการจอง และการชำระเงิน" %}</li>
+        <li><strong class="text-ink">{% translate "ข้อมูลตำแหน่งที่ตั้ง (Coarse GPS):" %}</strong> {% translate "บันทึกเฉพาะเมื่อได้รับความยินยอมเท่านั้น โดยปัดทศนิยมพิกัดเหลือ 2 ตำแหน่ง (~1.1 กิโลเมตร) และใช้เฉพาะคำนวณระยะทางสู่สถานที่ท่องเที่ยวในจังหวัดศรีสะเกษ" %}</li>
+        <li><strong class="text-ink">{% translate "รหัสผ่าน:" %}</strong> {% translate "เข้ารหัสทางเดียวด้วยมาตรฐานความปลอดภัยสากล ไม่มีการจัดเก็บรหัสผ่านเป็นข้อความธรรมดา" %}</li>
       </ul>
     </section>
     <section>
-      <h2 class="h5 fw-bold text-ink">3. สิทธิ์ของเจ้าของข้อมูล</h2>
-      <p class="mb-0">ท่านมีสิทธิ์ตามกฎหมาย PDPA ทุกประการ รวมถึง<strong class="text-ink">สิทธิ์ในการขอลบข้อมูลตำแหน่ง</strong> โดยไปที่หน้า <a href="{% url 'community:my_location_events' %}" class="text-green fw-semibold">ตั้งค่าความเป็นส่วนตัว (PDPA)</a> เพื่อลบประวัติตำแหน่งทั้งหมดได้ทันที</p>
+      <h2 class="h5 fw-bold text-ink">{% translate "3. สิทธิ์ของเจ้าของข้อมูล" %}</h2>
+      <p class="mb-0">{% translate "ท่านมีสิทธิ์ตามกฎหมาย PDPA ทุกประการ รวมถึง" %}<strong class="text-ink">{% translate "สิทธิ์ในการขอลบข้อมูลตำแหน่ง" %}</strong> {% translate "โดยไปที่หน้า" %} <a href="{% url 'community:my_location_events' %}" class="text-green fw-semibold">{% translate "ตั้งค่าความเป็นส่วนตัว (PDPA)" %}</a> {% translate "เพื่อลบประวัติตำแหน่งทั้งหมดได้ทันที" %}</p>
     </section>
     <section>
-      <h2 class="h5 fw-bold text-ink">4. การชำระเงินและการตรวจสอบสลิป</h2>
-      <p class="mb-0">การชำระเงินดำเนินการโดยการโอนเงินและแนบสลิป ระบบและผู้ดูแลจะตรวจสอบยอดเงินและเวลาโอน ไฟล์สลิปเปิดดูได้เฉพาะเจ้าของรายการและผู้ดูแลระบบ และไม่มีการเผยแพร่ข้อมูลทางการเงินของท่านสู่สาธารณะ</p>
+      <h2 class="h5 fw-bold text-ink">{% translate "4. การชำระเงินและการตรวจสอบสลิป" %}</h2>
+      <p class="mb-0">{% translate "การชำระเงินดำเนินการโดยการโอนเงินและแนบสลิป ระบบและผู้ดูแลจะตรวจสอบยอดเงินและเวลาโอน ไฟล์สลิปเปิดดูได้เฉพาะเจ้าของรายการและผู้ดูแลระบบ และไม่มีการเผยแพร่ข้อมูลทางการเงินของท่านสู่สาธารณะ" %}</p>
     </section>
     <section>
-      <h2 class="h5 fw-bold text-ink">5. ช่องทางการติดต่อ</h2>
-      <p class="mb-0">หากมีข้อสงสัยเกี่ยวกับนโยบายความเป็นส่วนตัวหรือต้องการใช้สิทธิ์ตามกฎหมาย PDPA ติดต่อ <strong class="text-ink">ศูนย์ประสานงาน WellTrip Sisaket</strong><br>อีเมล: support@welltripthailand.com · โทร: 045-962-455</p>
+      <h2 class="h5 fw-bold text-ink">{% translate "5. ช่องทางการติดต่อ" %}</h2>
+      <p class="mb-0">{% translate "หากมีข้อสงสัยเกี่ยวกับนโยบายความเป็นส่วนตัวหรือต้องการใช้สิทธิ์ตามกฎหมาย PDPA ติดต่อ" %} <strong class="text-ink">{% translate "ศูนย์ประสานงาน WellTrip Sisaket" %}</strong><br>{% translate "อีเมล: support@welltripthailand.com · โทร: 045-962-455" %}</p>
     </section>
   </div>
   <div class="d-flex flex-wrap gap-2 mt-4">
-    <a href="{% url 'community:my_location_events' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="settings" class="me-1"></i>ตั้งค่าความเป็นส่วนตัว</a>
-    <a href="{% url 'core:landing' %}" class="btn btn-outline-ink rounded-pill px-4">กลับหน้าแรก</a>
+    <a href="{% url 'community:my_location_events' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="settings" class="me-1"></i>{% translate "ตั้งค่าความเป็นส่วนตัว" %}</a>
+    <a href="{% url 'core:landing' %}" class="btn btn-outline-ink rounded-pill px-4">{% translate "กลับหน้าแรก" %}</a>
   </div>
 </div>
 {% endblock %}

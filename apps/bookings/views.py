@@ -13,6 +13,7 @@ from apps.community.models import Coupon
 from apps.bookings.services.checkout import process_checkout, StockUnavailableError
 from apps.payments.selectors.slip_selector import slip_status_context
 from apps.bookings.services.pricing import cart_line_total, resolve_cart_item
+from django.utils.translation import gettext as _, gettext_lazy
 
 
 def get_cart(request):
@@ -26,7 +27,7 @@ def save_cart(request, cart):
     request.session.modified = True
 
 
-LEGACY_PLACEHOLDER_ADDRESS = "123 หมู่ 4 ต.เมืองใต้"
+LEGACY_PLACEHOLDER_ADDRESS = gettext_lazy("123 หมู่ 4 ต.เมืองใต้")
 
 
 def get_shipping_addresses(request):
@@ -81,20 +82,20 @@ def calculate_cart_totals(request, cart):
 
     shipping_setting = ShippingSetting.get_settings()
     shipping_fee = Decimal("0.00")
-    shipping_status_text = "ไม่มีค่าจัดส่ง"
+    shipping_status_text = _("ไม่มีค่าจัดส่ง")
 
     if has_physical_items:
         if shipping_setting.is_free_shipping_enabled:
             shipping_fee = Decimal("0.00")
-            shipping_status_text = "ฟรี (โปรโมชันส่งฟรีทั้งระบบ)"
+            shipping_status_text = _("ฟรี (โปรโมชันส่งฟรีทั้งระบบ)")
         elif otop_subtotal >= shipping_setting.free_shipping_min_order:
             shipping_fee = Decimal("0.00")
-            shipping_status_text = f"ฟรี (ช้อปครบ ฿{shipping_setting.free_shipping_min_order:,.0f})"
+            shipping_status_text = _("ฟรี (ช้อปครบ ฿{free_shipping_min_order:,.0f})").format(free_shipping_min_order=shipping_setting.free_shipping_min_order)
         else:
             shipping_fee = shipping_setting.base_shipping_fee
             shipping_status_text = f"฿{shipping_fee:,.2f}"
     else:
-        shipping_status_text = "ไม่มีสินค้าต้องจัดส่ง (ที่พัก/บริการ)"
+        shipping_status_text = _("ไม่มีสินค้าต้องจัดส่ง (ที่พัก/บริการ)")
 
     # Coupon / Gift Voucher check
     applied_coupon_code = request.session.get('applied_coupon', '').strip().upper()
@@ -116,7 +117,7 @@ def calculate_cart_totals(request, cart):
         else:
             request.session['applied_coupon'] = ""
             request.session.modified = True
-            coupon_error = "ไม่พบคูปองส่วนลดนี้หรือคูปองถูกระงับแล้ว"
+            coupon_error = _("ไม่พบคูปองส่วนลดนี้หรือคูปองถูกระงับแล้ว")
 
     final_total = max(Decimal("0.00"), subtotal + shipping_fee - discount_amount)
 
@@ -206,19 +207,19 @@ def shipping_address_add_view(request):
     """Adds a new shipping address (strictly max 3)."""
     addresses = list(get_shipping_addresses(request))
     if len(addresses) >= 3:
-        messages.error(request, "สามารถบันทึกที่อยู่จัดส่งได้สูงสุด 3 รายการเท่านั้น")
+        messages.error(request, _("สามารถบันทึกที่อยู่จัดส่งได้สูงสุด 3 รายการเท่านั้น"))
         return redirect('bookings:cart')
 
     recipient_name = request.POST.get('recipient_name', '').strip()
     phone_number = request.POST.get('phone_number', '').strip()
     address_line = request.POST.get('address_line', '').strip()
-    district = request.POST.get('district', 'เมืองศรีสะเกษ').strip()
-    province = request.POST.get('province', 'ศรีสะเกษ').strip()
+    district = request.POST.get('district', _("เมืองศรีสะเกษ")).strip()
+    province = request.POST.get('province', _("ศรีสะเกษ")).strip()
     postal_code = request.POST.get('postal_code', '33000').strip()
-    label = request.POST.get('label', f'ที่อยู่จัดส่ง {len(addresses)+1}').strip()
+    label = request.POST.get('label', _("ที่อยู่จัดส่ง {value}").format(value=len(addresses)+1)).strip()
 
     if not recipient_name or not address_line or not phone_number:
-        messages.error(request, "กรุณากรอกข้อมูลชื่อผู้รับ เบอร์โทรศัพท์ และที่อยู่ให้ครบถ้วน")
+        messages.error(request, _("กรุณากรอกข้อมูลชื่อผู้รับ เบอร์โทรศัพท์ และที่อยู่ให้ครบถ้วน"))
         return redirect('bookings:cart')
 
     addresses.append({
@@ -233,7 +234,7 @@ def shipping_address_add_view(request):
     request.session['shipping_addresses'] = addresses
     request.session['selected_address_idx'] = len(addresses) - 1
     request.session.modified = True
-    messages.success(request, f"เพิ่มที่อยู่จัดส่ง '{label}' สำเร็จ")
+    messages.success(request, _("เพิ่มที่อยู่จัดส่ง '{label}' สำเร็จ").format(label=label))
     return redirect('bookings:cart')
 
 
@@ -246,7 +247,7 @@ def shipping_address_delete_view(request, index):
         request.session['shipping_addresses'] = addresses
         request.session['selected_address_idx'] = max(0, min(request.session.get('selected_address_idx', 0), len(addresses) - 1))
         request.session.modified = True
-        messages.success(request, f"ลบที่อยู่จัดส่ง '{removed.get('label', 'ที่อยู่')}' เรียบร้อยแล้ว")
+        messages.success(request, _("ลบที่อยู่จัดส่ง '{get}' เรียบร้อยแล้ว").format(get=removed.get('label', 'ที่อยู่')))
     return redirect('bookings:cart')
 
 
@@ -257,7 +258,7 @@ def shipping_address_select_view(request, index):
     if 0 <= index < len(addresses):
         request.session['selected_address_idx'] = index
         request.session.modified = True
-        messages.success(request, f"เลือกที่อยู่จัดส่ง: {addresses[index].get('recipient_name')}")
+        messages.success(request, _("เลือกที่อยู่จัดส่ง: {get}").format(get=addresses[index].get('recipient_name')))
     return redirect('bookings:cart')
 
 
@@ -303,7 +304,7 @@ def cart_add_view(request):
         })
 
     save_cart(request, cart)
-    messages.success(request, f"เพิ่ม '{resolved.title}' ลงตะกร้าเรียบร้อยแล้ว")
+    messages.success(request, _("เพิ่ม '{title}' ลงตะกร้าเรียบร้อยแล้ว").format(title=resolved.title))
     return redirect('bookings:cart')
 
 
@@ -314,7 +315,7 @@ def cart_remove_view(request, index):
     if 0 <= index < len(cart):
         removed = cart.pop(index)
         save_cart(request, cart)
-        messages.success(request, f"นำ '{removed.get('title')}' ออกจากตะกร้าแล้ว")
+        messages.success(request, _("นำ '{get}' ออกจากตะกร้าแล้ว").format(get=removed.get('title')))
 
     return redirect('bookings:cart')
 
@@ -353,15 +354,15 @@ def coupon_apply_view(request):
 
     if not code:
         if is_ajax:
-            return JsonResponse({"success": False, "message": "กรุณากรอกรหัสคูปอง"})
-        safe_add_message(messages.error, "กรุณากรอกรหัสคูปอง")
+            return JsonResponse({"success": False, "message": _("กรุณากรอกรหัสคูปอง")})
+        safe_add_message(messages.error, _("กรุณากรอกรหัสคูปอง"))
         return redirect('bookings:cart')
 
     coupon = Coupon.objects.filter(code=code, is_active=True).first()
     if not coupon:
         if is_ajax:
-            return JsonResponse({"success": False, "message": f"ไม่พบรหัสคูปอง '{code}' หรือคูปองหมดอายุแล้ว"})
-        safe_add_message(messages.error, f"ไม่พบรหัสคูปอง '{code}' หรือคูปองหมดอายุแล้ว")
+            return JsonResponse({"success": False, "message": _("ไม่พบรหัสคูปอง '{code}' หรือคูปองหมดอายุแล้ว").format(code=code)})
+        safe_add_message(messages.error, _("ไม่พบรหัสคูปอง '{code}' หรือคูปองหมดอายุแล้ว").format(code=code))
         return redirect('bookings:cart')
 
     is_valid, msg = coupon.is_valid_for(subtotal)
@@ -379,14 +380,14 @@ def coupon_apply_view(request):
     if is_ajax:
         return JsonResponse({
             "success": True,
-            "message": f"ใช้งานคูปอง '{code}' สำเร็จ! ลดทันที ฿{totals['discount_amount']:,.0f}",
+            "message": _("ใช้งานคูปอง '{code}' สำเร็จ! ลดทันที ฿{value:,.0f}").format(code=code, value=totals['discount_amount']),
             "code": code,
             "discount_amount": float(totals['discount_amount']),
             "shipping_fee": float(totals['shipping_fee']),
             "final_total": float(totals['final_total']),
         })
 
-    safe_add_message(messages.success, f"ใช้งานคูปอง '{code}' ส่วนลด ฿{totals['discount_amount']:,.0f} สำเร็จ")
+    safe_add_message(messages.success, _("ใช้งานคูปอง '{code}' ส่วนลด ฿{value:,.0f} สำเร็จ").format(code=code, value=totals['discount_amount']))
     return redirect('bookings:cart')
 
 
@@ -406,13 +407,13 @@ def coupon_remove_view(request):
     if is_ajax:
         return JsonResponse({
             "success": True,
-            "message": "ยกเลิกคูปองส่วนลดแล้ว",
+            "message": _("ยกเลิกคูปองส่วนลดแล้ว"),
             "shipping_fee": float(totals['shipping_fee']),
             "final_total": float(totals['final_total']),
         })
 
     try:
-        messages.info(request, "ยกเลิกการใช้คูปองส่วนลดแล้ว")
+        messages.info(request, _("ยกเลิกการใช้คูปองส่วนลดแล้ว"))
     except Exception:
         pass
     return redirect('bookings:cart')
@@ -426,7 +427,7 @@ def review_view(request):
     """
     cart = get_cart(request)
     if not cart:
-        messages.warning(request, "ตะกร้าสินค้าว่างเปล่า กรุณาเลือกบริการก่อนดำเนินการสั่งซื้อ")
+        messages.warning(request, _("ตะกร้าสินค้าว่างเปล่า กรุณาเลือกบริการก่อนดำเนินการสั่งซื้อ"))
         return redirect('accommodations:list')
 
     totals = calculate_cart_totals(request, cart)
@@ -453,7 +454,7 @@ def checkout_view(request):
     """
     cart = get_cart(request)
     if not cart:
-        messages.warning(request, "ตะกร้าสินค้าว่างเปล่า กรุณาเลือกบริการก่อนดำเนินการสั่งซื้อ")
+        messages.warning(request, _("ตะกร้าสินค้าว่างเปล่า กรุณาเลือกบริการก่อนดำเนินการสั่งซื้อ"))
         return redirect('accommodations:list')
 
     totals = calculate_cart_totals(request, cart)
@@ -462,12 +463,12 @@ def checkout_view(request):
     if request.method == "POST":
         has_physical_goods = any(str(item.get('item_type')).upper() == BookingItemType.OTOP for item in cart)
         if has_physical_goods and not shipping_address:
-            messages.error(request, "กรุณาเพิ่มที่อยู่จัดส่งสำหรับสินค้า OTOP ก่อนยืนยันคำสั่งซื้อ")
+            messages.error(request, _("กรุณาเพิ่มที่อยู่จัดส่งสำหรับสินค้า OTOP ก่อนยืนยันคำสั่งซื้อ"))
             return redirect('bookings:cart')
 
         customer_notes = request.POST.get('customer_notes', '').strip()
         if shipping_address:
-            addr_str = f"ที่อยู่จัดส่ง: {shipping_address.get('recipient_name')} ({shipping_address.get('phone_number')}) {shipping_address.get('address_line')} อ.{shipping_address.get('district')} จ.{shipping_address.get('province')} {shipping_address.get('postal_code')}"
+            addr_str = _("ที่อยู่จัดส่ง: {get} ({get2}) {get3} อ.{get4} จ.{get5} {get6}").format(get=shipping_address.get('recipient_name'), get2=shipping_address.get('phone_number'), get3=shipping_address.get('address_line'), get4=shipping_address.get('district'), get5=shipping_address.get('province'), get6=shipping_address.get('postal_code'))
             customer_notes = f"{customer_notes}\n{addr_str}".strip() if customer_notes else addr_str
 
         try:
@@ -486,13 +487,13 @@ def checkout_view(request):
             request.session['applied_coupon'] = ""
             request.session['last_order_shipping_address'] = shipping_address
             request.session.modified = True
-            messages.success(request, f"สร้างคำสั่งซื้อสำเร็จ รหัส: {booking.booking_code}")
+            messages.success(request, _("สร้างคำสั่งซื้อสำเร็จ รหัส: {booking_code}").format(booking_code=booking.booking_code))
             return redirect('payments:payment_instruction', booking_id=booking.id)
         except StockUnavailableError as e:
-            messages.error(request, f"ไม่สามารถดำเนินการได้: {str(e)}")
+            messages.error(request, _("ไม่สามารถดำเนินการได้: {str}").format(str=str(e)))
             return redirect('bookings:cart')
         except Exception as e:
-            messages.error(request, f"เกิดข้อผิดพลาดในระบบ: {str(e)}")
+            messages.error(request, _("เกิดข้อผิดพลาดในระบบ: {str}").format(str=str(e)))
             return redirect('bookings:cart')
 
     return redirect('bookings:review')
@@ -547,7 +548,7 @@ def booking_detail_view(request, booking_id):
     """
     booking = get_object_or_404(Booking, id=booking_id)
     if not can_view_object(request.user, booking):
-        messages.error(request, "คุณไม่มีสิทธิ์เข้าถึงข้อมูลการจองนี้")
+        messages.error(request, _("คุณไม่มีสิทธิ์เข้าถึงข้อมูลการจองนี้"))
         return redirect('bookings:my_bookings')
 
     items = booking.items.all().select_related('vendor')

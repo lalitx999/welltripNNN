@@ -1,7 +1,8 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}แผนที่ชุมชนและจุดเช็คอิน - WellTrip Sisaket{% endblock %}
+{% block title %}{% translate "แผนที่ชุมชนและจุดเช็คอิน - WellTrip Sisaket" %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
@@ -21,16 +22,16 @@
   <div class="container-xl d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
     <div>
       <span class="wt-eyebrow"><i data-lucide="map"></i>Sisaket community map</span>
-      <h1 class="mb-2">แผนที่ชุมชนและจุดเช็คอิน</h1>
-      <p class="text-secondary mb-0" style="max-width: 40rem;">สำรวจสถานที่ท่องเที่ยว ที่พัก อาหาร และสปา แล้วสแกน QR ที่จุดเช็คอินจริงเพื่อสะสมตราประทับในพาสปอร์ต</p>
+      <h1 class="mb-2">{% translate "แผนที่ชุมชนและจุดเช็คอิน" %}</h1>
+      <p class="text-secondary mb-0" style="max-width: 40rem;">{% translate "สำรวจสถานที่ท่องเที่ยว ที่พัก อาหาร และสปา แล้วสแกน QR ที่จุดเช็คอินจริงเพื่อสะสมตราประทับในพาสปอร์ต" %}</p>
     </div>
-    <a href="{% url 'community:passport' %}" class="btn btn-green rounded-pill px-4 flex-shrink-0"><i data-lucide="stamp" class="me-1"></i>พาสปอร์ตของฉัน</a>
+    <a href="{% url 'community:passport' %}" class="btn btn-green rounded-pill px-4 flex-shrink-0"><i data-lucide="stamp" class="me-1"></i>{% translate "พาสปอร์ตของฉัน" %}</a>
   </div>
 </section>
 
 <div class="container-xl pb-5">
   <div class="wt-pills mb-3">
-    <a href="{% url 'community:map' %}" class="wt-pill {% if selected_category == 'ALL' %}active{% endif %}">ทั้งหมด ({{ total_locations }})</a>
+    <a href="{% url 'community:map' %}" class="wt-pill {% if selected_category == 'ALL' %}active{% endif %}">{% blocktranslate trimmed with total_locations=total_locations %}ทั้งหมด ({{ total_locations }}){% endblocktranslate %}</a>
     {% for cat_val, cat_label in categories %}
       <a href="{% url 'community:map' %}?category={{ cat_val }}" class="wt-pill {% if selected_category == cat_val %}active{% endif %}">{{ cat_label }}</a>
     {% endfor %}
@@ -40,22 +41,22 @@
     <div id="map" class="rounded-4 w-100"></div>
   </div>
 
-  <h2 class="h5 fw-bold mb-3">สถานที่ในหมวดนี้ <span class="text-secondary fw-normal">({{ locations|length }} แห่ง)</span></h2>
+  <h2 class="h5 fw-bold mb-3">{% translate "สถานที่ในหมวดนี้" %} <span class="text-secondary fw-normal">{% blocktranslate trimmed with locations=locations|length %}({{ locations }} แห่ง){% endblocktranslate %}</span></h2>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
     {% for loc in locations %}
       <div class="col">
         <div class="wt-card wt-card-hover p-4 h-100 d-flex flex-column">
           <span class="badge badge-green align-self-start mb-2">{{ loc.get_category_display }}</span>
           <h3 class="h6 fw-bold mb-1">{{ loc.title }}</h3>
-          <p class="small text-secondary mb-3 flex-grow-1">{{ loc.address|default:"จังหวัดศรีสะเกษ" }}</p>
+          <p class="small text-secondary mb-3 flex-grow-1">{{ loc.address|default:_("จังหวัดศรีสะเกษ") }}</p>
           <div class="d-flex justify-content-between align-items-center border-top pt-3">
-            <a href="https://www.google.com/maps/search/?api=1&query={{ loc.latitude }},{{ loc.longitude }}" target="_blank" rel="noopener noreferrer" class="small fw-semibold text-green"><i data-lucide="navigation" class="me-1"></i>นำทาง</a>
-            <span class="small text-secondary"><i data-lucide="qr-code" class="me-1"></i>สแกน QR ที่จุดนี้เพื่อรับตรา</span>
+            <a href="https://www.google.com/maps/search/?api=1&query={{ loc.latitude }},{{ loc.longitude }}" target="_blank" rel="noopener noreferrer" class="small fw-semibold text-green"><i data-lucide="navigation" class="me-1"></i>{% translate "นำทาง" %}</a>
+            <span class="small text-secondary"><i data-lucide="qr-code" class="me-1"></i>{% translate "สแกน QR ที่จุดนี้เพื่อรับตรา" %}</span>
           </div>
         </div>
       </div>
     {% empty %}
-      <div class="col-12"><div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="map-pin-off"></i></span><div class="fw-bold">ยังไม่มีสถานที่ในหมวดนี้</div></div></div>
+      <div class="col-12"><div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="map-pin-off"></i></span><div class="fw-bold">{% translate "ยังไม่มีสถานที่ในหมวดนี้" %}</div></div></div>
     {% endfor %}
   </div>
 </div>
@@ -84,13 +85,13 @@
       title.textContent = loc.title;
       const addr = box.appendChild(document.createElement('div'));
       addr.className = 'small text-secondary';
-      addr.textContent = loc.address || 'ศรีสะเกษ';
+      addr.textContent = loc.address || '{{ _("ศรีสะเกษ")|escapejs }}';
       const nav = box.appendChild(document.createElement('a'));
       nav.className = 'small fw-semibold text-green d-inline-block mt-2';
       nav.target = '_blank';
       nav.rel = 'noopener noreferrer';
       nav.href = 'https://www.google.com/maps/search/?api=1&query=' + loc.lat + ',' + loc.lng;
-      nav.textContent = 'นำทาง →';
+      nav.textContent = '{{ _("นำทาง →")|escapejs }}';
       return box;
     }
 

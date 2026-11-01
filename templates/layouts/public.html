@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load static %}
 
 {% block body_class %}wt-has-bottom-nav{% endblock %}
 
 {% block layout %}
 <header class="wt-navbar sticky-top">
-  <nav class="navbar navbar-expand-lg py-2" aria-label="เมนูหลัก">
+  <nav class="navbar navbar-expand-lg py-2" aria-label="{% translate 'เมนูหลัก' %}">
     <div class="container-xl flex-nowrap">
 
       <a class="navbar-brand d-flex align-items-center gap-2"
@@ -19,60 +20,62 @@
 
       <ul class="navbar-nav d-none d-lg-flex flex-row gap-1 mx-auto">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">สำรวจศรีสะเกษ</a>
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{% translate "สำรวจศรีสะเกษ" %}</a>
           <div class="dropdown-menu wt-explore-menu shadow border-0 rounded-4 p-3">
             <div class="row g-2">
               <div class="col-6">
-                <div class="small fw-bold text-gold text-uppercase mb-2 px-2">บริการและสินค้าชุมชน</div>
+                <div class="small fw-bold text-gold text-uppercase mb-2 px-2">{% translate "บริการและสินค้าชุมชน" %}</div>
                 <a class="dropdown-item d-flex gap-2" href="{% url 'accommodations:list' %}">
                   <span class="wt-icon-pill"><i data-lucide="hotel"></i></span>
-                  <span><span class="d-block fw-semibold">ที่พักโฮมสเตย์</span><small class="text-secondary">พักผ่อนแบบวิถีชุมชน</small></span>
+                  <span><span class="d-block fw-semibold">{% translate "ที่พักโฮมสเตย์" %}</span><small class="text-secondary">{% translate "พักผ่อนแบบวิถีชุมชน" %}</small></span>
                 </a>
                 <a class="dropdown-item d-flex gap-2" href="/services/?category=FOOD">
                   <span class="wt-icon-pill"><i data-lucide="utensils"></i></span>
-                  <span><span class="d-block fw-semibold">อาหารสุขภาพ</span><small class="text-secondary">เมนูวัตถุดิบท้องถิ่น</small></span>
+                  <span><span class="d-block fw-semibold">{% translate "อาหารสุขภาพ" %}</span><small class="text-secondary">{% translate "เมนูวัตถุดิบท้องถิ่น" %}</small></span>
                 </a>
                 <a class="dropdown-item d-flex gap-2" href="/services/?category=SPA">
                   <span class="wt-icon-pill"><i data-lucide="sparkles"></i></span>
-                  <span><span class="d-block fw-semibold">นวดและสปา</span><small class="text-secondary">สมุนไพรสดจากชุมชน</small></span>
+                  <span><span class="d-block fw-semibold">{% translate "นวดและสปา" %}</span><small class="text-secondary">{% translate "สมุนไพรสดจากชุมชน" %}</small></span>
                 </a>
                 <a class="dropdown-item d-flex gap-2" href="{% url 'otop:list' %}">
                   <span class="wt-icon-pill"><i data-lucide="package"></i></span>
-                  <span><span class="d-block fw-semibold">ของดี OTOP</span><small class="text-secondary">หัตถกรรมและผลิตภัณฑ์ชุมชน</small></span>
+                  <span><span class="d-block fw-semibold">{% translate "ของดี OTOP" %}</span><small class="text-secondary">{% translate "หัตถกรรมและผลิตภัณฑ์ชุมชน" %}</small></span>
                 </a>
               </div>
               <div class="col-6">
-                <div class="small fw-bold text-gold text-uppercase mb-2 px-2">กิจกรรมและวิถีชุมชน</div>
+                <div class="small fw-bold text-gold text-uppercase mb-2 px-2">{% translate "กิจกรรมและวิถีชุมชน" %}</div>
                 <a class="dropdown-item d-flex gap-2" href="{% url 'ai_recommendations:assessment' %}">
                   <span class="wt-icon-pill"><i data-lucide="activity"></i></span>
-                  <span><span class="d-block fw-semibold">ประเมินสุขภาพ AI</span><small class="text-secondary">แนะนำทริปตามสุขภาพ</small></span>
+                  <span><span class="d-block fw-semibold">{% translate "ประเมินสุขภาพ AI" %}</span><small class="text-secondary">{% translate "แนะนำทริปตามสุขภาพ" %}</small></span>
                 </a>
                 <a class="dropdown-item d-flex gap-2" href="{% url 'community:map' %}">
                   <span class="wt-icon-pill"><i data-lucide="map-pin"></i></span>
-                  <span><span class="d-block fw-semibold">แผนที่ชุมชน</span><small class="text-secondary">จุดท่องเที่ยวในศรีสะเกษ</small></span>
+                  <span><span class="d-block fw-semibold">{% translate "แผนที่ชุมชน" %}</span><small class="text-secondary">{% translate "จุดท่องเที่ยวในศรีสะเกษ" %}</small></span>
                 </a>
                 <a class="dropdown-item d-flex gap-2" href="{% url 'community:stories_list' %}">
                   <span class="wt-icon-pill"><i data-lucide="book-open"></i></span>
-                  <span><span class="d-block fw-semibold">เรื่องเล่าภูมิปัญญา</span><small class="text-secondary">วิถี 4 ชนเผ่า</small></span>
+                  <span><span class="d-block fw-semibold">{% translate "เรื่องเล่าภูมิปัญญา" %}</span><small class="text-secondary">{% translate "วิถี 4 ชนเผ่า" %}</small></span>
                 </a>
               </div>
             </div>
           </div>
         </li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'accommodations:list' %}">ที่พักชุมชน</a></li>
-        <li class="nav-item"><a class="nav-link" href="/services/?category=FOOD">อาหารสุขภาพ</a></li>
-        <li class="nav-item"><a class="nav-link" href="/services/?category=SPA">นวดและสปา</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'otop:list' %}">ของดี OTOP</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'core:about' %}">เกี่ยวกับเรา</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'core:contact' %}">ติดต่อเรา</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'accommodations:list' %}">{% translate "ที่พักชุมชน" %}</a></li>
+        <li class="nav-item"><a class="nav-link" href="/services/?category=FOOD">{% translate "อาหารสุขภาพ" %}</a></li>
+        <li class="nav-item"><a class="nav-link" href="/services/?category=SPA">{% translate "นวดและสปา" %}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'otop:list' %}">{% translate "ของดี OTOP" %}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'community:events_list' %}">{% translate "กิจกรรม" %}</a></li>
+        <li class="nav-item d-none d-xxl-block"><a class="nav-link" href="{% url 'core:about' %}">{% translate "เกี่ยวกับเรา" %}</a></li>
+        <li class="nav-item d-none d-xxl-block"><a class="nav-link" href="{% url 'core:contact' %}">{% translate "ติดต่อเรา" %}</a></li>
       </ul>
 
       <div class="d-flex align-items-center gap-2">
+        {% include "partials/lang_switch.html" %}
         <div class="dropdown d-none d-sm-block">
           <button class="btn btn-outline-ink rounded-pill btn-sm px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i data-lucide="user"></i>
             <span class="text-truncate" style="max-width: 8rem;">
-              {% if user.is_authenticated %}{{ user.first_name|default:user.email|truncatechars:15 }}{% else %}บัญชี{% endif %}
+              {% if user.is_authenticated %}{{ user.first_name|default:user.email|truncatechars:15 }}{% else %}{% translate "บัญชี" %}{% endif %}
             </span>
           </button>
           <div class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2" style="width: 18rem;">
@@ -83,37 +86,37 @@
                 <span class="badge badge-gold mt-1">{{ user.get_role_display }}</span>
               </div>
               {% if user.is_community_admin %}
-                <a class="dropdown-item rounded-3 fw-semibold text-primary-emphasis" href="{% url 'accounts:admin_dashboard' %}"><i data-lucide="shield-check" class="me-2"></i>ศูนย์บัญชาการแอดมิน</a>
+                <a class="dropdown-item rounded-3 fw-semibold text-primary-emphasis" href="{% url 'accounts:admin_dashboard' %}"><i data-lucide="shield-check" class="me-2"></i>{% translate "ศูนย์บัญชาการแอดมิน" %}</a>
               {% else %}
-                <a class="dropdown-item rounded-3" href="{% url 'core:home' %}"><i data-lucide="home" class="me-2"></i>หน้าหลักนักท่องเที่ยว</a>
-                <a class="dropdown-item rounded-3" href="{% url 'bookings:my_orders' %}"><i data-lucide="receipt" class="me-2"></i>การจองของฉัน</a>
-                <a class="dropdown-item rounded-3" href="{% url 'accounts:profile' %}"><i data-lucide="user-round" class="me-2"></i>โปรไฟล์ส่วนตัว</a>
-                <a class="dropdown-item rounded-3" href="{% url 'community:my_location_events' %}"><i data-lucide="settings" class="me-2"></i>ความเป็นส่วนตัว (PDPA)</a>
+                <a class="dropdown-item rounded-3" href="{% url 'core:home' %}"><i data-lucide="home" class="me-2"></i>{% translate "หน้าหลักนักท่องเที่ยว" %}</a>
+                <a class="dropdown-item rounded-3" href="{% url 'bookings:my_orders' %}"><i data-lucide="receipt" class="me-2"></i>{% translate "การจองของฉัน" %}</a>
+                <a class="dropdown-item rounded-3" href="{% url 'accounts:profile' %}"><i data-lucide="user-round" class="me-2"></i>{% translate "โปรไฟล์ส่วนตัว" %}</a>
+                <a class="dropdown-item rounded-3" href="{% url 'community:my_location_events' %}"><i data-lucide="settings" class="me-2"></i>{% translate "ความเป็นส่วนตัว (PDPA)" %}</a>
                 {% if user.is_merchant %}
                   <a class="dropdown-item rounded-3 fw-semibold text-amber" href="{% url 'accounts:portal_dashboard' %}"><i data-lucide="store" class="me-2"></i>Partner Studio</a>
                 {% endif %}
               {% endif %}
               <div class="dropdown-divider"></div>
-              <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" class="dropdown-item rounded-3 text-danger"><i data-lucide="log-out" class="me-2"></i>ออกจากระบบ</button></form>
+              <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit" class="dropdown-item rounded-3 text-danger"><i data-lucide="log-out" class="me-2"></i>{% translate "ออกจากระบบ" %}</button></form>
             {% else %}
               <div class="p-2">
-                <div class="fw-bold">ยินดีต้อนรับสู่ WellTrip</div>
-                <p class="small text-secondary mb-2">เข้าสู่ระบบเพื่อจัดการทริปและการจองของคุณ</p>
-                <a class="btn btn-ink w-100 btn-sm" href="{% url 'accounts:login' %}">เข้าสู่ระบบ</a>
-                <a class="btn btn-outline-ink w-100 btn-sm mt-2" href="{% url 'accounts:register' %}">สมัครสมาชิก</a>
+                <div class="fw-bold">{% translate "ยินดีต้อนรับสู่ WellTrip" %}</div>
+                <p class="small text-secondary mb-2">{% translate "เข้าสู่ระบบเพื่อจัดการทริปและการจองของคุณ" %}</p>
+                <a class="btn btn-ink w-100 btn-sm" href="{% url 'accounts:login' %}">{% translate "เข้าสู่ระบบ" %}</a>
+                <a class="btn btn-outline-ink w-100 btn-sm mt-2" href="{% url 'accounts:register' %}">{% translate "สมัครสมาชิก" %}</a>
               </div>
             {% endif %}
           </div>
         </div>
 
-        <a href="{% url 'bookings:cart' %}" class="btn btn-outline-ink rounded-circle position-relative p-2 lh-1" aria-label="ตะกร้าสินค้า">
+        <a href="{% url 'bookings:cart' %}" class="btn btn-outline-ink rounded-circle position-relative p-2 lh-1" aria-label="{% translate 'ตะกร้าสินค้า' %}">
           <i data-lucide="shopping-bag" class="icon-lg"></i>
           {% if cart_item_count %}
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark wt-cart-badge">{{ cart_item_count }}</span>
           {% endif %}
         </a>
 
-        <button class="btn btn-outline-ink rounded-circle p-2 lh-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#wtMobileMenu" aria-controls="wtMobileMenu" aria-label="เปิดเมนู">
+        <button class="btn btn-outline-ink rounded-circle p-2 lh-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#wtMobileMenu" aria-controls="wtMobileMenu" aria-label="{% translate 'เปิดเมนู' %}">
           <i data-lucide="menu" class="icon-lg"></i>
         </button>
       </div>
@@ -124,29 +127,30 @@
 <!-- Mobile menu -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="wtMobileMenu" aria-labelledby="wtMobileMenuLabel">
   <div class="offcanvas-header border-bottom">
-    <h5 class="offcanvas-title fw-bold" id="wtMobileMenuLabel">เมนู WellTrip</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="ปิด"></button>
+    <h5 class="offcanvas-title fw-bold" id="wtMobileMenuLabel">{% translate "เมนู WellTrip" %}</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{% translate 'ปิด' %}"></button>
   </div>
   <div class="offcanvas-body">
     <div class="list-group list-group-flush fw-semibold">
-      <a class="list-group-item list-group-item-action" href="{% url 'accommodations:list' %}"><i data-lucide="hotel" class="me-2 text-gold"></i>ที่พักชุมชน</a>
-      <a class="list-group-item list-group-item-action" href="/services/?category=FOOD"><i data-lucide="utensils" class="me-2 text-gold"></i>อาหารสุขภาพ</a>
-      <a class="list-group-item list-group-item-action" href="/services/?category=SPA"><i data-lucide="sparkles" class="me-2 text-gold"></i>นวดและสปา</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'otop:list' %}"><i data-lucide="package" class="me-2 text-gold"></i>ของดี OTOP</a>
-      <a class="list-group-item list-group-item-action text-amber" href="{% url 'ai_recommendations:assessment' %}"><i data-lucide="activity" class="me-2"></i>ประเมินสุขภาพ AI</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'community:map' %}"><i data-lucide="map-pin" class="me-2 text-gold"></i>แผนที่ชุมชน</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'community:stories_list' %}"><i data-lucide="book-open" class="me-2 text-gold"></i>เรื่องเล่าภูมิปัญญา</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'core:about' %}"><i data-lucide="info" class="me-2 text-gold"></i>เกี่ยวกับเรา</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'core:contact' %}"><i data-lucide="phone" class="me-2 text-gold"></i>ติดต่อเรา</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'accommodations:list' %}"><i data-lucide="hotel" class="me-2 text-gold"></i>{% translate "ที่พักชุมชน" %}</a>
+      <a class="list-group-item list-group-item-action" href="/services/?category=FOOD"><i data-lucide="utensils" class="me-2 text-gold"></i>{% translate "อาหารสุขภาพ" %}</a>
+      <a class="list-group-item list-group-item-action" href="/services/?category=SPA"><i data-lucide="sparkles" class="me-2 text-gold"></i>{% translate "นวดและสปา" %}</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'otop:list' %}"><i data-lucide="package" class="me-2 text-gold"></i>{% translate "ของดี OTOP" %}</a>
+      <a class="list-group-item list-group-item-action text-amber" href="{% url 'ai_recommendations:assessment' %}"><i data-lucide="activity" class="me-2"></i>{% translate "ประเมินสุขภาพ AI" %}</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'community:map' %}"><i data-lucide="map-pin" class="me-2 text-gold"></i>{% translate "แผนที่ชุมชน" %}</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'community:events_list' %}"><i data-lucide="calendar-days" class="me-2 text-gold"></i>{% translate "ปฏิทินกิจกรรม" %}</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'community:stories_list' %}"><i data-lucide="book-open" class="me-2 text-gold"></i>{% translate "เรื่องเล่าภูมิปัญญา" %}</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'core:about' %}"><i data-lucide="info" class="me-2 text-gold"></i>{% translate "เกี่ยวกับเรา" %}</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'core:contact' %}"><i data-lucide="phone" class="me-2 text-gold"></i>{% translate "ติดต่อเรา" %}</a>
     </div>
     <div class="d-grid gap-2 mt-4">
       {% if user.is_authenticated %}
         {% if user.is_merchant %}<a class="btn btn-gold" href="{% url 'accounts:portal_dashboard' %}">Partner Studio</a>{% endif %}
-        {% if user.is_community_admin %}<a class="btn btn-ink" href="{% url 'accounts:admin_dashboard' %}">ศูนย์บัญชาการแอดมิน</a>{% endif %}
-        <form method="post" action="{% url 'accounts:logout' %}" class="d-grid">{% csrf_token %}<button type="submit" class="btn btn-outline-danger">ออกจากระบบ</button></form>
+        {% if user.is_community_admin %}<a class="btn btn-ink" href="{% url 'accounts:admin_dashboard' %}">{% translate "ศูนย์บัญชาการแอดมิน" %}</a>{% endif %}
+        <form method="post" action="{% url 'accounts:logout' %}" class="d-grid">{% csrf_token %}<button type="submit" class="btn btn-outline-danger">{% translate "ออกจากระบบ" %}</button></form>
       {% else %}
-        <a class="btn btn-ink" href="{% url 'accounts:login' %}">เข้าสู่ระบบ</a>
-        <a class="btn btn-outline-ink" href="{% url 'accounts:register' %}">สมัครสมาชิก</a>
+        <a class="btn btn-ink" href="{% url 'accounts:login' %}">{% translate "เข้าสู่ระบบ" %}</a>
+        <a class="btn btn-outline-ink" href="{% url 'accounts:register' %}">{% translate "สมัครสมาชิก" %}</a>
       {% endif %}
     </div>
   </div>
@@ -164,69 +168,70 @@
           <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip" width="36" height="36" class="rounded-circle object-fit-cover">
           <span class="wt-brand-name text-white">WellTrip</span>
         </div>
-        <p class="small text-white-50">แพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ สนับสนุนผู้ประกอบการท้องถิ่นโดยตรง</p>
-        <div class="small fw-semibold text-gold">มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)</div>
+        <p class="small text-white-50">{% translate "แพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ สนับสนุนผู้ประกอบการท้องถิ่นโดยตรง" %}</p>
+        <div class="small fw-semibold text-gold">{% translate "มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)" %}</div>
       </div>
       <div class="col-6 col-md-3">
-        <h6>บริการชุมชน</h6>
+        <h6>{% translate "บริการชุมชน" %}</h6>
         <ul class="list-unstyled small d-grid gap-2">
-          <li><a href="{% url 'accommodations:list' %}">โฮมสเตย์และฟาร์มสเตย์</a></li>
-          <li><a href="/services/?category=FOOD">อาหารสุขภาพ</a></li>
-          <li><a href="/services/?category=SPA">นวดแผนไทยและสปาสมุนไพร</a></li>
-          <li><a href="{% url 'otop:list' %}">สินค้า OTOP ศรีสะเกษ</a></li>
-          <li><a href="{% url 'ai_recommendations:assessment' %}">ประเมินสุขภาพ AI</a></li>
+          <li><a href="{% url 'accommodations:list' %}">{% translate "โฮมสเตย์และฟาร์มสเตย์" %}</a></li>
+          <li><a href="/services/?category=FOOD">{% translate "อาหารสุขภาพ" %}</a></li>
+          <li><a href="/services/?category=SPA">{% translate "นวดแผนไทยและสปาสมุนไพร" %}</a></li>
+          <li><a href="{% url 'otop:list' %}">{% translate "สินค้า OTOP ศรีสะเกษ" %}</a></li>
+          <li><a href="{% url 'ai_recommendations:assessment' %}">{% translate "ประเมินสุขภาพ AI" %}</a></li>
         </ul>
       </div>
       <div class="col-6 col-md-3">
-        <h6>เรื่องราวและชุมชน</h6>
+        <h6>{% translate "เรื่องราวและชุมชน" %}</h6>
         <ul class="list-unstyled small d-grid gap-2">
-          <li><a href="{% url 'core:about' %}">เกี่ยวกับเรา</a></li>
-          <li><a href="{% url 'core:contact' %}">ติดต่อเรา</a></li>
-          <li><a href="{% url 'community:map' %}">แผนที่ท่องเที่ยวชุมชน</a></li>
-          <li><a href="{% url 'community:stories_list' %}">เรื่องเล่าภูมิปัญญา 4 ชนเผ่า</a></li>
-          <li><a href="{% url 'accounts:register_merchant' %}">สมัครเป็นผู้ประกอบการ</a></li>
+          <li><a href="{% url 'core:about' %}">{% translate "เกี่ยวกับเรา" %}</a></li>
+          <li><a href="{% url 'core:contact' %}">{% translate "ติดต่อเรา" %}</a></li>
+          <li><a href="{% url 'community:map' %}">{% translate "แผนที่ท่องเที่ยวชุมชน" %}</a></li>
+          <li><a href="{% url 'community:events_list' %}">{% translate "ปฏิทินกิจกรรม" %}</a></li>
+          <li><a href="{% url 'community:stories_list' %}">{% translate "เรื่องเล่าภูมิปัญญา 4 ชนเผ่า" %}</a></li>
+          <li><a href="{% url 'accounts:register_merchant' %}">{% translate "สมัครเป็นผู้ประกอบการ" %}</a></li>
         </ul>
       </div>
       <div class="col-md-3">
-        <h6>ความปลอดภัย & PDPA</h6>
-        <p class="small text-white-50">เข้ารหัสรหัสผ่านด้วย Argon2 และบันทึกตำแหน่งแบบหยาบตามมาตรฐานคุ้มครองข้อมูลส่วนบุคคล (PDPA)</p>
+        <h6>{% translate "ความปลอดภัย & PDPA" %}</h6>
+        <p class="small text-white-50">{% translate "เข้ารหัสรหัสผ่านด้วย Argon2 และบันทึกตำแหน่งแบบหยาบตามมาตรฐานคุ้มครองข้อมูลส่วนบุคคล (PDPA)" %}</p>
       </div>
     </div>
 
     <div class="border-top mt-4 pt-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
       <div class="small text-white-50 text-center text-md-start">
-        <div class="fw-bold text-gold text-uppercase" style="font-size: .7rem; letter-spacing: .08em;">หน่วยงานสนับสนุนทุนและร่วมขับเคลื่อนนวัตกรรม</div>
-        โครงการพัฒนาระบบนิเวศการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาท้องถิ่น
+        <div class="fw-bold text-gold text-uppercase" style="font-size: .7rem; letter-spacing: .08em;">{% translate "หน่วยงานสนับสนุนทุนและร่วมขับเคลื่อนนวัตกรรม" %}</div>
+        {% translate "โครงการพัฒนาระบบนิเวศการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาท้องถิ่น" %}
       </div>
       <div class="d-flex flex-wrap justify-content-center gap-2">
-        <span class="wt-partner-logo" title="สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน)"><img src="{% static 'images/partners/logo-nia.png' %}" alt="NIA"></span>
-        <span class="wt-partner-logo" title="อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี"><img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="SIP UBU"></span>
+        <span class="wt-partner-logo" title="{% translate 'สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน)' %}"><img src="{% static 'images/partners/logo-nia.png' %}" alt="NIA"></span>
+        <span class="wt-partner-logo" title="{% translate 'อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี' %}"><img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="SIP UBU"></span>
       </div>
     </div>
 
     <div class="border-top mt-4 pt-3 d-flex flex-column flex-sm-row justify-content-between gap-2 small text-white-50">
       <span>&copy; 2026 WellTrip Slow Days Sisaket</span>
       <span class="d-flex gap-3">
-        <a href="{% url 'community:my_location_events' %}">ความเป็นส่วนตัว (PDPA)</a>
-        <a href="{% url 'core:terms' %}">ข้อตกลงการใช้งาน</a>
-        <a href="{% url 'core:contact' %}">แจ้งปัญหาความปลอดภัย</a>
+        <a href="{% url 'community:my_location_events' %}">{% translate "ความเป็นส่วนตัว (PDPA)" %}</a>
+        <a href="{% url 'core:terms' %}">{% translate "ข้อตกลงการใช้งาน" %}</a>
+        <a href="{% url 'core:contact' %}">{% translate "แจ้งปัญหาความปลอดภัย" %}</a>
       </span>
     </div>
   </div>
 </footer>
 
 <!-- Mobile bottom navigation -->
-<nav class="wt-bottom-nav fixed-bottom d-lg-none" aria-label="แถบนำทางมือถือ">
+<nav class="wt-bottom-nav fixed-bottom d-lg-none" aria-label="{% translate 'แถบนำทางมือถือ' %}">
   <div class="row g-0 text-center">
-    <a class="col {% if request.resolver_match.url_name == 'landing' or request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'core:home' %}"><i data-lucide="home" class="icon-lg text-gold"></i>หน้าหลัก</a>
-    <a class="col" href="{% url 'accommodations:list' %}"><i data-lucide="building-2" class="icon-lg"></i>ที่พัก</a>
+    <a class="col {% if request.resolver_match.url_name == 'landing' or request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'core:home' %}"><i data-lucide="home" class="icon-lg text-gold"></i>{% translate "หน้าหลัก" %}</a>
+    <a class="col" href="{% url 'accommodations:list' %}"><i data-lucide="building-2" class="icon-lg"></i>{% translate "ที่พัก" %}</a>
     <a class="col position-relative" href="{% url 'bookings:cart' %}">
       <span class="position-relative"><i data-lucide="shopping-bag" class="icon-lg"></i>
         {% if cart_item_count %}<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark wt-cart-badge">{{ cart_item_count }}</span>{% endif %}
-      </span>ตะกร้า
+      </span>{% translate "ตะกร้า" %}
     </a>
-    <a class="col" href="{% url 'ai_recommendations:assessment' %}"><i data-lucide="sparkles" class="icon-lg text-amber"></i>สุขภาพ AI</a>
-    <a class="col" href="{% if user.is_authenticated %}{% url 'bookings:my_orders' %}{% else %}{% url 'accounts:login' %}{% endif %}"><i data-lucide="user" class="icon-lg"></i>{% if user.is_authenticated %}บัญชี{% else %}เข้าสู่ระบบ{% endif %}</a>
+    <a class="col" href="{% url 'ai_recommendations:assessment' %}"><i data-lucide="sparkles" class="icon-lg text-amber"></i>{% translate "สุขภาพ AI" %}</a>
+    <a class="col" href="{% if user.is_authenticated %}{% url 'bookings:my_orders' %}{% else %}{% url 'accounts:login' %}{% endif %}"><i data-lucide="user" class="icon-lg"></i>{% if user.is_authenticated %}{% translate "บัญชี" %}{% else %}{% translate "เข้าสู่ระบบ" %}{% endif %}</a>
   </div>
 </nav>
 {% endblock %}

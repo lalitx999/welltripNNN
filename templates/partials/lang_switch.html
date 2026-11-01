@@ -1,0 +1,8 @@
+{% load i18n %}{% get_current_language as LANG %}
+{# TH/EN toggle: POSTs to Django's set_language, which stores the choice in a cookie and returns to this page #}
+<form action="{% url 'set_language' %}" method="post" class="wt-lang-switch {{ extra_class }}" role="group" aria-label="{% translate 'เปลี่ยนภาษา' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  <button type="submit" name="language" value="th" class="{% if LANG == 'th' %}active{% endif %}" {% if LANG == 'th' %}aria-pressed="true"{% endif %} lang="th">TH</button>
+  <button type="submit" name="language" value="en" class="{% if LANG == 'en' %}active{% endif %}" {% if LANG == 'en' %}aria-pressed="true"{% endif %} lang="en">EN</button>
+</form>

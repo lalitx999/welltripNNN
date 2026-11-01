@@ -1,38 +1,39 @@
 {% extends "layouts/merchant.html" %}
 
+{% load i18n %}
 {% block title %}Partner Studio - WellTrip{% endblock %}
-{% block page_heading %}ภาพรวมร้านค้า{% endblock %}
+{% block page_heading %}{% translate "ภาพรวมร้านค้า" %}{% endblock %}
 
 {% block content %}
 <div class="d-grid gap-4">
   <div class="wt-panel-green p-4">
     <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
       <div>
-        <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-2"><i data-lucide="badge-check" class="me-1"></i>ร้านค้าที่ได้รับอนุมัติ</span>
-        <h2 class="h3 fw-bold mb-1">สวัสดี {{ user.first_name|default:user.email }}</h2>
+        <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-2"><i data-lucide="badge-check" class="me-1"></i>{% translate "ร้านค้าที่ได้รับอนุมัติ" %}</span>
+        <h2 class="h3 fw-bold mb-1">{% blocktranslate trimmed with first_name=user.first_name|default:user.email %}สวัสดี {{ first_name }}{% endblocktranslate %}</h2>
         <p class="opacity-75 mb-0">{{ user.get_role_display }}{% if user.merchant_profile %} · {{ user.merchant_profile.business_name }}{% endif %}</p>
       </div>
       <div class="d-flex align-items-start gap-2">
-        <span class="wt-chip"><i data-lucide="phone"></i>{{ user.phone_number|default:"ยังไม่ระบุเบอร์โทร" }}</span>
-        <a href="{% url 'accounts:profile' %}" class="btn btn-light btn-sm rounded-pill">แก้ไขโปรไฟล์</a>
+        <span class="wt-chip"><i data-lucide="phone"></i>{{ user.phone_number|default:_("ยังไม่ระบุเบอร์โทร") }}</span>
+        <a href="{% url 'accounts:profile' %}" class="btn btn-light btn-sm rounded-pill">{% translate "แก้ไขโปรไฟล์" %}</a>
       </div>
     </div>
   </div>
 
   <div class="row g-3">
-    <div class="col-sm-4"><div class="wt-card p-4 h-100 d-flex gap-3 align-items-center"><span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="layers" class="icon-lg"></i></span><div><div class="wt-stat-value">{{ listing_count }}</div><small class="text-secondary">รายการในร้าน</small></div></div></div>
-    <div class="col-sm-4"><div class="wt-card p-4 h-100 d-flex gap-3 align-items-center"><span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="hourglass" class="icon-lg"></i></span><div><div class="wt-stat-value">{{ awaiting_count }}</div><small class="text-secondary">รอลูกค้าชำระเงิน</small></div></div></div>
-    <div class="col-sm-4"><div class="wt-card p-4 h-100 d-flex gap-3 align-items-center"><span class="wt-stat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="check-circle-2" class="icon-lg"></i></span><div><div class="wt-stat-value">{{ confirmed_count }}</div><small class="text-secondary">ยืนยันแล้ว</small></div></div></div>
+    <div class="col-sm-4"><div class="wt-card p-4 h-100 d-flex gap-3 align-items-center"><span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="layers" class="icon-lg"></i></span><div><div class="wt-stat-value">{{ listing_count }}</div><small class="text-secondary">{% translate "รายการในร้าน" %}</small></div></div></div>
+    <div class="col-sm-4"><div class="wt-card p-4 h-100 d-flex gap-3 align-items-center"><span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="hourglass" class="icon-lg"></i></span><div><div class="wt-stat-value">{{ awaiting_count }}</div><small class="text-secondary">{% translate "รอลูกค้าชำระเงิน" %}</small></div></div></div>
+    <div class="col-sm-4"><div class="wt-card p-4 h-100 d-flex gap-3 align-items-center"><span class="wt-stat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="check-circle-2" class="icon-lg"></i></span><div><div class="wt-stat-value">{{ confirmed_count }}</div><small class="text-secondary">{% translate "ยืนยันแล้ว" %}</small></div></div></div>
   </div>
 
   <div class="row g-4">
     <div class="col-xl-7">
       <div class="wt-card h-100">
-        <div class="p-3 border-bottom fw-bold"><i data-lucide="receipt" class="text-green me-1"></i>คำสั่งซื้อล่าสุด</div>
+        <div class="p-3 border-bottom fw-bold"><i data-lucide="receipt" class="text-green me-1"></i>{% translate "คำสั่งซื้อล่าสุด" %}</div>
         {% if recent_items %}
           <div class="table-responsive">
             <table class="table wt-table mb-0">
-              <thead><tr><th>รหัส</th><th>รายการ</th><th class="text-end">ยอด</th><th>สถานะ</th></tr></thead>
+              <thead><tr><th>{% translate "รหัส" %}</th><th>{% translate "รายการ" %}</th><th class="text-end">{% translate "ยอด" %}</th><th>{% translate "สถานะ" %}</th></tr></thead>
               <tbody>
                 {% for item in recent_items %}
                   <tr>
@@ -46,27 +47,27 @@
             </table>
           </div>
         {% else %}
-          <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="inbox"></i></span><div class="fw-bold">ยังไม่มีคำสั่งซื้อ</div><small class="text-secondary">คำสั่งซื้อจากลูกค้าจะแสดงที่นี่</small></div>
+          <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="inbox"></i></span><div class="fw-bold">{% translate "ยังไม่มีคำสั่งซื้อ" %}</div><small class="text-secondary">{% translate "คำสั่งซื้อจากลูกค้าจะแสดงที่นี่" %}</small></div>
         {% endif %}
       </div>
     </div>
 
     <div class="col-xl-5">
       <div class="wt-card p-3 h-100">
-        <div class="fw-bold mb-2"><i data-lucide="sparkles" class="text-green me-1"></i>จัดการร้าน</div>
+        <div class="fw-bold mb-2"><i data-lucide="sparkles" class="text-green me-1"></i>{% translate "จัดการร้าน" %}</div>
         <div class="list-group list-group-flush">
           {% if user.role == "HOMESTAY_OWNER" or user.is_community_admin %}
-            <a href="{% url 'accommodations:homestay_studio' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="house"></i></span><span><span class="d-block fw-semibold">ที่พักและห้องพัก</span><small class="text-secondary">ข้อมูลที่พัก รูป และประเภทห้อง</small></span></a>
-            <a href="{% url 'accommodations:calendar' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="calendar-days"></i></span><span><span class="d-block fw-semibold">ปฏิทินราคาและห้องว่าง</span><small class="text-secondary">ราคาพิเศษรายวันและจำนวนห้อง</small></span></a>
+            <a href="{% url 'accommodations:homestay_studio' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="house"></i></span><span><span class="d-block fw-semibold">{% translate "ที่พักและห้องพัก" %}</span><small class="text-secondary">{% translate "ข้อมูลที่พัก รูป และประเภทห้อง" %}</small></span></a>
+            <a href="{% url 'accommodations:calendar' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="calendar-days"></i></span><span><span class="d-block fw-semibold">{% translate "ปฏิทินราคาและห้องว่าง" %}</span><small class="text-secondary">{% translate "ราคาพิเศษรายวันและจำนวนห้อง" %}</small></span></a>
           {% endif %}
           {% if user.role == "RESTAURANT_OWNER" or user.is_community_admin %}
-            <a href="{% url 'services:restaurant_studio' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="utensils"></i></span><span><span class="d-block fw-semibold">เมนูอาหาร</span><small class="text-secondary">เพิ่มเมนูและราคา</small></span></a>
+            <a href="{% url 'services:restaurant_studio' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="utensils"></i></span><span><span class="d-block fw-semibold">{% translate "เมนูอาหาร" %}</span><small class="text-secondary">{% translate "เพิ่มเมนูและราคา" %}</small></span></a>
           {% endif %}
           {% if user.role == "WELLNESS_OWNER" or user.is_community_admin %}
-            <a href="{% url 'services:wellness_studio' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="flower-2"></i></span><span><span class="d-block fw-semibold">บริการสปาและรอบเวลา</span><small class="text-secondary">เปิดรอบให้ลูกค้าจอง</small></span></a>
+            <a href="{% url 'services:wellness_studio' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="flower-2"></i></span><span><span class="d-block fw-semibold">{% translate "บริการสปาและรอบเวลา" %}</span><small class="text-secondary">{% translate "เปิดรอบให้ลูกค้าจอง" %}</small></span></a>
           {% endif %}
           {% if user.role == "OTOP_OWNER" or user.is_community_admin %}
-            <a href="{% url 'otop:otop_studio' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="shopping-basket"></i></span><span><span class="d-block fw-semibold">สินค้า OTOP และสต็อก</span><small class="text-secondary">ราคาและจำนวนคงเหลือ</small></span></a>
+            <a href="{% url 'otop:otop_studio' %}" class="list-group-item list-group-item-action d-flex gap-3 align-items-center"><span class="wt-icon-pill"><i data-lucide="shopping-basket"></i></span><span><span class="d-block fw-semibold">{% translate "สินค้า OTOP และสต็อก" %}</span><small class="text-secondary">{% translate "ราคาและจำนวนคงเหลือ" %}</small></span></a>
           {% endif %}
         </div>
       </div>

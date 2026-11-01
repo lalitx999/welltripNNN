@@ -9,6 +9,7 @@ from apps.accounts.forms import LoginForm, UserRegistrationForm, MerchantRegistr
 from apps.accounts.models import UserRoles
 from apps.accounts.permissions import role_required
 from apps.accounts.services.audit import record_audit_log, get_client_ip
+from django.utils.translation import gettext as _
 
 
 @ratelimit(key='ip', rate='20/m', method=['POST'], block=True)
@@ -49,7 +50,7 @@ def login_view(request):
                 user=user,
             )
 
-            messages.success(request, f"ยินดีต้อนรับ {user.first_name or user.email}")
+            messages.success(request, _("ยินดีต้อนรับ {value}").format(value=user.first_name or user.email))
 
             next_url = request.GET.get('next')
             # Reject //evil.com and other off-site targets (open redirect)
@@ -60,7 +61,7 @@ def login_view(request):
 
             return redirect_after_auth(user)
         else:
-            messages.error(request, "การเข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบอีเมลและรหัสผ่าน")
+            messages.error(request, _("การเข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบอีเมลและรหัสผ่าน"))
 
     return render(request, 'accounts/login.html', {'form': form})
 
@@ -96,10 +97,10 @@ def register_view(request):
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             request.session.cycle_key()
 
-            messages.success(request, "สร้างบัญชีผู้ใช้งานสำเร็จ")
+            messages.success(request, _("สร้างบัญชีผู้ใช้งานสำเร็จ"))
             return redirect_after_auth(user)
         else:
-            messages.error(request, "ข้อมูลการสมัครสมาชิกไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง")
+            messages.error(request, _("ข้อมูลการสมัครสมาชิกไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง"))
 
     return render(request, 'accounts/register.html', {'form': form})
 
@@ -140,10 +141,10 @@ def merchant_register_view(request):
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             request.session.cycle_key()
 
-            messages.success(request, f"ยื่นคำขอเปิดร้าน '{merchant.business_name}' สำเร็จ ขณะนี้อยู่ระหว่างการตรวจสอบโดยผู้ดูแลระบบ (Pending Review)")
+            messages.success(request, _("ยื่นคำขอเปิดร้าน '{business_name}' สำเร็จ ขณะนี้อยู่ระหว่างการตรวจสอบโดยผู้ดูแลระบบ (Pending Review)").format(business_name=merchant.business_name))
             return redirect('accounts:portal_dashboard')
         else:
-            messages.error(request, "ข้อมูลการลงทะเบียนผู้ประกอบการไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง")
+            messages.error(request, _("ข้อมูลการลงทะเบียนผู้ประกอบการไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง"))
 
     return render(request, 'accounts/register_merchant.html', {'form': form})
 
@@ -168,7 +169,7 @@ def logout_view(request):
 
     logout(request)
     request.session.flush()
-    messages.success(request, "ออกจากระบบเรียบร้อยแล้ว")
+    messages.success(request, _("ออกจากระบบเรียบร้อยแล้ว"))
     return redirect('core:home')
 
 
@@ -204,7 +205,7 @@ def portal_dashboard_view(request):
     }
     vendor_items = BookingItem.objects.filter(vendor=user).select_related('booking')
     return render(request, 'accounts/portal_dashboard.html', {
-        'page_title': 'Partner Studio - ภาพรวมธุรกิจชุมชน',
+        'page_title': _("Partner Studio - ภาพรวมธุรกิจชุมชน"),
         'listing_count': listing_counts.get(user.role, lambda: 0)(),
         'awaiting_count': vendor_items.filter(booking__status=BookingStatus.AWAITING_PAYMENT).count(),
         'confirmed_count': vendor_items.filter(booking__status=BookingStatus.CONFIRMED).count(),
@@ -244,7 +245,7 @@ def profile_view(request):
             changes={'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number},
             user=user,
         )
-        messages.success(request, "บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว")
+        messages.success(request, _("บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว"))
         return redirect('accounts:profile')
 
     from apps.bookings.models import Booking, BookingStatus
@@ -259,7 +260,7 @@ def profile_view(request):
     merchant_profile = getattr(user, 'merchant_profile', None)
 
     return render(request, 'accounts/profile.html', {
-        'page_title': 'โปรไฟล์ส่วนตัว — WellTrip',
+        'page_title': _("โปรไฟล์ส่วนตัว — WellTrip"),
         'total_bookings_count': total_bookings_count,
         'active_bookings_count': active_bookings_count,
         'stamps_count': stamps_count,

@@ -17,6 +17,7 @@ from apps.bookings.services.pricing import parse_date, stay_dates
 from apps.accommodations.models import Room, RoomPricingCalendar
 from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot
 from apps.otop.models import OTOPProduct
+from django.utils.translation import gettext as _
 
 
 class StockUnavailableError(Exception):
@@ -40,7 +41,7 @@ def process_checkout(
     Guarantees no race condition or negative inventory can ever occur.
     """
     if not cart_items:
-        raise ValueError("ตะกร้าสินค้าว่างเปล่า ไม่สามารถดำเนินการสั่งซื้อได้")
+        raise ValueError(_("ตะกร้าสินค้าว่างเปล่า ไม่สามารถดำเนินการสั่งซื้อได้"))
 
     total_booking_amount = Decimal("0.00")
     pending_items_to_create = []
@@ -56,7 +57,7 @@ def process_checkout(
             try:
                 room = Room.objects.select_related("accommodation__owner").get(id=entity_id, is_active=True)
             except (Room.DoesNotExist, ValueError, DjangoValidationError):
-                raise StockUnavailableError("ไม่พบห้องพักที่เลือก หรือห้องพักนี้ปิดการจองแล้ว")
+                raise StockUnavailableError(_("ไม่พบห้องพักที่เลือก หรือห้องพักนี้ปิดการจองแล้ว"))
 
             check_in = parse_date(item.get("date")) or timezone.now().date()
             nights = max(1, int(item.get("nights", 1) or 1))
@@ -80,7 +81,7 @@ def process_checkout(
                     calendar = RoomPricingCalendar.objects.select_for_update().get(id=calendar.id)
 
                 if calendar.available_count < quantity:
-                    raise StockUnavailableError(f"ห้องพัก '{room.name}' เต็มแล้วสำหรับวันที่ {booking_date}")
+                    raise StockUnavailableError(_("ห้องพัก '{name}' เต็มแล้วสำหรับวันที่ {booking_date}").format(name=room.name, booking_date=booking_date))
 
                 calendar.available_count -= quantity
                 calendar.save(update_fields=["available_count"])
@@ -112,7 +113,7 @@ def process_checkout(
 
             if slot:
                 if slot.capacity_available < quantity:
-                    raise StockUnavailableError(f"รอบเวลาบริการ '{slot.service.name}' เต็มแล้ว")
+                    raise StockUnavailableError(_("รอบเวลาบริการ '{name}' เต็มแล้ว").format(name=slot.service.name))
 
                 slot.capacity_available -= quantity
                 slot.save(update_fields=["capacity_available"])
@@ -142,7 +143,7 @@ def process_checkout(
                     "vendor": service.owner,
                     "item_type": BookingItemType.WELLNESS,
                     "entity_id": str(service.id),
-                    "item_title_snapshot": f"{service.name} ({service.duration_minutes} นาที)",
+                    "item_title_snapshot": _("{name} ({duration_minutes} นาที)").format(name=service.name, duration_minutes=service.duration_minutes),
                     "unit_price_snapshot": service.price,
                     "quantity": quantity,
                     "subtotal": subtotal,
@@ -157,7 +158,7 @@ def process_checkout(
             )
 
             if product.stock_quantity < quantity:
-                raise StockUnavailableError(f"สินค้า '{product.name}' คงเหลือไม่เพียงพอ (เหลือ {product.stock_quantity} ชิ้น)")
+                raise StockUnavailableError(_("สินค้า '{name}' คงเหลือไม่เพียงพอ (เหลือ {stock_quantity} ชิ้น)").format(name=product.name, stock_quantity=product.stock_quantity))
 
             product.stock_quantity -= quantity
             product.save(update_fields=["stock_quantity", "updated_at"])

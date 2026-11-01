@@ -1,0 +1,6286 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-01 14:29+0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/accommodations/forms.py:20 templates/portal/homestay.html:56
+msgid "เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225"
+msgstr "e.g. https://maps.app.goo.gl/... or 15.1186, 104.3225"
+
+#: apps/accommodations/forms.py:29
+msgid "เช่น ห้องระเบียงชมดาว"
+msgstr "e.g. Stargazing Balcony Room"
+
+#: apps/accommodations/models.py:16
+msgid "รอการตรวจสอบ (Pending)"
+msgstr "Pending review"
+
+#: apps/accommodations/models.py:17
+msgid "เปิดให้บริการ (Active)"
+msgstr "Active"
+
+#: apps/accommodations/models.py:18
+msgid "ระงับชั่วคราว (Suspended)"
+msgstr "Suspended"
+
+#: apps/accommodations/views.py:112
+#, python-brace-format
+msgid "โฮมสเตย์ของ {value}"
+msgstr "{value}’s homestay"
+
+#: apps/accommodations/views.py:120
+msgid "ที่พักนี้ถูกระงับโดยผู้ดูแลระบบ กรุณาติดต่อทีมงาน"
+msgstr ""
+"This property was suspended by an administrator. Please contact our team."
+
+#: apps/accommodations/views.py:122
+msgid "เพิ่มห้องพักอย่างน้อย 1 ห้องก่อนเปิดให้จอง"
+msgstr "Add at least one room before opening for bookings."
+
+#: apps/accommodations/views.py:132
+msgid "เปิดให้จองแล้ว"
+msgstr "Now open for bookings"
+
+#: apps/accommodations/views.py:132
+msgid "ซ่อนที่พักจากหน้าเว็บแล้ว"
+msgstr "Property hidden from the website"
+
+#: apps/accommodations/views.py:146
+#, python-brace-format
+msgid "บันทึกข้อมูล '{name}' เรียบร้อยแล้ว"
+msgstr "Saved “{name}”"
+
+#: apps/accommodations/views.py:188
+#, python-brace-format
+msgid "เพิ่มห้องพัก '{name}' เรียบร้อยแล้ว"
+msgstr "Added room “{name}”"
+
+#: apps/accommodations/views.py:190
+msgid "ข้อมูลห้องพักไม่ถูกต้อง กรุณาตรวจสอบ"
+msgstr "Room details are invalid. Please check the form."
+
+#: apps/accommodations/views.py:199
+msgid "รูปภาพไม่ถูกต้อง"
+msgstr "Invalid image"
+
+#: apps/accommodations/views.py:216
+#, python-brace-format
+msgid "เพิ่มรูปห้อง '{name}' เรียบร้อยแล้ว"
+msgstr "Added a photo to “{name}”"
+
+#: apps/accommodations/views.py:231
+msgid "ลบรูปภาพเรียบร้อยแล้ว"
+msgstr "Photo deleted"
+
+#: apps/accommodations/views.py:247
+#, python-brace-format
+msgid "ลบห้องพัก '{room_name}' เรียบร้อยแล้ว"
+msgstr "Deleted room “{room_name}”"
+
+#: apps/accommodations/views.py:270
+msgid "ยังไม่มีข้อมูลที่พัก กรุณาสร้างที่พักก่อนจัดการปฏิทิน"
+msgstr "No property yet. Create a property before managing the calendar."
+
+#: apps/accommodations/views.py:334
+#, python-brace-format
+msgid "อัปเดตราคาและจำนวนห้องว่างวันที่ {date} สำเร็จ"
+msgstr "Updated price and availability for {date}"
+
+#: apps/accounts/admin_views.py:87
+msgid "ศูนย์ควบคุมระบบแอดมิน (Admin Command Center) — WellTrip"
+msgstr "Admin Command Center — WellTrip"
+
+#: apps/accounts/admin_views.py:242
+#, python-brace-format
+msgid ""
+"อนุมัติพาร์ทเนอร์ {email} เรียบร้อยแล้ว (สินค้า/ห้องพักเปิดให้บริการทันที "
+"พร้อมส่งอีเมลแจ้งเตือน)"
+msgstr ""
+"Approved partner {email} (listings are live and a notification email was "
+"sent)"
+
+#: apps/accounts/admin_views.py:254
+msgid ""
+"ข้อมูลเอกสารประกอบการยืนยันตัวตนไม่ครบถ้วนหรือไม่สอดคล้องตามเกณฑ์มาตรฐาน"
+msgstr ""
+"The verification documents are incomplete or do not meet our standards."
+
+#: apps/accounts/admin_views.py:273
+#, python-brace-format
+msgid "ปฏิเสธการอนุมัติพาร์ทเนอร์ {email} และส่งอีเมลแจ้งเหตุผลเรียบร้อยแล้ว"
+msgstr "Rejected partner {email} and emailed the reason"
+
+#: apps/accounts/admin_views.py:298
+msgid "ความปลอดภัย: ไม่อนุญาตให้ลบบัญชีของตนเองผ่านระบบผู้ดูแล"
+msgstr "Security: you cannot delete your own account from the admin panel."
+
+#: apps/accounts/admin_views.py:304
+msgid ""
+"การละเมิดสิทธิ์: ผู้ดูแลชุมชน (Community Admin) "
+"ไม่มีสิทธิ์ลบบัญชีผู้ดูแลระบบสูงสุด (Super Admin)"
+msgstr ""
+"Permission denied: Community Admins cannot delete Super Admin accounts."
+
+#: apps/accounts/admin_views.py:307
+msgid ""
+"การละเมิดสิทธิ์: ผู้ดูแลชุมชนไม่สามารถลบบัญชีผู้ดูแลชุมชนอื่นได้ "
+"(สงวนสิทธิ์เฉพาะ Super Admin)"
+msgstr ""
+"Permission denied: Community Admins cannot delete other Community Admins "
+"(Super Admin only)."
+
+#: apps/accounts/admin_views.py:323
+#, python-brace-format
+msgid "ลบบัญชีผู้ใช้ {user_email} ออกจากระบบเรียบร้อยแล้ว"
+msgstr "Deleted user {user_email}"
+
+#: apps/accounts/admin_views.py:341
+#, python-brace-format
+msgid ""
+"ผู้ใช้ {user_email} มีข้อมูลประวัติการเงิน การจอง หรือบริการผูกอยู่ "
+"จึงได้ทำการระงับ/ปิดการใช้งาน (Soft-Delete) "
+"เพื่อรักษาหลักฐานทางบัญชีตามมาตรฐานความปลอดภัย"
+msgstr ""
+"User {user_email} has payment, booking or service records, so the account "
+"was deactivated (soft delete) to keep the accounting trail."
+
+#: apps/accounts/admin_views.py:398
+msgid "กรุณาระบุชื่อรายการ"
+msgstr "Please enter a name"
+
+#: apps/accounts/admin_views.py:404 apps/bookings/views.py:216
+#: templates/partials/seo_org_jsonld.html:21
+msgid "เมืองศรีสะเกษ"
+msgstr "Mueang Sisaket"
+
+#: apps/accounts/admin_views.py:417
+msgid "ห้องพักมาตรฐาน"
+msgstr "Standard room"
+
+#: apps/accounts/admin_views.py:472
+#, python-brace-format
+msgid "ไม่พบประเภทแคตตาล็อก: {item_type}"
+msgstr "Unknown catalog type: {item_type}"
+
+#: apps/accounts/admin_views.py:483
+#, python-brace-format
+msgid "เพิ่มรายการ [{item_type}] '{title}' สำเร็จ"
+msgstr "Added [{item_type}] “{title}”"
+
+#: apps/accounts/admin_views.py:485
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในการเพิ่มรายการ: {str}"
+msgstr "Could not add the item: {str}"
+
+#: apps/accounts/admin_views.py:560 apps/accounts/admin_views.py:594
+#, python-brace-format
+msgid "ไม่พบประเภทรายการ {item_type}"
+msgstr "Unknown item type {item_type}"
+
+#: apps/accounts/admin_views.py:571
+#, python-brace-format
+msgid "แก้ไขข้อมูล [{item_type}] สำเร็จ"
+msgstr "Updated [{item_type}]"
+
+#: apps/accounts/admin_views.py:573
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในการแก้ไข: {str}"
+msgstr "Could not save changes: {str}"
+
+#: apps/accounts/admin_views.py:608
+#, python-brace-format
+msgid "ลบรายการ [{item_type}] '{item_name}' เรียบร้อยแล้ว"
+msgstr "Deleted [{item_type}] “{item_name}”"
+
+#: apps/accounts/admin_views.py:610
+#, python-brace-format
+msgid "ไม่สามารถลบรายการได้เนื่องจากมีข้อมูลออเดอร์ผูกอยู่ ({str})"
+msgstr "This item cannot be deleted because orders reference it ({str})"
+
+#: apps/accounts/admin_views.py:642
+msgid "ไม่พบหมวดหมู่"
+msgstr "Category not found"
+
+#: apps/accounts/admin_views.py:645
+msgid "เปิดให้บริการ/พร้อมขาย"
+msgstr "Active / on sale"
+
+#: apps/accounts/admin_views.py:645
+msgid "ระงับ/ปิดบริการชั่วคราว"
+msgstr "Suspended / temporarily closed"
+
+#: apps/accounts/admin_views.py:646
+#, python-brace-format
+msgid "เปลี่ยนสถานะ [{item_type}] เป็น '{status_text}' เรียบร้อยแล้ว"
+msgstr "Changed [{item_type}] status to “{status_text}”"
+
+#: apps/accounts/admin_views.py:648
+#, python-brace-format
+msgid "เกิดข้อผิดพลาด: {str}"
+msgstr "Something went wrong: {str}"
+
+#: apps/accounts/admin_views.py:677
+msgid "กรุณาระบุอีเมลและชื่อสถานประกอบการ"
+msgstr "Please enter an email and business name"
+
+#: apps/accounts/admin_views.py:682 apps/accounts/admin_views.py:851
+#: apps/accounts/admin_views.py:959
+#, python-brace-format
+msgid "รหัสผ่านไม่ผ่านเกณฑ์: {problem}"
+msgstr "Password rejected: {problem}"
+
+#: apps/accounts/admin_views.py:686
+#, python-brace-format
+msgid "อีเมล {email} มีอยู่ในระบบแล้ว"
+msgstr "{email} is already registered"
+
+#: apps/accounts/admin_views.py:716
+#, python-brace-format
+msgid ""
+"เพิ่มพาร์ทเนอร์ '{business_name}' ({email}) เรียบร้อยแล้ว (รหัสผ่านเริ่มต้น:"
+" {password})"
+msgstr ""
+"Added partner “{business_name}” ({email}) (initial password: {password})"
+
+#: apps/accounts/admin_views.py:718
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในการเพิ่มพาร์ทเนอร์: {str}"
+msgstr "Could not add the partner: {str}"
+
+#: apps/accounts/admin_views.py:755
+#, python-brace-format
+msgid "แก้ไขข้อมูลพาร์ทเนอร์ '{business_name}' เรียบร้อยแล้ว"
+msgstr "Updated partner “{business_name}”"
+
+#: apps/accounts/admin_views.py:782
+#, python-brace-format
+msgid "ลบข้อมูลพาร์ทเนอร์ '{business_name}' และระงับบัญชีเรียบร้อยแล้ว"
+msgstr "Deleted partner “{business_name}” and suspended the account"
+
+#: apps/accounts/admin_views.py:784
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในการลบพาร์ทเนอร์: {str}"
+msgstr "Could not delete the partner: {str}"
+
+#: apps/accounts/admin_views.py:822
+msgid "กรุณากำหนดรหัสผ่าน"
+msgstr "Please set a password"
+
+#: apps/accounts/admin_views.py:842
+msgid "กรุณาระบุอีเมลผู้ใช้งาน"
+msgstr "Please enter the user’s email"
+
+#: apps/accounts/admin_views.py:846
+msgid "ไม่มีสิทธิ์กำหนดบทบาทนี้"
+msgstr "You are not allowed to assign this role"
+
+#: apps/accounts/admin_views.py:855
+#, python-brace-format
+msgid "อีเมล {email} มีผู้ใช้งานในระบบแล้ว"
+msgstr "{email} is already registered"
+
+#: apps/accounts/admin_views.py:878
+#, python-brace-format
+msgid "สร้างบัญชีผู้ใช้ {email} (บทบาท: {role}) สำเร็จ"
+msgstr "Created account {email} (role: {role})"
+
+#: apps/accounts/admin_views.py:880
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในการสร้างบัญชี: {str}"
+msgstr "Could not create the account: {str}"
+
+#: apps/accounts/admin_views.py:892
+msgid "ไม่มีสิทธิ์แก้ไขบัญชี Super Admin"
+msgstr "You are not allowed to edit Super Admin accounts"
+
+#: apps/accounts/admin_views.py:915
+#, python-brace-format
+msgid "อัปเดตข้อมูลผู้ใช้ {email} เรียบร้อยแล้ว"
+msgstr "Updated user {email}"
+
+#: apps/accounts/admin_views.py:925
+msgid "ไม่สามารถระงับบัญชีของตนเองได้"
+msgstr "You cannot suspend your own account"
+
+#: apps/accounts/admin_views.py:928
+msgid "ไม่มีสิทธิ์ระงับบัญชี Super Admin"
+msgstr "You are not allowed to suspend Super Admin accounts"
+
+#: apps/accounts/admin_views.py:934 apps/accounts/admin_views.py:1398
+#: templates/admin/tabs/users.html:27
+msgid "เปิดใช้งาน"
+msgstr "Activate"
+
+#: apps/accounts/admin_views.py:934
+msgid "ระงับการใช้งาน"
+msgstr "Suspend"
+
+#: apps/accounts/admin_views.py:943
+#, python-brace-format
+msgid "เปลี่ยนสถานะบัญชี {email} เป็น '{status_str}' เรียบร้อยแล้ว"
+msgstr "Changed {email} to “{status_str}”"
+
+#: apps/accounts/admin_views.py:953
+msgid "ไม่มีสิทธิ์รีเซ็ตรหัสผ่านของ Super Admin"
+msgstr "You are not allowed to reset a Super Admin password"
+
+#: apps/accounts/admin_views.py:973
+#, python-brace-format
+msgid "รีเซ็ตรหัสผ่านสำหรับ {email} เรียบร้อยแล้ว"
+msgstr "Password reset for {email}"
+
+#: apps/accounts/admin_views.py:1031
+msgid "กรุณาระบุชื่อจุดเช็คอิน"
+msgstr "Please enter a check-in point name"
+
+#: apps/accounts/admin_views.py:1057
+#, python-brace-format
+msgid "เพิ่มจุดเช็คอิน '{title}' เรียบร้อยแล้ว (QR Secret: {value}...)"
+msgstr "Added check-in point “{title}” (QR secret: {value}...)"
+
+#: apps/accounts/admin_views.py:1059
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในการสร้างจุดเช็คอิน: {str}"
+msgstr "Could not create the check-in point: {str}"
+
+#: apps/accounts/admin_views.py:1097
+#, python-brace-format
+msgid "แก้ไขจุดเช็คอิน '{title}' สำเร็จ"
+msgstr "Updated check-in point “{title}”"
+
+#: apps/accounts/admin_views.py:1117
+#, python-brace-format
+msgid "ลบจุดเช็คอิน '{title}' เรียบร้อยแล้ว"
+msgstr "Deleted check-in point “{title}”"
+
+#: apps/accounts/admin_views.py:1142
+msgid "กรุณาระบุหัวข้อเรื่องเล่า/บทความ"
+msgstr "Please enter a title"
+
+#: apps/accounts/admin_views.py:1168
+#, python-brace-format
+msgid "สร้างบทความ/เรื่องเล่า '{title}' สำเร็จ"
+msgstr "Created story “{title}”"
+
+#: apps/accounts/admin_views.py:1170
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในการสร้างบทความ: {str}"
+msgstr "Could not create the story: {str}"
+
+#: apps/accounts/admin_views.py:1218
+#, python-brace-format
+msgid "แก้ไขบทความ '{title}' สำเร็จ"
+msgstr "Updated story “{title}”"
+
+#: apps/accounts/admin_views.py:1239
+#, python-brace-format
+msgid "ลบบทความ '{title}' เรียบร้อยแล้ว"
+msgstr "Deleted story “{title}”"
+
+#: apps/accounts/admin_views.py:1271
+#, python-brace-format
+msgid "อัปเดตสถานะการชำระเงินรหัส {booking_code} เป็น '{status}'"
+msgstr "Payment for {booking_code} set to “{status}”"
+
+#: apps/accounts/admin_views.py:1273
+msgid "สถานะการชำระเงินไม่ถูกต้อง"
+msgstr "Invalid payment status"
+
+#: apps/accounts/admin_views.py:1296
+#, python-brace-format
+msgid "ลบหลักฐานสลิป ({slip_ref}) ของรายการ {booking_code} เรียบร้อยแล้ว"
+msgstr "Deleted slip ({slip_ref}) for {booking_code}"
+
+#: apps/accounts/admin_views.py:1323
+#, python-brace-format
+msgid ""
+"ลบรายการชำระเงินและคำสั่งจองรหัส {booking_code} ({customer_email}) "
+"เรียบร้อยแล้ว"
+msgstr "Deleted payment and booking {booking_code} ({customer_email})"
+
+#: apps/accounts/admin_views.py:1325
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในการลบรายการ: {str}"
+msgstr "Could not delete: {str}"
+
+#: apps/accounts/admin_views.py:1343
+msgid "กรุณาระบุรหัสคูปอง (Coupon Code)"
+msgstr "Please enter a coupon code"
+
+#: apps/accounts/admin_views.py:1347
+#, python-brace-format
+msgid "รหัสคูปอง '{code}' มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น"
+msgstr "Coupon code “{code}” already exists. Please use another code."
+
+#: apps/accounts/admin_views.py:1353
+msgid "มูลค่าส่วนลดต้องมากกว่า 0 บาท"
+msgstr "The discount must be more than 0 baht"
+
+#: apps/accounts/admin_views.py:1356
+msgid "มูลค่าส่วนลดไม่ถูกต้อง"
+msgstr "Invalid discount amount"
+
+#: apps/accounts/admin_views.py:1386
+msgid ""
+"สร้างคูปองส่วนลดรหัส '{code}' (ส่วนลด ฿{discount_val:,.2f}) เรียบร้อยแล้ว"
+msgstr "Created coupon “{code}” (฿{discount_val:,.2f} off)"
+
+#: apps/accounts/admin_views.py:1398
+msgid "ปิดการใช้งาน"
+msgstr "Deactivate"
+
+#: apps/accounts/admin_views.py:1399
+#, python-brace-format
+msgid "{status_str} คูปอง '{code}' เรียบร้อยแล้ว"
+msgstr "{status_str} coupon “{code}”"
+
+#: apps/accounts/admin_views.py:1419
+#, python-brace-format
+msgid "ลบคูปองส่วนลด '{code}' เรียบร้อยแล้ว"
+msgstr "Deleted coupon “{code}”"
+
+#: apps/accounts/admin_views.py:1459
+msgid "บันทึกการตั้งค่าค่าจัดส่งเรียบร้อยแล้ว"
+msgstr "Shipping settings saved"
+
+#: apps/accounts/forms.py:14 templates/accounts/login.html:26
+#: templates/accounts/register.html:39
+#: templates/accounts/register_merchant.html:61
+#: templates/payments/admin_review.html:26
+msgid "อีเมล"
+msgstr "Email"
+
+#: apps/accounts/forms.py:22 apps/accounts/forms.py:63
+#: apps/accounts/forms.py:167 templates/accounts/login.html:32
+msgid "รหัสผ่าน"
+msgstr "Password"
+
+#: apps/accounts/forms.py:48
+msgid "อีเมลหรือรหัสผ่านไม่ถูกต้อง โปรดตรวจสอบอีกครั้ง"
+msgstr "Incorrect email or password. Please try again."
+
+#: apps/accounts/forms.py:50
+msgid "บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ"
+msgstr "This account is suspended. Please contact an administrator."
+
+#: apps/accounts/forms.py:66
+msgid "อย่างน้อย 10 ตัวอักษร"
+msgstr "At least 10 characters"
+
+#: apps/accounts/forms.py:71 apps/accounts/forms.py:168
+#: templates/accounts/register.html:55
+#: templates/accounts/register_merchant.html:64
+msgid "ยืนยันรหัสผ่าน"
+msgstr "Confirm password"
+
+#: apps/accounts/forms.py:74
+msgid "กรอกรหัสผ่านซ้ำอีกครั้ง"
+msgstr "Enter the password again"
+
+#: apps/accounts/forms.py:81
+msgid "นักท่องเที่ยว (Tourist)"
+msgstr "Tourist"
+
+#: apps/accounts/forms.py:86
+msgid "ประเภทผู้ใช้งาน"
+msgstr "Account type"
+
+#: apps/accounts/forms.py:105
+msgid "อีเมลนี้ถูกใช้งานแล้วในระบบ"
+msgstr "This email is already in use"
+
+#: apps/accounts/forms.py:115 apps/accounts/forms.py:192
+msgid "หมายเลขโทรศัพท์ต้องมีอย่างน้อย 9-10 หลัก"
+msgstr "The phone number must have at least 9–10 digits"
+
+#: apps/accounts/forms.py:125 apps/accounts/forms.py:202
+msgid "รหัสผ่านทั้งสองช่องไม่ตรงกัน"
+msgstr "The passwords do not match"
+
+#: apps/accounts/forms.py:149
+msgid "โฮมสเตย์ / ที่พักชุมชน (บ้านพัก ที่พักนิเวศ รีสอร์ทชุมชน)"
+msgstr ""
+"Homestay / community lodging (guesthouses, eco-stays, community resorts)"
+
+#: apps/accounts/forms.py:150
+msgid "ร้านอาหารเพื่อสุขภาพ (อาหารออร์แกนิก สมุนไพร อาหารพื้นบ้าน)"
+msgstr "Healthy restaurant (organic, herbal and local food)"
+
+#: apps/accounts/forms.py:151
+msgid "บริการสุขภาพ & สปา (นวดแผนไทย สปาอโรมา วารีบำบัด)"
+msgstr "Wellness & spa (Thai massage, aroma spa, hydrotherapy)"
+
+#: apps/accounts/forms.py:152
+msgid "สินค้า OTOP ชุมชน (สินค้าชุมชน ผลิตภัณฑ์สมุนไพร หัตถกรรม)"
+msgstr "Community OTOP products (local goods, herbal products, handicrafts)"
+
+#: apps/accounts/forms.py:159
+msgid "ประเภทสถานประกอบการ"
+msgstr "Business type"
+
+#: apps/accounts/forms.py:163
+msgid "ชื่อเจ้าของร้าน / ผู้ดูแล"
+msgstr "Owner / manager first name"
+
+#: apps/accounts/forms.py:164 templates/accounts/profile.html:50
+#: templates/accounts/register.html:33
+#: templates/accounts/register_merchant.html:60
+#: templates/admin/tabs/modals.html:120 templates/admin/tabs/modals.html:141
+msgid "นามสกุล"
+msgstr "Last name"
+
+#: apps/accounts/forms.py:165
+msgid "เบอร์โทรศัพท์ติดต่อ"
+msgstr "Contact phone number"
+
+#: apps/accounts/forms.py:166
+msgid "อีเมลเข้าสู่ระบบ"
+msgstr "Login email"
+
+#: apps/accounts/forms.py:171
+msgid "ชื่อสถานประกอบการ / ร้านค้า"
+msgstr "Business / shop name"
+
+#: apps/accounts/forms.py:173 apps/accounts/forms.py:238
+msgid "08:00 - 18:00 น."
+msgstr "08:00 - 18:00"
+
+#: apps/accounts/forms.py:173 templates/accounts/register_merchant.html:76
+msgid "วันและเวลาเปิดทำการ"
+msgstr "Opening days and hours"
+
+#: apps/accounts/forms.py:176
+msgid "ลิงก์ Google Maps ของร้าน"
+msgstr "Google Maps link of your business"
+
+#: apps/accounts/forms.py:179
+msgid "คำอธิบายร้านค้า / จุดเด่นของบริการ"
+msgstr "Business description / highlights"
+
+#: apps/accounts/forms.py:185
+msgid "อีเมลนี้ถูกลงทะเบียนไว้ในระบบแล้ว กรุณาเข้าสู่ระบบ"
+msgstr "This email is already registered. Please log in."
+
+#: apps/accounts/middleware.py:30
+msgid ""
+"เซสชันของคุณหมดอายุเนื่องจากไม่มีการใช้งานเกิน 30 นาที กรุณาเข้าสู่ระบบใหม่"
+msgstr ""
+"Your session expired after 30 minutes of inactivity. Please log in again."
+
+#: apps/accounts/models.py:11
+msgid "Tourist (นักท่องเที่ยว)"
+msgstr "Tourist"
+
+#: apps/accounts/models.py:12
+msgid "Homestay Owner (เจ้าของที่พัก/โฮมสเตย์)"
+msgstr "Homestay Owner"
+
+#: apps/accounts/models.py:13
+msgid "Restaurant Owner (เจ้าของร้านอาหารสุขภาพ)"
+msgstr "Restaurant Owner"
+
+#: apps/accounts/models.py:14
+msgid "Wellness Owner (เจ้าของสปา/นวดแผนไทย)"
+msgstr "Wellness / Spa Owner"
+
+#: apps/accounts/models.py:15
+msgid "OTOP Owner (เจ้าของสินค้าชุมชน OTOP)"
+msgstr "OTOP Owner"
+
+#: apps/accounts/models.py:16
+msgid "Community Admin (ผู้ดูแลระบบชุมชน)"
+msgstr "Community Admin"
+
+#: apps/accounts/models.py:17
+msgid "Super Admin (ผู้ดูแลระบบสูงสุด)"
+msgstr "Super Admin"
+
+#: apps/accounts/models.py:128
+msgid "อยู่ระหว่างการตรวจสอบ (Pending Review)"
+msgstr "Pending review"
+
+#: apps/accounts/models.py:129
+msgid "อนุมัติแล้ว (Approved)"
+msgstr "Approved"
+
+#: apps/accounts/models.py:130
+msgid "ไม่ผ่านการอนุมัติ (Rejected)"
+msgstr "Rejected"
+
+#: apps/accounts/models.py:145 apps/community/models.py:14
+#: templates/accounts/register_merchant.html:42
+msgid "โฮมสเตย์ / ที่พักชุมชน"
+msgstr "Homestay / community lodging"
+
+#: apps/accounts/models.py:146 templates/accounts/register_merchant.html:45
+msgid "ร้านอาหารเพื่อสุขภาพ"
+msgstr "Healthy restaurant"
+
+#: apps/accounts/models.py:147
+msgid "บริการสุขภาพ & สปา"
+msgstr "Wellness & spa"
+
+#: apps/accounts/models.py:148 templates/accounts/register_merchant.html:51
+msgid "สินค้า OTOP ชุมชน"
+msgstr "Community OTOP products"
+
+#: apps/accounts/views.py:53
+#, python-brace-format
+msgid "ยินดีต้อนรับ {value}"
+msgstr "Welcome, {value}"
+
+#: apps/accounts/views.py:64
+msgid "การเข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบอีเมลและรหัสผ่าน"
+msgstr "Login failed. Please check your email and password."
+
+#: apps/accounts/views.py:100
+msgid "สร้างบัญชีผู้ใช้งานสำเร็จ"
+msgstr "Account created"
+
+#: apps/accounts/views.py:103
+msgid "ข้อมูลการสมัครสมาชิกไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง"
+msgstr "Some sign-up details are invalid. Please check the errors below."
+
+#: apps/accounts/views.py:144
+#, python-brace-format
+msgid ""
+"ยื่นคำขอเปิดร้าน '{business_name}' สำเร็จ "
+"ขณะนี้อยู่ระหว่างการตรวจสอบโดยผู้ดูแลระบบ (Pending Review)"
+msgstr ""
+"Application for “{business_name}” submitted. It is now pending review by an "
+"administrator."
+
+#: apps/accounts/views.py:147
+msgid ""
+"ข้อมูลการลงทะเบียนผู้ประกอบการไม่ถูกต้อง กรุณาตรวจสอบข้อผิดพลาดด้านล่าง"
+msgstr ""
+"Some partner registration details are invalid. Please check the errors "
+"below."
+
+#: apps/accounts/views.py:172
+msgid "ออกจากระบบเรียบร้อยแล้ว"
+msgstr "You have logged out"
+
+#: apps/accounts/views.py:208
+msgid "Partner Studio - ภาพรวมธุรกิจชุมชน"
+msgstr "Partner Studio - Business overview"
+
+#: apps/accounts/views.py:248
+msgid "บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว"
+msgstr "Profile saved"
+
+#: apps/accounts/views.py:263
+msgid "โปรไฟล์ส่วนตัว — WellTrip"
+msgstr "My profile — WellTrip"
+
+#: apps/ai_recommendations/models.py:49
+msgid "กำลังวิเคราะห์"
+msgstr "Analyzing"
+
+#: apps/ai_recommendations/models.py:50
+msgid "เสร็จแล้ว"
+msgstr "Done"
+
+#: apps/ai_recommendations/models.py:51
+msgid "ไม่สำเร็จ"
+msgstr "Failed"
+
+#: apps/ai_recommendations/views.py:28
+msgid "AI Wellness Assistant - วิเคราะห์สุขภาพและวางแผนทริป"
+msgstr "AI Wellness Assistant - Health check and trip planning"
+
+#: apps/ai_recommendations/views.py:49
+msgid "ข้อมูลสุขภาพที่ส่งมาไม่ถูกต้อง"
+msgstr "The health data sent is invalid"
+
+#: apps/ai_recommendations/views.py:52
+msgid "ค่าน้ำหนักหรือส่วนสูงไม่อยู่ในเกณฑ์ที่เป็นไปได้"
+msgstr "Weight or height is outside a plausible range"
+
+#: apps/bookings/models.py:27
+msgid "รอชำระเงิน (Awaiting Payment)"
+msgstr "Awaiting payment"
+
+#: apps/bookings/models.py:28 apps/payments/models.py:23
+msgid "หมดเวลาชำระเงิน (Expired)"
+msgstr "Payment expired"
+
+#: apps/bookings/models.py:29
+msgid "ยืนยันแล้ว (Confirmed)"
+msgstr "Confirmed"
+
+#: apps/bookings/models.py:30
+msgid "ยกเลิก (Cancelled)"
+msgstr "Cancelled"
+
+#: apps/bookings/models.py:31
+msgid "เสร็จสิ้น (Completed)"
+msgstr "Completed"
+
+#: apps/bookings/models.py:35
+msgid "ที่พัก / โฮมสเตย์"
+msgstr "Stay / homestay"
+
+#: apps/bookings/models.py:36 apps/core/views.py:615
+#: templates/admin/tabs/catalog.html:8 templates/admin/tabs/modals.html:28
+#: templates/core/home.html:87 templates/core/home.html:107
+#: templates/core/home.html:149 templates/core/home_tourist.html:67
+#: templates/layouts/public.html:34 templates/layouts/public.html:64
+#: templates/layouts/public.html:135 templates/layouts/public.html:177
+#: templates/services/detail.html:5 templates/services/detail.html:12
+msgid "อาหารสุขภาพ"
+msgstr "Healthy food"
+
+#: apps/bookings/models.py:37
+msgid "นวดแผนไทย / สปา"
+msgstr "Thai massage / spa"
+
+#: apps/bookings/models.py:38
+msgid "สินค้าชุมชน OTOP"
+msgstr "Community OTOP product"
+
+#: apps/bookings/models.py:146
+msgid "ค่าจัดส่งเริ่มต้น (บาท)"
+msgstr "Base shipping fee (baht)"
+
+#: apps/bookings/models.py:150
+msgid "เปิดโปรโมชันส่งฟรีทุกออเดอร์"
+msgstr "Free shipping on every order"
+
+#: apps/bookings/models.py:157
+msgid "ยอดสั่งซื้อขั้นต่ำสำหรับส่งฟรี (บาท)"
+msgstr "Minimum order for free shipping (baht)"
+
+#: apps/bookings/models.py:163
+msgid "การตั้งค่าค่าจัดส่ง"
+msgstr "Shipping settings"
+
+#: apps/bookings/models.py:166
+msgid "ส่งฟรีทุกรายการ"
+msgstr "Free shipping on everything"
+
+#: apps/bookings/models.py:166
+#, python-brace-format
+msgid "เริ่มต้น ฿{base_shipping_fee}"
+msgstr "From ฿{base_shipping_fee}"
+
+#: apps/bookings/services/checkout.py:44
+msgid "ตะกร้าสินค้าว่างเปล่า ไม่สามารถดำเนินการสั่งซื้อได้"
+msgstr "Your cart is empty, so the order cannot be placed"
+
+#: apps/bookings/services/checkout.py:60
+msgid "ไม่พบห้องพักที่เลือก หรือห้องพักนี้ปิดการจองแล้ว"
+msgstr "The selected room was not found or is closed for booking"
+
+#: apps/bookings/services/checkout.py:84
+#, python-brace-format
+msgid "ห้องพัก '{name}' เต็มแล้วสำหรับวันที่ {booking_date}"
+msgstr "Room “{name}” is fully booked on {booking_date}"
+
+#: apps/bookings/services/checkout.py:116
+#, python-brace-format
+msgid "รอบเวลาบริการ '{name}' เต็มแล้ว"
+msgstr "The “{name}” time slot is fully booked"
+
+#: apps/bookings/services/checkout.py:146
+#, python-brace-format
+msgid "{name} ({duration_minutes} นาที)"
+msgstr "{name} ({duration_minutes} min)"
+
+#: apps/bookings/services/checkout.py:161
+#, python-brace-format
+msgid "สินค้า '{name}' คงเหลือไม่เพียงพอ (เหลือ {stock_quantity} ชิ้น)"
+msgstr "Not enough stock for “{name}” ({stock_quantity} left)"
+
+#: apps/bookings/services/pricing.py:50
+msgid "กรุณาเลือกวันเช็คอินและเช็คเอาท์ให้ถูกต้อง"
+msgstr "Please choose valid check-in and check-out dates"
+
+#: apps/bookings/services/pricing.py:52
+msgid "วันเช็คอินต้องไม่ใช่วันที่ผ่านมาแล้ว"
+msgstr "Check-in cannot be in the past"
+
+#: apps/bookings/services/pricing.py:55
+#, python-brace-format
+msgid "จองได้สูงสุด {MAX_NIGHTS} คืนต่อครั้ง"
+msgstr "You can book up to {MAX_NIGHTS} nights at a time"
+
+#: apps/bookings/services/pricing.py:81
+#, python-brace-format
+msgid "สินค้า '{name}' หมดชั่วคราว"
+msgstr "“{name}” is out of stock"
+
+#: apps/bookings/services/pricing.py:87
+msgid "ไม่พบรายการนี้ หรือรายการปิดให้บริการแล้ว"
+msgstr "This item was not found or is no longer available"
+
+#: apps/bookings/views.py:30
+msgid "123 หมู่ 4 ต.เมืองใต้"
+msgstr "123 Moo 4, Mueang Tai"
+
+#: apps/bookings/views.py:85
+msgid "ไม่มีค่าจัดส่ง"
+msgstr "No shipping fee"
+
+#: apps/bookings/views.py:90
+msgid "ฟรี (โปรโมชันส่งฟรีทั้งระบบ)"
+msgstr "Free (site-wide free shipping)"
+
+#: apps/bookings/views.py:93
+msgid "ฟรี (ช้อปครบ ฿{free_shipping_min_order:,.0f})"
+msgstr "Free (orders over ฿{free_shipping_min_order:,.0f})"
+
+#: apps/bookings/views.py:98
+msgid "ไม่มีสินค้าต้องจัดส่ง (ที่พัก/บริการ)"
+msgstr "Nothing to ship (stays/services)"
+
+#: apps/bookings/views.py:120
+msgid "ไม่พบคูปองส่วนลดนี้หรือคูปองถูกระงับแล้ว"
+msgstr "Coupon not found or no longer active"
+
+#: apps/bookings/views.py:210
+msgid "สามารถบันทึกที่อยู่จัดส่งได้สูงสุด 3 รายการเท่านั้น"
+msgstr "You can save up to 3 shipping addresses"
+
+#: apps/bookings/views.py:217 apps/core/views.py:103 apps/core/views.py:114
+#: apps/core/views.py:125 templates/community/map.html:88
+#: templates/core/home.html:23 templates/partials/seo_org_jsonld.html:22
+#: templates/services/detail.html:74
+msgid "ศรีสะเกษ"
+msgstr "Sisaket"
+
+#: apps/bookings/views.py:219
+#, python-brace-format
+msgid "ที่อยู่จัดส่ง {value}"
+msgstr "Shipping address {value}"
+
+#: apps/bookings/views.py:222
+msgid "กรุณากรอกข้อมูลชื่อผู้รับ เบอร์โทรศัพท์ และที่อยู่ให้ครบถ้วน"
+msgstr "Please fill in the recipient name, phone number and address"
+
+#: apps/bookings/views.py:237
+#, python-brace-format
+msgid "เพิ่มที่อยู่จัดส่ง '{label}' สำเร็จ"
+msgstr "Added shipping address “{label}”"
+
+#: apps/bookings/views.py:250
+#, python-brace-format
+msgid "ลบที่อยู่จัดส่ง '{get}' เรียบร้อยแล้ว"
+msgstr "Deleted shipping address “{get}”"
+
+#: apps/bookings/views.py:261
+#, python-brace-format
+msgid "เลือกที่อยู่จัดส่ง: {get}"
+msgstr "Shipping address selected: {get}"
+
+#: apps/bookings/views.py:307
+#, python-brace-format
+msgid "เพิ่ม '{title}' ลงตะกร้าเรียบร้อยแล้ว"
+msgstr "Added “{title}” to your cart"
+
+#: apps/bookings/views.py:318
+#, python-brace-format
+msgid "นำ '{get}' ออกจากตะกร้าแล้ว"
+msgstr "Removed “{get}” from your cart"
+
+#: apps/bookings/views.py:357 apps/bookings/views.py:358
+msgid "กรุณากรอกรหัสคูปอง"
+msgstr "Please enter a coupon code"
+
+#: apps/bookings/views.py:364 apps/bookings/views.py:365
+#, python-brace-format
+msgid "ไม่พบรหัสคูปอง '{code}' หรือคูปองหมดอายุแล้ว"
+msgstr "Coupon “{code}” not found or expired"
+
+#: apps/bookings/views.py:383
+msgid "ใช้งานคูปอง '{code}' สำเร็จ! ลดทันที ฿{value:,.0f}"
+msgstr "Coupon “{code}” applied! ฿{value:,.0f} off"
+
+#: apps/bookings/views.py:390
+msgid "ใช้งานคูปอง '{code}' ส่วนลด ฿{value:,.0f} สำเร็จ"
+msgstr "Coupon “{code}” applied: ฿{value:,.0f} off"
+
+#: apps/bookings/views.py:410
+msgid "ยกเลิกคูปองส่วนลดแล้ว"
+msgstr "Coupon removed"
+
+#: apps/bookings/views.py:416
+msgid "ยกเลิกการใช้คูปองส่วนลดแล้ว"
+msgstr "Coupon removed"
+
+#: apps/bookings/views.py:430 apps/bookings/views.py:457
+msgid "ตะกร้าสินค้าว่างเปล่า กรุณาเลือกบริการก่อนดำเนินการสั่งซื้อ"
+msgstr "Your cart is empty. Please choose something before checking out."
+
+#: apps/bookings/views.py:466
+msgid "กรุณาเพิ่มที่อยู่จัดส่งสำหรับสินค้า OTOP ก่อนยืนยันคำสั่งซื้อ"
+msgstr ""
+"Please add a shipping address for OTOP products before confirming the order"
+
+#: apps/bookings/views.py:471
+#, python-brace-format
+msgid "ที่อยู่จัดส่ง: {get} ({get2}) {get3} อ.{get4} จ.{get5} {get6}"
+msgstr ""
+"Shipping address: {get} ({get2}) {get3}, {get4} District, {get5} {get6}"
+
+#: apps/bookings/views.py:490
+#, python-brace-format
+msgid "สร้างคำสั่งซื้อสำเร็จ รหัส: {booking_code}"
+msgstr "Order created. Code: {booking_code}"
+
+#: apps/bookings/views.py:493
+#, python-brace-format
+msgid "ไม่สามารถดำเนินการได้: {str}"
+msgstr "Could not continue: {str}"
+
+#: apps/bookings/views.py:496
+#, python-brace-format
+msgid "เกิดข้อผิดพลาดในระบบ: {str}"
+msgstr "System error: {str}"
+
+#: apps/bookings/views.py:551
+msgid "คุณไม่มีสิทธิ์เข้าถึงข้อมูลการจองนี้"
+msgstr "You do not have access to this booking"
+
+#: apps/community/admin_views.py:24
+#, python-brace-format
+msgid "บันทึกกิจกรรม \"{title}\" แล้ว"
+msgstr "Saved event “{title}”"
+
+#: apps/community/admin_views.py:39
+#, python-brace-format
+msgid "ลบกิจกรรม \"{title}\" แล้ว"
+msgstr "Deleted event “{title}”"
+
+#: apps/community/forms.py:25
+msgid "12–13 และ 19–20 ธ.ค."
+msgstr "12–13 & 19–20 Dec"
+
+#: apps/community/forms.py:52
+msgid "วันสิ้นสุดต้องไม่ก่อนวันเริ่มงาน"
+msgstr "The end date cannot be before the start date"
+
+#: apps/community/models.py:15
+msgid "ร้านอาหารสุขภาพ"
+msgstr "Healthy restaurant"
+
+#: apps/community/models.py:16
+msgid "ศูนย์นวดแผนไทยและสปา"
+msgstr "Thai massage & spa center"
+
+#: apps/community/models.py:17
+msgid "ศูนย์จำหน่ายสินค้า OTOP"
+msgstr "OTOP shop"
+
+#: apps/community/models.py:18
+msgid "จุดถ่ายรูป / จุดเช็คอินธรรมชาติ"
+msgstr "Photo spot / nature check-in"
+
+#: apps/community/models.py:44
+msgid "รหัสความลับเฉพาะสำหรับพิมพ์ลงบนป้าย QR ณ สถานที่จริง"
+msgstr "Secret code printed on the on-site QR sign"
+
+#: apps/community/models.py:127
+msgid "คูปองนี้ถูกระงับการใช้งานแล้ว"
+msgstr "This coupon has been deactivated"
+
+#: apps/community/models.py:129
+msgid "คูปองนี้หมดอายุการใช้งานแล้ว"
+msgstr "This coupon has expired"
+
+#: apps/community/models.py:131
+msgid "ยอดสั่งซื้อขั้นต่ำสำหรับคูปองนี้คือ ฿{min_purchase:,.2f}"
+msgstr "The minimum order for this coupon is ฿{min_purchase:,.2f}"
+
+#: apps/community/models.py:132
+msgid "ใช้คูปองส่วนลดสำเร็จ"
+msgstr "Coupon applied"
+
+#: apps/community/models.py:143
+msgid "เรื่องเล่าชุมชน (Story)"
+msgstr "Community story"
+
+#: apps/community/models.py:144
+msgid "วิสาหกิจชุมชน (Community)"
+msgstr "Community enterprise"
+
+#: apps/community/models.py:145
+msgid "แหล่งท่องเที่ยว (Attraction)"
+msgstr "Attraction"
+
+#: apps/community/models.py:203
+msgid "ยินยอมระบุตำแหน่ง (Granted)"
+msgstr "Location granted"
+
+#: apps/community/models.py:204
+msgid "ปฏิเสธ (Denied)"
+msgstr "Denied"
+
+#: apps/community/models.py:205
+msgid "ไม่สามารถระบุได้ (Unavailable)"
+msgstr "Unavailable"
+
+#: apps/community/models.py:206
+msgid "หมดเวลาเชื่อมต่อ (Timeout)"
+msgstr "Timed out"
+
+#: apps/community/models.py:243
+msgid "เทศกาลและงานประเพณี"
+msgstr "Festivals & traditions"
+
+#: apps/community/models.py:244
+msgid "ดนตรีและคอนเสิร์ต"
+msgstr "Music & concerts"
+
+#: apps/community/models.py:245
+msgid "การประกวด"
+msgstr "Contests"
+
+#: apps/community/models.py:246
+msgid "กีฬา"
+msgstr "Sports"
+
+#: apps/community/models.py:247
+msgid "อาหารและกาแฟ"
+msgstr "Food & coffee"
+
+#: apps/community/models.py:248
+msgid "แคมป์และกิจกรรมกลางแจ้ง"
+msgstr "Camping & outdoors"
+
+#: apps/community/models.py:249
+msgid "อื่นๆ"
+msgstr "Other"
+
+#: apps/community/views.py:129
+#, python-brace-format
+msgid "ยินดีด้วย! คุณได้รับตราประทับ '{title}' และรับ 50 คะแนนสะสม"
+msgstr "Congratulations! You got the “{title}” stamp and 50 points"
+
+#: apps/community/views.py:131
+#, python-brace-format
+msgid "คุณเคยได้รับตราประทับของ '{title}' ไปแล้ว"
+msgstr "You already have the “{title}” stamp"
+
+#: apps/community/views.py:186
+msgid "กรุณาระบุรหัสคูปองส่วนลด"
+msgstr "Please enter a coupon code"
+
+#: apps/community/views.py:195
+#, python-brace-format
+msgid "ไม่พบคูปองรหัส '{code}' ในระบบ"
+msgstr "Coupon “{code}” was not found"
+
+#: apps/community/views.py:254
+msgid "ตั้งค่าความเป็นส่วนตัวและพิกัดตำแหน่ง (PDPA) — WellTrip"
+msgstr "Privacy & location settings (PDPA) — WellTrip"
+
+#: apps/core/services/media.py:59
+msgid "รูปแบบไฟล์ JPEG ไม่ถูกต้อง (Magic Byte Mismatch)"
+msgstr "Invalid JPEG file (magic byte mismatch)"
+
+#: apps/core/services/media.py:62
+msgid "รูปแบบไฟล์ PNG ไม่ถูกต้อง (Magic Byte Mismatch)"
+msgstr "Invalid PNG file (magic byte mismatch)"
+
+#: apps/core/services/media.py:65
+msgid "รูปแบบไฟล์ WEBP ไม่ถูกต้อง (Magic Byte Mismatch)"
+msgstr "Invalid WEBP file (magic byte mismatch)"
+
+#: apps/core/services/media.py:68
+msgid "รูปแบบไฟล์ PDF ไม่ถูกต้อง (Magic Byte Mismatch)"
+msgstr "Invalid PDF file (magic byte mismatch)"
+
+#: apps/core/services/media.py:81
+#, python-brace-format
+msgid "นามสกุลไฟล์ไม่ได้รับอนุญาต (อนุญาตเฉพาะ: {join})"
+msgstr "File type not allowed (allowed: {join})"
+
+#: apps/core/services/media.py:84
+#, python-brace-format
+msgid "ขนาดไฟล์รูปภาพเกินกำหนด (สูงสุด {value}MB)"
+msgstr "The image is too large (max {value}MB)"
+
+#: apps/core/services/media.py:132
+#, python-brace-format
+msgid "ไม่สามารถประมวลผลรูปภาพได้ รูปภาพอาจชำรุดหรือมีรูปแบบผิดปกติ: {str}"
+msgstr ""
+"Could not process the image. It may be corrupted or in an unusual format: "
+"{str}"
+
+#: apps/core/views.py:19
+msgid "ผามออีแดง"
+msgstr "Pha Mo I Daeng"
+
+#: apps/core/views.py:19
+msgid "อ.กันทรลักษ์"
+msgstr "Kantharalak"
+
+#: apps/core/views.py:19
+msgid "จุดชมวิว"
+msgstr "Viewpoint"
+
+#: apps/core/views.py:20
+msgid "ปราสาทสระกำแพงใหญ่"
+msgstr "Prasat Sa Kamphaeng Yai"
+
+#: apps/core/views.py:20
+msgid "อ.อุทุมพรพิสัย"
+msgstr "Uthumphon Phisai"
+
+#: apps/core/views.py:20 apps/core/views.py:23
+msgid "โบราณสถาน"
+msgstr "Ancient site"
+
+#: apps/core/views.py:21
+msgid "วัดป่ามหาเจดีย์แก้ว (วัดล้านขวด)"
+msgstr "Wat Pa Maha Chedi Kaew (Wat Lan Khuat)"
+
+#: apps/core/views.py:21 apps/core/views.py:22
+msgid "อ.ขุนหาญ"
+msgstr "Khun Han"
+
+#: apps/core/views.py:21
+msgid "วัด"
+msgstr "Temple"
+
+#: apps/core/views.py:22
+msgid "น้ำตกห้วยจันทร์"
+msgstr "Huai Chan Waterfall"
+
+#: apps/core/views.py:22
+msgid "น้ำตก"
+msgstr "Waterfall"
+
+#: apps/core/views.py:23
+msgid "ปราสาทปรางค์กู่"
+msgstr "Prasat Prang Ku"
+
+#: apps/core/views.py:23
+msgid "อ.ปรางค์กู่"
+msgstr "Prang Ku"
+
+#: apps/core/views.py:29
+msgid "WellTrip Sisaket คืออะไร และตอบโจทย์การท่องเที่ยวเชิงสุขภาพอย่างไร?"
+msgstr "What is WellTrip Sisaket and how does it support wellness travel?"
+
+#: apps/core/views.py:30
+msgid ""
+"WellTrip Sisaket คือแพลตฟอร์มการท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน "
+"(Wellness & Community-Based Tourism) ในจังหวัดศรีสะเกษ "
+"รวบรวมโฮมสเตย์ธรรมชาติ อาหารสุขภาพ นวดสปาสมุนไพรสด และผลิตภัณฑ์ภูมิปัญญา 4 "
+"ชนเผ่า (ลาว เขมร ส่วย เยอ) โดยรายได้ส่งตรงถึงผู้ประกอบการชุมชน"
+msgstr ""
+"WellTrip Sisaket is a wellness and community-based tourism platform in "
+"Sisaket Province. It brings together nature homestays, healthy food, fresh-"
+"herb massage and spa, and craft products from four ethnic groups (Lao, "
+"Khmer, Suai and Yoe), with income going straight to community businesses."
+
+#: apps/core/views.py:33
+msgid "การจองโฮมสเตย์และบริการสุขภาพผ่าน WellTrip มีขั้นตอนอย่างไร?"
+msgstr "How do I book a homestay or wellness service on WellTrip?"
+
+#: apps/core/views.py:34
+msgid ""
+"เลือกที่พัก อาหารสุขภาพ หรือบริการสปาลงตะกร้า แล้วกดดำเนินการสั่งซื้อ "
+"ระบบจะสรุปยอดและแสดงข้อมูลบัญชีสำหรับโอนเงิน "
+"เมื่อโอนแล้วให้แนบสลิปผ่านหน้าเว็บ ระบบจะตรวจสอบและยืนยันการจองให้"
+msgstr ""
+"Add a stay, healthy meal or spa service to your cart and check out. We show "
+"the total and the bank account to transfer to. After transferring, upload "
+"the slip on the website and we verify it and confirm your booking."
+
+#: apps/core/views.py:37
+msgid "ระบบ AI Wellness Curator วางแผนทริปและเมนูอาหารอย่างไร?"
+msgstr "How does the AI Wellness Curator plan trips and meals?"
+
+#: apps/core/views.py:38
+msgid ""
+"AI จะคำนวณดัชนีมวลกาย (BMI) อัตราการเผาผลาญ (BMR) และเป้าหมายสุขภาพของคุณ "
+"เช่น การคลายเครียดหรือการควบคุมโซเดียม แล้วจับคู่กับที่พัก เมนูอาหารสุขภาพ "
+"และโปรแกรมสปาในศรีสะเกษที่เหมาะสม"
+msgstr ""
+"The AI calculates your body mass index (BMI), metabolic rate (BMR) and "
+"health goals, such as stress relief or sodium control, then matches you with"
+" suitable stays, healthy menus and spa programs in Sisaket."
+
+#: apps/core/views.py:41
+msgid "ระบบตรวจสอบสลิปโอนเงินปลอดภัยและป้องกันสลิปซ้ำอย่างไร?"
+msgstr "How is slip verification kept safe from duplicate slips?"
+
+#: apps/core/views.py:42
+msgid ""
+"ระบบตรวจสลิปอัตโนมัติและบันทึกเลขอ้างอิงธุรกรรมของธนาคาร "
+"สลิปที่เลขอ้างอิงซ้ำจะถูกปฏิเสธ "
+"ไฟล์สลิปเปิดดูได้เฉพาะเจ้าของรายการและผู้ดูแลระบบ"
+msgstr ""
+"Slips are checked automatically and the bank transaction reference is "
+"recorded. Slips with a reused reference are rejected, and slip images can "
+"only be viewed by the booking owner and administrators."
+
+#: apps/core/views.py:45
+msgid "ผู้ประกอบการชุมชนในศรีสะเกษต้องการเข้าร่วมต้องทำอย่างไร?"
+msgstr "How can community businesses in Sisaket join?"
+
+#: apps/core/views.py:46
+msgid ""
+"สมัครสมาชิกแบบผู้ประกอบการ ระบุข้อมูลที่พัก ร้านอาหาร สปา หรือสินค้า OTOP "
+"และส่งเอกสารยืนยันตัวตน เมื่อผู้ดูแลระบบอนุมัติแล้ว "
+"สินค้าและบริการจะแสดงในระบบค้นหา"
+msgstr ""
+"Sign up as a partner, enter your stay, restaurant, spa or OTOP product "
+"details and submit identity documents. Once an administrator approves you, "
+"your products and services appear in search."
+
+#: apps/core/views.py:49
+msgid "Digital Passport และระบบสะสมตราประทับชุมชนใช้งานอย่างไร?"
+msgstr "How do the Digital Passport and community stamps work?"
+
+#: apps/core/views.py:50
+msgid ""
+"เมื่อเดินทางถึงชุมชน สแกน QR Code ประจำจุดท่องเที่ยวผ่านหน้าพาสปอร์ตดิจิทัล "
+"เพื่อปลดล็อกตราประทับและรับสิทธิพิเศษสำหรับการเดินทางครั้งถัดไป"
+msgstr ""
+"When you arrive at a community, scan the QR code at the attraction from your"
+" digital passport page to unlock a stamp and earn perks for your next trip."
+
+#: apps/core/views.py:53
+msgid "วิถีบำบัด 4 ชนเผ่าศรีสะเกษ ประกอบด้วยชนเผ่าใดและมีเอกลักษณ์อย่างไร?"
+msgstr "Which four ethnic groups shape Sisaket’s healing traditions?"
+
+#: apps/core/views.py:54
+msgid ""
+"ลาว: อาหารหมักดองธรรมชาติ สมุนไพรสวนครัว และดนตรีบำบัด · เขมร: "
+"สมุนไพรป่าพนมดงรัก แช่เท้าสมุนไพร และนวดคลายเส้น · ส่วย (กูย): "
+"ภูมิปัญญาคนเลี้ยงช้างและการย้อมผ้ามะเกลือ · เยอ: "
+"เกษตรอินทรีย์และการประคบสมุนไพรสด"
+msgstr ""
+"Lao: naturally fermented food, kitchen-garden herbs and music therapy · "
+"Khmer: Phanom Dong Rak forest herbs, herbal foot soaks and muscle-relief "
+"massage · Suai (Kui): elephant-keeper wisdom and ebony-dyed cloth · Yoe: "
+"organic farming and fresh herbal compresses"
+
+#: apps/core/views.py:57
+msgid "อาหารสุขภาพจากดินภูเขาไฟศรีสะเกษมีจุดเด่นอะไร?"
+msgstr "What makes Sisaket’s volcanic-soil food special?"
+
+#: apps/core/views.py:58
+msgid ""
+"ดินภูเขาไฟโบราณในศรีสะเกษอุดมด้วยแร่ธาตุ "
+"ทำให้ผลผลิตอย่างทุเรียนภูเขาไฟศรีสะเกษ (GI) หอมแดง และกระเทียม "
+"มีรสชาติเฉพาะตัว และถูกนำมาปรุงเป็นเมนูอาหารเพื่อสุขภาพ"
+msgstr ""
+"Sisaket’s ancient volcanic soil is rich in minerals, giving produce such as "
+"Sisaket volcanic durian (GI), shallots and garlic a distinctive flavor, "
+"which local cooks turn into healthy dishes."
+
+#: apps/core/views.py:61
+msgid "โครงการ WellTrip ได้รับการสนับสนุนจากหน่วยงานใด?"
+msgstr "Who supports the WellTrip project?"
+
+#: apps/core/views.py:62
+msgid ""
+"ได้รับการสนับสนุนทุนนวัตกรรมเพื่อสังคมจากสำนักงานนวัตกรรมแห่งชาติ (NIA) "
+"ภายใต้การบ่มเพาะโดยอุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU) "
+"และดำเนินการวิจัยพัฒนาโดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)"
+msgstr ""
+"WellTrip received a social innovation grant from the National Innovation "
+"Agency (NIA), was incubated by the Science Park of Ubon Ratchathani "
+"University (SIP UBU), and is researched and developed by Sisaket Rajabhat "
+"University (SSKRU)."
+
+#: apps/core/views.py:91 apps/core/views.py:141
+#: templates/accommodations/detail.html:42 templates/admin/tabs/catalog.html:7
+#: templates/core/home_tourist.html:66 templates/layouts/public.html:63
+#: templates/layouts/public.html:134
+msgid "ที่พักชุมชน"
+msgstr "Community stays"
+
+#: apps/core/views.py:94 templates/accommodations/detail.html:104
+#: templates/accommodations/detail.html:149
+#: templates/accommodations/detail.html:199
+#: templates/accommodations/list.html:74 templates/core/home_tourist.html:88
+msgid "/ คืน"
+msgstr "/ night"
+
+#: apps/core/views.py:102
+msgid "สปาและกิจกรรม"
+msgstr "Spa & activities"
+
+#: apps/core/views.py:105
+#, python-brace-format
+msgid "/ {duration_minutes} นาที"
+msgstr "/ {duration_minutes} min"
+
+#: apps/core/views.py:105
+msgid "/ รอบ"
+msgstr "/ session"
+
+#: apps/core/views.py:113 apps/core/views.py:264
+#: templates/services/list.html:37
+msgid "อาหารเพื่อสุขภาพ"
+msgstr "Healthy food"
+
+#: apps/core/views.py:116
+msgid "/ ชุด"
+msgstr "/ set"
+
+#: apps/core/views.py:124
+msgid "หัตถกรรม OTOP"
+msgstr "OTOP crafts"
+
+#: apps/core/views.py:127 templates/otop/detail.html:29
+msgid "/ ชิ้น"
+msgstr "/ piece"
+
+#: apps/core/views.py:133
+msgid "พักผ่อนและคลายความเครียด"
+msgstr "Rest and stress relief"
+
+#: apps/core/views.py:134
+msgid "สรรหาความสงบและสปาบำบัด"
+msgstr "Calm and spa therapy"
+
+#: apps/core/views.py:135
+msgid "อาหารสุขภาพโซเดียมต่ำ"
+msgstr "Low-sodium healthy food"
+
+#: apps/core/views.py:136
+msgid "ชาร์จพลังโฮมสเตย์ธรรมชาติ"
+msgstr "Recharge at a nature homestay"
+
+#: apps/core/views.py:142
+msgid "บริการ & อาหารสุขภาพ"
+msgstr "Services & healthy food"
+
+#: apps/core/views.py:143
+msgid "สินค้าภูมิปัญญา OTOP"
+msgstr "OTOP local products"
+
+#: apps/core/views.py:147 templates/core/home.html:5
+#: templates/core/home.html:388
+msgid "WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ"
+msgstr "WellTrip - Wellness and community wisdom in Sisaket"
+
+#: apps/core/views.py:199
+msgid "หน้าหลักนักท่องเที่ยว — WellTrip สุขภาวะชุมชนศรีสะเกษ"
+msgstr "Traveler home — WellTrip Sisaket community wellness"
+
+#: apps/core/views.py:222 templates/base.html:10
+msgid "WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญา 4 ชนเผ่า"
+msgstr "WellTrip Sisaket - Wellness and the wisdom of four ethnic groups"
+
+#: apps/core/views.py:224 templates/partials/seo_org_jsonld.html:16
+msgid ""
+"แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร "
+"เยอ) ดินแดนดินภูเขาไฟศรีสะเกษ"
+msgstr ""
+"A creative wellness tourism platform for the four Thai ethnic groups (Kui, "
+"Lao, Khmer, Yoe) of Sisaket’s volcanic land"
+
+#: apps/core/views.py:257
+msgid "ค้นหาโฮมสเตย์"
+msgstr "Find homestays"
+
+#: apps/core/views.py:258 templates/admin/tabs/modals.html:28
+#: templates/admin/tabs/modals.html:74 templates/admin/tabs/modals.html:97
+#: templates/admin/tabs/modals.html:173 templates/admin/tabs/modals.html:191
+#: templates/bookings/cart.html:30 templates/layouts/merchant.html:13
+#: templates/layouts/public.html:226 templates/portal/calendar.html:39
+msgid "ที่พัก"
+msgstr "Stays"
+
+#: apps/core/views.py:259
+msgid "จองโฮมสเตย์ชุมชนนิเวศและบ้านพักธรรมชาติในศรีสะเกษ"
+msgstr "Book eco community homestays and nature lodges in Sisaket"
+
+#: apps/core/views.py:265 templates/bookings/cart.html:30
+#: templates/layouts/merchant.html:18
+msgid "อาหาร"
+msgstr "Food"
+
+#: apps/core/views.py:266
+msgid "สั่งเมนูอาหารสุขภาพดินภูเขาไฟและวัตถุดิบอินทรีย์"
+msgstr "Order healthy volcanic-soil dishes and organic ingredients"
+
+#: apps/core/views.py:271
+msgid "นวดสปาสมุนไพร"
+msgstr "Herbal massage & spa"
+
+#: apps/core/views.py:272 templates/admin/tabs/modals.html:74
+#: templates/admin/tabs/modals.html:97 templates/bookings/cart.html:30
+#: templates/layouts/merchant.html:22
+msgid "สปา"
+msgstr "Spa"
+
+#: apps/core/views.py:273
+msgid "บริการนวดแผนไทยและอบสมุนไพรพื้นบ้าน 4 ชนเผ่า"
+msgstr "Thai massage and herbal steam from four ethnic traditions"
+
+#: apps/core/views.py:278
+msgid "ของดี OTOP ศรีสะเกษ"
+msgstr "Sisaket OTOP products"
+
+#: apps/core/views.py:280
+msgid "ช้อปสินค้าภูมิปัญญา ผ้าไหมมะเกลือ และผลผลิต GI"
+msgstr "Shop local crafts, ebony-dyed silk and GI produce"
+
+#: apps/core/views.py:540 templates/core/about.html:5
+#: templates/core/about.html:109
+msgid "เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ"
+msgstr "About us — WellTrip community wellness in Sisaket"
+
+#: apps/core/views.py:548
+msgid "ติดต่อเรา — WellTrip ช่องทางติดต่อและศูนย์ประสานงานชุมชน"
+msgstr "Contact us — WellTrip contact channels and community coordination"
+
+#: apps/core/views.py:556
+msgid "ข้อตกลงการใช้งานและนโยบายคุ้มครองข้อมูลส่วนบุคคล — WellTrip"
+msgstr "Terms of use and privacy policy — WellTrip"
+
+#: apps/core/views.py:599
+msgid "โฮมสเตย์"
+msgstr "Homestay"
+
+#: apps/core/views.py:603
+#, python-brace-format
+msgid "อ.{district} จ.{province}"
+msgstr "{district}, {province}"
+
+#: apps/core/views.py:603
+msgid " · เริ่มต้น ฿{min_price_per_night:,.0f}/คืน"
+msgstr " · from ฿{min_price_per_night:,.0f}/night"
+
+#: apps/core/views.py:631
+msgid "สปา/นวด"
+msgstr "Spa / massage"
+
+#: apps/core/views.py:635
+msgid "{duration_minutes} นาที · ฿{price:,.0f}"
+msgstr "{duration_minutes} min · ฿{price:,.0f}"
+
+#: apps/core/views.py:647 templates/core/home.html:151
+#: templates/layouts/public.html:42 templates/layouts/public.html:66
+#: templates/layouts/public.html:137 templates/otop/detail.html:11
+msgid "ของดี OTOP"
+msgstr "OTOP products"
+
+#: apps/core/views.py:666 templates/accommodations/detail.html:115
+#: templates/accommodations/list.html:30 templates/admin/tabs/catalog.html:7
+#: templates/bookings/cart.html:97 templates/core/about.html:27
+#: templates/portal/homestay.html:50
+msgid "อำเภอ"
+msgstr "District"
+
+#: apps/core/views.py:669
+#, python-brace-format
+msgid "อำเภอ{md}"
+msgstr "{md} District"
+
+#: apps/core/views.py:670
+#, python-brace-format
+msgid "ค้นหาที่พักและบริการทั้งหมดใน อ.{md}"
+msgstr "Find all stays and services in {md} District"
+
+#: apps/otop/forms.py:14
+msgid "ชื่อผลิตภัณฑ์ OTOP"
+msgstr "OTOP product name"
+
+#: apps/otop/models.py:15
+msgid "สมุนไพรและผลิตภัณฑ์สุขภาพ"
+msgstr "Herbs and health products"
+
+#: apps/otop/models.py:16
+msgid "ผ้าไหม ผ้าฝ้าย และเครื่องแต่งกาย"
+msgstr "Silk, cotton and clothing"
+
+#: apps/otop/models.py:17
+msgid "อาหารแปรรูปและของฝาก"
+msgstr "Processed food and souvenirs"
+
+#: apps/otop/models.py:18
+msgid "หัตถกรรม งานจักสาน และของแต่งบ้าน"
+msgstr "Handicrafts, basketry and home decor"
+
+#: apps/otop/models.py:45
+msgid "จำนวนสินค้าคงคลัง (ห้ามติดลบเด็ดขาดตามระดับฐานข้อมูล)"
+msgstr "Stock quantity (can never go below zero)"
+
+#: apps/otop/models.py:57
+#, python-brace-format
+msgid "{name} - ฿{price} (คงเหลือ {stock_quantity})"
+msgstr "{name} - ฿{price} ({stock_quantity} left)"
+
+#: apps/otop/views.py:76
+#, python-brace-format
+msgid "เพิ่มสินค้า OTOP '{name}' สำเร็จ"
+msgstr "Added OTOP product “{name}”"
+
+#: apps/otop/views.py:79
+msgid "ข้อมูลสินค้าไม่ถูกต้อง กรุณาตรวจสอบ"
+msgstr "Product details are invalid. Please check the form."
+
+#: apps/otop/views.py:107
+msgid ""
+"<span class=\"text-xs text-rose-600 font-semibold\">สต็อกไม่สามารถต่ำกว่า 0 "
+"ได้</span>"
+msgstr ""
+"<span class=\"text-xs text-rose-600 font-semibold\">Stock cannot go below "
+"0</span>"
+
+#: apps/payments/forms.py:14
+msgid "รหัสอ้างอิงธุรกรรมธนาคาร (Transaction Ref)"
+msgstr "Bank transaction reference"
+
+#: apps/payments/forms.py:18
+msgid "เช่น 20261027XXXXXX (ระบุเพื่อความรวดเร็วในการตรวจสอบ)"
+msgstr "e.g. 20261027XXXXXX (speeds up verification)"
+
+#: apps/payments/forms.py:20
+msgid "รหัสอ้างอิงที่ระบุบนสลิปของธนาคาร (ถ้ามี)"
+msgstr "Reference number printed on the bank slip (if any)"
+
+#: apps/payments/forms.py:24
+msgid "รูปภาพสลิปการโอนเงิน"
+msgstr "Transfer slip image"
+
+#: apps/payments/forms.py:52
+msgid "รหัสอ้างอิงสลิปนี้ถูกใช้งานและยืนยันการชำระเงินไปแล้วในระบบ"
+msgstr "This slip reference has already been used to confirm a payment"
+
+#: apps/payments/models.py:16
+msgid "โอนเงินผ่านบัญชีธนาคาร (Slip Check)"
+msgstr "Bank transfer (slip check)"
+
+#: apps/payments/models.py:20
+msgid "รอการตรวจสอบสลิป (Pending)"
+msgstr "Awaiting slip check"
+
+#: apps/payments/models.py:21
+msgid "ชำระเงินสำเร็จ (Success)"
+msgstr "Paid"
+
+#: apps/payments/models.py:22
+msgid "การชำระเงินไม่ถูกต้อง (Failed)"
+msgstr "Payment failed"
+
+#: apps/payments/models.py:27
+msgid "รอเจ้าหน้าที่ตรวจสอบ (Pending Check)"
+msgstr "Awaiting staff check"
+
+#: apps/payments/models.py:28
+msgid "ตรวจสอบผ่านแล้ว (Verified)"
+msgstr "Verified"
+
+#: apps/payments/models.py:29
+msgid "ปฏิเสธ / สลิปไม่ถูกต้อง (Rejected)"
+msgstr "Rejected / invalid slip"
+
+#: apps/payments/models.py:99
+msgid "รหัสอ้างอิงธุรกรรมธนาคารจากสลิป (Bank Transfer Ref Number)"
+msgstr "Bank transfer reference number from the slip"
+
+#: apps/payments/views.py:34
+msgid "คุณไม่มีสิทธิ์เข้าถึงหน้านี้"
+msgstr "You do not have access to this page"
+
+#: apps/payments/views.py:38
+msgid "คำสั่งซื้อนี้หมดเวลาชำระเงิน 15 นาทีแล้ว ระบบได้ทำการปลดสต็อกคืนชุมชน"
+msgstr ""
+"This order passed its 15-minute payment window and the items were released "
+"back to the community"
+
+#: apps/payments/views.py:79
+msgid "แนบสลิปเรียบร้อยแล้ว ระบบกำลังตรวจสอบอัตโนมัติ"
+msgstr "Slip uploaded. Automatic verification is running."
+
+#: apps/payments/views.py:81
+msgid "แนบสลิปเรียบร้อยแล้ว รอเจ้าหน้าที่ตรวจสอบ"
+msgstr "Slip uploaded. Waiting for staff to verify."
+
+#: apps/payments/views.py:85
+msgid "สลิปที่อัปโหลดไม่ถูกต้อง กรุณาตรวจสอบรูปภาพและรหัสอ้างอิง"
+msgstr ""
+"The uploaded slip is invalid. Please check the image and reference number."
+
+#: apps/payments/views.py:153
+#, python-brace-format
+msgid "อนุมัติการชำระเงินสำหรับรหัส {booking_code} สำเร็จ"
+msgstr "Payment approved for {booking_code}"
+
+#: apps/payments/views.py:178
+msgid "สลิปไม่ผ่านการตรวจสอบ"
+msgstr "Slip failed verification"
+
+#: apps/payments/views.py:179
+#, python-brace-format
+msgid "ปฏิเสธสลิปการโอนเงิน รหัส {booking_code}"
+msgstr "Rejected the transfer slip for {booking_code}"
+
+#: apps/services/forms.py:14
+msgid "ชื่อเมนูสุขภาพ"
+msgstr "Healthy dish name"
+
+#: apps/services/forms.py:18
+msgid "เช่น 250 kcal"
+msgstr "e.g. 250 kcal"
+
+#: apps/services/forms.py:34
+msgid "เช่น นวดประคบสมุนไพรสด"
+msgstr "e.g. Fresh herbal compress massage"
+
+#: apps/services/models.py:15
+msgid "น้ำตาลน้อย (Low Sugar)"
+msgstr "Low sugar"
+
+#: apps/services/models.py:16
+msgid "โซเดียมต่ำ (Low Sodium)"
+msgstr "Low sodium"
+
+#: apps/services/models.py:17
+msgid "เกษตรอินทรีย์ (Organic)"
+msgstr "Organic"
+
+#: apps/services/models.py:18
+msgid "สมุนไพรพื้นบ้าน (Herbal)"
+msgstr "Local herbal"
+
+#: apps/services/models.py:19
+msgid "มังสวิรัติ/เจ (Vegan)"
+msgstr "Vegan / vegetarian"
+
+#: apps/services/models.py:80
+#, python-brace-format
+msgid "{name} ({duration_minutes} นาที) - ฿{price}"
+msgstr "{name} ({duration_minutes} min) - ฿{price}"
+
+#: apps/services/views.py:95
+#, python-brace-format
+msgid "เพิ่มเมนู '{name}' สำเร็จ"
+msgstr "Added dish “{name}”"
+
+#: apps/services/views.py:98
+msgid "ข้อมูลเมนูไม่ถูกต้อง กรุณาตรวจสอบ"
+msgstr "Dish details are invalid. Please check the form."
+
+#: apps/services/views.py:124
+#, python-brace-format
+msgid "ลบเมนู '{name}' เรียบร้อยแล้ว"
+msgstr "Deleted dish “{name}”"
+
+#: apps/services/views.py:150
+#, python-brace-format
+msgid "เพิ่มบริการ '{name}' สำเร็จ"
+msgstr "Added service “{name}”"
+
+#: apps/services/views.py:190
+#, python-brace-format
+msgid "เพิ่มรอบเวลา {strftime} สำเร็จ"
+msgstr "Added time slot {strftime}"
+
+#: apps/services/views.py:192
+msgid "ข้อมูลรอบเวลาไม่ถูกต้อง"
+msgstr "Invalid time slot details"
+
+#: apps/services/views.py:210
+msgid "ลบรอบบริการเรียบร้อยแล้ว"
+msgstr "Time slot deleted"
+
+#: templates/403.html:4
+msgid "ไม่มีสิทธิ์เข้าถึงหน้านี้ - WellTrip"
+msgstr "Access denied - WellTrip"
+
+#: templates/403.html:11
+msgid "ไม่มีสิทธิ์เข้าถึงหน้านี้"
+msgstr "Access denied"
+
+#: templates/403.html:12
+msgid ""
+"คุณไม่มีสิทธิ์เข้าถึงหน้านี้ ระบบได้บันทึกการเข้าถึงไว้เพื่อความปลอดภัย"
+msgstr ""
+"You do not have access to this page. This attempt has been logged for "
+"security."
+
+#: templates/403.html:14 templates/404.html:14 templates/500.html:19
+#: templates/accounts/lockout.html:27
+#: templates/accounts/merchant_pending.html:21 templates/core/terms.html:45
+msgid "กลับหน้าแรก"
+msgstr "Back to home"
+
+#: templates/403.html:15 templates/accounts/login.html:38
+#: templates/accounts/register.html:63
+#: templates/accounts/register_merchant.html:92
+#: templates/core/home_tourist.html:28 templates/layouts/public.html:104
+#: templates/layouts/public.html:151 templates/layouts/public.html:233
+msgid "เข้าสู่ระบบ"
+msgstr "Log in"
+
+#: templates/404.html:4
+msgid "ไม่พบหน้าที่คุณต้องการ - WellTrip"
+msgstr "Page not found - WellTrip"
+
+#: templates/404.html:11
+msgid "ไม่พบหน้าที่คุณต้องการ"
+msgstr "Page not found"
+
+#: templates/404.html:12
+msgid ""
+"หน้านี้อาจถูกย้าย เปลี่ยนชื่อ หรือไม่มีอยู่แล้ว "
+"ลองกลับไปหน้าแรกหรือค้นหาที่พักแทน"
+msgstr ""
+"This page may have moved, been renamed or no longer exists. Try the home "
+"page or search for a stay instead."
+
+#: templates/404.html:15
+msgid "ค้นหาที่พัก"
+msgstr "Find a stay"
+
+#: templates/500.html:7
+msgid "500 - ระบบขัดข้อง - WellTrip"
+msgstr "500 - System error - WellTrip"
+
+#: templates/500.html:17
+msgid "ระบบขัดข้องชั่วคราว"
+msgstr "Temporary system error"
+
+#: templates/500.html:18
+msgid ""
+"ระบบบันทึกข้อผิดพลาดนี้ไว้แล้ว ทีมงานกำลังตรวจสอบ "
+"กรุณาลองใหม่อีกครั้งในอีกสักครู่"
+msgstr ""
+"We have logged this error and our team is looking into it. Please try again "
+"shortly."
+
+#: templates/accommodations/detail.html:5
+#, python-format
+msgid "%(name)s — ที่พักชุมชนศรีสะเกษ WellTrip"
+msgstr "%(name)s — Sisaket community stay | WellTrip"
+
+#: templates/accommodations/detail.html:43
+#: templates/accommodations/detail.html:60
+#: templates/accommodations/detail.html:167
+#, python-format
+msgid "อ.%(district)s"
+msgstr "%(district)s District"
+
+#: templates/accommodations/detail.html:51
+msgid "เปิดรับจอง"
+msgstr "Open for booking"
+
+#: templates/accommodations/detail.html:60
+#: templates/accommodations/detail.html:167
+#, python-format
+msgid "จ.%(province)s %(postal_code)s"
+msgstr "%(province)s %(postal_code)s"
+
+#: templates/accommodations/detail.html:65
+#: templates/admin/tabs/locations.html:18
+#: templates/payments/instruction.html:34
+msgid "คัดลอกแล้ว"
+msgstr "Copied"
+
+#: templates/accommodations/detail.html:65
+#: templates/admin/tabs/locations.html:18
+msgid "คัดลอกลิงก์"
+msgstr "Copy link"
+
+#: templates/accommodations/detail.html:69
+msgid "แชร์"
+msgstr "Share"
+
+#: templates/accommodations/detail.html:103
+msgid "ราคาเริ่มต้น"
+msgstr "Starting price"
+
+#: templates/accommodations/detail.html:104
+msgid "ยังไม่ระบุ"
+msgstr "Not set"
+
+#: templates/accommodations/detail.html:109
+msgid "ประเภทห้องพัก"
+msgstr "Room types"
+
+#: templates/accommodations/detail.html:110
+msgid "แบบ"
+msgstr "types"
+
+#: templates/accommodations/detail.html:124
+msgid "เกี่ยวกับที่พัก"
+msgstr "About this stay"
+
+#: templates/accommodations/detail.html:132
+msgid "เลือกห้องพัก"
+msgstr "Choose a room"
+
+#: templates/accommodations/detail.html:133
+msgid "กด \"เลือกห้องนี้\" เพื่อคำนวณราคา"
+msgstr "Tap “Choose this room” to see the price"
+
+#: templates/accommodations/detail.html:142
+#, python-format
+msgid "สูงสุด %(capacity_people)s ท่าน"
+msgstr "Up to %(capacity_people)s guests"
+
+#: templates/accommodations/detail.html:154
+msgid "✓ เลือกแล้ว"
+msgstr "✓ Selected"
+
+#: templates/accommodations/detail.html:154
+msgid "เลือกห้องนี้"
+msgstr "Choose this room"
+
+#: templates/accommodations/detail.html:159
+msgid "ที่พักนี้ยังไม่เปิดให้จองห้องพักออนไลน์"
+msgstr "This stay is not taking online bookings yet"
+
+#: templates/accommodations/detail.html:166
+msgid "ที่ตั้งและการเดินทาง"
+msgstr "Location and getting there"
+
+#: templates/accommodations/detail.html:171
+msgid "นำทางด้วย Google Maps"
+msgstr "Directions in Google Maps"
+
+#: templates/accommodations/detail.html:181
+msgid "ข้อตกลงการเข้าพักในชุมชน"
+msgstr "Community house rules"
+
+#: templates/accommodations/detail.html:183
+msgid "งดส่งเสียงดังรบกวนชุมชนในเวลากลางคืน"
+msgstr "Please keep noise down at night"
+
+#: templates/accommodations/detail.html:184
+msgid "งดสูบบุหรี่ภายในห้องพัก"
+msgstr "No smoking inside the rooms"
+
+#: templates/accommodations/detail.html:185
+msgid "ช่วยกันคัดแยกขยะและรักษาสิ่งแวดล้อม"
+msgstr "Help sort waste and care for the environment"
+
+#: templates/accommodations/detail.html:186
+msgid "สอบถามเวลาเช็คอิน/เช็คเอาท์กับเจ้าของที่พักก่อนเดินทาง"
+msgstr "Ask the host about check-in and check-out times before you travel"
+
+#: templates/accommodations/detail.html:196
+msgid "ราคาต่อคืน"
+msgstr "Price per night"
+
+#: templates/accommodations/detail.html:215
+msgid "เช็คอิน"
+msgstr "Check-in"
+
+#: templates/accommodations/detail.html:219
+msgid "เช็คเอาท์"
+msgstr "Check-out"
+
+#: templates/accommodations/detail.html:225
+#: templates/accommodations/detail.html:226
+msgid "จำนวนห้อง"
+msgstr "Rooms"
+
+#: templates/accommodations/detail.html:227
+#: templates/accommodations/detail.html:235 templates/otop/detail.html:49
+msgid "ลด"
+msgstr "Decrease"
+
+#: templates/accommodations/detail.html:229
+#: templates/accommodations/detail.html:237 templates/otop/detail.html:51
+msgid "เพิ่ม"
+msgstr "Add"
+
+#: templates/accommodations/detail.html:233
+msgid "ผู้เข้าพัก"
+msgstr "Guests"
+
+#: templates/accommodations/detail.html:234
+msgid "จำนวนผู้เข้าพัก"
+msgstr "Number of guests"
+
+#: templates/accommodations/detail.html:243
+msgid "คืน ×"
+msgstr "nights ×"
+
+#: templates/accommodations/detail.html:243
+msgid "ห้อง"
+msgstr "rooms"
+
+#: templates/accommodations/detail.html:246
+#: templates/bookings/booking_detail.html:58 templates/bookings/cart.html:118
+#: templates/bookings/my_bookings.html:51 templates/bookings/review.html:63
+msgid "ยอดรวม"
+msgstr "Total"
+
+#: templates/accommodations/detail.html:251 templates/otop/detail.html:62
+msgid "เพิ่มลงตะกร้า"
+msgstr "Add to cart"
+
+#: templates/accommodations/detail.html:253
+msgid "ชำระโดยโอนเงินและแนบสลิปผ่านหน้าเว็บ"
+msgstr "Pay by bank transfer and upload the slip on the website"
+
+#: templates/accommodations/detail.html:257
+msgid "ยังไม่เปิดจองออนไลน์"
+msgstr "Online booking not open yet"
+
+#: templates/accommodations/detail.html:258
+msgid "ติดต่อเจ้าของที่พักเพื่อสอบถามห้องว่าง"
+msgstr "Contact the host to ask about availability"
+
+#: templates/accommodations/detail.html:266
+msgid "เจ้าของที่พัก"
+msgstr "Host"
+
+#: templates/accommodations/detail.html:270
+#, python-format
+msgid "โทร %(phone_number)s"
+msgstr "Call %(phone_number)s"
+
+#: templates/accommodations/list.html:5
+msgid "โฮมสเตย์และที่พักชุมชน - WellTrip Sisaket"
+msgstr "Homestays and community stays - WellTrip Sisaket"
+
+#: templates/accommodations/list.html:11 templates/core/home.html:106
+msgid "โฮมสเตย์และที่พักชุมชน"
+msgstr "Homestays and community stays"
+
+#: templates/accommodations/list.html:12
+msgid ""
+"ค้นหาที่พักตามอำเภอและงบประมาณ สัมผัสวิถีชีวิต 4 ชนเผ่า "
+"และอุดหนุนผู้ประกอบการชุมชนศรีสะเกษโดยตรง"
+msgstr ""
+"Find stays by district and budget, experience the life of four ethnic "
+"groups, and support Sisaket community businesses directly"
+
+#: templates/accommodations/list.html:26
+msgid "ชื่อที่พัก หมู่บ้าน หรือคำค้น"
+msgstr "Stay name, village or keyword"
+
+#: templates/accommodations/list.html:26
+msgid "คำค้นหา"
+msgstr "Search keyword"
+
+#: templates/accommodations/list.html:31
+msgid "ทุกอำเภอ"
+msgstr "All districts"
+
+#: templates/accommodations/list.html:38
+msgid "ช่วงราคาต่อคืน"
+msgstr "Price per night"
+
+#: templates/accommodations/list.html:39
+msgid "ทุกราคา"
+msgstr "Any price"
+
+#: templates/accommodations/list.html:40
+msgid "ต่ำกว่า ฿800"
+msgstr "Under ฿800"
+
+#: templates/accommodations/list.html:42
+msgid "มากกว่า ฿1,500"
+msgstr "Over ฿1,500"
+
+#: templates/accommodations/list.html:47 templates/admin/tabs/users.html:11
+#: templates/core/home.html:44 templates/core/home.html:51
+#: templates/otop/list.html:27 templates/services/list.html:24
+#: templates/services/list.html:26
+msgid "ค้นหา"
+msgstr "Search"
+
+#: templates/accommodations/list.html:50 templates/otop/list.html:28
+msgid "ล้างตัวกรอง"
+msgstr "Clear filters"
+
+#: templates/accommodations/list.html:60
+#, python-format
+msgid "ทั้งหมด (%(total_count)s)"
+msgstr "All (%(total_count)s)"
+
+#: templates/accommodations/list.html:61
+msgid "กันทรลักษ์ · ผามออีแดง"
+msgstr "Kantharalak · Pha Mo I Daeng"
+
+#: templates/accommodations/list.html:62
+msgid "ขุนหาญ · สวนภูเขาไฟ"
+msgstr "Khun Han · volcanic gardens"
+
+#: templates/accommodations/list.html:63
+msgid "ในเมืองศรีสะเกษ"
+msgstr "In Sisaket town"
+
+#: templates/accommodations/list.html:64
+msgid "อุทุมพรพิสัย · ปราสาทสระกำแพงใหญ่"
+msgstr "Uthumphon Phisai · Prasat Sa Kamphaeng Yai"
+
+#: templates/accommodations/list.html:78
+#, python-format
+msgid "อ.%(district)s,"
+msgstr "%(district)s District,"
+
+#: templates/accommodations/list.html:83
+msgid "ดูห้องพักและจอง"
+msgstr "See rooms and book"
+
+#: templates/accommodations/list.html:92
+msgid "ไม่พบที่พักตามเงื่อนไขที่ค้นหา"
+msgstr "No stays match your search"
+
+#: templates/accommodations/list.html:93
+msgid "ลองเปลี่ยนคำค้นหา ปรับช่วงราคา หรือเลือกดูทุกอำเภอ"
+msgstr "Try another keyword, adjust the price range or browse all districts"
+
+#: templates/accommodations/list.html:94
+msgid "ล้างตัวกรองทั้งหมด"
+msgstr "Clear all filters"
+
+#: templates/accounts/lockout.html:4
+msgid "ระงับการเข้าสู่ระบบชั่วคราว - WellTrip"
+msgstr "Login temporarily locked - WellTrip"
+
+#: templates/accounts/lockout.html:18
+msgid "ระงับการเข้าสู่ระบบชั่วคราว"
+msgstr "Login temporarily locked"
+
+#: templates/accounts/lockout.html:19
+msgid ""
+"มีการใส่รหัสผ่านผิดเกิน 5 ครั้งติดต่อกัน ระบบจึงระงับการเข้าสู่ระบบ 15 "
+"นาทีเพื่อปกป้องบัญชีของคุณ"
+msgstr ""
+"The wrong password was entered more than 5 times in a row, so login is "
+"locked for 15 minutes to protect your account"
+
+#: templates/accounts/lockout.html:21
+msgid "ลองใหม่ได้ในอีก"
+msgstr "Try again in"
+
+#: templates/accounts/lockout.html:24
+msgid "ถ้าลืมรหัสผ่านหรือสงสัยว่ามีคนพยายามเข้าบัญชีของคุณ กรุณาติดต่อทีมงาน"
+msgstr ""
+"If you forgot your password or think someone is trying to access your "
+"account, please contact our team"
+
+#: templates/accounts/lockout.html:26
+#: templates/accounts/merchant_pending.html:20
+msgid "ติดต่อทีมงาน"
+msgstr "Contact our team"
+
+#: templates/accounts/login.html:4
+msgid "เข้าสู่ระบบ - WellTrip Sisaket"
+msgstr "Log in - WellTrip Sisaket"
+
+#: templates/accounts/login.html:5
+msgid "ทริปที่ดีต่อใจ"
+msgstr "A trip that feels good"
+
+#: templates/accounts/login.html:5
+msgid "เริ่มได้อีกครั้งที่นี่"
+msgstr "starts here again"
+
+#: templates/accounts/login.html:10 templates/accounts/register.html:11
+#: templates/accounts/register_merchant.html:12
+msgid "นักท่องเที่ยว"
+msgstr "Traveler"
+
+#: templates/accounts/login.html:11 templates/accounts/register.html:12
+#: templates/accounts/register_merchant.html:13
+msgid "ผู้ประกอบการ"
+msgstr "Partner"
+
+#: templates/accounts/login.html:15
+msgid "เข้าสู่ระบบผู้ประกอบการ"
+msgstr "Partner login"
+
+#: templates/accounts/login.html:15
+msgid "ยินดีต้อนรับกลับมา"
+msgstr "Welcome back"
+
+#: templates/accounts/login.html:16
+msgid "จัดการที่พัก ร้านอาหาร สปา และสินค้า OTOP ของคุณ"
+msgstr "Manage your stays, restaurant, spa and OTOP products"
+
+#: templates/accounts/login.html:16
+msgid "เข้าสู่ระบบเพื่อจัดการการจองของคุณ"
+msgstr "Log in to manage your bookings"
+
+#: templates/accounts/login.html:33
+msgid "ลืมรหัสผ่าน? ติดต่อทีมงาน"
+msgstr "Forgot your password? Contact our team"
+
+#: templates/accounts/login.html:42
+msgid "ยังไม่มีบัญชี?"
+msgstr "No account yet?"
+
+#: templates/accounts/login.html:44 templates/core/home.html:219
+#: templates/layouts/public.html:191
+msgid "สมัครเป็นผู้ประกอบการ"
+msgstr "Become a partner"
+
+#: templates/accounts/login.html:46 templates/core/home_tourist.html:29
+#: templates/layouts/public.html:105 templates/layouts/public.html:152
+msgid "สมัครสมาชิก"
+msgstr "Sign up"
+
+#: templates/accounts/merchant_pending.html:4
+msgid "รอการอนุมัติร้านค้า - WellTrip"
+msgstr "Awaiting store approval - WellTrip"
+
+#: templates/accounts/merchant_pending.html:11
+msgid "ใบสมัครผู้ประกอบการไม่ผ่านการอนุมัติ"
+msgstr "Your partner application was not approved"
+
+#: templates/accounts/merchant_pending.html:12
+#, python-format
+msgid "เหตุผล: %(rejection_reason)s"
+msgstr "Reason: %(rejection_reason)s"
+
+#: templates/accounts/merchant_pending.html:13
+msgid "ติดต่อทีมงานเพื่อแก้ไขข้อมูลและยื่นตรวจสอบใหม่"
+msgstr "Contact our team to update your details and resubmit"
+
+#: templates/accounts/merchant_pending.html:16
+msgid "ร้านค้าของคุณกำลังรอการอนุมัติ"
+msgstr "Your store is awaiting approval"
+
+#: templates/accounts/merchant_pending.html:17
+#, python-format
+msgid ""
+"ทีมงานกำลังตรวจสอบข้อมูล \"%(business_name)s\" "
+"เมื่ออนุมัติแล้วจะแจ้งทางอีเมล และคุณจะเข้า Partner Studio ได้ทันที"
+msgstr ""
+"Our team is reviewing “%(business_name)s”. We will email you once approved, "
+"and you can then use Partner Studio right away."
+
+#: templates/accounts/merchant_pending.html:17
+msgid "บัญชีนี้ยังไม่มีข้อมูลร้านค้าสำหรับตรวจสอบ กรุณาติดต่อทีมงาน"
+msgstr "This account has no store details to review. Please contact our team."
+
+#: templates/accounts/portal_dashboard.html:5
+msgid "ภาพรวมร้านค้า"
+msgstr "Store overview"
+
+#: templates/accounts/portal_dashboard.html:12
+msgid "ร้านค้าที่ได้รับอนุมัติ"
+msgstr "Approved store"
+
+#: templates/accounts/portal_dashboard.html:13
+#, python-format
+msgid "สวัสดี %(first_name)s"
+msgstr "Hello %(first_name)s"
+
+#: templates/accounts/portal_dashboard.html:17
+msgid "ยังไม่ระบุเบอร์โทร"
+msgstr "No phone number yet"
+
+#: templates/accounts/portal_dashboard.html:18
+msgid "แก้ไขโปรไฟล์"
+msgstr "Edit profile"
+
+#: templates/accounts/portal_dashboard.html:24
+msgid "รายการในร้าน"
+msgstr "Listings"
+
+#: templates/accounts/portal_dashboard.html:25
+msgid "รอลูกค้าชำระเงิน"
+msgstr "Awaiting customer payment"
+
+#: templates/accounts/portal_dashboard.html:26
+msgid "ยืนยันแล้ว"
+msgstr "Confirmed"
+
+#: templates/accounts/portal_dashboard.html:32
+#: templates/admin/tabs/overview.html:13
+msgid "คำสั่งซื้อล่าสุด"
+msgstr "Latest orders"
+
+#: templates/accounts/portal_dashboard.html:36
+#: templates/admin/tabs/overview.html:16 templates/admin/tabs/vouchers.html:46
+msgid "รหัส"
+msgstr "Code"
+
+#: templates/accounts/portal_dashboard.html:36
+#: templates/bookings/booking_detail.html:42 templates/core/home.html:59
+msgid "รายการ"
+msgstr "Items"
+
+#: templates/accounts/portal_dashboard.html:36
+#: templates/admin/tabs/overview.html:16 templates/admin/tabs/payments.html:13
+msgid "ยอด"
+msgstr "Amount"
+
+#: templates/accounts/portal_dashboard.html:36
+#: templates/admin/tabs/approvals.html:12
+#: templates/admin/tabs/catalog_table.html:7
+#: templates/admin/tabs/content.html:8 templates/admin/tabs/events.html:10
+#: templates/admin/tabs/modals.html:55 templates/admin/tabs/modals.html:211
+#: templates/admin/tabs/modals.html:232 templates/admin/tabs/modals.html:249
+#: templates/admin/tabs/overview.html:16 templates/admin/tabs/payments.html:13
+#: templates/admin/tabs/users.html:17 templates/admin/tabs/vouchers.html:46
+#: templates/ai_recommendations/partials/recommendation_result.html:13
+msgid "สถานะ"
+msgstr "Status"
+
+#: templates/accounts/portal_dashboard.html:50
+#: templates/admin/tabs/overview.html:26
+msgid "ยังไม่มีคำสั่งซื้อ"
+msgstr "No orders yet"
+
+#: templates/accounts/portal_dashboard.html:50
+msgid "คำสั่งซื้อจากลูกค้าจะแสดงที่นี่"
+msgstr "Customer orders will appear here"
+
+#: templates/accounts/portal_dashboard.html:57
+msgid "จัดการร้าน"
+msgstr "Manage store"
+
+#: templates/accounts/portal_dashboard.html:60
+#: templates/layouts/merchant.html:14 templates/portal/homestay.html:5
+msgid "ที่พักและห้องพัก"
+msgstr "Stays and rooms"
+
+#: templates/accounts/portal_dashboard.html:60
+msgid "ข้อมูลที่พัก รูป และประเภทห้อง"
+msgstr "Property details, photos and room types"
+
+#: templates/accounts/portal_dashboard.html:61
+#: templates/layouts/merchant.html:15 templates/portal/calendar.html:5
+msgid "ปฏิทินราคาและห้องว่าง"
+msgstr "Price and availability calendar"
+
+#: templates/accounts/portal_dashboard.html:61
+msgid "ราคาพิเศษรายวันและจำนวนห้อง"
+msgstr "Daily special prices and room counts"
+
+#: templates/accounts/portal_dashboard.html:64
+#: templates/layouts/merchant.html:19
+msgid "เมนูอาหาร"
+msgstr "Menu"
+
+#: templates/accounts/portal_dashboard.html:64
+msgid "เพิ่มเมนูและราคา"
+msgstr "Add dishes and prices"
+
+#: templates/accounts/portal_dashboard.html:67
+#: templates/portal/wellness.html:5
+msgid "บริการสปาและรอบเวลา"
+msgstr "Spa services and time slots"
+
+#: templates/accounts/portal_dashboard.html:67
+msgid "เปิดรอบให้ลูกค้าจอง"
+msgstr "Open slots for customers to book"
+
+#: templates/accounts/portal_dashboard.html:70 templates/portal/otop.html:5
+msgid "สินค้า OTOP และสต็อก"
+msgstr "OTOP products and stock"
+
+#: templates/accounts/portal_dashboard.html:70
+msgid "ราคาและจำนวนคงเหลือ"
+msgstr "Prices and stock left"
+
+#: templates/accounts/profile.html:4
+msgid "โปรไฟล์ส่วนตัว — WellTrip Sisaket"
+msgstr "My profile — WellTrip Sisaket"
+
+#: templates/accounts/profile.html:10
+msgid "โปรไฟล์ของฉัน"
+msgstr "My profile"
+
+#: templates/accounts/profile.html:19
+#: templates/bookings/booking_detail.html:63
+msgid "การจองทั้งหมด"
+msgstr "All bookings"
+
+#: templates/accounts/profile.html:25
+msgid "ตราประทับพาสปอร์ต"
+msgstr "Passport stamps"
+
+#: templates/accounts/profile.html:31
+msgid "ยืนยันอีเมลแล้ว"
+msgstr "Email verified"
+
+#: templates/accounts/profile.html:31
+msgid "ยังไม่ยืนยันอีเมล"
+msgstr "Email not verified"
+
+#: templates/accounts/profile.html:49 templates/accounts/register.html:28
+#: templates/admin/tabs/catalog_table.html:7
+#: templates/admin/tabs/modals.html:119 templates/admin/tabs/modals.html:140
+msgid "ชื่อ"
+msgstr "First name"
+
+#: templates/accounts/profile.html:52 templates/accounts/register.html:44
+#: templates/accounts/register_merchant.html:62
+msgid "เบอร์โทรศัพท์"
+msgstr "Phone number"
+
+#: templates/accounts/profile.html:53 templates/admin/event_form.html:34
+#: templates/admin/tabs/modals.html:38 templates/admin/tabs/modals.html:60
+#: templates/admin/tabs/modals.html:106 templates/admin/tabs/modals.html:145
+#: templates/admin/tabs/modals.html:178 templates/admin/tabs/modals.html:197
+#: templates/admin/tabs/modals.html:217 templates/admin/tabs/modals.html:238
+#: templates/admin/tabs/modals.html:257 templates/admin/tabs/vouchers.html:20
+#: templates/portal/calendar.html:104
+msgid "บันทึก"
+msgstr "Save"
+
+#: templates/accounts/profile.html:59
+msgid "ข้อมูลส่วนบุคคล (PDPA)"
+msgstr "Personal data (PDPA)"
+
+#: templates/accounts/profile.html:60
+msgid "ตรวจสอบหรือลบประวัติตำแหน่งที่ระบบบันทึกไว้ได้ตลอดเวลา"
+msgstr "Review or delete your saved location history at any time"
+
+#: templates/accounts/profile.html:61 templates/core/home_tourist.html:114
+msgid "จัดการความเป็นส่วนตัว"
+msgstr "Manage privacy"
+
+#: templates/accounts/register.html:5
+msgid "สมัครสมาชิก - WellTrip Sisaket"
+msgstr "Sign up - WellTrip Sisaket"
+
+#: templates/accounts/register.html:7
+msgid "ให้ทริปครั้งใหม่"
+msgstr "Let your next trip"
+
+#: templates/accounts/register.html:7
+msgid "พาคุณใกล้ธรรมชาติ"
+msgstr "bring you closer to nature"
+
+#: templates/accounts/register.html:16
+msgid "สร้างบัญชีนักท่องเที่ยว"
+msgstr "Create a traveler account"
+
+#: templates/accounts/register.html:17
+msgid "ติดตามสถานะการจองและสะสมตราประทับพาสปอร์ตชุมชน"
+msgstr "Track your bookings and collect community passport stamps"
+
+#: templates/accounts/register.html:50
+#: templates/accounts/register_merchant.html:63
+msgid "รหัสผ่าน (10 ตัวขึ้นไป)"
+msgstr "Password (10+ characters)"
+
+#: templates/accounts/register.html:60 templates/admin/tabs/modals.html:129
+msgid "สร้างบัญชี"
+msgstr "Create account"
+
+#: templates/accounts/register.html:63
+msgid "มีบัญชีอยู่แล้ว?"
+msgstr "Already have an account?"
+
+#: templates/accounts/register_merchant.html:5
+msgid "สมัครเป็นผู้ประกอบการ - WellTrip Sisaket"
+msgstr "Become a partner - WellTrip Sisaket"
+
+#: templates/accounts/register_merchant.html:7
+msgid "เปิดร้านของคุณ"
+msgstr "Open your store"
+
+#: templates/accounts/register_merchant.html:7
+msgid "สู่นักท่องเที่ยวสุขภาวะ"
+msgstr "to wellness travelers"
+
+#: templates/accounts/register_merchant.html:16
+msgid "Partner onboarding · ขั้นตอนที่"
+msgstr "Partner onboarding · step"
+
+#: templates/accounts/register_merchant.html:18
+msgid "เลือกประเภทธุรกิจ"
+msgstr "Choose your business type"
+
+#: templates/accounts/register_merchant.html:19
+msgid "บัญชีผู้ดูแลร้าน"
+msgstr "Store manager account"
+
+#: templates/accounts/register_merchant.html:20
+msgid "ข้อมูลร้านค้า"
+msgstr "Store details"
+
+#: templates/accounts/register_merchant.html:22
+msgid ""
+"หลังส่งใบสมัคร ทีมงานจะตรวจสอบและแจ้งผลทางอีเมล "
+"เมื่ออนุมัติแล้วจึงเริ่มลงขายได้"
+msgstr ""
+"After you apply, our team reviews it and emails you the result. You can "
+"start selling once approved."
+
+#: templates/accounts/register_merchant.html:23
+#: templates/community/passport.html:25
+msgid "ความคืบหน้า"
+msgstr "Progress"
+
+#: templates/accounts/register_merchant.html:29
+msgid "กรุณาตรวจสอบข้อมูล"
+msgstr "Please check your details"
+
+#: templates/accounts/register_merchant.html:42
+msgid "บ้านพัก ที่พักนิเวศ ฟาร์มสเตย์"
+msgstr "Guesthouses, eco-stays, farm stays"
+
+#: templates/accounts/register_merchant.html:45
+msgid "อาหารพื้นบ้าน วัตถุดิบท้องถิ่น"
+msgstr "Local dishes, local ingredients"
+
+#: templates/accounts/register_merchant.html:48
+msgid "บริการสุขภาพและสปา"
+msgstr "Wellness and spa"
+
+#: templates/accounts/register_merchant.html:48
+msgid "นวดแผนไทย ประคบสมุนไพร"
+msgstr "Thai massage, herbal compress"
+
+#: templates/accounts/register_merchant.html:51
+msgid "ผ้าทอ ของฝาก หัตถกรรม"
+msgstr "Woven cloth, souvenirs, handicrafts"
+
+#: templates/accounts/register_merchant.html:54
+#: templates/accounts/register_merchant.html:68
+#: templates/admin/tabs/pager.html:7 templates/portal/calendar.html:51
+msgid "ถัดไป"
+msgstr "Next"
+
+#: templates/accounts/register_merchant.html:59
+msgid "ชื่อผู้ดูแลร้าน"
+msgstr "Store manager name"
+
+#: templates/accounts/register_merchant.html:74
+msgid "ชื่อร้าน / สถานประกอบการ"
+msgstr "Store / business name"
+
+#: templates/accounts/register_merchant.html:76
+msgid "เช่น ทุกวัน 08:00 - 18:00 น."
+msgstr "e.g. Daily 08:00 - 18:00"
+
+#: templates/accounts/register_merchant.html:77
+#: templates/admin/event_form.html:22
+msgid "ลิงก์ Google Maps"
+msgstr "Google Maps link"
+
+#: templates/accounts/register_merchant.html:79
+msgid "รายละเอียดร้านและจุดเด่น"
+msgstr "Store details and highlights"
+
+#: templates/accounts/register_merchant.html:82
+msgid "ยืนยันว่าข้อมูลเป็นความจริง และยอมรับ"
+msgstr "I confirm this information is true and accept the"
+
+#: templates/accounts/register_merchant.html:82
+msgid "ข้อตกลงและนโยบายความเป็นส่วนตัว"
+msgstr "terms and privacy policy"
+
+#: templates/accounts/register_merchant.html:87
+msgid "ส่งใบสมัคร"
+msgstr "Submit application"
+
+#: templates/accounts/register_merchant.html:92
+msgid "มีบัญชีแล้ว?"
+msgstr "Already have an account?"
+
+#: templates/admin/audit_logs.html:4
+msgid "บันทึกการใช้งาน - Admin Center"
+msgstr "Activity log - Admin Center"
+
+#: templates/admin/audit_logs.html:5
+msgid "บันทึกการใช้งานระบบ"
+msgstr "System activity log"
+
+#: templates/admin/audit_logs.html:10
+msgid "100 รายการล่าสุด"
+msgstr "Latest 100 entries"
+
+#: templates/admin/audit_logs.html:12 templates/admin/tabs/approvals.html:5
+#: templates/admin/tabs/payments.html:6 templates/bookings/my_bookings.html:19
+#: templates/community/events_list.html:13
+#: templates/community/stories_list.html:14 templates/core/contact.html:68
+#: templates/otop/list.html:16 templates/services/list.html:16
+msgid "ทั้งหมด"
+msgstr "All"
+
+#: templates/admin/audit_logs.html:17
+msgid "ถูกปฏิเสธสิทธิ์"
+msgstr "Access denied"
+
+#: templates/admin/audit_logs.html:22 templates/portal/wellness.html:38
+msgid "เวลา"
+msgstr "Time"
+
+#: templates/admin/audit_logs.html:22 templates/admin/tabs/users.html:17
+msgid "ผู้ใช้"
+msgstr "User"
+
+#: templates/admin/audit_logs.html:22
+msgid "การกระทำ"
+msgstr "Action"
+
+#: templates/admin/audit_logs.html:22
+msgid "เป้าหมาย"
+msgstr "Target"
+
+#: templates/admin/audit_logs.html:22 templates/admin/tabs/modals.html:35
+#: templates/admin/tabs/modals.html:54 templates/admin/tabs/modals.html:100
+#: templates/bookings/my_bookings.html:52 templates/services/detail.html:41
+msgid "รายละเอียด"
+msgstr "Details"
+
+#: templates/admin/audit_logs.html:27
+msgid "ไม่ระบุตัวตน"
+msgstr "Anonymous"
+
+#: templates/admin/audit_logs.html:34
+msgid "ยังไม่มีบันทึก"
+msgstr "No entries yet"
+
+#: templates/admin/dashboard.html:5 templates/layouts/admin.html:12
+msgid "อนุมัติร้านค้า"
+msgstr "Store approvals"
+
+#: templates/admin/dashboard.html:5
+msgid "ตรวจสลิปการโอนเงิน"
+msgstr "Transfer slip review"
+
+#: templates/admin/dashboard.html:5 templates/layouts/admin.html:15
+msgid "แคตตาล็อก"
+msgstr "Catalog"
+
+#: templates/admin/dashboard.html:5 templates/layouts/admin.html:16
+msgid "ผู้ใช้งาน"
+msgstr "Users"
+
+#: templates/admin/dashboard.html:5
+msgid "จุดเช็คอินและแผนที่"
+msgstr "Check-in points and map"
+
+#: templates/admin/dashboard.html:5 templates/admin/tabs/modals.html:209
+#: templates/admin/tabs/modals.html:229
+#: templates/community/story_detail.html:11
+msgid "เรื่องเล่าชุมชน"
+msgstr "Community stories"
+
+#: templates/admin/dashboard.html:5 templates/community/event_detail.html:10
+#: templates/layouts/admin.html:19 templates/layouts/public.html:140
+#: templates/layouts/public.html:189
+msgid "ปฏิทินกิจกรรม"
+msgstr "Events calendar"
+
+#: templates/admin/dashboard.html:5
+msgid "คูปองและค่าจัดส่ง"
+msgstr "Coupons and shipping"
+
+#: templates/admin/dashboard.html:5
+msgid "ภาพรวมระบบ"
+msgstr "System overview"
+
+#: templates/admin/event_form.html:4 templates/admin/event_form.html:5
+#: templates/admin/tabs/events.html:26
+msgid "แก้ไขกิจกรรม"
+msgstr "Edit event"
+
+#: templates/admin/event_form.html:4 templates/admin/event_form.html:5
+#: templates/admin/tabs/events.html:6
+msgid "เพิ่มกิจกรรม"
+msgstr "Add event"
+
+#: templates/admin/event_form.html:13
+msgid "ชื่องาน (ไทย)"
+msgstr "Event name (Thai)"
+
+#: templates/admin/event_form.html:14
+msgid "ชื่องาน (English)"
+msgstr "Event name (English)"
+
+#: templates/admin/event_form.html:15 templates/admin/tabs/approvals.html:12
+#: templates/admin/tabs/content.html:8 templates/admin/tabs/modals.html:97
+#: templates/admin/tabs/modals.html:209 templates/admin/tabs/modals.html:229
+msgid "ประเภท"
+msgstr "Type"
+
+#: templates/admin/event_form.html:16
+msgid "วันเริ่ม"
+msgstr "Start date"
+
+#: templates/admin/event_form.html:17
+msgid "วันสิ้นสุด"
+msgstr "End date"
+
+#: templates/admin/event_form.html:18
+msgid "ข้อความวันที่แทน (ไทย)"
+msgstr "Custom date text (Thai)"
+
+#: templates/admin/event_form.html:18
+msgid "ใช้เมื่อจัดหลายช่วง เช่น 12–13 และ 19–20 ธ.ค."
+msgstr "Use for split schedules, e.g. 12–13 and 19–20 Dec"
+
+#: templates/admin/event_form.html:19
+msgid "ข้อความวันที่แทน (English)"
+msgstr "Custom date text (English)"
+
+#: templates/admin/event_form.html:20
+msgid "สถานที่ (ไทย)"
+msgstr "Venue (Thai)"
+
+#: templates/admin/event_form.html:21
+msgid "สถานที่ (English)"
+msgstr "Venue (English)"
+
+#: templates/admin/event_form.html:23
+msgid "จุดเช็คอินพาสปอร์ต"
+msgstr "Passport check-in point"
+
+#: templates/admin/event_form.html:23
+msgid "เลือกจุดที่วาง QR ในงาน"
+msgstr "Choose the point where the QR is placed at the event"
+
+#: templates/admin/event_form.html:24
+msgid "รายละเอียด (ไทย)"
+msgstr "Details (Thai)"
+
+#: templates/admin/event_form.html:25
+msgid "รายละเอียด (English)"
+msgstr "Details (English)"
+
+#: templates/admin/event_form.html:26 templates/community/event_detail.html:25
+msgid "ผู้จัด"
+msgstr "Organizer"
+
+#: templates/admin/event_form.html:27
+msgid "ลิงก์ข้อมูลจากผู้จัด"
+msgstr "Organizer info link"
+
+#: templates/admin/event_form.html:28 templates/admin/tabs/modals.html:36
+msgid "รูปภาพ"
+msgstr "Image"
+
+#: templates/admin/event_form.html:28
+msgid "JPG, PNG หรือ WebP"
+msgstr "JPG, PNG or WebP"
+
+#: templates/admin/event_form.html:31
+msgid "เผยแพร่บนหน้าเว็บ"
+msgstr "Publish on the website"
+
+#: templates/admin/event_form.html:35 templates/admin/tabs/modals.html:14
+#: templates/admin/tabs/modals.html:38 templates/admin/tabs/modals.html:60
+#: templates/admin/tabs/modals.html:84 templates/admin/tabs/modals.html:106
+#: templates/admin/tabs/modals.html:129 templates/admin/tabs/modals.html:145
+#: templates/admin/tabs/modals.html:160 templates/admin/tabs/modals.html:178
+#: templates/admin/tabs/modals.html:197 templates/admin/tabs/modals.html:217
+#: templates/admin/tabs/modals.html:238 templates/admin/tabs/modals.html:257
+#: templates/bookings/cart.html:104 templates/bookings/cart.html:133
+#: templates/community/privacy_settings.html:70
+#: templates/portal/calendar.html:103
+msgid "ยกเลิก"
+msgstr "Cancel"
+
+#: templates/admin/tabs/approvals.html:8
+msgid "เพิ่มร้านค้า"
+msgstr "Add store"
+
+#: templates/admin/tabs/approvals.html:12
+msgid "ร้านค้า"
+msgstr "Store"
+
+#: templates/admin/tabs/approvals.html:12
+msgid "ติดต่อ"
+msgstr "Contact"
+
+#: templates/admin/tabs/approvals.html:12
+#: templates/admin/tabs/catalog_table.html:7
+#: templates/admin/tabs/content.html:8 templates/admin/tabs/events.html:10
+#: templates/admin/tabs/locations.html:9 templates/admin/tabs/payments.html:13
+#: templates/admin/tabs/users.html:17 templates/admin/tabs/vouchers.html:46
+msgid "จัดการ"
+msgstr "Actions"
+
+#: templates/admin/tabs/approvals.html:19
+msgid "อนุมัติแล้ว"
+msgstr "Approved"
+
+#: templates/admin/tabs/approvals.html:19
+#: templates/payments/instruction.html:90
+msgid "ไม่ผ่าน"
+msgstr "Rejected"
+
+#: templates/admin/tabs/approvals.html:19
+#: templates/admin/tabs/payments.html:27
+msgid "รอตรวจ"
+msgstr "Pending"
+
+#: templates/admin/tabs/approvals.html:22
+#: templates/admin/tabs/overview.html:40
+msgid "อนุมัติ"
+msgstr "Approve"
+
+#: templates/admin/tabs/approvals.html:25
+msgid "เหตุผลที่ไม่อนุมัติ"
+msgstr "Reason for rejection"
+
+#: templates/admin/tabs/approvals.html:25
+#: templates/payments/admin_review.html:45
+msgid "ไม่อนุมัติ"
+msgstr "Reject"
+
+#: templates/admin/tabs/approvals.html:27
+#: templates/admin/tabs/catalog_table.html:23
+#: templates/admin/tabs/content.html:22 templates/admin/tabs/events.html:26
+#: templates/admin/tabs/locations.html:22 templates/admin/tabs/users.html:28
+msgid "แก้ไข"
+msgstr "Edit"
+
+#: templates/admin/tabs/approvals.html:27 templates/admin/tabs/modals.html:93
+msgid "แก้ไขร้านค้า"
+msgstr "Edit store"
+
+#: templates/admin/tabs/approvals.html:29
+#: templates/admin/tabs/catalog_table.html:25
+#: templates/admin/tabs/content.html:24 templates/admin/tabs/events.html:27
+#: templates/admin/tabs/locations.html:24 templates/admin/tabs/modals.html:11
+#: templates/admin/tabs/modals.html:15 templates/admin/tabs/payments.html:32
+#: templates/admin/tabs/users.html:30
+msgid "ลบ"
+msgstr "Delete"
+
+#: templates/admin/tabs/approvals.html:29
+msgid "ลบร้านค้า"
+msgstr "Delete store"
+
+#: templates/admin/tabs/approvals.html:30
+msgid "ร้าน"
+msgstr "store"
+
+#: templates/admin/tabs/approvals.html:34
+msgid "ไม่พบร้านค้า"
+msgstr "No stores found"
+
+#: templates/admin/tabs/catalog.html:4
+#, python-format
+msgid ""
+"ที่พัก %(total_stays)s · อาหาร %(total_foods)s · สปา %(total_spas)s · OTOP "
+"%(total_products)s"
+msgstr ""
+"Stays %(total_stays)s · Food %(total_foods)s · Spa %(total_spas)s · OTOP "
+"%(total_products)s"
+
+#: templates/admin/tabs/catalog.html:5
+msgid "เพิ่มรายการ"
+msgstr "Add item"
+
+#: templates/admin/tabs/catalog.html:8 templates/admin/tabs/locations.html:9
+#: templates/admin/tabs/modals.html:173 templates/admin/tabs/modals.html:191
+msgid "หมวด"
+msgstr "Category"
+
+#: templates/admin/tabs/catalog.html:9
+msgid "สปาและนวด"
+msgstr "Spa and massage"
+
+#: templates/admin/tabs/catalog.html:9
+msgid "ระยะเวลา"
+msgstr "Duration"
+
+#: templates/admin/tabs/catalog.html:10 templates/admin/tabs/modals.html:28
+#: templates/layouts/merchant.html:26
+msgid "สินค้า OTOP"
+msgstr "OTOP products"
+
+#: templates/admin/tabs/catalog.html:10 templates/admin/tabs/modals.html:33
+#: templates/admin/tabs/modals.html:52 templates/portal/otop.html:18
+msgid "สต็อก"
+msgstr "Stock"
+
+#: templates/admin/tabs/catalog_table.html:7 templates/portal/otop.html:18
+msgid "ราคา"
+msgstr "Price"
+
+#: templates/admin/tabs/catalog_table.html:13
+#: templates/portal/wellness.html:22 templates/services/list.html:85
+#, python-format
+msgid "%(duration_minutes)s นาที"
+msgstr "%(duration_minutes)s min"
+
+#: templates/admin/tabs/catalog_table.html:13
+#, python-format
+msgid "คงเหลือ %(stock_quantity)s"
+msgstr "%(stock_quantity)s left"
+
+#: templates/admin/tabs/catalog_table.html:18
+#: templates/admin/tabs/catalog_table.html:19
+msgid "เปิดขาย"
+msgstr "On sale"
+
+#: templates/admin/tabs/catalog_table.html:18
+#: templates/admin/tabs/catalog_table.html:19
+#: templates/admin/tabs/locations.html:13 templates/admin/tabs/modals.html:25
+#: templates/admin/tabs/modals.html:47 templates/admin/tabs/modals.html:69
+#: templates/admin/tabs/modals.html:93 templates/admin/tabs/modals.html:115
+#: templates/admin/tabs/modals.html:138 templates/admin/tabs/modals.html:154
+#: templates/admin/tabs/modals.html:169 templates/admin/tabs/modals.html:187
+#: templates/admin/tabs/modals.html:206 templates/admin/tabs/modals.html:226
+#: templates/admin/tabs/modals.html:247 templates/admin/tabs/vouchers.html:54
+#: templates/admin/tabs/vouchers.html:56 templates/base.html:42
+#: templates/base.html:59 templates/community/privacy_settings.html:41
+#: templates/core/home.html:99 templates/layouts/public.html:130
+#: templates/portal/calendar.html:88
+msgid "ปิด"
+msgstr "Off"
+
+#: templates/admin/tabs/catalog_table.html:22
+msgid "เปิด/ปิด"
+msgstr "On/off"
+
+#: templates/admin/tabs/catalog_table.html:23
+#, python-format
+msgid "แก้ไข %(name)s"
+msgstr "Edit %(name)s"
+
+#: templates/admin/tabs/catalog_table.html:25
+#, python-format
+msgid "ลบ %(name)s"
+msgstr "Delete %(name)s"
+
+#: templates/admin/tabs/catalog_table.html:30
+msgid "ยังไม่มีรายการ"
+msgstr "No items yet"
+
+#: templates/admin/tabs/content.html:4 templates/admin/tabs/modals.html:206
+msgid "เขียนเรื่องใหม่"
+msgstr "Write a new story"
+
+#: templates/admin/tabs/content.html:8 templates/admin/tabs/content.html:24
+msgid "เรื่อง"
+msgstr "Story"
+
+#: templates/admin/tabs/content.html:8
+msgid "อัปเดต"
+msgstr "Updated"
+
+#: templates/admin/tabs/content.html:19 templates/admin/tabs/events.html:21
+#: templates/admin/tabs/modals.html:211 templates/admin/tabs/modals.html:232
+msgid "เผยแพร่"
+msgstr "Published"
+
+#: templates/admin/tabs/content.html:19 templates/admin/tabs/events.html:22
+#: templates/admin/tabs/modals.html:211 templates/admin/tabs/modals.html:232
+msgid "ฉบับร่าง"
+msgstr "Draft"
+
+#: templates/admin/tabs/content.html:22 templates/admin/tabs/modals.html:226
+msgid "แก้ไขเรื่อง"
+msgstr "Edit story"
+
+#: templates/admin/tabs/content.html:24
+msgid "ลบเรื่อง"
+msgstr "Delete story"
+
+#: templates/admin/tabs/content.html:28
+msgid "ยังไม่มีเรื่องเล่า"
+msgstr "No stories yet"
+
+#: templates/admin/tabs/events.html:5
+msgid "งานที่จบแล้วจะไม่แสดงบนหน้าเว็บอัตโนมัติ"
+msgstr "Events that have ended are hidden from the website automatically"
+
+#: templates/admin/tabs/events.html:10 templates/layouts/public.html:67
+msgid "กิจกรรม"
+msgstr "Event"
+
+#: templates/admin/tabs/events.html:10 templates/portal/wellness.html:38
+msgid "วันที่"
+msgstr "Date"
+
+#: templates/admin/tabs/events.html:20
+msgid "จบแล้ว"
+msgstr "Ended"
+
+#: templates/admin/tabs/events.html:25 templates/portal/otop.html:13
+#: templates/portal/restaurant.html:13 templates/portal/wellness.html:13
+msgid "ดูหน้าเว็บ"
+msgstr "View on website"
+
+#: templates/admin/tabs/events.html:27
+msgid "ลบกิจกรรม"
+msgstr "Delete event"
+
+#: templates/admin/tabs/events.html:27 templates/portal/homestay.html:77
+#: templates/portal/restaurant.html:29
+msgid "หรือไม่?"
+msgstr "?"
+
+#: templates/admin/tabs/events.html:31
+msgid "ยังไม่มีกิจกรรม"
+msgstr "No events yet"
+
+#: templates/admin/tabs/locations.html:4
+msgid ""
+"จุดเช็คอินบนแผนที่ · รหัส QR ใช้พิมพ์ติดที่จุดจริงเท่านั้น "
+"ห้ามเผยแพร่ออนไลน์"
+msgstr ""
+"Check-in points on the map · QR codes are only for printing at the real "
+"location; never post them online"
+
+#: templates/admin/tabs/locations.html:5 templates/admin/tabs/modals.html:169
+msgid "เพิ่มจุดเช็คอิน"
+msgstr "Add check-in point"
+
+#: templates/admin/tabs/locations.html:9 templates/admin/tabs/modals.html:210
+#: templates/admin/tabs/modals.html:230
+msgid "สถานที่"
+msgstr "Place"
+
+#: templates/admin/tabs/locations.html:9 templates/portal/homestay.html:47
+msgid "ที่อยู่"
+msgstr "Address"
+
+#: templates/admin/tabs/locations.html:9
+msgid "ลิงก์ปั๊มตรา (สำหรับทำ QR)"
+msgstr "Stamp link (for making the QR)"
+
+#: templates/admin/tabs/locations.html:22
+msgid "แก้ไขสถานที่"
+msgstr "Edit place"
+
+#: templates/admin/tabs/locations.html:24
+msgid "ลบสถานที่"
+msgstr "Delete place"
+
+#: templates/admin/tabs/locations.html:24
+msgid "จุด"
+msgstr "point"
+
+#: templates/admin/tabs/locations.html:28
+msgid "ยังไม่มีจุดเช็คอิน"
+msgstr "No check-in points yet"
+
+#: templates/admin/tabs/modals.html:10
+msgid "ยืนยันการลบ"
+msgstr "Confirm deletion"
+
+#: templates/admin/tabs/modals.html:11
+msgid "ออกจากระบบ? ข้อมูลที่ลบจะกู้คืนไม่ได้"
+msgstr "from the system? Deleted data cannot be recovered."
+
+#: templates/admin/tabs/modals.html:25
+msgid "เพิ่มรายการในแคตตาล็อก"
+msgstr "Add catalog item"
+
+#: templates/admin/tabs/modals.html:27
+msgid "หมวด *"
+msgstr "Category *"
+
+#: templates/admin/tabs/modals.html:28
+msgid "สปา / นวด"
+msgstr "Spa / massage"
+
+#: templates/admin/tabs/modals.html:30 templates/admin/tabs/modals.html:49
+msgid "ชื่อ *"
+msgstr "Name *"
+
+#: templates/admin/tabs/modals.html:32 templates/admin/tabs/modals.html:51
+msgid "ราคา (บาท) *"
+msgstr "Price (baht) *"
+
+#: templates/admin/tabs/modals.html:47
+msgid "แก้ไขรายการ"
+msgstr "Edit item"
+
+#: templates/admin/tabs/modals.html:56
+msgid "เปิดขาย / เปิดให้บริการ"
+msgstr "On sale / open"
+
+#: templates/admin/tabs/modals.html:56
+msgid "ปิดชั่วคราว"
+msgstr "Temporarily closed"
+
+#: templates/admin/tabs/modals.html:58 templates/admin/tabs/modals.html:233
+msgid "เปลี่ยนรูป"
+msgstr "Change image"
+
+#: templates/admin/tabs/modals.html:69
+msgid "เพิ่มร้านค้า (อนุมัติทันที)"
+msgstr "Add store (approved immediately)"
+
+#: templates/admin/tabs/modals.html:71
+msgid "อีเมลเข้าสู่ระบบ *"
+msgstr "Login email *"
+
+#: templates/admin/tabs/modals.html:72 templates/admin/tabs/modals.html:95
+msgid "ชื่อร้าน *"
+msgstr "Store name *"
+
+#: templates/admin/tabs/modals.html:74
+msgid "ประเภท *"
+msgstr "Type *"
+
+#: templates/admin/tabs/modals.html:74 templates/admin/tabs/modals.html:97
+#: templates/admin/tabs/modals.html:173 templates/admin/tabs/modals.html:191
+msgid "ร้านอาหาร"
+msgstr "Restaurant"
+
+#: templates/admin/tabs/modals.html:75 templates/admin/tabs/modals.html:98
+#: templates/admin/tabs/modals.html:122 templates/admin/tabs/modals.html:143
+#: templates/admin/tabs/users.html:17 templates/bookings/cart.html:95
+#: templates/payments/admin_review.html:27
+msgid "เบอร์โทร"
+msgstr "Phone"
+
+#: templates/admin/tabs/modals.html:77
+msgid "รายละเอียดร้าน"
+msgstr "Store details"
+
+#: templates/admin/tabs/modals.html:79 templates/admin/tabs/modals.html:125
+msgid "รหัสผ่านเริ่มต้น *"
+msgstr "Initial password *"
+
+#: templates/admin/tabs/modals.html:80 templates/admin/tabs/modals.html:126
+#: templates/admin/tabs/modals.html:157
+msgid "สุ่ม"
+msgstr "Random"
+
+#: templates/admin/tabs/modals.html:81
+msgid "ส่งรหัสให้ร้านค้าทางช่องทางส่วนตัว และให้เปลี่ยนหลังเข้าสู่ระบบ"
+msgstr ""
+"Send the password to the store privately and ask them to change it after "
+"logging in"
+
+#: templates/admin/tabs/modals.html:84
+msgid "สร้างร้านค้า"
+msgstr "Create store"
+
+#: templates/admin/tabs/modals.html:103
+msgid "เวลาทำการ"
+msgstr "Opening hours"
+
+#: templates/admin/tabs/modals.html:115 templates/admin/tabs/users.html:13
+msgid "เพิ่มผู้ใช้"
+msgstr "Add user"
+
+#: templates/admin/tabs/modals.html:117
+msgid "อีเมล *"
+msgstr "Email *"
+
+#: templates/admin/tabs/modals.html:121
+msgid "บทบาท *"
+msgstr "Role *"
+
+#: templates/admin/tabs/modals.html:138 templates/admin/tabs/users.html:28
+msgid "แก้ไขผู้ใช้"
+msgstr "Edit user"
+
+#: templates/admin/tabs/modals.html:142 templates/admin/tabs/users.html:7
+#: templates/admin/tabs/users.html:17
+msgid "บทบาท"
+msgstr "Role"
+
+#: templates/admin/tabs/modals.html:154 templates/admin/tabs/users.html:26
+msgid "รีเซ็ตรหัสผ่าน"
+msgstr "Reset password"
+
+#: templates/admin/tabs/modals.html:156
+msgid "รหัสผ่านใหม่ *"
+msgstr "New password *"
+
+#: templates/admin/tabs/modals.html:158
+msgid "อย่างน้อย 10 ตัวอักษร ส่งให้เจ้าของบัญชีทางช่องทางส่วนตัว"
+msgstr "At least 10 characters. Send it to the account owner privately."
+
+#: templates/admin/tabs/modals.html:160
+msgid "รีเซ็ต"
+msgstr "Reset"
+
+#: templates/admin/tabs/modals.html:171 templates/admin/tabs/modals.html:189
+msgid "ชื่อสถานที่ *"
+msgstr "Place name *"
+
+#: templates/admin/tabs/modals.html:173 templates/admin/tabs/modals.html:191
+msgid "จุดถ่ายรูป / ธรรมชาติ"
+msgstr "Photo spot / nature"
+
+#: templates/admin/tabs/modals.html:173 templates/admin/tabs/modals.html:191
+#: templates/core/home.html:150 templates/core/home_tourist.html:68
+#: templates/layouts/public.html:38 templates/layouts/public.html:65
+#: templates/layouts/public.html:136 templates/services/detail.html:5
+#: templates/services/detail.html:12
+msgid "นวดและสปา"
+msgstr "Massage and spa"
+
+#: templates/admin/tabs/modals.html:173 templates/admin/tabs/modals.html:191
+msgid "ร้าน OTOP"
+msgstr "OTOP shop"
+
+#: templates/admin/tabs/modals.html:174 templates/admin/tabs/modals.html:192
+msgid "ที่อยู่ / อำเภอ"
+msgstr "Address / district"
+
+#: templates/admin/tabs/modals.html:176
+msgid "ลิงก์ Google Maps หรือพิกัด *"
+msgstr "Google Maps link or coordinates *"
+
+#: templates/admin/tabs/modals.html:176
+msgid "https://maps.app.goo.gl/... หรือ 15.1186, 104.3225"
+msgstr "https://maps.app.goo.gl/... or 15.1186, 104.3225"
+
+#: templates/admin/tabs/modals.html:187
+msgid "แก้ไขจุดเช็คอิน"
+msgstr "Edit check-in point"
+
+#: templates/admin/tabs/modals.html:194 templates/admin/tabs/modals.html:213
+#: templates/admin/tabs/modals.html:234 templates/portal/homestay.html:55
+msgid "ลิงก์ Google Maps หรือพิกัด"
+msgstr "Google Maps link or coordinates"
+
+#: templates/admin/tabs/modals.html:195
+msgid "เปิดใช้งานจุดนี้"
+msgstr "Enable this point"
+
+#: templates/admin/tabs/modals.html:208 templates/admin/tabs/modals.html:228
+msgid "หัวข้อ *"
+msgstr "Title *"
+
+#: templates/admin/tabs/modals.html:209 templates/admin/tabs/modals.html:229
+msgid "วิสาหกิจชุมชน"
+msgstr "Community enterprise"
+
+#: templates/admin/tabs/modals.html:209 templates/admin/tabs/modals.html:229
+msgid "แหล่งท่องเที่ยว"
+msgstr "Attraction"
+
+#: templates/admin/tabs/modals.html:212
+msgid "รูปประกอบ"
+msgstr "Image"
+
+#: templates/admin/tabs/modals.html:214 templates/admin/tabs/modals.html:235
+msgid "สรุปย่อ"
+msgstr "Summary"
+
+#: templates/admin/tabs/modals.html:215 templates/admin/tabs/modals.html:236
+msgid "เนื้อหา"
+msgstr "Content"
+
+#: templates/admin/tabs/modals.html:247
+msgid "สถานะการชำระเงิน"
+msgstr "Payment status"
+
+#: templates/admin/tabs/modals.html:251
+msgid "รอตรวจสลิป"
+msgstr "Awaiting slip check"
+
+#: templates/admin/tabs/modals.html:252
+msgid "ชำระสำเร็จ (ยืนยันการจอง)"
+msgstr "Paid (booking confirmed)"
+
+#: templates/admin/tabs/modals.html:253
+msgid "ไม่ถูกต้อง"
+msgstr "Invalid"
+
+#: templates/admin/tabs/modals.html:254
+msgid "หมดเวลา"
+msgstr "Expired"
+
+#: templates/admin/tabs/overview.html:4
+#, python-format
+msgid ""
+"สมาชิก · นักท่องเที่ยว %(tourists_count)s · ร้านค้า %(merchants_count)s"
+msgstr "Members · %(tourists_count)s travelers · %(merchants_count)s stores"
+
+#: templates/admin/tabs/overview.html:5 templates/admin/tabs/overview.html:35
+msgid "ร้านค้ารออนุมัติ"
+msgstr "Stores awaiting approval"
+
+#: templates/admin/tabs/overview.html:6
+msgid "สลิปรอตรวจ"
+msgstr "Slips to check"
+
+#: templates/admin/tabs/overview.html:7
+#, python-format
+msgid "ยอดชำระสำเร็จ · %(total_bookings_count)s คำสั่งซื้อ"
+msgstr "Paid total · %(total_bookings_count)s orders"
+
+#: templates/admin/tabs/overview.html:13 templates/core/home.html:186
+#: templates/core/home_tourist.html:41 templates/core/home_tourist.html:79
+msgid "ดูทั้งหมด"
+msgstr "View all"
+
+#: templates/admin/tabs/overview.html:16 templates/admin/tabs/payments.html:13
+#: templates/payments/admin_review.html:25
+msgid "ลูกค้า"
+msgstr "Customer"
+
+#: templates/admin/tabs/overview.html:35
+#, python-format
+msgid "ทั้งหมด (%(total_pending_kyc)s)"
+msgstr "All (%(total_pending_kyc)s)"
+
+#: templates/admin/tabs/overview.html:43
+msgid "ไม่มีร้านค้าค้างอนุมัติ"
+msgstr "No stores awaiting approval"
+
+#: templates/admin/tabs/pager.html:3
+msgid "แบ่งหน้า"
+msgstr "Pagination"
+
+#: templates/admin/tabs/pager.html:5 templates/portal/calendar.html:46
+msgid "ก่อนหน้า"
+msgstr "Previous"
+
+#: templates/admin/tabs/pager.html:6
+#, python-format
+msgid "หน้า %(number)s / %(num_pages)s"
+msgstr "Page %(number)s / %(num_pages)s"
+
+#: templates/admin/tabs/payments.html:4
+msgid "ตรวจยอดโอนให้ตรงกับคำสั่งซื้อ ก่อนยืนยันการจอง"
+msgstr ""
+"Check that the transfer matches the order before confirming the booking"
+
+#: templates/admin/tabs/payments.html:7
+#, python-format
+msgid "รอตรวจ (%(pending_slips_count)s)"
+msgstr "Pending (%(pending_slips_count)s)"
+
+#: templates/admin/tabs/payments.html:8 templates/admin/tabs/payments.html:27
+msgid "สำเร็จ"
+msgstr "Successful"
+
+#: templates/admin/tabs/payments.html:13
+msgid "คำสั่งซื้อ"
+msgstr "Order"
+
+#: templates/admin/tabs/payments.html:13 templates/admin/tabs/payments.html:23
+#: templates/payments/admin_review.html:14
+#: templates/payments/instruction.html:83
+msgid "สลิป"
+msgstr "Slip"
+
+#: templates/admin/tabs/payments.html:24
+msgid "ยังไม่แนบ"
+msgstr "Not uploaded"
+
+#: templates/admin/tabs/payments.html:29 templates/layouts/admin.html:13
+#: templates/payments/admin_review.html:5
+msgid "ตรวจสลิป"
+msgstr "Check slip"
+
+#: templates/admin/tabs/payments.html:30
+msgid "แก้สถานะ"
+msgstr "Edit status"
+
+#: templates/admin/tabs/payments.html:32
+msgid "ลบรายการ"
+msgstr "Delete item"
+
+#: templates/admin/tabs/payments.html:33
+msgid "รายการชำระเงิน"
+msgstr "Payment"
+
+#: templates/admin/tabs/payments.html:37
+msgid "ไม่พบรายการ"
+msgstr "No items found"
+
+#: templates/admin/tabs/users.html:6
+msgid "ชื่อ อีเมล หรือเบอร์โทร"
+msgstr "Name, email or phone"
+
+#: templates/admin/tabs/users.html:6
+msgid "ค้นหาผู้ใช้"
+msgstr "Search users"
+
+#: templates/admin/tabs/users.html:8
+msgid "ทุกบทบาท"
+msgstr "All roles"
+
+#: templates/admin/tabs/users.html:24
+msgid "ใช้งาน"
+msgstr "Active"
+
+#: templates/admin/tabs/users.html:24 templates/admin/tabs/users.html:27
+msgid "ระงับ"
+msgstr "Suspended"
+
+#: templates/admin/tabs/users.html:27
+msgid "สลับสถานะ"
+msgstr "Toggle status"
+
+#: templates/admin/tabs/users.html:30
+msgid "ลบผู้ใช้"
+msgstr "Delete user"
+
+#: templates/admin/tabs/users.html:30 templates/layouts/public.html:77
+#: templates/layouts/public.html:233
+msgid "บัญชี"
+msgstr "Account"
+
+#: templates/admin/tabs/users.html:34
+msgid "ไม่พบผู้ใช้"
+msgstr "No users found"
+
+#: templates/admin/tabs/vouchers.html:6
+msgid "ค่าจัดส่งสินค้า OTOP"
+msgstr "OTOP shipping fee"
+
+#: templates/admin/tabs/vouchers.html:7
+msgid "ส่งฟรีทุกออเดอร์"
+msgstr "Free shipping on every order"
+
+#: templates/admin/tabs/vouchers.html:7
+msgid "คิดตามเกณฑ์"
+msgstr "Rule-based"
+
+#: templates/admin/tabs/vouchers.html:12
+msgid "ค่าส่งพื้นฐาน (บาท)"
+msgstr "Base shipping fee (baht)"
+
+#: templates/admin/tabs/vouchers.html:13
+msgid "ยอดขั้นต่ำส่งฟรี (บาท)"
+msgstr "Minimum order for free shipping (baht)"
+
+#: templates/admin/tabs/vouchers.html:17
+msgid "ส่งฟรีทุกออเดอร์ (โปรโมชัน)"
+msgstr "Free shipping on every order (promotion)"
+
+#: templates/admin/tabs/vouchers.html:19
+msgid ""
+"คิดค่าส่งเฉพาะเมื่อมีสินค้า OTOP ในตะกร้า ที่พัก อาหาร และสปาไม่มีค่าส่ง"
+msgstr ""
+"Shipping is charged only when the cart has OTOP products. Stays, food and "
+"spa have no shipping fee."
+
+#: templates/admin/tabs/vouchers.html:26 templates/admin/tabs/vouchers.html:37
+msgid "สร้างคูปอง"
+msgstr "Create coupon"
+
+#: templates/admin/tabs/vouchers.html:30
+msgid "รหัสคูปอง *"
+msgstr "Coupon code *"
+
+#: templates/admin/tabs/vouchers.html:30
+msgid "เช่น WELCOME50"
+msgstr "e.g. WELCOME50"
+
+#: templates/admin/tabs/vouchers.html:31
+msgid "ส่วนลด (บาท) *"
+msgstr "Discount (baht) *"
+
+#: templates/admin/tabs/vouchers.html:32
+msgid "ยอดซื้อขั้นต่ำ (บาท)"
+msgstr "Minimum purchase (baht)"
+
+#: templates/admin/tabs/vouchers.html:33
+msgid "อายุคูปอง"
+msgstr "Valid for"
+
+#: templates/admin/tabs/vouchers.html:34
+msgid "7 วัน"
+msgstr "7 days"
+
+#: templates/admin/tabs/vouchers.html:34
+msgid "15 วัน"
+msgstr "15 days"
+
+#: templates/admin/tabs/vouchers.html:34
+msgid "30 วัน"
+msgstr "30 days"
+
+#: templates/admin/tabs/vouchers.html:34
+msgid "60 วัน"
+msgstr "60 days"
+
+#: templates/admin/tabs/vouchers.html:34
+msgid "90 วัน"
+msgstr "90 days"
+
+#: templates/admin/tabs/vouchers.html:34
+msgid "180 วัน"
+msgstr "180 days"
+
+#: templates/admin/tabs/vouchers.html:34
+msgid "1 ปี"
+msgstr "1 year"
+
+#: templates/admin/tabs/vouchers.html:43
+#, python-format
+msgid "คูปองทั้งหมด (%(coupons)s)"
+msgstr "All coupons (%(coupons)s)"
+
+#: templates/admin/tabs/vouchers.html:46
+msgid "ส่วนลด"
+msgstr "Discount"
+
+#: templates/admin/tabs/vouchers.html:46
+msgid "ขั้นต่ำ"
+msgstr "Minimum"
+
+#: templates/admin/tabs/vouchers.html:46
+msgid "หมดอายุ"
+msgstr "Expires"
+
+#: templates/admin/tabs/vouchers.html:52
+msgid "ไม่มี"
+msgstr "None"
+
+#: templates/admin/tabs/vouchers.html:54 templates/admin/tabs/vouchers.html:56
+msgid "เปิด"
+msgstr "On"
+
+#: templates/admin/tabs/vouchers.html:57
+msgid "ลบคูปอง"
+msgstr "Delete coupon"
+
+#: templates/admin/tabs/vouchers.html:57
+msgid "คูปอง"
+msgstr "coupon"
+
+#: templates/admin/tabs/vouchers.html:61
+msgid "ยังไม่มีคูปอง"
+msgstr "No coupons yet"
+
+#: templates/ai_recommendations/assessment.html:4
+msgid ""
+"AI Wellness Assistant - วิเคราะห์สุขภาพและจัดทริปเฉพาะบุคคล | WellTrip "
+"Sisaket"
+msgstr ""
+"AI Wellness Assistant - Personal health check and trip plan | WellTrip "
+"Sisaket"
+
+#: templates/ai_recommendations/assessment.html:26
+msgid "กรอกน้ำหนักและส่วนสูง"
+msgstr "Enter weight and height"
+
+#: templates/ai_recommendations/assessment.html:27
+msgid "น้ำหนักน้อยกว่าเกณฑ์"
+msgstr "Underweight"
+
+#: templates/ai_recommendations/assessment.html:28
+msgid "สมส่วนตามเกณฑ์เอเชีย"
+msgstr "Healthy (Asian criteria)"
+
+#: templates/ai_recommendations/assessment.html:29
+msgid "น้ำหนักเกินเกณฑ์"
+msgstr "Overweight"
+
+#: templates/ai_recommendations/assessment.html:30
+msgid "ภาวะอ้วน ควรควบคุม"
+msgstr "Obese, worth managing"
+
+#: templates/ai_recommendations/assessment.html:36
+msgid "วางแผนทริปสุขภาวะศรีสะเกษ"
+msgstr "Plan a Sisaket wellness trip"
+
+#: templates/ai_recommendations/assessment.html:36
+msgid "ด้วยการประเมินสุขภาพ"
+msgstr "with a health check"
+
+#: templates/ai_recommendations/assessment.html:37
+msgid ""
+"คำนวณดัชนีมวลกาย (BMI) อัตราการเผาผลาญ (BMR) แล้วจับคู่ที่พัก อาหารสุขภาพ "
+"และสปาที่เหมาะกับคุณ"
+msgstr ""
+"We calculate your body mass index (BMI) and metabolic rate (BMR), then match"
+" stays, healthy food and spas that suit you"
+
+#: templates/ai_recommendations/assessment.html:45
+msgid "ข้อมูลร่างกายและเป้าหมาย"
+msgstr "Body data and goals"
+
+#: templates/ai_recommendations/assessment.html:58
+msgid "น้ำหนัก (กก.)"
+msgstr "Weight (kg)"
+
+#: templates/ai_recommendations/assessment.html:58
+msgid "เช่น 60"
+msgstr "e.g. 60"
+
+#: templates/ai_recommendations/assessment.html:59
+msgid "ส่วนสูง (ซม.)"
+msgstr "Height (cm)"
+
+#: templates/ai_recommendations/assessment.html:59
+msgid "เช่น 165"
+msgstr "e.g. 165"
+
+#: templates/ai_recommendations/assessment.html:60
+msgid "อายุ (ปี)"
+msgstr "Age (years)"
+
+#: templates/ai_recommendations/assessment.html:60
+msgid "เช่น 35"
+msgstr "e.g. 35"
+
+#: templates/ai_recommendations/assessment.html:61
+msgid "เพศ"
+msgstr "Gender"
+
+#: templates/ai_recommendations/assessment.html:62
+msgid "หญิง"
+msgstr "Female"
+
+#: templates/ai_recommendations/assessment.html:62
+msgid "ชาย"
+msgstr "Male"
+
+#: templates/ai_recommendations/assessment.html:62
+#: templates/payments/admin_review.html:30
+msgid "ไม่ระบุ"
+msgstr "Prefer not to say"
+
+#: templates/ai_recommendations/assessment.html:67
+msgid "เป้าหมายหลัก"
+msgstr "Main goal"
+
+#: templates/ai_recommendations/assessment.html:70
+msgid "🌿 คลายเครียด"
+msgstr "🌿 Stress relief"
+
+#: templates/ai_recommendations/assessment.html:71
+msgid "✨ ดีท็อกซ์"
+msgstr "✨ Detox"
+
+#: templates/ai_recommendations/assessment.html:72
+msgid "🏃 ควบคุมน้ำหนัก"
+msgstr "🏃 Weight control"
+
+#: templates/ai_recommendations/assessment.html:73
+msgid "🍵 ผู้สูงอายุ"
+msgstr "🍵 Seniors"
+
+#: templates/ai_recommendations/assessment.html:78
+msgid "ข้อจำกัดด้านอาหาร"
+msgstr "Dietary restrictions"
+
+#: templates/ai_recommendations/assessment.html:79
+msgid "โซเดียมต่ำ"
+msgstr "Low sodium"
+
+#: templates/ai_recommendations/assessment.html:80
+#: templates/core/about.html:43
+msgid "เกษตรอินทรีย์"
+msgstr "Organic"
+
+#: templates/ai_recommendations/assessment.html:81
+msgid "มังสวิรัติ / เจ"
+msgstr "Vegetarian / vegan"
+
+#: templates/ai_recommendations/assessment.html:84
+msgid "ให้ AI วิเคราะห์และจัดทริป"
+msgstr "Let AI analyze and plan my trip"
+
+#: templates/ai_recommendations/assessment.html:92
+#: templates/ai_recommendations/partials/recommendation_pending.html:4
+msgid "AI กำลังวิเคราะห์..."
+msgstr "AI is analyzing..."
+
+#: templates/ai_recommendations/assessment.html:93
+#: templates/ai_recommendations/partials/recommendation_pending.html:5
+msgid "กำลังค้นหาที่พัก เมนูอาหาร และสปาที่ตรงกับเป้าหมายของคุณ"
+msgstr "Finding stays, dishes and spas that match your goals"
+
+#: templates/ai_recommendations/assessment.html:98
+msgid "รอข้อมูลของคุณ"
+msgstr "Waiting for your details"
+
+#: templates/ai_recommendations/assessment.html:99
+msgid "กรอกน้ำหนัก ส่วนสูง และเลือกเป้าหมาย แล้วกด"
+msgstr "Enter your weight and height, choose a goal, then tap"
+
+#: templates/ai_recommendations/assessment.html:99
+msgid "\"ให้ AI วิเคราะห์และจัดทริป\""
+msgstr "“Let AI analyze and plan my trip”"
+
+#: templates/ai_recommendations/partials/recommendation_failed.html:4
+msgid "วิเคราะห์ไม่สำเร็จ"
+msgstr "Analysis failed"
+
+#: templates/ai_recommendations/partials/recommendation_failed.html:5
+msgid "ระบบไม่ว่างชั่วคราว กรุณากดวิเคราะห์อีกครั้ง"
+msgstr "The system is busy. Please try again."
+
+#: templates/ai_recommendations/partials/recommendation_result.html:7
+msgid "ผลวิเคราะห์สุขภาพเฉพาะบุคคล"
+msgstr "Your personal health analysis"
+
+#: templates/ai_recommendations/partials/recommendation_result.html:27
+msgid "ประมาณการราคารวม"
+msgstr "Estimated total"
+
+#: templates/ai_recommendations/partials/recommendation_result.html:45
+msgid "ดู"
+msgstr "View"
+
+#: templates/ai_recommendations/partials/recommendation_result.html:51
+msgid "เริ่มจองที่พัก"
+msgstr "Start booking a stay"
+
+#: templates/ai_recommendations/partials/recommendation_result.html:52
+msgid "ดูบนแผนที่"
+msgstr "View on map"
+
+#: templates/base.html:55
+msgid "ติดตั้งแอป WellTrip"
+msgstr "Install the WellTrip app"
+
+#: templates/base.html:56
+msgid "เปิดเร็ว ใช้งานได้แม้ออฟไลน์"
+msgstr "Opens fast and works offline"
+
+#: templates/base.html:58
+msgid "ติดตั้ง"
+msgstr "Install"
+
+#: templates/bookings/booking_detail.html:4
+#, python-format
+msgid "การจอง %(booking_code)s - WellTrip Sisaket"
+msgstr "Booking %(booking_code)s - WellTrip Sisaket"
+
+#: templates/bookings/booking_detail.html:10
+#: templates/bookings/my_bookings.html:10 templates/core/home_tourist.html:25
+#: templates/layouts/public.html:91
+msgid "การจองของฉัน"
+msgstr "My bookings"
+
+#: templates/bookings/booking_detail.html:17
+#: templates/core/home_tourist.html:49
+msgid "รหัสการจอง"
+msgstr "Booking code"
+
+#: templates/bookings/booking_detail.html:19
+#, python-format
+msgid "สร้างเมื่อ %(created_at)s น."
+msgstr "Created %(created_at)s"
+
+#: templates/bookings/booking_detail.html:30
+msgid "คำสั่งซื้อนี้หมดเวลาชำระเงินแล้ว ระบบปล่อยห้องพักและสินค้าคืนแล้ว"
+msgstr ""
+"This order passed its payment deadline. The rooms and products have been "
+"released."
+
+#: templates/bookings/booking_detail.html:35
+#: templates/bookings/my_bookings.html:52
+msgid "บัตรเข้าใช้บริการ"
+msgstr "Service pass"
+
+#: templates/bookings/booking_detail.html:37
+msgid "แสดงรหัสนี้กับเจ้าของที่พักหรือผู้ให้บริการเพื่อยืนยันสิทธิ์"
+msgstr "Show this code to the host or provider to confirm your booking"
+
+#: templates/bookings/cart.html:4
+msgid "ตะกร้าของฉัน - WellTrip Sisaket"
+msgstr "My cart - WellTrip Sisaket"
+
+#: templates/bookings/cart.html:11
+msgid "ตะกร้าของฉัน"
+msgstr "My cart"
+
+#: templates/bookings/cart.html:12
+#, python-format
+msgid "%(item_count)s รายการ"
+msgstr "%(item_count)s items"
+
+#: templates/bookings/cart.html:23
+msgid "รายการที่เลือก"
+msgstr "Selected items"
+
+#: templates/bookings/cart.html:31
+#, python-format
+msgid "· %(nights)s คืน"
+msgstr "· %(nights)s nights"
+
+#: templates/bookings/cart.html:34
+msgid "/ คืน / ห้อง"
+msgstr "/ night / room"
+
+#: templates/bookings/cart.html:34
+msgid "/ หน่วย"
+msgstr "/ unit"
+
+#: templates/bookings/cart.html:37 templates/otop/detail.html:47
+#: templates/otop/detail.html:48
+msgid "จำนวน"
+msgstr "Quantity"
+
+#: templates/bookings/cart.html:38
+msgid "ลดจำนวน"
+msgstr "Decrease quantity"
+
+#: templates/bookings/cart.html:40
+msgid "เพิ่มจำนวน"
+msgstr "Increase quantity"
+
+#: templates/bookings/cart.html:43
+msgid "ลบออกจากตะกร้า"
+msgstr "Remove from cart"
+
+#: templates/bookings/cart.html:54
+msgid "ที่อยู่จัดส่ง (สำหรับสินค้า OTOP)"
+msgstr "Shipping address (for OTOP products)"
+
+#: templates/bookings/cart.html:55
+#, python-format
+msgid "บันทึกได้สูงสุด 3 ที่อยู่ · ใช้อยู่ %(shipping_addresses)s/3"
+msgstr "Save up to 3 addresses · %(shipping_addresses)s/3 used"
+
+#: templates/bookings/cart.html:58
+msgid "ปิดแบบฟอร์ม"
+msgstr "Close form"
+
+#: templates/bookings/cart.html:58
+msgid "เพิ่มที่อยู่"
+msgstr "Add address"
+
+#: templates/bookings/cart.html:63
+msgid "ยังไม่มีที่อยู่จัดส่ง"
+msgstr "No shipping address yet"
+
+#: templates/bookings/cart.html:63
+msgid "จำเป็นต้องกรอกเพราะมีสินค้า OTOP ในตะกร้า"
+msgstr "Required because your cart has OTOP products"
+
+#: templates/bookings/cart.html:63
+msgid "(จำเป็นเฉพาะเมื่อสั่งสินค้า OTOP)"
+msgstr "(only needed for OTOP products)"
+
+#: templates/bookings/cart.html:71 templates/bookings/review.html:42
+#: templates/bookings/review.html:46
+msgid "ที่อยู่จัดส่ง"
+msgstr "Shipping address"
+
+#: templates/bookings/cart.html:73
+msgid "ลบที่อยู่นี้หรือไม่?"
+msgstr "Delete this address?"
+
+#: templates/bookings/cart.html:73
+msgid "ลบที่อยู่"
+msgstr "Delete address"
+
+#: templates/bookings/cart.html:77 templates/bookings/review.html:47
+#, python-format
+msgid "%(address_line)s อ.%(district)s จ.%(province)s %(postal_code)s"
+msgstr "%(address_line)s, %(district)s District, %(province)s %(postal_code)s"
+
+#: templates/bookings/cart.html:79 templates/bookings/cart.html:81
+msgid "ใช้ที่อยู่นี้"
+msgstr "Use this address"
+
+#: templates/bookings/cart.html:93
+msgid "ชื่อเรียก"
+msgstr "Label"
+
+#: templates/bookings/cart.html:93
+msgid "บ้าน, ที่ทำงาน"
+msgstr "Home, work"
+
+#: templates/bookings/cart.html:94
+msgid "ชื่อผู้รับ"
+msgstr "Recipient name"
+
+#: templates/bookings/cart.html:96
+msgid "ที่อยู่ (บ้านเลขที่ หมู่ ถนน ตำบล)"
+msgstr "Address (house no., village, road, subdistrict)"
+
+#: templates/bookings/cart.html:100 templates/portal/homestay.html:51
+msgid "จังหวัด"
+msgstr "Province"
+
+#: templates/bookings/cart.html:101 templates/portal/homestay.html:52
+msgid "รหัสไปรษณีย์"
+msgstr "Postal code"
+
+#: templates/bookings/cart.html:105
+msgid "บันทึกที่อยู่"
+msgstr "Save address"
+
+#: templates/bookings/cart.html:111
+msgid "เลือกบริการเพิ่มเติม"
+msgstr "Add more services"
+
+#: templates/bookings/cart.html:116
+msgid "สรุปคำสั่งซื้อ"
+msgstr "Order summary"
+
+#: templates/bookings/cart.html:119 templates/bookings/review.html:64
+msgid "ค่าจัดส่ง"
+msgstr "Shipping"
+
+#: templates/bookings/cart.html:121
+msgid "ส่วนลด ("
+msgstr "Discount ("
+
+#: templates/bookings/cart.html:129
+msgid "โค้ดส่วนลด"
+msgstr "Discount code"
+
+#: templates/bookings/cart.html:132 templates/bookings/cart.html:138
+msgid "ใช้โค้ด"
+msgstr "Apply code"
+
+#: templates/bookings/cart.html:137
+msgid "กรอกโค้ด"
+msgstr "Enter code"
+
+#: templates/bookings/cart.html:138
+msgid "กำลังตรวจ..."
+msgstr "Checking..."
+
+#: templates/bookings/cart.html:152
+#, python-format
+msgid "ส่งไปที่ %(recipient_name)s (%(label)s)"
+msgstr "Ship to %(recipient_name)s (%(label)s)"
+
+#: templates/bookings/cart.html:153
+#, python-format
+msgid "%(address_line)s อ.%(district)s จ.%(province)s"
+msgstr "%(address_line)s, %(district)s District, %(province)s"
+
+#: templates/bookings/cart.html:158 templates/bookings/review.html:68
+msgid "ยอดชำระสุทธิ"
+msgstr "Total to pay"
+
+#: templates/bookings/cart.html:163 templates/bookings/review.html:10
+msgid "ตรวจสอบคำสั่งซื้อ"
+msgstr "Review order"
+
+#: templates/bookings/cart.html:165
+msgid "เข้าสู่ระบบเพื่อสั่งซื้อ"
+msgstr "Log in to order"
+
+#: templates/bookings/cart.html:173
+msgid "ตะกร้ายังว่างอยู่"
+msgstr "Your cart is empty"
+
+#: templates/bookings/cart.html:174
+msgid "เลือกที่พัก อาหารสุขภาพ สปา หรือสินค้า OTOP ได้เลย"
+msgstr "Pick a stay, healthy food, spa or OTOP product"
+
+#: templates/bookings/cart.html:175
+msgid "เริ่มเลือกบริการ"
+msgstr "Start browsing"
+
+#: templates/bookings/cart.html:210
+msgid "กรุณากรอกหรือเลือกรหัสคูปอง"
+msgstr "Please enter or choose a coupon code"
+
+#: templates/bookings/cart.html:252
+msgid "เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง"
+msgstr "Connection error. Please try again."
+
+#: templates/bookings/cart.html:283
+msgid "ยกเลิกการใช้คูปองแล้ว"
+msgstr "Coupon removed"
+
+#: templates/bookings/my_bookings.html:4
+msgid "การจองของฉัน — WellTrip Sisaket"
+msgstr "My bookings — WellTrip Sisaket"
+
+#: templates/bookings/my_bookings.html:11
+msgid "สถานะการจองที่พัก สปา อาหาร และสินค้า OTOP"
+msgstr "Status of your stays, spa, food and OTOP orders"
+
+#: templates/bookings/my_bookings.html:13
+msgid "จองเพิ่ม"
+msgstr "Book more"
+
+#: templates/bookings/my_bookings.html:20
+msgid "กำลังดำเนินการ"
+msgstr "In progress"
+
+#: templates/bookings/my_bookings.html:21
+msgid "สำเร็จแล้ว"
+msgstr "Completed"
+
+#: templates/bookings/my_bookings.html:22
+msgid "ยกเลิก / หมดเวลา"
+msgstr "Cancelled / expired"
+
+#: templates/bookings/my_bookings.html:34
+#, python-format
+msgid "%(created_at)s น."
+msgstr "%(created_at)s"
+
+#: templates/bookings/my_bookings.html:46
+msgid "รอชำระเงินและแนบสลิป"
+msgstr "Awaiting payment and slip"
+
+#: templates/bookings/my_bookings.html:47
+#: templates/bookings/partials/checkout_steps.html:5
+#: templates/payments/instruction.html:10
+msgid "ชำระเงิน"
+msgstr "Pay"
+
+#: templates/bookings/my_bookings.html:60
+msgid "ยังไม่มีการจองในแท็บนี้"
+msgstr "No bookings in this tab yet"
+
+#: templates/bookings/my_bookings.html:61
+msgid "เริ่มสำรวจที่พักและบริการเพื่อสุขภาพได้เลย"
+msgstr "Start exploring stays and wellness services"
+
+#: templates/bookings/my_bookings.html:62 templates/core/about.html:98
+msgid "สำรวจที่พัก"
+msgstr "Explore stays"
+
+#: templates/bookings/partials/checkout_steps.html:2
+msgid "ขั้นตอนการสั่งซื้อ"
+msgstr "Checkout steps"
+
+#: templates/bookings/partials/checkout_steps.html:3
+#: templates/layouts/public.html:230
+msgid "ตะกร้า"
+msgstr "Cart"
+
+#: templates/bookings/partials/checkout_steps.html:4
+msgid "ตรวจสอบ"
+msgstr "Review"
+
+#: templates/bookings/partials/payment_timer.html:11
+msgid "เวลาที่เหลือในการชำระเงิน"
+msgstr "Time left to pay"
+
+#: templates/bookings/partials/payment_timer.html:12
+msgid "หากเลยเวลานี้ ระบบจะปล่อยห้องพักและสินค้าคืนให้ผู้อื่นจองโดยอัตโนมัติ"
+msgstr ""
+"After this time, the rooms and products are released for others to book "
+"automatically"
+
+#: templates/bookings/partials/payment_timer.html:16
+msgid "แนบสลิป"
+msgstr "Upload slip"
+
+#: templates/bookings/partials/payment_timer.html:20
+msgid "หมดเวลาชำระเงินแล้ว ระบบปล่อยห้องพักและสินค้าคืนแล้ว"
+msgstr "The payment time is up. The rooms and products have been released."
+
+#: templates/bookings/review.html:4
+msgid "ตรวจสอบคำสั่งซื้อ - WellTrip Sisaket"
+msgstr "Review order - WellTrip Sisaket"
+
+#: templates/bookings/review.html:11
+msgid "ตรวจสอบรายการ ที่อยู่จัดส่ง และยอดเงินก่อนยืนยัน"
+msgstr "Check your items, shipping address and total before confirming"
+
+#: templates/bookings/review.html:21
+#, python-format
+msgid "รายการ (%(item_count)s)"
+msgstr "Items (%(item_count)s)"
+
+#: templates/bookings/review.html:22
+msgid "แก้ไขตะกร้า"
+msgstr "Edit cart"
+
+#: templates/bookings/review.html:30
+#, python-format
+msgid "ห้อง × %(nights)s คืน"
+msgstr "rooms × %(nights)s nights"
+
+#: templates/bookings/review.html:43
+msgid "เปลี่ยน"
+msgstr "Change"
+
+#: templates/bookings/review.html:49
+msgid "ยังไม่ได้เลือกที่อยู่จัดส่ง (จำเป็นเฉพาะสินค้า OTOP)"
+msgstr "No shipping address selected (only needed for OTOP products)"
+
+#: templates/bookings/review.html:54
+msgid "ข้อความถึงผู้ประกอบการ (ถ้ามี)"
+msgstr "Message to the provider (optional)"
+
+#: templates/bookings/review.html:55
+msgid "เช่น เดินทางถึงประมาณ 15:00 น., แพ้อาหารทะเล"
+msgstr "e.g. Arriving around 3 pm, allergic to seafood"
+
+#: templates/bookings/review.html:61
+msgid "สรุปยอด"
+msgstr "Summary"
+
+#: templates/bookings/review.html:65
+#, python-format
+msgid "ส่วนลด (%(coupon_code)s)"
+msgstr "Discount (%(coupon_code)s)"
+
+#: templates/bookings/review.html:71
+msgid "ยืนยันคำสั่งซื้อ"
+msgstr "Confirm order"
+
+#: templates/bookings/review.html:72
+msgid ""
+"เมื่อยืนยัน ระบบจะกันห้องพักและสินค้าไว้ให้ 15 นาทีเพื่อชำระเงินและแนบสลิป"
+msgstr ""
+"Once you confirm, rooms and products are held for 15 minutes while you pay "
+"and upload the slip"
+
+#: templates/community/event_detail.html:29
+msgid "เพิ่มลง Google Calendar"
+msgstr "Add to Google Calendar"
+
+#: templates/community/event_detail.html:30 templates/community/map.html:53
+msgid "นำทาง"
+msgstr "Directions"
+
+#: templates/community/event_detail.html:31
+msgid "ข้อมูลจากผู้จัด"
+msgstr "Organizer info"
+
+#: templates/community/event_detail.html:34
+#, python-format
+msgid "สแกน QR ที่จุดเช็คอิน \"%(place)s\" ในงาน เพื่อรับตราประทับในพาสปอร์ต"
+msgstr ""
+"Scan the QR at the “%(place)s” check-in point at the event to get a passport"
+" stamp"
+
+#: templates/community/event_detail.html:34 templates/community/map.html:28
+#: templates/core/home_tourist.html:26
+msgid "พาสปอร์ตของฉัน"
+msgstr "My passport"
+
+#: templates/community/event_detail.html:40
+msgid "กิจกรรมอื่นที่กำลังจะมาถึง"
+msgstr "More upcoming events"
+
+#: templates/community/events_list.html:4
+#: templates/community/events_list.html:10
+msgid "ปฏิทินกิจกรรมศรีสะเกษ"
+msgstr "Sisaket events calendar"
+
+#: templates/community/events_list.html:11
+msgid ""
+"เทศกาล ดนตรี กีฬา และงานประเพณีที่กำลังจะมาถึง "
+"เลือกงานที่ชอบแล้วเพิ่มลงปฏิทินของคุณได้เลย"
+msgstr ""
+"Upcoming festivals, music, sports and traditional events. Pick the ones you "
+"like and add them to your calendar."
+
+#: templates/community/events_list.html:30
+msgid "ยังไม่มีกิจกรรมที่กำลังจะมาถึง"
+msgstr "No upcoming events yet"
+
+#: templates/community/events_list.html:30
+msgid "แวะกลับมาดูใหม่เร็วๆ นี้"
+msgstr "Check back soon"
+
+#: templates/community/map.html:5
+msgid "แผนที่ชุมชนและจุดเช็คอิน - WellTrip Sisaket"
+msgstr "Community map and check-in points - WellTrip Sisaket"
+
+#: templates/community/map.html:25
+msgid "แผนที่ชุมชนและจุดเช็คอิน"
+msgstr "Community map and check-in points"
+
+#: templates/community/map.html:26
+msgid ""
+"สำรวจสถานที่ท่องเที่ยว ที่พัก อาหาร และสปา แล้วสแกน QR "
+"ที่จุดเช็คอินจริงเพื่อสะสมตราประทับในพาสปอร์ต"
+msgstr ""
+"Explore attractions, stays, food and spas, then scan the QR at real check-in"
+" points to collect passport stamps"
+
+#: templates/community/map.html:34
+#, python-format
+msgid "ทั้งหมด (%(total_locations)s)"
+msgstr "All (%(total_locations)s)"
+
+#: templates/community/map.html:44
+msgid "สถานที่ในหมวดนี้"
+msgstr "Places in this category"
+
+#: templates/community/map.html:44
+#, python-format
+msgid "(%(locations)s แห่ง)"
+msgstr "(%(locations)s places)"
+
+#: templates/community/map.html:51
+msgid "จังหวัดศรีสะเกษ"
+msgstr "Sisaket Province"
+
+#: templates/community/map.html:54
+msgid "สแกน QR ที่จุดนี้เพื่อรับตรา"
+msgstr "Scan the QR here to get a stamp"
+
+#: templates/community/map.html:59
+msgid "ยังไม่มีสถานที่ในหมวดนี้"
+msgstr "No places in this category yet"
+
+#: templates/community/map.html:94
+msgid "นำทาง →"
+msgstr "Directions →"
+
+#: templates/community/partials/coupon_feedback.html:6
+msgid "ยอดชำระหลังหักส่วนลด"
+msgstr "Total after discount"
+
+#: templates/community/passport.html:4
+msgid "พาสปอร์ตท่องเที่ยวดิจิทัล - WellTrip Sisaket"
+msgstr "Digital travel passport - WellTrip Sisaket"
+
+#: templates/community/passport.html:12
+#, python-format
+msgid "ระดับนักเดินทาง: %(name)s"
+msgstr "Traveler level: %(name)s"
+
+#: templates/community/passport.html:14
+msgid ""
+"สมุดบันทึกการเดินทางวิถีสุขภาวะและภูมิปัญญา 4 ชนเผ่า สแกน QR "
+"ที่จุดเช็คอินในชุมชนเพื่อสะสมตราประทับ"
+msgstr ""
+"Your travel log of wellness and four-tribe wisdom. Scan the QR at community "
+"check-in points to collect stamps."
+
+#: templates/community/passport.html:19
+msgid "ตราประทับ"
+msgstr "Stamps"
+
+#: templates/community/passport.html:25
+#, python-format
+msgid "%(stamp_count)s / %(all_locations)s แห่ง"
+msgstr "%(stamp_count)s / %(all_locations)s places"
+
+#: templates/community/passport.html:37
+msgid "ตราประทับที่สะสมแล้ว"
+msgstr "Stamps collected"
+
+#: templates/community/passport.html:38
+msgid "ดูจุดเช็คอินบนแผนที่"
+msgstr "See check-in points on the map"
+
+#: templates/community/passport.html:49
+#, python-format
+msgid "%(stamped_at)s น."
+msgstr "%(stamped_at)s"
+
+#: templates/community/passport.html:58
+msgid "ยังไม่มีตราประทับ"
+msgstr "No stamps yet"
+
+#: templates/community/passport.html:59
+msgid ""
+"เดินทางไปยังจุดเช็คอินในชุมชน แล้วสแกนป้าย QR เพื่อรับตราประทับดวงแรกของคุณ"
+msgstr ""
+"Travel to a community check-in point and scan the QR sign to get your first "
+"stamp"
+
+#: templates/community/passport.html:60 templates/core/home.html:233
+msgid "เปิดแผนที่"
+msgstr "Open map"
+
+#: templates/community/privacy_settings.html:4
+msgid "ตั้งค่าความเป็นส่วนตัว (PDPA) — WellTrip Sisaket"
+msgstr "Privacy settings (PDPA) — WellTrip Sisaket"
+
+#: templates/community/privacy_settings.html:23
+msgid "ลบประวัติตำแหน่งออกจากระบบเรียบร้อยแล้ว"
+msgstr "Your location history has been deleted"
+
+#: templates/community/privacy_settings.html:25
+msgid "ลบข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"
+msgstr "Could not delete the data. Please try again."
+
+#: templates/community/privacy_settings.html:32
+msgid "ความเป็นส่วนตัวและข้อมูลตำแหน่ง"
+msgstr "Privacy and location data"
+
+#: templates/community/privacy_settings.html:33
+msgid ""
+"ตรวจสอบข้อมูลตำแหน่งที่ระบบบันทึกไว้ และสั่งลบได้ทันทีตาม พ.ร.บ. "
+"คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562"
+msgstr ""
+"See the location data we have saved and delete it right away, as provided by"
+" Thailand’s Personal Data Protection Act B.E. 2562 (2019)"
+
+#: templates/community/privacy_settings.html:50
+msgid "ตำแหน่งที่บันทึกไว้ (แบบหยาบ)"
+msgstr "Saved location (approximate)"
+
+#: templates/community/privacy_settings.html:51
+msgid ""
+"ความแม่นยำประมาณ 1.1 กม. ใช้แนะนำแหล่งท่องเที่ยวและคำนวณระยะทางเท่านั้น"
+msgstr ""
+"Accurate to about 1.1 km. Used only to suggest attractions and calculate "
+"distances."
+
+#: templates/community/privacy_settings.html:54
+msgid "มีข้อมูลบันทึกอยู่"
+msgstr "Data saved"
+
+#: templates/community/privacy_settings.html:54
+msgid "ไม่มีข้อมูล"
+msgstr "No data"
+
+#: templates/community/privacy_settings.html:60
+msgid "ละติจูด"
+msgstr "Latitude"
+
+#: templates/community/privacy_settings.html:61
+msgid "ลองจิจูด"
+msgstr "Longitude"
+
+#: templates/community/privacy_settings.html:62
+msgid "บันทึกเมื่อ"
+msgstr "Saved at"
+
+#: templates/community/privacy_settings.html:65
+msgid "ลบประวัติตำแหน่งทั้งหมดออกจากเซิร์ฟเวอร์ โดยไม่เก็บสำเนา"
+msgstr "Delete all location history from the server, with no copies kept"
+
+#: templates/community/privacy_settings.html:66
+msgid "ลบประวัติตำแหน่ง"
+msgstr "Delete location history"
+
+#: templates/community/privacy_settings.html:68
+msgid "ยืนยันการลบ?"
+msgstr "Confirm deletion?"
+
+#: templates/community/privacy_settings.html:69
+msgid "กำลังลบ..."
+msgstr "Deleting..."
+
+#: templates/community/privacy_settings.html:69
+msgid "ใช่ ลบเลย"
+msgstr "Yes, delete"
+
+#: templates/community/privacy_settings.html:75
+msgid "ยังไม่มีประวัติการบันทึกตำแหน่งในบัญชีของคุณ"
+msgstr "Your account has no saved location history"
+
+#: templates/community/privacy_settings.html:79
+msgid "หลักการคุ้มครองข้อมูลของ WellTrip"
+msgstr "How WellTrip protects your data"
+
+#: templates/community/privacy_settings.html:81
+msgid "ความปลอดภัยของบัญชี"
+msgstr "Account security"
+
+#: templates/community/privacy_settings.html:81
+msgid "รหัสผ่านเข้ารหัสทางเดียวด้วย Argon2 และระบบป้องกันการเดารหัสผ่าน"
+msgstr ""
+"Passwords are one-way hashed with Argon2, with protection against password "
+"guessing"
+
+#: templates/community/privacy_settings.html:82
+msgid "ไม่ส่งต่อข้อมูลแก่บุคคลภายนอก"
+msgstr "No sharing with third parties"
+
+#: templates/community/privacy_settings.html:82
+msgid ""
+"ข้อมูลการเดินทางและตำแหน่งใช้ภายในแพลตฟอร์มเท่านั้น "
+"ไม่นำไปจำหน่ายหรือใช้เชิงพาณิชย์อื่น"
+msgstr ""
+"Travel and location data is used only within the platform and is never sold "
+"or used for other commercial purposes"
+
+#: templates/community/privacy_settings.html:84
+msgid "อ่านนโยบายคุ้มครองข้อมูลฉบับเต็ม"
+msgstr "Read the full privacy policy"
+
+#: templates/community/stories_list.html:5
+msgid "เรื่องเล่าชุมชนและภูมิปัญญาท้องถิ่นศรีสะเกษ - WellTrip Sisaket"
+msgstr "Community stories and local wisdom of Sisaket - WellTrip Sisaket"
+
+#: templates/community/stories_list.html:11
+msgid "เรื่องเล่าวิถีชุมชนศรีสะเกษ"
+msgstr "Stories of Sisaket community life"
+
+#: templates/community/stories_list.html:12
+msgid ""
+"ภูมิปัญญาผ้าย้อมมะเกลือ เกษตรอินทรีย์ดินภูเขาไฟ และเทศกาลประเพณีของ 4 ชนเผ่า"
+msgstr ""
+"Ebony-dyed cloth, organic farming on volcanic soil and the festivals of four"
+" ethnic groups"
+
+#: templates/community/stories_list.html:36
+msgid "อ่านต่อ"
+msgstr "Read more"
+
+#: templates/community/stories_list.html:44
+msgid "ยังไม่มีเรื่องเล่าในหมวดนี้"
+msgstr "No stories in this category yet"
+
+#: templates/community/stories_list.html:45
+msgid "ทีมงานกำลังเตรียมเรื่องราวจากชุมชน"
+msgstr "Our team is preparing stories from the communities"
+
+#: templates/community/story_detail.html:5
+#, python-format
+msgid "%(title)s - เรื่องเล่าชุมชน WellTrip Sisaket"
+msgstr "%(title)s - Community stories | WellTrip Sisaket"
+
+#: templates/community/story_detail.html:22
+#, python-format
+msgid "เผยแพร่เมื่อ %(updated_at)s"
+msgstr "Published %(updated_at)s"
+
+#: templates/community/story_detail.html:35
+msgid "เรื่องเล่าทั้งหมด"
+msgstr "All stories"
+
+#: templates/core/about.html:12
+msgid "วิถีชุมชนริมบึงบัวในศรีสะเกษ"
+msgstr "Community life by a lotus pond in Sisaket"
+
+#: templates/core/about.html:18
+msgid "เชื่อมการท่องเที่ยวสุขภาวะ"
+msgstr "Connecting wellness travel"
+
+#: templates/core/about.html:18
+msgid "กับ"
+msgstr "with"
+
+#: templates/core/about.html:18
+msgid "ภูมิปัญญา 4 ชนเผ่า"
+msgstr "the wisdom of four ethnic groups"
+
+#: templates/core/about.html:19
+msgid ""
+"โครงการวิจัยและพัฒนานวัตกรรมการท่องเที่ยวเชิงสุขภาพ "
+"โดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) เพื่อสร้างรายได้สู่เศรษฐกิจฐานรากโดยตรง"
+msgstr ""
+"A wellness tourism research and innovation project by Sisaket Rajabhat "
+"University (SSKRU) that brings income straight to the grassroots economy"
+
+#: templates/core/about.html:27
+msgid "เครือข่ายชุมชนท่องเที่ยว"
+msgstr "Community tourism network"
+
+#: templates/core/about.html:28
+msgid "ชนเผ่า"
+msgstr "ethnic groups"
+
+#: templates/core/about.html:28
+msgid "ลาว · เขมร · ส่วย (กูย) · เยอ"
+msgstr "Lao · Khmer · Suai (Kui) · Yoe"
+
+#: templates/core/about.html:29
+msgid "นิเวศน์"
+msgstr "eco"
+
+#: templates/core/about.html:29
+msgid "โภชนาการตามธาตุทั้ง 5"
+msgstr "Nutrition based on the five elements"
+
+#: templates/core/about.html:30
+msgid "ตรง"
+msgstr "Direct"
+
+#: templates/core/about.html:30
+msgid "ถึงชุมชน"
+msgstr "to communities"
+
+#: templates/core/about.html:30
+msgid "ผู้ประกอบการรับเงินโดยตรง"
+msgstr "Businesses are paid directly"
+
+#: templates/core/about.html:39
+msgid "พันธกิจและวิสัยทัศน์"
+msgstr "Mission and vision"
+
+#: templates/core/about.html:40
+msgid "การเดินทางที่ช่วยฟื้นฟูร่างกาย และเติมเต็มจิตใจ"
+msgstr "Travel that restores the body and fills the heart"
+
+#: templates/core/about.html:41
+msgid ""
+"WellTrip เกิดจากความร่วมมือระหว่างคณาจารย์ นักวิจัย "
+"มหาวิทยาลัยราชภัฏศรีสะเกษ และผู้นำชุมชนท่องเที่ยวเชิงสุขภาพ "
+"เพื่อยกระดับมรดกทางธรรมชาติและภูมิปัญญาท้องถิ่นของศรีสะเกษ เช่น ดินภูเขาไฟ "
+"แหล่งปลูกพืชอินทรีย์ สมุนไพรพื้นบ้าน และผ้าทอย้อมสีธรรมชาติ "
+"ให้เป็นเส้นทางท่องเที่ยวเชิงสุขภาวะ (Wellness Tourism)"
+msgstr ""
+"WellTrip is a collaboration between lecturers and researchers at Sisaket "
+"Rajabhat University and leaders of wellness tourism communities. It turns "
+"Sisaket’s natural heritage and local wisdom, such as volcanic soil, organic "
+"farms, local herbs and naturally dyed cloth, into wellness tourism routes."
+
+#: templates/core/about.html:44
+msgid "แพทย์แผนไทย"
+msgstr "Thai traditional medicine"
+
+#: templates/core/about.html:45
+msgid "วางแผนทริปด้วย AI"
+msgstr "Plan your trip with AI"
+
+#: templates/core/about.html:50 templates/core/about.html:51
+msgid "ผามออีแดง อ.กันทรลักษ์"
+msgstr "Pha Mo I Daeng, Kantharalak"
+
+#: templates/core/about.html:51
+msgid "จุดชมวิวชายแดนเทือกเขาพนมดงรัก"
+msgstr "Border viewpoint on the Phanom Dong Rak range"
+
+#: templates/core/about.html:61
+msgid "เครือข่ายความร่วมมือ"
+msgstr "Partner network"
+
+#: templates/core/about.html:62
+msgid "หน่วยงานผู้สนับสนุนทุนวิจัยและบ่มเพาะนวัตกรรม"
+msgstr "Research funders and innovation incubators"
+
+#: templates/core/about.html:63
+msgid ""
+"ความร่วมมือระหว่างภาครัฐ สถาบันอุดมศึกษา และวิสาหกิจชุมชน "
+"เพื่อผลักดันเศรษฐกิจฐานรากอย่างยั่งยืน"
+msgstr ""
+"A partnership between government, universities and community enterprises to "
+"build a sustainable grassroots economy"
+
+#: templates/core/about.html:68 templates/core/home.html:354
+msgid "สำนักงานนวัตกรรมแห่งชาติ"
+msgstr "National Innovation Agency"
+
+#: templates/core/about.html:70
+msgid "หน่วยงานสนับสนุนทุน"
+msgstr "Funding agency"
+
+#: templates/core/about.html:71 templates/layouts/public.html:206
+msgid "สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน)"
+msgstr "National Innovation Agency (Public Organization)"
+
+#: templates/core/about.html:72
+msgid ""
+"สนับสนุนทุนโครงการนวัตกรรมเพื่อสังคม "
+"ส่งเสริมการนำเทคโนโลยีและกระบวนการสร้างสรรค์มายกระดับคุณภาพชีวิต ชุมชน "
+"และสิ่งแวดล้อม"
+msgstr ""
+"Funds social innovation projects that use technology and creative processes "
+"to improve quality of life, communities and the environment"
+
+#: templates/core/about.html:78 templates/core/about.html:81
+#: templates/core/home.html:355 templates/layouts/public.html:207
+msgid "อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี"
+msgstr "Science Park, Ubon Ratchathani University"
+
+#: templates/core/about.html:80
+msgid "แม่ข่ายอุทยานวิทยาศาสตร์"
+msgstr "Science park hub"
+
+#: templates/core/about.html:82
+msgid ""
+"แม่ข่ายเครือข่ายอุดมศึกษาภาคตะวันออกเฉียงเหนือตอนล่าง บ่มเพาะวิสาหกิจ "
+"เชื่อมโยงงานวิจัย และส่งเสริมการใช้นวัตกรรม"
+msgstr ""
+"Hub of the lower northeastern university network, incubating enterprises, "
+"linking research and promoting innovation"
+
+#: templates/core/about.html:94
+msgid "พร้อมออกเดินทางสำรวจศรีสะเกษหรือยัง?"
+msgstr "Ready to explore Sisaket?"
+
+#: templates/core/about.html:95
+msgid "ค้นหาที่พัก เมนูสุขภาพ และสินค้าชุมชนได้เลย"
+msgstr "Find stays, healthy menus and community products now"
+
+#: templates/core/about.html:99 templates/core/home.html:327
+#: templates/layouts/public.html:69 templates/layouts/public.html:143
+#: templates/layouts/public.html:187
+msgid "ติดต่อเรา"
+msgstr "Contact us"
+
+#: templates/core/about.html:110
+msgid ""
+"โครงการวิจัยและพัฒนานวัตกรรมการท่องเที่ยวเชิงสุขภาพ "
+"โดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) "
+"ภายใต้การสนับสนุนของสำนักงานนวัตกรรมแห่งชาติ (NIA) และอุทยานวิทยาศาสตร์ "
+"มหาวิทยาลัยอุบลราชธานี (SIP UBU)"
+msgstr ""
+"A wellness tourism research and innovation project by Sisaket Rajabhat "
+"University (SSKRU), supported by the National Innovation Agency (NIA) and "
+"the Science Park of Ubon Ratchathani University (SIP UBU)"
+
+#: templates/core/about.html:118 templates/partials/seo_org_jsonld.html:33
+msgid "สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) - NIA"
+msgstr "National Innovation Agency (Public Organization) - NIA"
+
+#: templates/core/about.html:123 templates/partials/seo_org_jsonld.html:38
+msgid "อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)"
+msgstr "Science Park, Ubon Ratchathani University (SIP UBU)"
+
+#: templates/core/about.html:128 templates/layouts/public.html:171
+msgid "มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)"
+msgstr "Sisaket Rajabhat University (SSKRU)"
+
+#: templates/core/contact.html:4
+msgid "ศูนย์ช่วยเหลือและติดต่อเรา — WellTrip Sisaket"
+msgstr "Help center and contact — WellTrip Sisaket"
+
+#: templates/core/contact.html:19
+msgid "ศูนย์ช่วยเหลือและติดต่อเรา"
+msgstr "Help center and contact"
+
+#: templates/core/contact.html:20
+msgid "ค้นหาคำตอบ หรือติดต่อทีมงานดูแลนักท่องเที่ยว WellTrip ศรีสะเกษ"
+msgstr "Find answers or contact the WellTrip Sisaket traveler support team"
+
+#: templates/core/contact.html:23
+msgid "วิธีจอง การแนบสลิป นโยบายการยกเลิก..."
+msgstr "How to book, uploading slips, cancellation policy..."
+
+#: templates/core/contact.html:23
+msgid "ค้นหาคำถาม"
+msgstr "Search questions"
+
+#: templates/core/contact.html:24
+msgid "ล้าง"
+msgstr "Clear"
+
+#: templates/core/contact.html:35
+msgid "สายด่วนท่องเที่ยว"
+msgstr "Travel hotline"
+
+#: templates/core/contact.html:37
+msgid "สอบถามเส้นทางและเหตุฉุกเฉิน"
+msgstr "Directions and emergencies"
+
+#: templates/core/contact.html:45
+msgid "อีเมลบริการนักท่องเที่ยว"
+msgstr "Traveler service email"
+
+#: templates/core/contact.html:47
+msgid "ข้อเสนอแนะและแจ้งปัญหา (ตอบกลับภายใน 1 วันทำการ)"
+msgstr "Feedback and issue reports (reply within 1 business day)"
+
+#: templates/core/contact.html:55
+msgid "ศูนย์ปฏิบัติการและวิจัยการท่องเที่ยวเชิงสุขภาวะ (WellTrip)"
+msgstr "WellTrip Wellness Tourism Operations and Research Center"
+
+#: templates/core/contact.html:56
+msgid ""
+"คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏศรีสะเกษ เลขที่ 319 ถนนไทยพันทา "
+"ต.โพธิ์ อ.เมือง จ.ศรีสะเกษ 33000"
+msgstr ""
+"Faculty of Science and Technology, Sisaket Rajabhat University, 319 Thai "
+"Phan Tha Road, Pho Subdistrict, Mueang District, Sisaket 33000"
+
+#: templates/core/contact.html:57
+msgid "จันทร์ – ศุกร์ 08:30 – 16:30 น."
+msgstr "Monday – Friday 08:30 – 16:30"
+
+#: templates/core/contact.html:66 templates/core/home.html:324
+msgid "คำถามที่พบบ่อย"
+msgstr "Frequently asked questions"
+
+#: templates/core/contact.html:69
+msgid "การจอง"
+msgstr "Booking"
+
+#: templates/core/contact.html:70
+msgid "ชำระเงิน &amp; สลิป"
+msgstr "Payment &amp; slips"
+
+#: templates/core/contact.html:71
+msgid "OTOP &amp; จัดส่ง"
+msgstr "OTOP &amp; shipping"
+
+#: templates/core/contact.html:74 templates/core/contact.html:77
+msgid "วิธีแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?"
+msgstr "How do I upload a transfer slip, and how long does verification take?"
+
+#: templates/core/contact.html:81
+msgid ""
+"เมื่อโอนเงินแล้ว ให้แนบไฟล์สลิปผ่านหน้าชำระเงิน "
+"ระบบจะตรวจสอบยอดเงินและเวลาโอนอัตโนมัติภายใน 5-15 นาที"
+msgstr ""
+"After transferring, upload the slip on the payment page. The system checks "
+"the amount and transfer time automatically within 5–15 minutes."
+
+#: templates/core/contact.html:84 templates/core/contact.html:87
+msgid "หากต้องการเลื่อนวันเข้าพักต้องทำอย่างไร?"
+msgstr "How do I change my stay dates?"
+
+#: templates/core/contact.html:91
+msgid ""
+"ติดต่อเจ้าของที่พักโดยตรงผ่านเบอร์โทรที่แสดงในหน้าการจองของฉัน "
+"ล่วงหน้าอย่างน้อย 3 วันก่อนวันเข้าพัก"
+msgstr ""
+"Contact the host directly using the phone number on your booking page at "
+"least 3 days before your stay"
+
+#: templates/core/contact.html:94 templates/core/contact.html:97
+msgid "สินค้า OTOP จัดส่งอย่างไร?"
+msgstr "How are OTOP products shipped?"
+
+#: templates/core/contact.html:101
+msgid ""
+"ผู้ผลิตชุมชนจะจัดส่งพัสดุตรงจากชุมชนศรีสะเกษ ภายใน 1-2 "
+"วันทำการหลังยืนยันคำสั่งซื้อ"
+msgstr ""
+"Community producers ship parcels directly from Sisaket within 1–2 business "
+"days after the order is confirmed"
+
+#: templates/core/contact.html:104 templates/core/contact.html:107
+msgid "นโยบายการยกเลิกการจองและรับเงินคืนเป็นอย่างไร?"
+msgstr "What is the cancellation and refund policy?"
+
+#: templates/core/contact.html:111
+msgid ""
+"ยกเลิกและขอรับเงินคืนเต็มจำนวนได้ หากยกเลิกก่อนวันเข้าพักอย่างน้อย 7 วัน "
+"โดยติดต่อทีมงานทางโทรศัพท์ 045-962-455 หรืออีเมล "
+"support@welltripthailand.com"
+msgstr ""
+"You can cancel for a full refund at least 7 days before your stay by "
+"contacting our team at 045-962-455 or support@welltripthailand.com"
+
+#: templates/core/contact.html:114 templates/core/contact.html:117
+msgid "หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?"
+msgstr "What if my transfer slip is rejected?"
+
+#: templates/core/contact.html:121
+msgid ""
+"หากสลิปถูกปฏิเสธ (เช่น ภาพไม่ชัด หรือยอดเงินไม่ตรง) "
+"สามารถแนบสลิปใบใหม่ได้ที่หน้ารายละเอียดการจองของฉัน"
+msgstr ""
+"If a slip is rejected (for example a blurry image or wrong amount), you can "
+"upload a new slip from your booking details page"
+
+#: templates/core/contact.html:124 templates/core/contact.html:127
+msgid "สั่งสินค้า OTOP พร้อมกับจองที่พักในครั้งเดียวได้ไหม?"
+msgstr "Can I order OTOP products and book a stay at the same time?"
+
+#: templates/core/contact.html:131
+msgid ""
+"ได้ ตะกร้าของ WellTrip รวมที่พัก สปา อาหาร และสินค้า OTOP "
+"จากหลายร้านไว้ในการชำระเงินครั้งเดียวได้"
+msgstr ""
+"Yes. The WellTrip cart combines stays, spa, food and OTOP products from "
+"several stores into one payment."
+
+#: templates/core/home.html:15
+msgid "ทุ่งนาและกระท่อมยามเช้าในศรีสะเกษ"
+msgstr "Rice fields and a hut at dawn in Sisaket"
+
+#: templates/core/home.html:23
+msgid "พักใจที่"
+msgstr "Rest your mind in "
+
+#: templates/core/home.html:23
+msgid "สัมผัสวิถีสุขภาวะชุมชน"
+msgstr "experience community wellness"
+
+#: templates/core/home.html:24
+msgid ""
+"โฮมสเตย์กลางธรรมชาติ อาหารสุขภาพจากดินภูเขาไฟ นวดสปาสมุนไพรสด และของดี 4 "
+"ชนเผ่า ในที่เดียว"
+msgstr ""
+"Nature homestays, healthy volcanic-soil food, fresh-herb massage and spa, "
+"and products of four ethnic groups, all in one place"
+
+#: templates/core/home.html:43
+msgid "อยากไปพักที่ไหน กินอะไร ผ่อนคลายแบบไหน?"
+msgstr "Where to stay, what to eat, how to unwind?"
+
+#: templates/core/home.html:46 templates/services/list.html:27
+msgid "ล้างคำค้น"
+msgstr "Clear search"
+
+#: templates/core/home.html:48
+msgid "ตัวกรอง"
+msgstr "Filters"
+
+#: templates/core/home.html:58
+msgid "ผลการค้นหาด่วน"
+msgstr "Quick results"
+
+#: templates/core/home.html:59
+msgid "พบ"
+msgstr "Found"
+
+#: templates/core/home.html:77
+msgid "ไม่พบรายการที่ตรงกับ \""
+msgstr "Nothing matches “"
+
+#: templates/core/home.html:77
+msgid "\" — กด Enter เพื่อค้นหาทั้งหมด"
+msgstr "” — press Enter to search everything"
+
+#: templates/core/home.html:84
+msgid "ขุนหาญ"
+msgstr "Khun Han"
+
+#: templates/core/home.html:85
+msgid "กันทรลักษ์"
+msgstr "Kantharalak"
+
+#: templates/core/home.html:86
+msgid "สปาสมุนไพร"
+msgstr "Herbal spa"
+
+#: templates/core/home.html:98
+msgid "ตัวกรองการค้นหา"
+msgstr "Search filters"
+
+#: templates/core/home.html:103
+msgid "ประเภทบริการ"
+msgstr "Service type"
+
+#: templates/core/home.html:105
+msgid "ทุกประเภทบริการ"
+msgstr "All service types"
+
+#: templates/core/home.html:108 templates/layouts/public.html:178
+msgid "นวดแผนไทยและสปาสมุนไพร"
+msgstr "Thai massage and herbal spa"
+
+#: templates/core/home.html:109
+msgid "ของดีชุมชน OTOP"
+msgstr "Community OTOP products"
+
+#: templates/core/home.html:113
+msgid "อำเภอ / โซนท่องเที่ยว"
+msgstr "District / travel zone"
+
+#: templates/core/home.html:115
+msgid "ทุกอำเภอในศรีสะเกษ"
+msgstr "All districts in Sisaket"
+
+#: templates/core/home.html:116
+msgid "อำเภอเมืองศรีสะเกษ"
+msgstr "Mueang Sisaket District"
+
+#: templates/core/home.html:117
+msgid "อำเภอกันทรลักษ์"
+msgstr "Kantharalak District"
+
+#: templates/core/home.html:118
+msgid "อำเภอขุนหาญ"
+msgstr "Khun Han District"
+
+#: templates/core/home.html:119
+msgid "อำเภออุทุมพรพิสัย"
+msgstr "Uthumphon Phisai District"
+
+#: templates/core/home.html:120
+msgid "อำเภอราษีไศล"
+msgstr "Rasi Salai District"
+
+#: templates/core/home.html:121
+msgid "อำเภอปรางค์กู่"
+msgstr "Prang Ku District"
+
+#: templates/core/home.html:122
+msgid "อำเภอไพรบึง"
+msgstr "Phrai Bueng District"
+
+#: templates/core/home.html:126
+msgid "ช่วงราคาที่พักต่อคืน"
+msgstr "Price per night"
+
+#: templates/core/home.html:128
+msgid "ทุกช่วงราคา"
+msgstr "Any price"
+
+#: templates/core/home.html:129
+msgid "ต่ำกว่า 800 บาท"
+msgstr "Under 800 baht"
+
+#: templates/core/home.html:130
+msgid "800 - 1,500 บาท"
+msgstr "800 - 1,500 baht"
+
+#: templates/core/home.html:131
+msgid "มากกว่า 1,500 บาท"
+msgstr "Over 1,500 baht"
+
+#: templates/core/home.html:136
+msgid "ล้างค่า"
+msgstr "Reset"
+
+#: templates/core/home.html:137
+msgid "ค้นหาตามตัวกรอง"
+msgstr "Search with filters"
+
+#: templates/core/home.html:148 templates/layouts/public.html:30
+msgid "ที่พักโฮมสเตย์"
+msgstr "Homestays"
+
+#: templates/core/home.html:152 templates/layouts/public.html:232
+msgid "สุขภาพ AI"
+msgstr "AI health"
+
+#: templates/core/home.html:153 templates/core/home_tourist.html:71
+#: templates/layouts/public.html:53 templates/layouts/public.html:139
+msgid "แผนที่ชุมชน"
+msgstr "Community map"
+
+#: templates/core/home.html:154
+msgid "พาสปอร์ต"
+msgstr "Passport"
+
+#: templates/core/home.html:155
+msgid "เรื่องเล่าวิถี"
+msgstr "Local stories"
+
+#: templates/core/home.html:167
+msgid "กิจกรรมที่กำลังจะมาถึง"
+msgstr "Upcoming events"
+
+#: templates/core/home.html:169
+msgid "ดูปฏิทินทั้งหมด"
+msgstr "See the full calendar"
+
+#: templates/core/home.html:183
+msgid "แนะนำจากชุมชน"
+msgstr "Community picks"
+
+#: templates/core/home.html:184
+msgid "ไฮไลท์ชุมชนศรีสะเกษ"
+msgstr "Sisaket community highlights"
+
+#: templates/core/home.html:206
+msgid "ยังไม่ระบุราคา"
+msgstr "Price not set"
+
+#: templates/core/home.html:217
+msgid "ยังไม่มีรายการในระบบ"
+msgstr "Nothing listed yet"
+
+#: templates/core/home.html:218
+msgid "ผู้ประกอบการชุมชนกำลังทยอยลงทะเบียนที่พัก อาหาร สปา และสินค้า OTOP"
+msgstr ""
+"Community businesses are gradually listing stays, food, spas and OTOP "
+"products"
+
+#: templates/core/home.html:230
+msgid "แรงบันดาลใจ"
+msgstr "Inspiration"
+
+#: templates/core/home.html:231
+msgid "เที่ยวไหนดีในศรีสะเกษ"
+msgstr "Where to go in Sisaket"
+
+#: templates/core/home.html:257
+msgid "ให้ AI ช่วยวางแผนทริปที่เหมาะกับสุขภาพของคุณ"
+msgstr "Let AI plan a trip that suits your health"
+
+#: templates/core/home.html:258
+msgid ""
+"ประเมิน BMI / BMR และเป้าหมายสุขภาพ แล้วรับคำแนะนำที่พัก อาหาร "
+"และสปาที่เหมาะกับคุณ ใช้เวลาไม่ถึง 2 นาที"
+msgstr ""
+"Check your BMI / BMR and health goals, then get stay, food and spa "
+"suggestions that suit you, in under 2 minutes"
+
+#: templates/core/home.html:267
+msgid "เริ่มประเมินฟรี"
+msgstr "Start free check"
+
+#: templates/core/home.html:287
+#, python-format
+msgid "%(label)sในระบบ"
+msgstr "%(label)s listed"
+
+#: templates/core/home.html:299
+msgid "แชร์ตำแหน่งเพื่อดูทริปใกล้คุณ"
+msgstr "Share your location to see trips near you"
+
+#: templates/core/home.html:299
+msgid "ความแม่นยำ ~1.1 กม."
+msgstr "Accuracy ~1.1 km"
+
+#: templates/core/home.html:300
+msgid ""
+"ใช้คำนวณระยะทางสู่ที่พักและร้านอาหาร ลบประวัติตำแหน่งได้ตลอดเวลา (PDPA)"
+msgstr ""
+"Used to calculate distances to stays and restaurants. You can delete your "
+"location history any time (PDPA)."
+
+#: templates/core/home.html:304
+msgid "บันทึกตำแหน่งเรียบร้อย"
+msgstr "Location saved"
+
+#: templates/core/home.html:308
+msgid "กำลังระบุ..."
+msgstr "Locating..."
+
+#: templates/core/home.html:308
+msgid "ยินยอม"
+msgstr "Allow"
+
+#: templates/core/home.html:310
+msgid "ไว้คราวหลัง"
+msgstr "Maybe later"
+
+#: templates/core/home.html:325
+msgid "มีคำถาม? เรามีคำตอบ"
+msgstr "Questions? We have answers"
+
+#: templates/core/home.html:326
+msgid ""
+"การจอง การชำระเงิน และวิถีชุมชนศรีสะเกษ ถ้ายังไม่เจอคำตอบ ติดต่อทีมงานได้เลย"
+msgstr ""
+"Booking, payment and community life in Sisaket. If you cannot find an "
+"answer, contact our team."
+
+#: templates/core/home.html:352
+msgid "ได้รับการสนับสนุนโดย"
+msgstr "Supported by"
+
+#: templates/core/home.html:354
+msgid "สำนักงานนวัตกรรมแห่งชาติ (NIA)"
+msgstr "National Innovation Agency (NIA)"
+
+#: templates/core/home.html:355
+msgid "อุทยานวิทยาศาสตร์ ม.อุบลฯ"
+msgstr "Science Park, Ubon Ratchathani University"
+
+#: templates/core/home.html:356
+msgid "มหาวิทยาลัยราชภัฏศรีสะเกษ"
+msgstr "Sisaket Rajabhat University"
+
+#: templates/core/home.html:356
+msgid "หน่วยบริหารโครงการ"
+msgstr "Project management unit"
+
+#: templates/core/home.html:369
+msgid "การท่องเที่ยวเชิงสุขภาพและวิถีบำบัด 4 ชนเผ่า จังหวัดศรีสะเกษ"
+msgstr ""
+"Wellness tourism and healing traditions of four ethnic groups, Sisaket "
+"Province"
+
+#: templates/core/home.html:370
+msgid ""
+"แหล่งท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน จ.ศรีสะเกษ โฮมสเตย์ธรรมชาติ "
+"อาหารสุขภาพ สปาสมุนไพรสด และภูมิปัญญา 4 ชนเผ่า"
+msgstr ""
+"Wellness and community healing destinations in Sisaket: nature homestays, "
+"healthy food, fresh-herb spas and the wisdom of four ethnic groups"
+
+#: templates/core/home_tourist.html:5
+msgid "หน้าหลักนักท่องเที่ยว — WellTrip Sisaket"
+msgstr "Traveler home — WellTrip Sisaket"
+
+#: templates/core/home_tourist.html:14
+#, python-format
+msgid "สวัสดีคุณ %(first_name)s"
+msgstr "Hello %(first_name)s"
+
+#: templates/core/home_tourist.html:14
+msgid "ยินดีต้อนรับสู่ศรีสะเกษ"
+msgstr "Welcome to Sisaket"
+
+#: templates/core/home_tourist.html:15
+msgid "วางแผนที่พัก อาหารสุขภาพ สปา และสะสมตราประทับพาสปอร์ตชุมชน"
+msgstr ""
+"Plan stays, healthy food and spas, and collect community passport stamps"
+
+#: templates/core/home_tourist.html:18
+#, python-format
+msgid "การจอง %(total_bookings_count)s รายการ"
+msgstr "%(total_bookings_count)s bookings"
+
+#: templates/core/home_tourist.html:19
+#, python-format
+msgid "ตราประทับ %(stamps_count)s ดวง"
+msgstr "%(stamps_count)s stamps"
+
+#: templates/core/home_tourist.html:40
+msgid "ทริปที่กำลังดำเนินการ"
+msgstr "Trips in progress"
+
+#: templates/core/home_tourist.html:54
+#, python-format
+msgid "%(count)s รายการ · ฿%(total_amount)s · %(created_at)s"
+msgstr "%(count)s items · ฿%(total_amount)s · %(created_at)s"
+
+#: templates/core/home_tourist.html:55
+msgid "ดูรายละเอียด"
+msgstr "View details"
+
+#: templates/core/home_tourist.html:64
+msgid "บริการและกิจกรรม"
+msgstr "Services and activities"
+
+#: templates/core/home_tourist.html:69
+msgid "ของฝาก OTOP"
+msgstr "OTOP souvenirs"
+
+#: templates/core/home_tourist.html:70 templates/layouts/public.html:49
+#: templates/layouts/public.html:138 templates/layouts/public.html:180
+msgid "ประเมินสุขภาพ AI"
+msgstr "AI health check"
+
+#: templates/core/home_tourist.html:78
+msgid "ที่พักแนะนำ"
+msgstr "Recommended stays"
+
+#: templates/core/home_tourist.html:100
+msgid "ยังไม่มีที่พักในระบบ"
+msgstr "No stays listed yet"
+
+#: templates/core/home_tourist.html:110
+msgid "ข้อมูลส่วนบุคคลและตำแหน่ง (PDPA)"
+msgstr "Personal and location data (PDPA)"
+
+#: templates/core/home_tourist.html:111
+msgid "ดูและลบประวัติตำแหน่งของคุณได้ตลอดเวลา"
+msgstr "View and delete your location history any time"
+
+#: templates/core/offline.html:4
+msgid "ออฟไลน์ - WellTrip"
+msgstr "Offline - WellTrip"
+
+#: templates/core/offline.html:11
+msgid "ไม่มีการเชื่อมต่ออินเทอร์เน็ต"
+msgstr "No internet connection"
+
+#: templates/core/offline.html:12
+msgid ""
+"หน้าที่คุณเคยเปิดไว้ยังดูได้จากแคชในเครื่อง "
+"เมื่อสัญญาณกลับมาให้ลองโหลดหน้าใหม่อีกครั้ง"
+msgstr ""
+"Pages you opened before can still be viewed from the cache on your device. "
+"When you are back online, try reloading."
+
+#: templates/core/offline.html:14
+msgid "กำลังตรวจสอบ..."
+msgstr "Checking..."
+
+#: templates/core/offline.html:14
+msgid "ลองเชื่อมต่อใหม่"
+msgstr "Try reconnecting"
+
+#: templates/core/terms.html:4
+msgid "ข้อตกลงการใช้งานและนโยบายความเป็นส่วนตัว (PDPA) — WellTrip Sisaket"
+msgstr "Terms of use and privacy policy (PDPA) — WellTrip Sisaket"
+
+#: templates/core/terms.html:10
+msgid "ข้อตกลงการใช้งานและนโยบายความเป็นส่วนตัว"
+msgstr "Terms of use and privacy policy"
+
+#: templates/core/terms.html:11
+msgid ""
+"อัปเดตล่าสุด: ตุลาคม 2569 · แพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะจังหวัดศรีสะเกษ"
+msgstr "Last updated: October 2026 · Sisaket wellness tourism platform"
+
+#: templates/core/terms.html:18
+msgid "1. บทนำและวัตถุประสงค์"
+msgstr "1. Introduction and purpose"
+
+#: templates/core/terms.html:19
+msgid ""
+"แพลตฟอร์ม WellTrip "
+"พัฒนาขึ้นภายใต้โครงการวิจัยนวัตกรรมการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาชุมชน"
+" มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) เพื่อส่งเสริมการท่องเที่ยวชุมชน "
+"กระจายรายได้สู่ผู้ประกอบการท้องถิ่น และสนับสนุนการดูแลสุขภาพแบบองค์รวม"
+msgstr ""
+"WellTrip was developed under a research project on wellness tourism and "
+"community wisdom at Sisaket Rajabhat University (SSKRU) to promote community"
+" tourism, spread income to local businesses and support holistic health."
+
+#: templates/core/terms.html:22
+msgid ""
+"2. การเก็บรวบรวมข้อมูลส่วนบุคคลตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)"
+msgstr ""
+"2. Collection of personal data under the Personal Data Protection Act (PDPA)"
+
+#: templates/core/terms.html:23
+msgid "เรายึดหลักการจำกัดข้อมูลให้เพียงพอต่อความจำเป็น (Data Minimization):"
+msgstr "We follow data minimization and collect only what is necessary:"
+
+#: templates/core/terms.html:25
+msgid "ข้อมูลบัญชีผู้ใช้:"
+msgstr "Account data:"
+
+#: templates/core/terms.html:25
+msgid ""
+"ชื่อ นามสกุล เบอร์โทรศัพท์ และอีเมล สำหรับการติดต่อ ยืนยันการจอง "
+"และการชำระเงิน"
+msgstr ""
+"First name, last name, phone number and email, used for contact, booking "
+"confirmation and payment"
+
+#: templates/core/terms.html:26
+msgid "ข้อมูลตำแหน่งที่ตั้ง (Coarse GPS):"
+msgstr "Location data (coarse GPS):"
+
+#: templates/core/terms.html:26
+msgid ""
+"บันทึกเฉพาะเมื่อได้รับความยินยอมเท่านั้น โดยปัดทศนิยมพิกัดเหลือ 2 ตำแหน่ง "
+"(~1.1 กิโลเมตร) และใช้เฉพาะคำนวณระยะทางสู่สถานที่ท่องเที่ยวในจังหวัดศรีสะเกษ"
+msgstr ""
+"Recorded only with your consent, rounded to 2 decimal places (~1.1 km), and "
+"used only to calculate distances to attractions in Sisaket"
+
+#: templates/core/terms.html:27
+msgid "รหัสผ่าน:"
+msgstr "Password:"
+
+#: templates/core/terms.html:27
+msgid ""
+"เข้ารหัสทางเดียวด้วยมาตรฐานความปลอดภัยสากล "
+"ไม่มีการจัดเก็บรหัสผ่านเป็นข้อความธรรมดา"
+msgstr ""
+"One-way hashed to international security standards. Passwords are never "
+"stored as plain text."
+
+#: templates/core/terms.html:31
+msgid "3. สิทธิ์ของเจ้าของข้อมูล"
+msgstr "3. Your rights as a data subject"
+
+#: templates/core/terms.html:32
+msgid "ท่านมีสิทธิ์ตามกฎหมาย PDPA ทุกประการ รวมถึง"
+msgstr "You have every right under the PDPA, including"
+
+#: templates/core/terms.html:32
+msgid "สิทธิ์ในการขอลบข้อมูลตำแหน่ง"
+msgstr "the right to delete your location data"
+
+#: templates/core/terms.html:32
+msgid "โดยไปที่หน้า"
+msgstr "by going to the"
+
+#: templates/core/terms.html:32
+msgid "ตั้งค่าความเป็นส่วนตัว (PDPA)"
+msgstr "Privacy settings (PDPA)"
+
+#: templates/core/terms.html:32
+msgid "เพื่อลบประวัติตำแหน่งทั้งหมดได้ทันที"
+msgstr "page to delete all location history immediately"
+
+#: templates/core/terms.html:35
+msgid "4. การชำระเงินและการตรวจสอบสลิป"
+msgstr "4. Payment and slip verification"
+
+#: templates/core/terms.html:36
+msgid ""
+"การชำระเงินดำเนินการโดยการโอนเงินและแนบสลิป "
+"ระบบและผู้ดูแลจะตรวจสอบยอดเงินและเวลาโอน "
+"ไฟล์สลิปเปิดดูได้เฉพาะเจ้าของรายการและผู้ดูแลระบบ "
+"และไม่มีการเผยแพร่ข้อมูลทางการเงินของท่านสู่สาธารณะ"
+msgstr ""
+"Payment is made by bank transfer with a slip upload. The system and "
+"administrators check the amount and transfer time. Slip files can only be "
+"viewed by the booking owner and administrators, and your financial data is "
+"never made public."
+
+#: templates/core/terms.html:39
+msgid "5. ช่องทางการติดต่อ"
+msgstr "5. Contact"
+
+#: templates/core/terms.html:40
+msgid ""
+"หากมีข้อสงสัยเกี่ยวกับนโยบายความเป็นส่วนตัวหรือต้องการใช้สิทธิ์ตามกฎหมาย "
+"PDPA ติดต่อ"
+msgstr ""
+"If you have questions about this privacy policy or want to exercise your "
+"PDPA rights, contact"
+
+#: templates/core/terms.html:40
+msgid "ศูนย์ประสานงาน WellTrip Sisaket"
+msgstr "WellTrip Sisaket coordination center"
+
+#: templates/core/terms.html:40
+msgid "อีเมล: support@welltripthailand.com · โทร: 045-962-455"
+msgstr "Email: support@welltripthailand.com · Phone: 045-962-455"
+
+#: templates/core/terms.html:44
+msgid "ตั้งค่าความเป็นส่วนตัว"
+msgstr "Privacy settings"
+
+#: templates/layouts/admin.html:6
+msgid "ศูนย์ควบคุมระบบ WellTrip Sisaket"
+msgstr "WellTrip Sisaket control center"
+
+#: templates/layouts/admin.html:10 templates/layouts/merchant.html:10
+msgid "ภาพรวม"
+msgstr "Overview"
+
+#: templates/layouts/admin.html:11
+msgid "การดำเนินงาน"
+msgstr "Operations"
+
+#: templates/layouts/admin.html:14
+msgid "ข้อมูลในระบบ"
+msgstr "Data"
+
+#: templates/layouts/admin.html:17
+msgid "จุดเช็คอิน"
+msgstr "Check-in points"
+
+#: templates/layouts/admin.html:18
+msgid "เรื่องเล่า"
+msgstr "Stories"
+
+#: templates/layouts/admin.html:20
+msgid "คูปองและค่าส่ง"
+msgstr "Coupons and shipping"
+
+#: templates/layouts/admin.html:21
+msgid "ความปลอดภัย"
+msgstr "Security"
+
+#: templates/layouts/admin.html:22
+msgid "บันทึกการใช้งาน"
+msgstr "Activity log"
+
+#: templates/layouts/auth.html:14
+msgid "โฮมสเตย์กลางธรรมชาติ อาหารสุขภาพ และสปาสมุนไพรจากชุมชนศรีสะเกษ"
+msgstr ""
+"Nature homestays, healthy food and herbal spas from Sisaket communities"
+
+#: templates/layouts/dashboard.html:18
+msgid "ปิดเมนู"
+msgstr "Close menu"
+
+#: templates/layouts/dashboard.html:21
+msgid "เมนูจัดการ"
+msgstr "Admin menu"
+
+#: templates/layouts/dashboard.html:32 templates/layouts/public.html:99
+#: templates/layouts/public.html:149
+msgid "ออกจากระบบ"
+msgstr "Log out"
+
+#: templates/layouts/dashboard.html:41 templates/layouts/public.html:118
+msgid "เปิดเมนู"
+msgstr "Open menu"
+
+#: templates/layouts/dashboard.html:47
+msgid "หน้าเว็บไซต์"
+msgstr "Website"
+
+#: templates/layouts/merchant.html:6
+msgid "จัดการร้านค้าของคุณบน WellTrip Sisaket"
+msgstr "Manage your store on WellTrip Sisaket"
+
+#: templates/layouts/merchant.html:23
+msgid "บริการและรอบเวลา"
+msgstr "Services and time slots"
+
+#: templates/layouts/merchant.html:27
+msgid "สินค้าและสต็อก"
+msgstr "Products and stock"
+
+#: templates/layouts/merchant.html:30
+msgid "ผู้ดูแลระบบ"
+msgstr "Administrator"
+
+#: templates/layouts/public.html:9
+msgid "เมนูหลัก"
+msgstr "Main menu"
+
+#: templates/layouts/public.html:23
+msgid "สำรวจศรีสะเกษ"
+msgstr "Explore Sisaket"
+
+#: templates/layouts/public.html:27
+msgid "บริการและสินค้าชุมชน"
+msgstr "Community services and products"
+
+#: templates/layouts/public.html:30
+msgid "พักผ่อนแบบวิถีชุมชน"
+msgstr "Stay the community way"
+
+#: templates/layouts/public.html:34
+msgid "เมนูวัตถุดิบท้องถิ่น"
+msgstr "Dishes from local ingredients"
+
+#: templates/layouts/public.html:38
+msgid "สมุนไพรสดจากชุมชน"
+msgstr "Fresh herbs from the community"
+
+#: templates/layouts/public.html:42
+msgid "หัตถกรรมและผลิตภัณฑ์ชุมชน"
+msgstr "Community crafts and products"
+
+#: templates/layouts/public.html:46
+msgid "กิจกรรมและวิถีชุมชน"
+msgstr "Activities and community life"
+
+#: templates/layouts/public.html:49
+msgid "แนะนำทริปตามสุขภาพ"
+msgstr "Trip ideas for your health"
+
+#: templates/layouts/public.html:53
+msgid "จุดท่องเที่ยวในศรีสะเกษ"
+msgstr "Attractions in Sisaket"
+
+#: templates/layouts/public.html:57 templates/layouts/public.html:141
+msgid "เรื่องเล่าภูมิปัญญา"
+msgstr "Stories of local wisdom"
+
+#: templates/layouts/public.html:57
+msgid "วิถี 4 ชนเผ่า"
+msgstr "Four ethnic traditions"
+
+#: templates/layouts/public.html:68 templates/layouts/public.html:142
+#: templates/layouts/public.html:186
+msgid "เกี่ยวกับเรา"
+msgstr "About us"
+
+#: templates/layouts/public.html:88 templates/layouts/public.html:148
+msgid "ศูนย์บัญชาการแอดมิน"
+msgstr "Admin command center"
+
+#: templates/layouts/public.html:90
+msgid "หน้าหลักนักท่องเที่ยว"
+msgstr "Traveler home"
+
+#: templates/layouts/public.html:92
+msgid "โปรไฟล์ส่วนตัว"
+msgstr "My profile"
+
+#: templates/layouts/public.html:93 templates/layouts/public.html:214
+msgid "ความเป็นส่วนตัว (PDPA)"
+msgstr "Privacy (PDPA)"
+
+#: templates/layouts/public.html:102
+msgid "ยินดีต้อนรับสู่ WellTrip"
+msgstr "Welcome to WellTrip"
+
+#: templates/layouts/public.html:103
+msgid "เข้าสู่ระบบเพื่อจัดการทริปและการจองของคุณ"
+msgstr "Log in to manage your trips and bookings"
+
+#: templates/layouts/public.html:111
+msgid "ตะกร้าสินค้า"
+msgstr "Cart"
+
+#: templates/layouts/public.html:129
+msgid "เมนู WellTrip"
+msgstr "WellTrip menu"
+
+#: templates/layouts/public.html:170
+msgid ""
+"แพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ "
+"สนับสนุนผู้ประกอบการท้องถิ่นโดยตรง"
+msgstr ""
+"A wellness and community-wisdom tourism platform in Sisaket that supports "
+"local businesses directly"
+
+#: templates/layouts/public.html:174
+msgid "บริการชุมชน"
+msgstr "Community services"
+
+#: templates/layouts/public.html:176
+msgid "โฮมสเตย์และฟาร์มสเตย์"
+msgstr "Homestays and farm stays"
+
+#: templates/layouts/public.html:179
+msgid "สินค้า OTOP ศรีสะเกษ"
+msgstr "Sisaket OTOP products"
+
+#: templates/layouts/public.html:184
+msgid "เรื่องราวและชุมชน"
+msgstr "Stories and communities"
+
+#: templates/layouts/public.html:188
+msgid "แผนที่ท่องเที่ยวชุมชน"
+msgstr "Community travel map"
+
+#: templates/layouts/public.html:190
+msgid "เรื่องเล่าภูมิปัญญา 4 ชนเผ่า"
+msgstr "Wisdom of four ethnic groups"
+
+#: templates/layouts/public.html:195
+msgid "ความปลอดภัย & PDPA"
+msgstr "Security & PDPA"
+
+#: templates/layouts/public.html:196
+msgid ""
+"เข้ารหัสรหัสผ่านด้วย Argon2 "
+"และบันทึกตำแหน่งแบบหยาบตามมาตรฐานคุ้มครองข้อมูลส่วนบุคคล (PDPA)"
+msgstr ""
+"Passwords hashed with Argon2 and coarse location records, following personal"
+" data protection (PDPA) standards"
+
+#: templates/layouts/public.html:202
+msgid "หน่วยงานสนับสนุนทุนและร่วมขับเคลื่อนนวัตกรรม"
+msgstr "Funders and innovation partners"
+
+#: templates/layouts/public.html:203
+msgid "โครงการพัฒนาระบบนิเวศการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาท้องถิ่น"
+msgstr "Developing a wellness tourism and local wisdom ecosystem"
+
+#: templates/layouts/public.html:215
+msgid "ข้อตกลงการใช้งาน"
+msgstr "Terms of use"
+
+#: templates/layouts/public.html:216
+msgid "แจ้งปัญหาความปลอดภัย"
+msgstr "Report a security issue"
+
+#: templates/layouts/public.html:223
+msgid "แถบนำทางมือถือ"
+msgstr "Mobile navigation"
+
+#: templates/layouts/public.html:225
+msgid "หน้าหลัก"
+msgstr "Home"
+
+#: templates/otop/detail.html:5
+#, python-format
+msgid "%(name)s - สินค้า OTOP ศรีสะเกษ WellTrip"
+msgstr "%(name)s - Sisaket OTOP product | WellTrip"
+
+#: templates/otop/detail.html:33
+msgid "รายละเอียดสินค้า"
+msgstr "Product details"
+
+#: templates/otop/detail.html:40
+msgid "ผู้ผลิต"
+msgstr "Producer"
+
+#: templates/otop/detail.html:53
+#, python-format
+msgid "คงเหลือ %(stock_quantity)s ชิ้น"
+msgstr "%(stock_quantity)s left"
+
+#: templates/otop/detail.html:63 templates/otop/detail.html:67
+msgid "ดูสินค้าอื่น"
+msgstr "See other products"
+
+#: templates/otop/detail.html:66
+msgid "สินค้าหมดชั่วคราว"
+msgstr "Temporarily out of stock"
+
+#: templates/otop/list.html:5
+msgid "สินค้าภูมิปัญญาชุมชน OTOP ศรีสะเกษ - WellTrip"
+msgstr "Sisaket community OTOP products - WellTrip"
+
+#: templates/otop/list.html:11
+msgid "ของดีชุมชน OTOP ศรีสะเกษ"
+msgstr "Sisaket community OTOP products"
+
+#: templates/otop/list.html:12
+msgid "ผ้าทอ สมุนไพรแปรรูป อาหารแปรรูป และงานหัตถกรรม ส่งตรงจากผู้ผลิตในชุมชน"
+msgstr ""
+"Woven cloth, herbal products, processed food and handicrafts, sent straight "
+"from community producers"
+
+#: templates/otop/list.html:25
+msgid "ชื่อสินค้า ผ้าไหม กาแฟ..."
+msgstr "Product name, silk, coffee..."
+
+#: templates/otop/list.html:25
+msgid "ค้นหาสินค้า"
+msgstr "Search products"
+
+#: templates/otop/list.html:51
+msgid "มีสินค้า"
+msgstr "In stock"
+
+#: templates/otop/list.html:53
+msgid "สินค้าหมด"
+msgstr "Out of stock"
+
+#: templates/otop/list.html:62
+msgid "ยังไม่มีสินค้าในหมวดนี้"
+msgstr "No products in this category yet"
+
+#: templates/otop/list.html:63
+msgid "ผู้ผลิตชุมชนกำลังทยอยนำสินค้าขึ้นระบบ"
+msgstr "Community producers are gradually adding products"
+
+#: templates/partials/head_meta.html:14
+msgid ""
+"WellTrip Sisaket (เวลทริป ศรีสะเกษ) "
+"แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร "
+"เยอ) ดินแดนดินภูเขาไฟ จองโฮมสเตย์ อาหารสุขภาพ สปาสมุนไพร และสินค้า OTOP"
+msgstr ""
+"WellTrip Sisaket: a creative wellness tourism platform for the four Thai "
+"ethnic groups (Kui, Lao, Khmer, Yoe) of the volcanic land. Book homestays, "
+"healthy food, herbal spas and OTOP products."
+
+#: templates/partials/head_meta.html:15
+msgid ""
+"WellTrip, ศรีสะเกษ, ท่องเที่ยวเชิงสุขภาพ, โฮมสเตย์ศรีสะเกษ, ดินภูเขาไฟ, 4 "
+"ชนเผ่า, กูย, ลาว, เขมร, เยอ, อาหารสุขภาพ, สปาสมุนไพร, ทุเรียนภูเขาไฟ, "
+"หอมแดงศรีสะเกษ GI, มรภ.ศรีสะเกษ"
+msgstr ""
+"WellTrip, Sisaket, wellness tourism, Sisaket homestay, volcanic soil, four "
+"ethnic groups, Kui, Lao, Khmer, Yoe, healthy food, herbal spa, volcanic "
+"durian, Sisaket shallot GI, Sisaket Rajabhat University"
+
+#: templates/partials/head_meta.html:16
+msgid "มหาวิทยาลัยราชภัฏศรีสะเกษ ร่วมกับ NIA, SIP UBU, บพท., กระทรวง อว."
+msgstr ""
+"Sisaket Rajabhat University with NIA, SIP UBU, PMU A and the Ministry of "
+"Higher Education, Science, Research and Innovation"
+
+#: templates/partials/head_meta.html:22
+msgid "WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน 4 เผ่าไท"
+msgstr ""
+"WellTrip Sisaket - Wellness and community wisdom of four Thai ethnic groups"
+
+#: templates/partials/head_meta.html:23
+msgid ""
+"สัมผัสเสน่ห์วิถีชีวิต 4 ชนเผ่า วัฒนธรรมสุขภาวะ อาหารอินทรีย์ "
+"และอัตลักษณ์ดินภูเขาไฟศรีสะเกษ"
+msgstr ""
+"Discover the life of four ethnic groups, wellness culture, organic food and "
+"the volcanic-soil identity of Sisaket"
+
+#: templates/partials/head_meta.html:27
+msgid "WellTrip Sisaket โลโก้โครงการท่องเที่ยวเชิงสุขภาวะ"
+msgstr "WellTrip Sisaket wellness tourism project logo"
+
+#: templates/partials/head_meta.html:31
+msgid "WellTrip Sisaket - การท่องเที่ยวเชิงสุขภาวะและมรดกชุมชน"
+msgstr "WellTrip Sisaket - Wellness tourism and community heritage"
+
+#: templates/partials/head_meta.html:32
+msgid ""
+"Slow Days Sisaket: สัมผัสเสน่ห์โฮมสเตย์ อาหารอินทรีย์ สปาสมุนไพร และของดี 4 "
+"ชนเผ่า"
+msgstr ""
+"Slow Days Sisaket: homestays, organic food, herbal spas and products of four"
+" ethnic groups"
+
+#: templates/partials/seo_org_jsonld.html:12
+msgid "เวลทริป ศรีสะเกษ"
+msgstr "WellTrip Sisaket"
+
+#: templates/partials/seo_org_jsonld.html:13
+msgid ""
+"โครงการขับเคลื่อนการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญา 4 ชนเผ่า "
+"มหาวิทยาลัยราชภัฏศรีสะเกษ"
+msgstr ""
+"Wellness tourism and four-tribe wisdom project, Sisaket Rajabhat University"
+
+#: templates/partials/seo_org_jsonld.html:20
+msgid "319 ถนนไทยพันทา ตำบลโพธิ์"
+msgstr "319 Thai Phan Tha Road, Pho Subdistrict"
+
+#: templates/partials/seo_org_jsonld.html:28
+msgid "มหาวิทยาลัยราชภัฏศรีสะเกษ (Sisaket Rajabhat University)"
+msgstr "Sisaket Rajabhat University"
+
+#: templates/partials/seo_org_jsonld.html:43
+msgid "หน่วยบริหารและจัดการทุนด้านการพัฒนาระดับพื้นที่ (บพท.)"
+msgstr "Program Management Unit for Area Based Development (PMU A)"
+
+#: templates/partials/seo_org_jsonld.html:47
+msgid "กระทรวงการอุดมศึกษา วิทยาศาสตร์ วิจัยและนวัตกรรม (อว.)"
+msgstr ""
+"Ministry of Higher Education, Science, Research and Innovation (MHESI)"
+
+#: templates/partials/seo_org_jsonld.html:64
+msgid "Slow Days Sisaket - นวัตกรรมการท่องเที่ยวเชิงสุขภาวะและมรดกวัฒนธรรม"
+msgstr "Slow Days Sisaket - Wellness tourism and cultural heritage innovation"
+
+#: templates/payments/admin_review.html:4
+#, python-format
+msgid "ตรวจสลิป %(booking_code)s - Admin Center"
+msgstr "Check slip %(booking_code)s - Admin Center"
+
+#: templates/payments/admin_review.html:8
+msgid "รายการสลิปทั้งหมด"
+msgstr "All slips"
+
+#: templates/payments/admin_review.html:12
+msgid "สลิปที่แนบมา"
+msgstr "Uploaded slip"
+
+#: templates/payments/admin_review.html:15
+msgid "แตะรูปเพื่อเปิดขนาดเต็ม"
+msgstr "Tap the image to open it full size"
+
+#: templates/payments/admin_review.html:17
+msgid "ไม่มีไฟล์สลิป"
+msgstr "No slip file"
+
+#: templates/payments/admin_review.html:23
+msgid "ข้อมูลคำสั่งซื้อ"
+msgstr "Order details"
+
+#: templates/payments/admin_review.html:28
+msgid "ยอดที่ต้องชำระ"
+msgstr "Amount due"
+
+#: templates/payments/admin_review.html:30
+msgid "เลขอ้างอิง"
+msgstr "Reference"
+
+#: templates/payments/admin_review.html:31
+msgid "อัปโหลดเมื่อ"
+msgstr "Uploaded"
+
+#: templates/payments/admin_review.html:31
+#, python-format
+msgid "%(uploaded_at)s น."
+msgstr "%(uploaded_at)s"
+
+#: templates/payments/admin_review.html:37
+msgid "ผลการตรวจสอบ"
+msgstr "Verification result"
+
+#: templates/payments/admin_review.html:41
+msgid "บันทึก / เหตุผล (ระบุเมื่อไม่อนุมัติ)"
+msgstr "Notes / reason (required when rejecting)"
+
+#: templates/payments/admin_review.html:42
+msgid "เช่น ยอดเงินไม่ตรง หรือไม่พบรายการในบัญชี"
+msgstr "e.g. Amount does not match, or no matching entry in the account"
+
+#: templates/payments/admin_review.html:45
+msgid "ยืนยันไม่อนุมัติสลิปนี้?"
+msgstr "Reject this slip?"
+
+#: templates/payments/admin_review.html:46
+msgid "อนุมัติการชำระเงิน"
+msgstr "Approve payment"
+
+#: templates/payments/admin_review.html:49
+msgid "ลบรายการชำระเงินและคำสั่งซื้อ"
+msgstr "Delete this payment and order"
+
+#: templates/payments/admin_review.html:49
+msgid "ถาวร?"
+msgstr "permanently?"
+
+#: templates/payments/admin_review.html:51
+msgid "ลบรายการชำระเงินนี้"
+msgstr "Delete this payment"
+
+#: templates/payments/instruction.html:4
+#, python-format
+msgid "ชำระเงิน %(booking_code)s - WellTrip Sisaket"
+msgstr "Pay %(booking_code)s - WellTrip Sisaket"
+
+#: templates/payments/instruction.html:11
+msgid "โอนเงินตามยอดด้านล่าง แล้วแนบสลิปเพื่อยืนยันการจอง"
+msgstr ""
+"Transfer the amount below, then upload the slip to confirm your booking"
+
+#: templates/payments/instruction.html:21
+msgid "ข้อความของคุณ:"
+msgstr "Your message:"
+
+#: templates/payments/instruction.html:25
+msgid "บัญชีสำหรับโอนเงิน"
+msgstr "Account to transfer to"
+
+#: templates/payments/instruction.html:28
+msgid "ธนาคาร"
+msgstr "Bank"
+
+#: templates/payments/instruction.html:29
+msgid "ชื่อบัญชี"
+msgstr "Account name"
+
+#: templates/payments/instruction.html:31
+msgid "เลขที่บัญชี"
+msgstr "Account number"
+
+#: templates/payments/instruction.html:34
+msgid "คัดลอก"
+msgstr "Copy"
+
+#: templates/payments/instruction.html:40
+msgid "ยอดที่ต้องโอน (โอนให้ตรงยอด)"
+msgstr "Amount to transfer (exact amount)"
+
+#: templates/payments/instruction.html:48
+msgid "แนบสลิปการโอนเงิน"
+msgstr "Upload transfer slip"
+
+#: templates/payments/instruction.html:49
+msgid "ไฟล์ JPG, PNG หรือ WEBP ไม่เกิน 10MB เห็นยอดเงิน วันที่ และเวลาชัดเจน"
+msgstr ""
+"JPG, PNG or WEBP, up to 10MB, with the amount, date and time clearly visible"
+
+#: templates/payments/instruction.html:60
+msgid "แตะเพื่อเลือกรูปสลิป"
+msgstr "Tap to choose a slip image"
+
+#: templates/payments/instruction.html:65
+msgid "ตัวอย่างสลิป"
+msgstr "Slip preview"
+
+#: templates/payments/instruction.html:66
+msgid "แตะเพื่อเปลี่ยนรูป"
+msgstr "Tap to change the image"
+
+#: templates/payments/instruction.html:71
+msgid "เลขอ้างอิงธุรกรรม (ถ้ามี)"
+msgstr "Transaction reference (if any)"
+
+#: templates/payments/instruction.html:72
+msgid "เลขอ้างอิงที่อยู่บนสลิป"
+msgstr "Reference number on the slip"
+
+#: templates/payments/instruction.html:74
+msgid "ส่งสลิป"
+msgstr "Send slip"
+
+#: templates/payments/instruction.html:78
+#, python-format
+msgid "สลิปที่ส่งแล้ว (%(slips)s)"
+msgstr "Slips sent (%(slips)s)"
+
+#: templates/payments/instruction.html:85
+msgid "ไม่ระบุเลขอ้างอิง"
+msgstr "No reference given"
+
+#: templates/payments/instruction.html:89
+msgid "ตรวจสอบผ่าน"
+msgstr "Verified"
+
+#: templates/payments/instruction.html:91
+msgid "รอตรวจสอบ"
+msgstr "Pending check"
+
+#: templates/payments/partials/slip_status.html:7
+msgid "กำลังตรวจสอบสลิปอัตโนมัติ"
+msgstr "Checking your slip automatically"
+
+#: templates/payments/partials/slip_status.html:7
+msgid "หน้านี้จะอัปเดตเองเมื่อได้ผล ไม่ต้องรีเฟรช"
+msgstr ""
+"This page updates by itself when the result is in. No need to refresh."
+
+#: templates/payments/partials/slip_status.html:10
+msgid "ได้รับสลิปแล้ว"
+msgstr "Slip received"
+
+#: templates/payments/partials/slip_status.html:10
+msgid "รอเจ้าหน้าที่ตรวจสอบ ระบบจะแจ้งผลทางอีเมล"
+msgstr "Waiting for staff to check. We will email you the result."
+
+#: templates/payments/partials/slip_status.html:14
+msgid "สลิปล่าสุดไม่ผ่านการตรวจสอบ"
+msgstr "Your latest slip failed verification"
+
+#: templates/payments/partials/slip_status.html:16
+msgid "แนบสลิปใหม่"
+msgstr "Upload a new slip"
+
+#: templates/portal/calendar.html:4
+msgid "ปฏิทินราคา - Partner Studio"
+msgstr "Price calendar - Partner Studio"
+
+#: templates/portal/calendar.html:26
+#, python-format
+msgid ""
+"%(name)s · ราคาปกติ ฿%(base_price_per_night)s · %(total_rooms_count)s ห้อง"
+msgstr ""
+"%(name)s · regular price ฿%(base_price_per_night)s · %(total_rooms_count)s "
+"rooms"
+
+#: templates/portal/calendar.html:34
+msgid "เลือกห้อง"
+msgstr "Choose room"
+
+#: templates/portal/calendar.html:49
+msgid "เดือนนี้"
+msgstr "This month"
+
+#: templates/portal/calendar.html:55
+msgid "จ."
+msgstr "Mon"
+
+#: templates/portal/calendar.html:55
+msgid "อ."
+msgstr "Tue"
+
+#: templates/portal/calendar.html:55
+msgid "พ."
+msgstr "Wed"
+
+#: templates/portal/calendar.html:55
+msgid "พฤ."
+msgstr "Thu"
+
+#: templates/portal/calendar.html:55
+msgid "ศ."
+msgstr "Fri"
+
+#: templates/portal/calendar.html:55
+msgid "ส."
+msgstr "Sat"
+
+#: templates/portal/calendar.html:55
+msgid "อา."
+msgstr "Sun"
+
+#: templates/portal/calendar.html:65
+msgid "เต็ม"
+msgstr "Full"
+
+#: templates/portal/calendar.html:65
+#, python-format
+msgid "ว่าง %(available_count)s"
+msgstr "%(available_count)s free"
+
+#: templates/portal/calendar.html:74
+msgid "ราคาปกติ"
+msgstr "Regular price"
+
+#: templates/portal/calendar.html:75
+msgid "ราคาพิเศษ"
+msgstr "Special price"
+
+#: templates/portal/calendar.html:76
+msgid "ห้องเต็ม"
+msgstr "Fully booked"
+
+#: templates/portal/calendar.html:77
+msgid "แตะวันที่เพื่อแก้ราคาหรือจำนวนห้องว่าง"
+msgstr "Tap a date to edit the price or available rooms"
+
+#: templates/portal/calendar.html:87
+msgid "ราคาและห้องว่าง วันที่"
+msgstr "Price and availability for"
+
+#: templates/portal/calendar.html:92
+msgid "ราคาต่อคืน (บาท)"
+msgstr "Price per night (baht)"
+
+#: templates/portal/calendar.html:94
+#, python-format
+msgid "ราคาปกติ ฿%(base_price_per_night)s"
+msgstr "Regular price ฿%(base_price_per_night)s"
+
+#: templates/portal/calendar.html:97
+msgid "ห้องว่างที่เปิดรับจอง"
+msgstr "Rooms open for booking"
+
+#: templates/portal/calendar.html:99
+msgid "มีทั้งหมด"
+msgstr "Total"
+
+#: templates/portal/calendar.html:99
+msgid "ห้อง (ใส่ 0 เพื่อปิดรับจองวันนั้น)"
+msgstr "rooms (enter 0 to close that date)"
+
+#: templates/portal/calendar.html:110 templates/portal/homestay.html:96
+msgid "ยังไม่มีห้องพัก"
+msgstr "No rooms yet"
+
+#: templates/portal/calendar.html:110 templates/portal/homestay.html:101
+#: templates/portal/homestay.html:113
+msgid "เพิ่มห้องพัก"
+msgstr "Add room"
+
+#: templates/portal/homestay.html:4
+msgid "จัดการที่พัก - Partner Studio"
+msgstr "Manage stay - Partner Studio"
+
+#: templates/portal/homestay.html:20
+msgid "ยังไม่เผยแพร่"
+msgstr "Not published"
+
+#: templates/portal/homestay.html:21
+#, python-format
+msgid "อัปเดต %(updated_at)s"
+msgstr "Updated %(updated_at)s"
+
+#: templates/portal/homestay.html:24
+msgid "ยังไม่ระบุอำเภอ"
+msgstr "No district set"
+
+#: templates/portal/homestay.html:24
+#, python-format
+msgid "%(district)s · ห้องพัก %(rooms)s แบบ"
+msgstr "%(district)s · %(rooms)s room types"
+
+#: templates/portal/homestay.html:27 templates/portal/homestay.html:76
+msgid "ปฏิทินราคา"
+msgstr "Price calendar"
+
+#: templates/portal/homestay.html:29
+msgid "ดูหน้าที่พัก"
+msgstr "View stay page"
+
+#: templates/portal/homestay.html:30
+msgid "ซ่อนจากหน้าเว็บ"
+msgstr "Hide from website"
+
+#: templates/portal/homestay.html:32
+msgid "เปิดให้จอง"
+msgstr "Open for booking"
+
+#: templates/portal/homestay.html:40
+msgid "ข้อมูลที่พัก"
+msgstr "Property details"
+
+#: templates/portal/homestay.html:45
+msgid "ชื่อที่พัก *"
+msgstr "Property name *"
+
+#: templates/portal/homestay.html:46
+msgid "คำอธิบายและจุดเด่น"
+msgstr "Description and highlights"
+
+#: templates/portal/homestay.html:49
+msgid "ตำบล"
+msgstr "Subdistrict"
+
+#: templates/portal/homestay.html:58
+msgid "บันทึกข้อมูลที่พัก"
+msgstr "Save property details"
+
+#: templates/portal/homestay.html:65
+#, python-format
+msgid "ห้องพัก (%(rooms)s แบบ)"
+msgstr "Rooms (%(rooms)s types)"
+
+#: templates/portal/homestay.html:73
+#, python-format
+msgid "%(room_type)s · %(capacity_people)s คน · %(total_rooms_count)s ห้อง ·"
+msgstr ""
+"%(room_type)s · %(capacity_people)s guests · %(total_rooms_count)s rooms ·"
+
+#: templates/portal/homestay.html:73
+msgid "/คืน"
+msgstr "/night"
+
+#: templates/portal/homestay.html:77
+msgid "ลบห้อง"
+msgstr "Delete room"
+
+#: templates/portal/homestay.html:84
+msgid "ลบรูปนี้หรือไม่?"
+msgstr "Delete this photo?"
+
+#: templates/portal/homestay.html:84
+msgid "ลบรูป"
+msgstr "Delete photo"
+
+#: templates/portal/homestay.html:89
+msgid "เพิ่มรูป"
+msgstr "Add photo"
+
+#: templates/portal/homestay.html:96
+msgid "เพิ่มห้องพักด้านล่าง แล้วกด \"เปิดให้จอง\""
+msgstr "Add rooms below, then tap “Open for booking”"
+
+#: templates/portal/homestay.html:106
+msgid "ชื่อห้อง *"
+msgstr "Room name *"
+
+#: templates/portal/homestay.html:107
+msgid "ประเภท (แอร์, พัดลม, บ้านเดี่ยว)"
+msgstr "Type (air-con, fan, private house)"
+
+#: templates/portal/homestay.html:108
+msgid "พักได้ (คน) *"
+msgstr "Sleeps (guests) *"
+
+#: templates/portal/homestay.html:109
+msgid "ราคา/คืน *"
+msgstr "Price/night *"
+
+#: templates/portal/homestay.html:110
+msgid "จำนวนห้อง *"
+msgstr "Number of rooms *"
+
+#: templates/portal/homestay.html:111
+msgid "รูปห้อง (ไม่บังคับ)"
+msgstr "Room photo (optional)"
+
+#: templates/portal/otop.html:4
+msgid "สินค้า OTOP - Partner Studio"
+msgstr "OTOP products - Partner Studio"
+
+#: templates/portal/otop.html:12
+#, python-format
+msgid "สินค้าของคุณ (%(products)s)"
+msgstr "Your products (%(products)s)"
+
+#: templates/portal/otop.html:18
+msgid "สินค้า"
+msgstr "Product"
+
+#: templates/portal/otop.html:36
+msgid "ยังไม่มีสินค้า"
+msgstr "No products yet"
+
+#: templates/portal/otop.html:36
+msgid "เพิ่มสินค้าแรกจากแบบฟอร์ม"
+msgstr "Add your first product with the form"
+
+#: templates/portal/otop.html:42
+msgid "เพิ่มสินค้า"
+msgstr "Add product"
+
+#: templates/portal/otop.html:45
+msgid "ชื่อสินค้า"
+msgstr "Product name"
+
+#: templates/portal/otop.html:46
+msgid "หมวดหมู่"
+msgstr "Category"
+
+#: templates/portal/otop.html:47
+msgid "รายละเอียดและเรื่องราว"
+msgstr "Details and story"
+
+#: templates/portal/otop.html:49 templates/portal/restaurant.html:47
+#: templates/portal/wellness.html:87
+msgid "ราคา (บาท)"
+msgstr "Price (baht)"
+
+#: templates/portal/otop.html:50
+msgid "จำนวนสต็อก"
+msgstr "Stock quantity"
+
+#: templates/portal/otop.html:52
+msgid "รูปสินค้า"
+msgstr "Product image"
+
+#: templates/portal/otop.html:53
+msgid "บันทึกสินค้า"
+msgstr "Save product"
+
+#: templates/portal/partials/otop_stock_counter.html:2
+#, python-format
+msgid "ปรับสต็อก %(name)s"
+msgstr "Adjust stock for %(name)s"
+
+#: templates/portal/partials/otop_stock_counter.html:3
+msgid "ลดสต็อก"
+msgstr "Decrease stock"
+
+#: templates/portal/partials/otop_stock_counter.html:5
+msgid "เพิ่มสต็อก"
+msgstr "Increase stock"
+
+#: templates/portal/restaurant.html:4
+msgid "เมนูอาหาร - Partner Studio"
+msgstr "Menu - Partner Studio"
+
+#: templates/portal/restaurant.html:5
+msgid "เมนูอาหารสุขภาพ"
+msgstr "Healthy menu"
+
+#: templates/portal/restaurant.html:12
+#, python-format
+msgid "เมนูของคุณ (%(menus)s)"
+msgstr "Your dishes (%(menus)s)"
+
+#: templates/portal/restaurant.html:29
+msgid "ลบเมนู"
+msgstr "Delete dish"
+
+#: templates/portal/restaurant.html:34
+msgid "ยังไม่มีเมนู"
+msgstr "No dishes yet"
+
+#: templates/portal/restaurant.html:34
+msgid "เพิ่มเมนูแรกจากแบบฟอร์ม"
+msgstr "Add your first dish with the form"
+
+#: templates/portal/restaurant.html:40
+msgid "เพิ่มเมนู"
+msgstr "Add dish"
+
+#: templates/portal/restaurant.html:43
+msgid "ชื่อเมนู"
+msgstr "Dish name"
+
+#: templates/portal/restaurant.html:44
+msgid "หมวดอาหารสุขภาพ"
+msgstr "Healthy food category"
+
+#: templates/portal/restaurant.html:45
+msgid "รายละเอียดและวัตถุดิบ"
+msgstr "Details and ingredients"
+
+#: templates/portal/restaurant.html:48
+msgid "แคลอรี่โดยประมาณ"
+msgstr "Estimated calories"
+
+#: templates/portal/restaurant.html:50
+msgid "รูปเมนู"
+msgstr "Dish image"
+
+#: templates/portal/restaurant.html:51
+msgid "บันทึกเมนู"
+msgstr "Save dish"
+
+#: templates/portal/wellness.html:4
+msgid "บริการสปา - Partner Studio"
+msgstr "Spa services - Partner Studio"
+
+#: templates/portal/wellness.html:12
+#, python-format
+msgid "บริการของคุณ (%(services)s)"
+msgstr "Your services (%(services)s)"
+
+#: templates/portal/wellness.html:29
+msgid "ยังไม่มีบริการ"
+msgstr "No services yet"
+
+#: templates/portal/wellness.html:29
+msgid "เพิ่มบริการแรกจากแบบฟอร์ม"
+msgstr "Add your first service with the form"
+
+#: templates/portal/wellness.html:34
+#, python-format
+msgid "รอบเวลาที่เปิดรับจอง (%(slots)s)"
+msgstr "Time slots open for booking (%(slots)s)"
+
+#: templates/portal/wellness.html:38
+msgid "บริการ"
+msgstr "Service"
+
+#: templates/portal/wellness.html:38
+msgid "ว่าง / ทั้งหมด"
+msgstr "Free / total"
+
+#: templates/portal/wellness.html:46
+msgid "ลบรอบเวลานี้หรือไม่?"
+msgstr "Delete this time slot?"
+
+#: templates/portal/wellness.html:46
+msgid "ลบรอบเวลา"
+msgstr "Delete time slot"
+
+#: templates/portal/wellness.html:53
+msgid "ยังไม่มีรอบเวลา"
+msgstr "No time slots yet"
+
+#: templates/portal/wellness.html:60 templates/portal/wellness.html:73
+msgid "เปิดรอบเวลา"
+msgstr "Open a time slot"
+
+#: templates/portal/wellness.html:64
+msgid "บริการ *"
+msgstr "Service *"
+
+#: templates/portal/wellness.html:65
+#, python-format
+msgid "%(name)s (%(duration_minutes)s นาที)"
+msgstr "%(name)s (%(duration_minutes)s min)"
+
+#: templates/portal/wellness.html:67
+msgid "วันที่ *"
+msgstr "Date *"
+
+#: templates/portal/wellness.html:69
+msgid "เริ่ม *"
+msgstr "Start *"
+
+#: templates/portal/wellness.html:70
+msgid "สิ้นสุด *"
+msgstr "End *"
+
+#: templates/portal/wellness.html:72
+msgid "รับได้กี่คน *"
+msgstr "Capacity (people) *"
+
+#: templates/portal/wellness.html:76
+msgid "เพิ่มบริการก่อน แล้วจึงเปิดรอบเวลาได้"
+msgstr "Add a service first, then open time slots"
+
+#: templates/portal/wellness.html:81
+msgid "เพิ่มบริการ"
+msgstr "Add service"
+
+#: templates/portal/wellness.html:84
+msgid "ชื่อบริการ"
+msgstr "Service name"
+
+#: templates/portal/wellness.html:85
+msgid "รายละเอียดและสมุนไพรที่ใช้"
+msgstr "Details and herbs used"
+
+#: templates/portal/wellness.html:88
+msgid "ระยะเวลา (นาที)"
+msgstr "Duration (minutes)"
+
+#: templates/portal/wellness.html:90
+msgid "รูปบริการ"
+msgstr "Service image"
+
+#: templates/portal/wellness.html:91
+msgid "บันทึกบริการ"
+msgstr "Save service"
+
+#: templates/services/detail.html:11
+msgid "อาหารสุขภาพ &amp; สปา"
+msgstr "Healthy food &amp; spa"
+
+#: templates/services/detail.html:28 templates/services/list.html:69
+msgid "นวดแผนไทยและสปา"
+msgstr "Thai massage and spa"
+
+#: templates/services/detail.html:35
+msgid "/ จาน"
+msgstr "/ dish"
+
+#: templates/services/detail.html:35
+#, python-format
+msgid "· ประมาณ %(calorie_estimate)s kcal"
+msgstr "· about %(calorie_estimate)s kcal"
+
+#: templates/services/detail.html:36
+#, python-format
+msgid "/ ครั้ง · %(duration_minutes)s นาที"
+msgstr "/ session · %(duration_minutes)s min"
+
+#: templates/services/detail.html:48
+msgid "ผู้ให้บริการ"
+msgstr "Provider"
+
+#: templates/services/detail.html:60
+msgid "สั่งเมนูนี้"
+msgstr "Order this dish"
+
+#: templates/services/detail.html:60
+msgid "จองบริการนี้"
+msgstr "Book this service"
+
+#: templates/services/detail.html:61
+msgid "ดูบริการอื่น"
+msgstr "See other services"
+
+#: templates/services/list.html:5
+msgid "อาหารสุขภาพและสปาชุมชนศรีสะเกษ - WellTrip"
+msgstr "Sisaket community healthy food and spa - WellTrip"
+
+#: templates/services/list.html:11
+msgid "อาหารสุขภาพ &amp; นวดสปาสมุนไพร"
+msgstr "Healthy food &amp; herbal massage spa"
+
+#: templates/services/list.html:12
+msgid "เมนูจากวัตถุดิบท้องถิ่น และบริการนวดแผนไทยจากผู้ประกอบการชุมชนศรีสะเกษ"
+msgstr ""
+"Dishes from local ingredients and Thai massage from Sisaket community "
+"businesses"
+
+#: templates/services/list.html:17
+#, python-format
+msgid "อาหารสุขภาพ (%(total_menus)s)"
+msgstr "Healthy food (%(total_menus)s)"
+
+#: templates/services/list.html:18
+#, python-format
+msgid "นวดและสปา (%(total_services)s)"
+msgstr "Massage and spa (%(total_services)s)"
+
+#: templates/services/list.html:24
+msgid "ชื่อเมนู สมุนไพร หรือบริการ"
+msgstr "Dish, herb or service name"
+
+#: templates/services/list.html:38
+#, python-format
+msgid "%(food_menus)s เมนู"
+msgstr "%(food_menus)s dishes"
+
+#: templates/services/list.html:60
+msgid "ยังไม่มีเมนูอาหาร"
+msgstr "No dishes yet"
+
+#: templates/services/list.html:60 templates/services/list.html:91
+msgid "ลองค้นหาด้วยคำอื่น หรือกลับมาดูใหม่เร็ว ๆ นี้"
+msgstr "Try another keyword, or check back soon"
+
+#: templates/services/list.html:70
+#, python-format
+msgid "%(wellness_services)s บริการ"
+msgstr "%(wellness_services)s services"
+
+#: templates/services/list.html:91
+msgid "ยังไม่มีบริการสปา"
+msgstr "No spa services yet"
+
+#: templates/partials/lang_switch.html:3
+msgid "เปลี่ยนภาษา"
+msgstr "Change language"

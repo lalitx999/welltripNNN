@@ -1,36 +1,37 @@
 {% extends "layouts/admin.html" %}
 
-{% block title %}บันทึกการใช้งาน - Admin Center{% endblock %}
-{% block page_heading %}บันทึกการใช้งานระบบ{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "บันทึกการใช้งาน - Admin Center" %}{% endblock %}
+{% block page_heading %}{% translate "บันทึกการใช้งานระบบ" %}{% endblock %}
 
 {% block content %}
 <div class="wt-card">
   <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
-    <span class="small text-secondary">100 รายการล่าสุด</span>
+    <span class="small text-secondary">{% translate "100 รายการล่าสุด" %}</span>
     <div class="wt-pills">
-      <a href="{% url 'accounts:admin_audit' %}" class="wt-pill {% if not action_filter %}active{% endif %}">ทั้งหมด</a>
+      <a href="{% url 'accounts:admin_audit' %}" class="wt-pill {% if not action_filter %}active{% endif %}">{% translate "ทั้งหมด" %}</a>
       <a href="?action=CREATE" class="wt-pill {% if action_filter == 'CREATE' %}active{% endif %}">CREATE</a>
       <a href="?action=UPDATE" class="wt-pill {% if action_filter == 'UPDATE' %}active{% endif %}">UPDATE</a>
       <a href="?action=DELETE" class="wt-pill {% if action_filter == 'DELETE' %}active{% endif %}">DELETE</a>
       <a href="?action=LOGIN" class="wt-pill {% if action_filter == 'LOGIN' %}active{% endif %}">LOGIN</a>
-      <a href="?action=PERMISSION_DENIED" class="wt-pill {% if action_filter == 'PERMISSION_DENIED' %}active{% endif %}">ถูกปฏิเสธสิทธิ์</a>
+      <a href="?action=PERMISSION_DENIED" class="wt-pill {% if action_filter == 'PERMISSION_DENIED' %}active{% endif %}">{% translate "ถูกปฏิเสธสิทธิ์" %}</a>
     </div>
   </div>
   <div class="table-responsive">
     <table class="table wt-table mb-0">
-      <thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>การกระทำ</th><th>เป้าหมาย</th><th>IP</th><th>รายละเอียด</th></tr></thead>
+      <thead><tr><th>{% translate "เวลา" %}</th><th>{% translate "ผู้ใช้" %}</th><th>{% translate "การกระทำ" %}</th><th>{% translate "เป้าหมาย" %}</th><th>IP</th><th>{% translate "รายละเอียด" %}</th></tr></thead>
       <tbody>
         {% for log in logs %}
           <tr>
             <td class="small text-nowrap">{{ log.timestamp|date:"d/m/Y H:i:s" }}</td>
-            <td class="small text-truncate" style="max-width: 12rem;">{{ log.user.email|default:"ไม่ระบุตัวตน" }}</td>
+            <td class="small text-truncate" style="max-width: 12rem;">{{ log.user.email|default:_("ไม่ระบุตัวตน") }}</td>
             <td><span class="badge {% if log.action == 'PERMISSION_DENIED' or log.action == 'DELETE' %}text-bg-danger{% elif log.action == 'CREATE' or log.action == 'LOGIN' %}badge-green{% elif log.action == 'UPDATE' %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ log.action }}</span></td>
             <td class="small font-monospace">{{ log.model_name }}:{{ log.object_id|truncatechars:12 }}</td>
             <td class="small font-monospace">{{ log.ip_address|default:"-" }}</td>
             <td class="small text-secondary text-truncate" style="max-width: 18rem;" title="{{ log.changes }}">{{ log.changes }}</td>
           </tr>
         {% empty %}
-          <tr><td colspan="6" class="text-center text-secondary small py-4">ยังไม่มีบันทึก</td></tr>
+          <tr><td colspan="6" class="text-center text-secondary small py-4">{% translate "ยังไม่มีบันทึก" %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

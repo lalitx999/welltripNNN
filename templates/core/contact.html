@@ -1,6 +1,7 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ศูนย์ช่วยเหลือและติดต่อเรา — WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ศูนย์ช่วยเหลือและติดต่อเรา — WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <div x-data="{
@@ -15,12 +16,12 @@
   <section class="wt-page-head text-center">
     <div class="container-xl" style="max-width: 44rem;">
       <span class="wt-eyebrow justify-content-center"><i data-lucide="life-buoy"></i>Help &amp; support</span>
-      <h1 class="mb-2">ศูนย์ช่วยเหลือและติดต่อเรา</h1>
-      <p class="text-secondary mb-4">ค้นหาคำตอบ หรือติดต่อทีมงานดูแลนักท่องเที่ยว WellTrip ศรีสะเกษ</p>
+      <h1 class="mb-2">{% translate "ศูนย์ช่วยเหลือและติดต่อเรา" %}</h1>
+      <p class="text-secondary mb-4">{% translate "ค้นหาคำตอบ หรือติดต่อทีมงานดูแลนักท่องเที่ยว WellTrip ศรีสะเกษ" %}</p>
       <div class="wt-search-pill d-flex align-items-center border">
         <i data-lucide="search" class="text-secondary ms-3"></i>
-        <input type="text" class="form-control form-control-lg fs-6" x-model="searchQuery" placeholder="วิธีจอง การแนบสลิป นโยบายการยกเลิก..." aria-label="ค้นหาคำถาม">
-        <button type="button" class="btn-close me-3" x-show="searchQuery.length > 0" x-cloak @click="searchQuery = ''" aria-label="ล้าง"></button>
+        <input type="text" class="form-control form-control-lg fs-6" x-model="searchQuery" placeholder="{% translate 'วิธีจอง การแนบสลิป นโยบายการยกเลิก...' %}" aria-label="{% translate 'ค้นหาคำถาม' %}">
+        <button type="button" class="btn-close me-3" x-show="searchQuery.length > 0" x-cloak @click="searchQuery = ''" aria-label="{% translate 'ล้าง' %}"></button>
       </div>
     </div>
   </section>
@@ -31,9 +32,9 @@
         <div class="wt-card p-4 h-100 d-flex gap-3">
           <span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="phone-call" class="icon-lg"></i></span>
           <div>
-            <div class="small text-secondary">สายด่วนท่องเที่ยว</div>
+            <div class="small text-secondary">{% translate "สายด่วนท่องเที่ยว" %}</div>
             <a href="tel:045962455" class="fs-4 fw-bold text-green">045-962-455</a>
-            <div class="small text-secondary">สอบถามเส้นทางและเหตุฉุกเฉิน</div>
+            <div class="small text-secondary">{% translate "สอบถามเส้นทางและเหตุฉุกเฉิน" %}</div>
           </div>
         </div>
       </div>
@@ -41,9 +42,9 @@
         <div class="wt-card p-4 h-100 d-flex gap-3">
           <span class="wt-stat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="mail" class="icon-lg"></i></span>
           <div class="min-w-0">
-            <div class="small text-secondary">อีเมลบริการนักท่องเที่ยว</div>
+            <div class="small text-secondary">{% translate "อีเมลบริการนักท่องเที่ยว" %}</div>
             <a href="mailto:support@welltripthailand.com" class="fs-5 fw-bold text-break">support@welltripthailand.com</a>
-            <div class="small text-secondary">ข้อเสนอแนะและแจ้งปัญหา (ตอบกลับภายใน 1 วันทำการ)</div>
+            <div class="small text-secondary">{% translate "ข้อเสนอแนะและแจ้งปัญหา (ตอบกลับภายใน 1 วันทำการ)" %}</div>
           </div>
         </div>
       </div>
@@ -51,9 +52,9 @@
         <div class="wt-card p-4 d-flex gap-3 bg-sand border-0">
           <span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff"><i data-lucide="map-pin" class="icon-lg"></i></span>
           <div>
-            <div class="fw-bold">ศูนย์ปฏิบัติการและวิจัยการท่องเที่ยวเชิงสุขภาวะ (WellTrip)</div>
-            <div class="text-secondary">คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏศรีสะเกษ เลขที่ 319 ถนนไทยพันทา ต.โพธิ์ อ.เมือง จ.ศรีสะเกษ 33000</div>
-            <div class="small text-secondary mt-1"><i data-lucide="clock" class="me-1"></i>จันทร์ – ศุกร์ 08:30 – 16:30 น.</div>
+            <div class="fw-bold">{% translate "ศูนย์ปฏิบัติการและวิจัยการท่องเที่ยวเชิงสุขภาวะ (WellTrip)" %}</div>
+            <div class="text-secondary">{% translate "คณะวิทยาศาสตร์และเทคโนโลยี มหาวิทยาลัยราชภัฏศรีสะเกษ เลขที่ 319 ถนนไทยพันทา ต.โพธิ์ อ.เมือง จ.ศรีสะเกษ 33000" %}</div>
+            <div class="small text-secondary mt-1"><i data-lucide="clock" class="me-1"></i>{% translate "จันทร์ – ศุกร์ 08:30 – 16:30 น." %}</div>
           </div>
         </div>
       </div>
@@ -62,72 +63,72 @@
 
   <section class="wt-section bg-mint">
     <div class="container-xl" style="max-width: 52rem;">
-      <h2 class="wt-section-title text-center">คำถามที่พบบ่อย</h2>
+      <h2 class="wt-section-title text-center">{% translate "คำถามที่พบบ่อย" %}</h2>
       <div class="wt-pills justify-content-md-center mb-4">
-        <button type="button" class="wt-pill" :class="activeCategory === 'all' && 'active'" @click="activeCategory = 'all'">ทั้งหมด</button>
-        <button type="button" class="wt-pill" :class="activeCategory === 'booking' && 'active'" @click="activeCategory = 'booking'"><i data-lucide="house" class="me-1"></i>การจอง</button>
-        <button type="button" class="wt-pill" :class="activeCategory === 'payment' && 'active'" @click="activeCategory = 'payment'"><i data-lucide="receipt" class="me-1"></i>ชำระเงิน &amp; สลิป</button>
-        <button type="button" class="wt-pill" :class="activeCategory === 'otop' && 'active'" @click="activeCategory = 'otop'"><i data-lucide="package" class="me-1"></i>OTOP &amp; จัดส่ง</button>
+        <button type="button" class="wt-pill" :class="activeCategory === 'all' && 'active'" @click="activeCategory = 'all'">{% translate "ทั้งหมด" %}</button>
+        <button type="button" class="wt-pill" :class="activeCategory === 'booking' && 'active'" @click="activeCategory = 'booking'"><i data-lucide="house" class="me-1"></i>{% translate "การจอง" %}</button>
+        <button type="button" class="wt-pill" :class="activeCategory === 'payment' && 'active'" @click="activeCategory = 'payment'"><i data-lucide="receipt" class="me-1"></i>{% translate "ชำระเงิน &amp; สลิป" %}</button>
+        <button type="button" class="wt-pill" :class="activeCategory === 'otop' && 'active'" @click="activeCategory = 'otop'"><i data-lucide="package" class="me-1"></i>{% translate "OTOP &amp; จัดส่ง" %}</button>
       </div>
       <div class="accordion">
-        <div class="accordion-item" x-show="matches('payment', 'วิธีแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?')">
+        <div class="accordion-item" x-show="matches('payment', '{{ _("วิธีแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?")|escapejs }}')">
           <h3 class="accordion-header">
             <button class="accordion-button gap-2" :class="openFaq === 1 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 1 ? null : 1">
-              <span class="wt-num">1</span>วิธีแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?
+              <span class="wt-num">1</span>{% translate "วิธีแนบสลิปโอนเงิน และระบบตรวจสอบใช้เวลานานเท่าไร?" %}
             </button>
           </h3>
           <div class="accordion-collapse" x-show="openFaq === 1" x-cloak>
-            <div class="accordion-body text-secondary">เมื่อโอนเงินแล้ว ให้แนบไฟล์สลิปผ่านหน้าชำระเงิน ระบบจะตรวจสอบยอดเงินและเวลาโอนอัตโนมัติภายใน 5-15 นาที</div>
+            <div class="accordion-body text-secondary">{% translate "เมื่อโอนเงินแล้ว ให้แนบไฟล์สลิปผ่านหน้าชำระเงิน ระบบจะตรวจสอบยอดเงินและเวลาโอนอัตโนมัติภายใน 5-15 นาที" %}</div>
           </div>
         </div>
-        <div class="accordion-item" x-show="matches('booking', 'หากต้องการเลื่อนวันเข้าพักต้องทำอย่างไร?')">
+        <div class="accordion-item" x-show="matches('booking', '{{ _("หากต้องการเลื่อนวันเข้าพักต้องทำอย่างไร?")|escapejs }}')">
           <h3 class="accordion-header">
             <button class="accordion-button gap-2" :class="openFaq === 2 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 2 ? null : 2">
-              <span class="wt-num">2</span>หากต้องการเลื่อนวันเข้าพักต้องทำอย่างไร?
+              <span class="wt-num">2</span>{% translate "หากต้องการเลื่อนวันเข้าพักต้องทำอย่างไร?" %}
             </button>
           </h3>
           <div class="accordion-collapse" x-show="openFaq === 2" x-cloak>
-            <div class="accordion-body text-secondary">ติดต่อเจ้าของที่พักโดยตรงผ่านเบอร์โทรที่แสดงในหน้าการจองของฉัน ล่วงหน้าอย่างน้อย 3 วันก่อนวันเข้าพัก</div>
+            <div class="accordion-body text-secondary">{% translate "ติดต่อเจ้าของที่พักโดยตรงผ่านเบอร์โทรที่แสดงในหน้าการจองของฉัน ล่วงหน้าอย่างน้อย 3 วันก่อนวันเข้าพัก" %}</div>
           </div>
         </div>
-        <div class="accordion-item" x-show="matches('otop', 'สินค้า OTOP จัดส่งอย่างไร?')">
+        <div class="accordion-item" x-show="matches('otop', '{{ _("สินค้า OTOP จัดส่งอย่างไร?")|escapejs }}')">
           <h3 class="accordion-header">
             <button class="accordion-button gap-2" :class="openFaq === 3 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 3 ? null : 3">
-              <span class="wt-num">3</span>สินค้า OTOP จัดส่งอย่างไร?
+              <span class="wt-num">3</span>{% translate "สินค้า OTOP จัดส่งอย่างไร?" %}
             </button>
           </h3>
           <div class="accordion-collapse" x-show="openFaq === 3" x-cloak>
-            <div class="accordion-body text-secondary">ผู้ผลิตชุมชนจะจัดส่งพัสดุตรงจากชุมชนศรีสะเกษ ภายใน 1-2 วันทำการหลังยืนยันคำสั่งซื้อ</div>
+            <div class="accordion-body text-secondary">{% translate "ผู้ผลิตชุมชนจะจัดส่งพัสดุตรงจากชุมชนศรีสะเกษ ภายใน 1-2 วันทำการหลังยืนยันคำสั่งซื้อ" %}</div>
           </div>
         </div>
-        <div class="accordion-item" x-show="matches('booking', 'นโยบายการยกเลิกการจองและรับเงินคืนเป็นอย่างไร?')">
+        <div class="accordion-item" x-show="matches('booking', '{{ _("นโยบายการยกเลิกการจองและรับเงินคืนเป็นอย่างไร?")|escapejs }}')">
           <h3 class="accordion-header">
             <button class="accordion-button gap-2" :class="openFaq === 4 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 4 ? null : 4">
-              <span class="wt-num">4</span>นโยบายการยกเลิกการจองและรับเงินคืนเป็นอย่างไร?
+              <span class="wt-num">4</span>{% translate "นโยบายการยกเลิกการจองและรับเงินคืนเป็นอย่างไร?" %}
             </button>
           </h3>
           <div class="accordion-collapse" x-show="openFaq === 4" x-cloak>
-            <div class="accordion-body text-secondary">ยกเลิกและขอรับเงินคืนเต็มจำนวนได้ หากยกเลิกก่อนวันเข้าพักอย่างน้อย 7 วัน โดยติดต่อทีมงานทางโทรศัพท์ 045-962-455 หรืออีเมล support@welltripthailand.com</div>
+            <div class="accordion-body text-secondary">{% translate "ยกเลิกและขอรับเงินคืนเต็มจำนวนได้ หากยกเลิกก่อนวันเข้าพักอย่างน้อย 7 วัน โดยติดต่อทีมงานทางโทรศัพท์ 045-962-455 หรืออีเมล support@welltripthailand.com" %}</div>
           </div>
         </div>
-        <div class="accordion-item" x-show="matches('payment', 'หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?')">
+        <div class="accordion-item" x-show="matches('payment', '{{ _("หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?")|escapejs }}')">
           <h3 class="accordion-header">
             <button class="accordion-button gap-2" :class="openFaq === 5 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 5 ? null : 5">
-              <span class="wt-num">5</span>หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?
+              <span class="wt-num">5</span>{% translate "หากสลิปโอนเงินถูกปฏิเสธต้องทำอย่างไร?" %}
             </button>
           </h3>
           <div class="accordion-collapse" x-show="openFaq === 5" x-cloak>
-            <div class="accordion-body text-secondary">หากสลิปถูกปฏิเสธ (เช่น ภาพไม่ชัด หรือยอดเงินไม่ตรง) สามารถแนบสลิปใบใหม่ได้ที่หน้ารายละเอียดการจองของฉัน</div>
+            <div class="accordion-body text-secondary">{% translate "หากสลิปถูกปฏิเสธ (เช่น ภาพไม่ชัด หรือยอดเงินไม่ตรง) สามารถแนบสลิปใบใหม่ได้ที่หน้ารายละเอียดการจองของฉัน" %}</div>
           </div>
         </div>
-        <div class="accordion-item" x-show="matches('otop', 'สั่งสินค้า OTOP พร้อมกับจองที่พักในครั้งเดียวได้ไหม?')">
+        <div class="accordion-item" x-show="matches('otop', '{{ _("สั่งสินค้า OTOP พร้อมกับจองที่พักในครั้งเดียวได้ไหม?")|escapejs }}')">
           <h3 class="accordion-header">
             <button class="accordion-button gap-2" :class="openFaq === 6 ? '' : 'collapsed'" type="button" @click="openFaq = openFaq === 6 ? null : 6">
-              <span class="wt-num">6</span>สั่งสินค้า OTOP พร้อมกับจองที่พักในครั้งเดียวได้ไหม?
+              <span class="wt-num">6</span>{% translate "สั่งสินค้า OTOP พร้อมกับจองที่พักในครั้งเดียวได้ไหม?" %}
             </button>
           </h3>
           <div class="accordion-collapse" x-show="openFaq === 6" x-cloak>
-            <div class="accordion-body text-secondary">ได้ ตะกร้าของ WellTrip รวมที่พัก สปา อาหาร และสินค้า OTOP จากหลายร้านไว้ในการชำระเงินครั้งเดียวได้</div>
+            <div class="accordion-body text-secondary">{% translate "ได้ ตะกร้าของ WellTrip รวมที่พัก สปา อาหาร และสินค้า OTOP จากหลายร้านไว้ในการชำระเงินครั้งเดียวได้" %}</div>
           </div>
         </div>
       </div>

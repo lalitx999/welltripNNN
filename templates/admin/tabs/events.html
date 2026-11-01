@@ -1,0 +1,36 @@
+{% load i18n %}
+{% load welltrip_i18n %}
+<div class="wt-card">
+  <div class="p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <span class="small text-secondary">{% translate "งานที่จบแล้วจะไม่แสดงบนหน้าเว็บอัตโนมัติ" %}</span>
+    <a href="{% url 'accounts:admin_event_add' %}" class="btn btn-green btn-sm rounded-pill"><i data-lucide="plus" class="me-1"></i>{% translate "เพิ่มกิจกรรม" %}</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table wt-table mb-0">
+      <thead><tr><th>{% translate "กิจกรรม" %}</th><th>{% translate "วันที่" %}</th><th>{% translate "สถานะ" %}</th><th class="text-end">{% translate "จัดการ" %}</th></tr></thead>
+      <tbody>
+        {% for event in events %}
+          <tr>
+            <td class="small">
+              <div class="fw-semibold">{{ event.title }}</div>
+              <span class="text-secondary">{{ event.get_category_display }}{% if event.venue %} · {{ event.venue|truncatechars:40 }}{% endif %}</span>
+            </td>
+            <td class="small text-nowrap">{{ event|event_dates }}</td>
+            <td>
+              {% if event.end_date < today %}<span class="badge text-bg-light border">{% translate "จบแล้ว" %}</span>
+              {% elif event.is_published %}<span class="badge badge-green">{% translate "เผยแพร่" %}</span>
+              {% else %}<span class="badge text-bg-secondary">{% translate "ฉบับร่าง" %}</span>{% endif %}
+            </td>
+            <td class="text-end text-nowrap">
+              {% if event.is_published %}<a href="{% url 'community:event_detail' event.id %}" target="_blank" rel="noopener" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="{% translate 'ดูหน้าเว็บ' %}" aria-label="{% translate 'ดูหน้าเว็บ' %}"><i data-lucide="eye"></i></a>{% endif %}
+              <a href="{% url 'accounts:admin_event_edit' event.id %}" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="{% translate 'แก้ไข' %}" aria-label="{% translate 'แก้ไขกิจกรรม' %}"><i data-lucide="pencil"></i></a>
+              <form method="post" action="{% url 'accounts:admin_event_delete' event.id %}" class="d-inline" onsubmit="return confirm('{{ _("ลบกิจกรรม")|escapejs }} {{ event.title|escapejs }} {{ _("หรือไม่?")|escapejs }}');">{% csrf_token %}<button type="submit" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="{% translate 'ลบ' %}" aria-label="{% translate 'ลบกิจกรรม' %}"><i data-lucide="trash-2"></i></button></form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="text-center text-secondary small py-4">{% translate "ยังไม่มีกิจกรรม" %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

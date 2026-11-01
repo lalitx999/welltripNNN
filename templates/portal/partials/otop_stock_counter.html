@@ -1,5 +1,6 @@
-<div id="stock-counter-{{ product.id }}" class="btn-group btn-group-sm" role="group" aria-label="ปรับสต็อก {{ product.name }}">
-  <button type="button" class="btn btn-outline-ink" hx-post="{% url 'otop:stock_update' product.id %}" hx-vals='{"delta": -1}' hx-target="#stock-counter-{{ product.id }}" hx-swap="outerHTML" {% if product.stock_quantity == 0 %}disabled{% endif %} aria-label="ลดสต็อก">−</button>
+{% load i18n %}
+<div id="stock-counter-{{ product.id }}" class="btn-group btn-group-sm" role="group" aria-label="{% blocktranslate trimmed with name=product.name %}ปรับสต็อก {{ name }}{% endblocktranslate %}">
+  <button type="button" class="btn btn-outline-ink" hx-post="{% url 'otop:stock_update' product.id %}" hx-vals='{"delta": -1}' hx-target="#stock-counter-{{ product.id }}" hx-swap="outerHTML" {% if product.stock_quantity == 0 %}disabled{% endif %} aria-label="{% translate 'ลดสต็อก' %}">−</button>
   <span class="btn btn-outline-ink disabled fw-bold {% if product.stock_quantity == 0 %}text-danger{% endif %}" style="min-width: 3rem;">{{ product.stock_quantity }}</span>
-  <button type="button" class="btn btn-outline-ink" hx-post="{% url 'otop:stock_update' product.id %}" hx-vals='{"delta": 1}' hx-target="#stock-counter-{{ product.id }}" hx-swap="outerHTML" aria-label="เพิ่มสต็อก">+</button>
+  <button type="button" class="btn btn-outline-ink" hx-post="{% url 'otop:stock_update' product.id %}" hx-vals='{"delta": 1}' hx-target="#stock-counter-{{ product.id }}" hx-swap="outerHTML" aria-label="{% translate 'เพิ่มสต็อก' %}">+</button>
 </div>

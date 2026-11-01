@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from apps.core.services.media import secure_upload_path
+from django.utils.translation import gettext as _, gettext_lazy
 
 
 def otop_image_path(instance, filename):
@@ -11,10 +12,10 @@ def otop_image_path(instance, filename):
 
 
 class OTOPCategory(models.TextChoices):
-    HERBAL_PRODUCT = "HERBAL_PRODUCT", "สมุนไพรและผลิตภัณฑ์สุขภาพ"
-    TEXTILE = "TEXTILE", "ผ้าไหม ผ้าฝ้าย และเครื่องแต่งกาย"
-    PROCESSED_FOOD = "PROCESSED_FOOD", "อาหารแปรรูปและของฝาก"
-    CRAFT = "CRAFT", "หัตถกรรม งานจักสาน และของแต่งบ้าน"
+    HERBAL_PRODUCT = "HERBAL_PRODUCT", gettext_lazy("สมุนไพรและผลิตภัณฑ์สุขภาพ")
+    TEXTILE = "TEXTILE", gettext_lazy("ผ้าไหม ผ้าฝ้าย และเครื่องแต่งกาย")
+    PROCESSED_FOOD = "PROCESSED_FOOD", gettext_lazy("อาหารแปรรูปและของฝาก")
+    CRAFT = "CRAFT", gettext_lazy("หัตถกรรม งานจักสาน และของแต่งบ้าน")
 
 
 class OTOPProduct(models.Model):
@@ -41,7 +42,7 @@ class OTOPProduct(models.Model):
     )
     stock_quantity = models.PositiveIntegerField(
         default=0,
-        help_text="จำนวนสินค้าคงคลัง (ห้ามติดลบเด็ดขาดตามระดับฐานข้อมูล)"
+        help_text=gettext_lazy("จำนวนสินค้าคงคลัง (ห้ามติดลบเด็ดขาดตามระดับฐานข้อมูล)")
     )
     image = models.ImageField(upload_to=otop_image_path, null=True, blank=True)
     is_active = models.BooleanField(default=True)
@@ -53,7 +54,7 @@ class OTOPProduct(models.Model):
         ordering = ("name",)
 
     def __str__(self):
-        return f"{self.name} - ฿{self.price} (คงเหลือ {self.stock_quantity})"
+        return _("{name} - ฿{price} (คงเหลือ {stock_quantity})").format(name=self.name, price=self.price, stock_quantity=self.stock_quantity)
 
     @property
     def stock(self):

@@ -1,18 +1,19 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}สินค้าภูมิปัญญาชุมชน OTOP ศรีสะเกษ - WellTrip{% endblock %}
+{% block title %}{% translate "สินค้าภูมิปัญญาชุมชน OTOP ศรีสะเกษ - WellTrip" %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head">
   <div class="container-xl">
     <span class="wt-eyebrow"><i data-lucide="shopping-basket"></i>Local crafts &amp; wisdom</span>
-    <h1 class="mb-2">ของดีชุมชน OTOP ศรีสะเกษ</h1>
-    <p class="text-secondary mb-4" style="max-width: 40rem;">ผ้าทอ สมุนไพรแปรรูป อาหารแปรรูป และงานหัตถกรรม ส่งตรงจากผู้ผลิตในชุมชน</p>
+    <h1 class="mb-2">{% translate "ของดีชุมชน OTOP ศรีสะเกษ" %}</h1>
+    <p class="text-secondary mb-4" style="max-width: 40rem;">{% translate "ผ้าทอ สมุนไพรแปรรูป อาหารแปรรูป และงานหัตถกรรม ส่งตรงจากผู้ผลิตในชุมชน" %}</p>
 
     <div class="wt-filter-bar d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-between">
       <div class="wt-pills">
-        <a href="?{% if query %}q={{ query|urlencode }}{% endif %}" class="wt-pill {% if not selected_category %}active{% endif %}">ทั้งหมด</a>
+        <a href="?{% if query %}q={{ query|urlencode }}{% endif %}" class="wt-pill {% if not selected_category %}active{% endif %}">{% translate "ทั้งหมด" %}</a>
         {% for cat_key, cat_label in categories %}
           <a href="?category={{ cat_key }}{% if query %}&q={{ query|urlencode }}{% endif %}" class="wt-pill {% if selected_category == cat_key %}active{% endif %}">{{ cat_label }}</a>
         {% endfor %}
@@ -21,10 +22,10 @@
         {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
         <div class="position-relative flex-grow-1">
           <i data-lucide="search" class="position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
-          <input type="text" name="q" value="{{ query }}" class="form-control ps-5" placeholder="ชื่อสินค้า ผ้าไหม กาแฟ..." aria-label="ค้นหาสินค้า">
+          <input type="text" name="q" value="{{ query }}" class="form-control ps-5" placeholder="{% translate 'ชื่อสินค้า ผ้าไหม กาแฟ...' %}" aria-label="{% translate 'ค้นหาสินค้า' %}">
         </div>
-        <button type="submit" class="btn btn-green rounded-pill px-3">ค้นหา</button>
-        {% if query or selected_category %}<a href="{% url 'otop:list' %}" class="btn btn-outline-ink rounded-pill" aria-label="ล้างตัวกรอง"><i data-lucide="x"></i></a>{% endif %}
+        <button type="submit" class="btn btn-green rounded-pill px-3">{% translate "ค้นหา" %}</button>
+        {% if query or selected_category %}<a href="{% url 'otop:list' %}" class="btn btn-outline-ink rounded-pill" aria-label="{% translate 'ล้างตัวกรอง' %}"><i data-lucide="x"></i></a>{% endif %}
       </form>
     </div>
   </div>
@@ -47,9 +48,9 @@
           <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex justify-content-between align-items-center small">
             <span class="text-secondary text-truncate me-2"><i data-lucide="store" class="text-green me-1"></i>{{ product.owner.full_name|default:product.owner.email }}</span>
             {% if product.stock_quantity > 0 %}
-              <span class="badge badge-green flex-shrink-0">มีสินค้า</span>
+              <span class="badge badge-green flex-shrink-0">{% translate "มีสินค้า" %}</span>
             {% else %}
-              <span class="badge text-bg-danger bg-opacity-75 flex-shrink-0">สินค้าหมด</span>
+              <span class="badge text-bg-danger bg-opacity-75 flex-shrink-0">{% translate "สินค้าหมด" %}</span>
             {% endif %}
           </div>
         </article>
@@ -58,8 +59,8 @@
       <div class="col-12">
         <div class="wt-card wt-empty">
           <span class="wt-icon-pill"><i data-lucide="shopping-basket"></i></span>
-          <div class="fw-bold">ยังไม่มีสินค้าในหมวดนี้</div>
-          <small class="text-secondary">ผู้ผลิตชุมชนกำลังทยอยนำสินค้าขึ้นระบบ</small>
+          <div class="fw-bold">{% translate "ยังไม่มีสินค้าในหมวดนี้" %}</div>
+          <small class="text-secondary">{% translate "ผู้ผลิตชุมชนกำลังทยอยนำสินค้าขึ้นระบบ" %}</small>
         </div>
       </div>
     {% endfor %}

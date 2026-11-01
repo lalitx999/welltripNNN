@@ -1,14 +1,15 @@
 {% extends "layouts/public.html" %}
+{% load i18n welltrip_i18n %}
 {% load static %}
 
-{% block title %}โฮมสเตย์และที่พักชุมชน - WellTrip Sisaket{% endblock %}
+{% block title %}{% translate "โฮมสเตย์และที่พักชุมชน - WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head">
   <div class="container-xl">
     <span class="wt-eyebrow"><i data-lucide="house"></i>Stay close to nature</span>
-    <h1 class="mb-2">โฮมสเตย์และที่พักชุมชน</h1>
-    <p class="text-secondary mb-4" style="max-width: 40rem;">ค้นหาที่พักตามอำเภอและงบประมาณ สัมผัสวิถีชีวิต 4 ชนเผ่า และอุดหนุนผู้ประกอบการชุมชนศรีสะเกษโดยตรง</p>
+    <h1 class="mb-2">{% translate "โฮมสเตย์และที่พักชุมชน" %}</h1>
+    <p class="text-secondary mb-4" style="max-width: 40rem;">{% translate "ค้นหาที่พักตามอำเภอและงบประมาณ สัมผัสวิถีชีวิต 4 ชนเผ่า และอุดหนุนผู้ประกอบการชุมชนศรีสะเกษโดยตรง" %}</p>
 
     <form method="get" action="{% url 'accommodations:list' %}" class="wt-filter-bar"
           hx-get="{% url 'accommodations:list' %}"
@@ -22,31 +23,31 @@
         <div class="col-md-5">
           <div class="position-relative">
             <i data-lucide="search" class="position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
-            <input type="text" name="q" value="{{ query }}" class="form-control ps-5" placeholder="ชื่อที่พัก หมู่บ้าน หรือคำค้น" aria-label="คำค้นหา">
+            <input type="text" name="q" value="{{ query }}" class="form-control ps-5" placeholder="{% translate 'ชื่อที่พัก หมู่บ้าน หรือคำค้น' %}" aria-label="{% translate 'คำค้นหา' %}">
           </div>
         </div>
         <div class="col-6 col-md-3">
-          <select name="district" class="form-select" aria-label="อำเภอ">
-            <option value="">ทุกอำเภอ</option>
+          <select name="district" class="form-select" aria-label="{% translate 'อำเภอ' %}">
+            <option value="">{% translate "ทุกอำเภอ" %}</option>
             {% for d in districts %}
-              <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
+              <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d|place_name }}</option>
             {% endfor %}
           </select>
         </div>
         <div class="col-6 col-md-2">
-          <select name="priceRange" class="form-select" aria-label="ช่วงราคาต่อคืน">
-            <option value="">ทุกราคา</option>
-            <option value="budget" {% if selected_price == 'budget' or selected_price == 'economy' %}selected{% endif %}>ต่ำกว่า ฿800</option>
+          <select name="priceRange" class="form-select" aria-label="{% translate 'ช่วงราคาต่อคืน' %}">
+            <option value="">{% translate "ทุกราคา" %}</option>
+            <option value="budget" {% if selected_price == 'budget' or selected_price == 'economy' %}selected{% endif %}>{% translate "ต่ำกว่า ฿800" %}</option>
             <option value="mid" {% if selected_price == 'mid' or selected_price == 'moderate' %}selected{% endif %}>฿800 - ฿1,500</option>
-            <option value="luxury" {% if selected_price == 'luxury' %}selected{% endif %}>มากกว่า ฿1,500</option>
+            <option value="luxury" {% if selected_price == 'luxury' %}selected{% endif %}>{% translate "มากกว่า ฿1,500" %}</option>
           </select>
         </div>
         <div class="col-md-2 d-flex gap-2">
           <button type="submit" class="btn btn-green rounded-pill flex-grow-1 d-flex align-items-center justify-content-center gap-1">
-            <span id="search-spinner" class="htmx-indicator spinner-border spinner-border-sm"></span>ค้นหา
+            <span id="search-spinner" class="htmx-indicator spinner-border spinner-border-sm"></span>{% translate "ค้นหา" %}
           </button>
           {% if query or selected_district or selected_price %}
-            <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink rounded-pill" title="ล้างตัวกรอง" aria-label="ล้างตัวกรอง"><i data-lucide="rotate-ccw"></i></a>
+            <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink rounded-pill" title="{% translate 'ล้างตัวกรอง' %}" aria-label="{% translate 'ล้างตัวกรอง' %}"><i data-lucide="rotate-ccw"></i></a>
           {% endif %}
         </div>
       </div>
@@ -56,11 +57,11 @@
 
 <section class="container-xl pb-5" id="accommodations-container">
   <div class="wt-pills my-3">
-    <a href="{% url 'accommodations:list' %}" class="wt-pill {% if not selected_district and not selected_price and not query %}active{% endif %}">ทั้งหมด ({{ total_count }})</a>
-    <a href="?district=กันทรลักษ์" class="wt-pill {% if selected_district == 'กันทรลักษ์' %}active{% endif %}">กันทรลักษ์ · ผามออีแดง</a>
-    <a href="?district=ขุนหาญ" class="wt-pill {% if selected_district == 'ขุนหาญ' %}active{% endif %}">ขุนหาญ · สวนภูเขาไฟ</a>
-    <a href="?district=เมืองศรีสะเกษ" class="wt-pill {% if selected_district == 'เมืองศรีสะเกษ' %}active{% endif %}">ในเมืองศรีสะเกษ</a>
-    <a href="?district=อุทุมพรพิสัย" class="wt-pill {% if selected_district == 'อุทุมพรพิสัย' %}active{% endif %}">อุทุมพรพิสัย · ปราสาทสระกำแพงใหญ่</a>
+    <a href="{% url 'accommodations:list' %}" class="wt-pill {% if not selected_district and not selected_price and not query %}active{% endif %}">{% blocktranslate trimmed with total_count=total_count %}ทั้งหมด ({{ total_count }}){% endblocktranslate %}</a>
+    <a href="?district=กันทรลักษ์" class="wt-pill {% if selected_district == 'กันทรลักษ์' %}active{% endif %}">{% translate "กันทรลักษ์ · ผามออีแดง" %}</a>
+    <a href="?district=ขุนหาญ" class="wt-pill {% if selected_district == 'ขุนหาญ' %}active{% endif %}">{% translate "ขุนหาญ · สวนภูเขาไฟ" %}</a>
+    <a href="?district=เมืองศรีสะเกษ" class="wt-pill {% if selected_district == 'เมืองศรีสะเกษ' %}active{% endif %}">{% translate "ในเมืองศรีสะเกษ" %}</a>
+    <a href="?district=อุทุมพรพิสัย" class="wt-pill {% if selected_district == 'อุทุมพรพิสัย' %}active{% endif %}">{% translate "อุทุมพรพิสัย · ปราสาทสระกำแพงใหญ่" %}</a>
   </div>
 
   <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
@@ -70,16 +71,16 @@
           <div class="wt-card-img">
             <img src="{% if acc.hero_image %}{{ acc.hero_image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ acc.name }}" loading="lazy">
             {% if acc.min_price_per_night %}
-              <span class="wt-price-tag">฿{{ acc.min_price_per_night|floatformat:"0g" }} <small>/ คืน</small></span>
+              <span class="wt-price-tag">฿{{ acc.min_price_per_night|floatformat:"0g" }} <small>{% translate "/ คืน" %}</small></span>
             {% endif %}
           </div>
           <div class="card-body">
-            <div class="small text-secondary d-flex align-items-center gap-1 mb-1"><i data-lucide="map-pin" class="text-green"></i>{% if acc.district %}อ.{{ acc.district }}, {% endif %}{{ acc.province }}</div>
+            <div class="small text-secondary d-flex align-items-center gap-1 mb-1"><i data-lucide="map-pin" class="text-green"></i>{% if acc.district %}{% blocktranslate trimmed with district=acc.district|place_name %}อ.{{ district }},{% endblocktranslate %} {% endif %}{{ acc.province|place_name }}</div>
             <h2 class="h6 fw-bold mb-2 line-clamp-2"><a href="{% url 'accommodations:detail' acc.slug|default:acc.id %}" class="stretched-link">{{ acc.name }}</a></h2>
             {% if acc.description %}<p class="small text-secondary mb-0 line-clamp-2">{{ acc.description }}</p>{% endif %}
           </div>
           <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex align-items-center justify-content-between">
-            <span class="small fw-semibold text-green">ดูห้องพักและจอง</span>
+            <span class="small fw-semibold text-green">{% translate "ดูห้องพักและจอง" %}</span>
             <span class="wt-icon-pill rounded-circle"><i data-lucide="arrow-up-right"></i></span>
           </div>
         </article>
@@ -88,9 +89,9 @@
       <div class="col-12">
         <div class="wt-card wt-empty">
           <span class="wt-icon-pill"><i data-lucide="search-x"></i></span>
-          <h2 class="h6 fw-bold">ไม่พบที่พักตามเงื่อนไขที่ค้นหา</h2>
-          <p class="small text-secondary">ลองเปลี่ยนคำค้นหา ปรับช่วงราคา หรือเลือกดูทุกอำเภอ</p>
-          <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill btn-sm px-3">ล้างตัวกรองทั้งหมด</a>
+          <h2 class="h6 fw-bold">{% translate "ไม่พบที่พักตามเงื่อนไขที่ค้นหา" %}</h2>
+          <p class="small text-secondary">{% translate "ลองเปลี่ยนคำค้นหา ปรับช่วงราคา หรือเลือกดูทุกอำเภอ" %}</p>
+          <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill btn-sm px-3">{% translate "ล้างตัวกรองทั้งหมด" %}</a>
         </div>
       </div>
     {% endfor %}

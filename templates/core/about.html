@@ -1,21 +1,22 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ{% endblock %}
+{% block title %}{% translate "เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ" %}{% endblock %}
 
 {% block content %}
 <section class="wt-hero" style="min-height: 420px;">
   <div class="wt-hero-bg">
     <picture>
       <source media="(max-width: 767px)" srcset="{% static 'images/c/village-mobile.webp' %}">
-      <img src="{% static 'images/c/village.webp' %}" alt="วิถีชุมชนริมบึงบัวในศรีสะเกษ" fetchpriority="high">
+      <img src="{% static 'images/c/village.webp' %}" alt="{% translate 'วิถีชุมชนริมบึงบัวในศรีสะเกษ' %}" fetchpriority="high">
     </picture>
   </div>
   <div class="container-xl wt-hero-body">
     <div style="max-width: 40rem;">
       <span class="badge rounded-pill bg-white bg-opacity-25 border border-light border-opacity-25 px-3 py-2 mb-3 fw-semibold">About WellTrip Sisaket</span>
-      <h1 class="mb-3">เชื่อมการท่องเที่ยวสุขภาวะ<br>กับ<span class="wt-highlight">ภูมิปัญญา 4 ชนเผ่า</span></h1>
-      <p class="wt-hero-lead mb-0">โครงการวิจัยและพัฒนานวัตกรรมการท่องเที่ยวเชิงสุขภาพ โดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) เพื่อสร้างรายได้สู่เศรษฐกิจฐานรากโดยตรง</p>
+      <h1 class="mb-3">{% translate "เชื่อมการท่องเที่ยวสุขภาวะ" %}<br>{% translate "กับ" %}<span class="wt-highlight">{% translate "ภูมิปัญญา 4 ชนเผ่า" %}</span></h1>
+      <p class="wt-hero-lead mb-0">{% translate "โครงการวิจัยและพัฒนานวัตกรรมการท่องเที่ยวเชิงสุขภาพ โดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) เพื่อสร้างรายได้สู่เศรษฐกิจฐานรากโดยตรง" %}</p>
     </div>
   </div>
 </section>
@@ -23,10 +24,10 @@
 <section class="wt-section-sm bg-white">
   <div class="container-xl">
     <div class="row g-3 wt-reveal">
-      <div class="col-6 col-lg-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map" class="icon-lg"></i></span><div class="wt-stat-value">13</div><div class="fw-bold">อำเภอ</div><small class="text-secondary">เครือข่ายชุมชนท่องเที่ยว</small></div></div>
-      <div class="col-6 col-lg-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#c2255c;--bg:#fdebf1"><i data-lucide="users" class="icon-lg"></i></span><div class="wt-stat-value">4</div><div class="fw-bold">ชนเผ่า</div><small class="text-secondary">ลาว · เขมร · ส่วย (กูย) · เยอ</small></div></div>
-      <div class="col-6 col-lg-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="salad" class="icon-lg"></i></span><div class="wt-stat-value">5</div><div class="fw-bold">นิเวศน์</div><small class="text-secondary">โภชนาการตามธาตุทั้ง 5</small></div></div>
-      <div class="col-6 col-lg-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="hand-coins" class="icon-lg"></i></span><div class="wt-stat-value">ตรง</div><div class="fw-bold">ถึงชุมชน</div><small class="text-secondary">ผู้ประกอบการรับเงินโดยตรง</small></div></div>
+      <div class="col-6 col-lg-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map" class="icon-lg"></i></span><div class="wt-stat-value">13</div><div class="fw-bold">{% translate "อำเภอ" %}</div><small class="text-secondary">{% translate "เครือข่ายชุมชนท่องเที่ยว" %}</small></div></div>
+      <div class="col-6 col-lg-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#c2255c;--bg:#fdebf1"><i data-lucide="users" class="icon-lg"></i></span><div class="wt-stat-value">4</div><div class="fw-bold">{% translate "ชนเผ่า" %}</div><small class="text-secondary">{% translate "ลาว · เขมร · ส่วย (กูย) · เยอ" %}</small></div></div>
+      <div class="col-6 col-lg-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="salad" class="icon-lg"></i></span><div class="wt-stat-value">5</div><div class="fw-bold">{% translate "นิเวศน์" %}</div><small class="text-secondary">{% translate "โภชนาการตามธาตุทั้ง 5" %}</small></div></div>
+      <div class="col-6 col-lg-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="hand-coins" class="icon-lg"></i></span><div class="wt-stat-value">{% translate "ตรง" %}</div><div class="fw-bold">{% translate "ถึงชุมชน" %}</div><small class="text-secondary">{% translate "ผู้ประกอบการรับเงินโดยตรง" %}</small></div></div>
     </div>
   </div>
 </section>
@@ -35,19 +36,19 @@
   <div class="container-xl">
     <div class="row g-4 g-lg-5 align-items-center wt-reveal">
       <div class="col-lg-6">
-        <span class="wt-eyebrow"><i data-lucide="target"></i>พันธกิจและวิสัยทัศน์</span>
-        <h2 class="wt-section-title">การเดินทางที่ช่วยฟื้นฟูร่างกาย และเติมเต็มจิตใจ</h2>
-        <p class="text-secondary">WellTrip เกิดจากความร่วมมือระหว่างคณาจารย์ นักวิจัย มหาวิทยาลัยราชภัฏศรีสะเกษ และผู้นำชุมชนท่องเที่ยวเชิงสุขภาพ เพื่อยกระดับมรดกทางธรรมชาติและภูมิปัญญาท้องถิ่นของศรีสะเกษ เช่น ดินภูเขาไฟ แหล่งปลูกพืชอินทรีย์ สมุนไพรพื้นบ้าน และผ้าทอย้อมสีธรรมชาติ ให้เป็นเส้นทางท่องเที่ยวเชิงสุขภาวะ (Wellness Tourism)</p>
+        <span class="wt-eyebrow"><i data-lucide="target"></i>{% translate "พันธกิจและวิสัยทัศน์" %}</span>
+        <h2 class="wt-section-title">{% translate "การเดินทางที่ช่วยฟื้นฟูร่างกาย และเติมเต็มจิตใจ" %}</h2>
+        <p class="text-secondary">{% translate "WellTrip เกิดจากความร่วมมือระหว่างคณาจารย์ นักวิจัย มหาวิทยาลัยราชภัฏศรีสะเกษ และผู้นำชุมชนท่องเที่ยวเชิงสุขภาพ เพื่อยกระดับมรดกทางธรรมชาติและภูมิปัญญาท้องถิ่นของศรีสะเกษ เช่น ดินภูเขาไฟ แหล่งปลูกพืชอินทรีย์ สมุนไพรพื้นบ้าน และผ้าทอย้อมสีธรรมชาติ ให้เป็นเส้นทางท่องเที่ยวเชิงสุขภาวะ (Wellness Tourism)" %}</p>
         <div class="d-flex flex-wrap gap-2">
-          <span class="badge badge-green py-2 px-3"><i data-lucide="sprout" class="me-1"></i>เกษตรอินทรีย์</span>
-          <span class="badge badge-green py-2 px-3"><i data-lucide="flower-2" class="me-1"></i>แพทย์แผนไทย</span>
-          <span class="badge badge-green py-2 px-3"><i data-lucide="sparkles" class="me-1"></i>วางแผนทริปด้วย AI</span>
+          <span class="badge badge-green py-2 px-3"><i data-lucide="sprout" class="me-1"></i>{% translate "เกษตรอินทรีย์" %}</span>
+          <span class="badge badge-green py-2 px-3"><i data-lucide="flower-2" class="me-1"></i>{% translate "แพทย์แผนไทย" %}</span>
+          <span class="badge badge-green py-2 px-3"><i data-lucide="sparkles" class="me-1"></i>{% translate "วางแผนทริปด้วย AI" %}</span>
         </div>
       </div>
       <div class="col-lg-6">
         <div class="wt-dest" style="aspect-ratio: 4 / 3;">
-          <img src="{% static 'images/attractions/pha-mo-e-daeng.jpeg' %}" alt="ผามออีแดง อ.กันทรลักษ์" loading="lazy">
-          <span class="wt-dest-body"><span class="d-block fw-bold">ผามออีแดง อ.กันทรลักษ์</span><span class="small opacity-75">จุดชมวิวชายแดนเทือกเขาพนมดงรัก</span></span>
+          <img src="{% static 'images/attractions/pha-mo-e-daeng.jpeg' %}" alt="{% translate 'ผามออีแดง อ.กันทรลักษ์' %}" loading="lazy">
+          <span class="wt-dest-body"><span class="d-block fw-bold">{% translate "ผามออีแดง อ.กันทรลักษ์" %}</span><span class="small opacity-75">{% translate "จุดชมวิวชายแดนเทือกเขาพนมดงรัก" %}</span></span>
         </div>
       </div>
     </div>
@@ -57,28 +58,28 @@
 <section class="wt-section bg-white">
   <div class="container-xl wt-reveal">
     <div class="text-center mx-auto mb-4" style="max-width: 40rem;">
-      <span class="wt-eyebrow"><i data-lucide="award"></i>เครือข่ายความร่วมมือ</span>
-      <h2 class="wt-section-title">หน่วยงานผู้สนับสนุนทุนวิจัยและบ่มเพาะนวัตกรรม</h2>
-      <p class="text-secondary mb-0">ความร่วมมือระหว่างภาครัฐ สถาบันอุดมศึกษา และวิสาหกิจชุมชน เพื่อผลักดันเศรษฐกิจฐานรากอย่างยั่งยืน</p>
+      <span class="wt-eyebrow"><i data-lucide="award"></i>{% translate "เครือข่ายความร่วมมือ" %}</span>
+      <h2 class="wt-section-title">{% translate "หน่วยงานผู้สนับสนุนทุนวิจัยและบ่มเพาะนวัตกรรม" %}</h2>
+      <p class="text-secondary mb-0">{% translate "ความร่วมมือระหว่างภาครัฐ สถาบันอุดมศึกษา และวิสาหกิจชุมชน เพื่อผลักดันเศรษฐกิจฐานรากอย่างยั่งยืน" %}</p>
     </div>
     <div class="row g-3">
       <div class="col-md-6">
         <div class="wt-card h-100 p-4 d-flex flex-column flex-sm-row gap-3 align-items-center align-items-sm-start text-center text-sm-start">
-          <img src="{% static 'images/partners/logo-nia.png' %}" alt="สำนักงานนวัตกรรมแห่งชาติ" width="96" height="96" class="object-fit-contain">
+          <img src="{% static 'images/partners/logo-nia.png' %}" alt="{% translate 'สำนักงานนวัตกรรมแห่งชาติ' %}" width="96" height="96" class="object-fit-contain">
           <div>
-            <span class="badge badge-green mb-1">หน่วยงานสนับสนุนทุน</span>
-            <h3 class="h6 fw-bold">สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน)</h3>
-            <p class="small text-secondary mb-0">สนับสนุนทุนโครงการนวัตกรรมเพื่อสังคม ส่งเสริมการนำเทคโนโลยีและกระบวนการสร้างสรรค์มายกระดับคุณภาพชีวิต ชุมชน และสิ่งแวดล้อม</p>
+            <span class="badge badge-green mb-1">{% translate "หน่วยงานสนับสนุนทุน" %}</span>
+            <h3 class="h6 fw-bold">{% translate "สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน)" %}</h3>
+            <p class="small text-secondary mb-0">{% translate "สนับสนุนทุนโครงการนวัตกรรมเพื่อสังคม ส่งเสริมการนำเทคโนโลยีและกระบวนการสร้างสรรค์มายกระดับคุณภาพชีวิต ชุมชน และสิ่งแวดล้อม" %}</p>
           </div>
         </div>
       </div>
       <div class="col-md-6">
         <div class="wt-card h-100 p-4 d-flex flex-column flex-sm-row gap-3 align-items-center align-items-sm-start text-center text-sm-start">
-          <img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี" width="96" height="96" class="object-fit-contain">
+          <img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="{% translate 'อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี' %}" width="96" height="96" class="object-fit-contain">
           <div>
-            <span class="badge badge-green mb-1">แม่ข่ายอุทยานวิทยาศาสตร์</span>
-            <h3 class="h6 fw-bold">อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี</h3>
-            <p class="small text-secondary mb-0">แม่ข่ายเครือข่ายอุดมศึกษาภาคตะวันออกเฉียงเหนือตอนล่าง บ่มเพาะวิสาหกิจ เชื่อมโยงงานวิจัย และส่งเสริมการใช้นวัตกรรม</p>
+            <span class="badge badge-green mb-1">{% translate "แม่ข่ายอุทยานวิทยาศาสตร์" %}</span>
+            <h3 class="h6 fw-bold">{% translate "อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี" %}</h3>
+            <p class="small text-secondary mb-0">{% translate "แม่ข่ายเครือข่ายอุดมศึกษาภาคตะวันออกเฉียงเหนือตอนล่าง บ่มเพาะวิสาหกิจ เชื่อมโยงงานวิจัย และส่งเสริมการใช้นวัตกรรม" %}</p>
           </div>
         </div>
       </div>
@@ -90,12 +91,12 @@
   <div class="container-xl wt-reveal">
     <div class="wt-panel-green p-4 p-md-5 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
       <div>
-        <h2 class="h3 fw-bold mb-1">พร้อมออกเดินทางสำรวจศรีสะเกษหรือยัง?</h2>
-        <p class="mb-0 opacity-75">ค้นหาที่พัก เมนูสุขภาพ และสินค้าชุมชนได้เลย</p>
+        <h2 class="h3 fw-bold mb-1">{% translate "พร้อมออกเดินทางสำรวจศรีสะเกษหรือยัง?" %}</h2>
+        <p class="mb-0 opacity-75">{% translate "ค้นหาที่พัก เมนูสุขภาพ และสินค้าชุมชนได้เลย" %}</p>
       </div>
       <div class="d-flex gap-2 flex-shrink-0">
-        <a href="{% url 'accommodations:list' %}" class="btn btn-gold btn-lg rounded-pill px-4">สำรวจที่พัก</a>
-        <a href="{% url 'core:contact' %}" class="btn btn-light btn-lg rounded-pill px-4">ติดต่อเรา</a>
+        <a href="{% url 'accommodations:list' %}" class="btn btn-gold btn-lg rounded-pill px-4">{% translate "สำรวจที่พัก" %}</a>
+        <a href="{% url 'core:contact' %}" class="btn btn-light btn-lg rounded-pill px-4">{% translate "ติดต่อเรา" %}</a>
       </div>
     </div>
   </div>
@@ -105,8 +106,8 @@
   {
     "@context": "https://schema.org",
     "@type": "AboutPage",
-    "name": "เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ",
-    "description": "โครงการวิจัยและพัฒนานวัตกรรมการท่องเที่ยวเชิงสุขภาพ โดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) ภายใต้การสนับสนุนของสำนักงานนวัตกรรมแห่งชาติ (NIA) และอุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)",
+    "name": "{{ _("เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ")|escapejs }}",
+    "description": "{{ _("โครงการวิจัยและพัฒนานวัตกรรมการท่องเที่ยวเชิงสุขภาพ โดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU) ภายใต้การสนับสนุนของสำนักงานนวัตกรรมแห่งชาติ (NIA) และอุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)")|escapejs }}",
     "url": "{{ request.build_absolute_uri }}",
     "mainEntity": {
       "@type": "Organization",
@@ -114,17 +115,17 @@
       "url": "{{ request.scheme }}://{{ request.get_host }}/",
       "funder": {
         "@type": "GovernmentOrganization",
-        "name": "สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) - NIA",
+        "name": "{{ _("สำนักงานนวัตกรรมแห่งชาติ (องค์การมหาชน) - NIA")|escapejs }}",
         "url": "https://www.nia.or.th/"
       },
       "sponsor": {
         "@type": "EducationalOrganization",
-        "name": "อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)",
+        "name": "{{ _("อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU)")|escapejs }}",
         "url": "https://www.ubu.ac.th/"
       },
       "parentOrganization": {
         "@type": "CollegeOrUniversity",
-        "name": "มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)",
+        "name": "{{ _("มหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)")|escapejs }}",
         "url": "https://www.sskru.ac.th/"
       }
     }

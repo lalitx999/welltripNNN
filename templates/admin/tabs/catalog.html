@@ -1,10 +1,11 @@
+{% load i18n %}
 <div class="d-grid gap-4">
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-    <span class="small text-secondary">ที่พัก {{ total_stays }} · อาหาร {{ total_foods }} · สปา {{ total_spas }} · OTOP {{ total_products }}</span>
-    <button type="button" class="btn btn-green btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addCatalogModal"><i data-lucide="plus" class="me-1"></i>เพิ่มรายการ</button>
+    <span class="small text-secondary">{% blocktranslate trimmed with total_stays=total_stays total_foods=total_foods total_spas=total_spas total_products=total_products %}ที่พัก {{ total_stays }} · อาหาร {{ total_foods }} · สปา {{ total_spas }} · OTOP {{ total_products }}{% endblocktranslate %}</span>
+    <button type="button" class="btn btn-green btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addCatalogModal"><i data-lucide="plus" class="me-1"></i>{% translate "เพิ่มรายการ" %}</button>
   </div>
-  {% include "admin/tabs/catalog_table.html" with title="ที่พักชุมชน" rows=accommodations kind="ACCOMMODATION" col_label="อำเภอ" %}
-  {% include "admin/tabs/catalog_table.html" with title="อาหารสุขภาพ" rows=foods kind="FOOD" col_label="หมวด" %}
-  {% include "admin/tabs/catalog_table.html" with title="สปาและนวด" rows=spas kind="WELLNESS" col_label="ระยะเวลา" %}
-  {% include "admin/tabs/catalog_table.html" with title="สินค้า OTOP" rows=products kind="OTOP" col_label="สต็อก" %}
+  {% include "admin/tabs/catalog_table.html" with title=_("ที่พักชุมชน") rows=accommodations kind="ACCOMMODATION" col_label=_("อำเภอ") %}
+  {% include "admin/tabs/catalog_table.html" with title=_("อาหารสุขภาพ") rows=foods kind="FOOD" col_label=_("หมวด") %}
+  {% include "admin/tabs/catalog_table.html" with title=_("สปาและนวด") rows=spas kind="WELLNESS" col_label=_("ระยะเวลา") %}
+  {% include "admin/tabs/catalog_table.html" with title=_("สินค้า OTOP") rows=products kind="OTOP" col_label=_("สต็อก") %}
 </div>

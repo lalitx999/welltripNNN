@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.db import models
 from apps.core.services.media import secure_upload_path
+from django.utils.translation import gettext as _, gettext_lazy
 
 
 def story_image_path(instance, filename):
@@ -10,11 +11,11 @@ def story_image_path(instance, filename):
 
 
 class MapLocationCategory(models.TextChoices):
-    HOMESTAY = "HOMESTAY", "โฮมสเตย์ / ที่พักชุมชน"
-    FOOD = "FOOD", "ร้านอาหารสุขภาพ"
-    WELLNESS = "WELLNESS", "ศูนย์นวดแผนไทยและสปา"
-    OTOP = "OTOP", "ศูนย์จำหน่ายสินค้า OTOP"
-    PHOTO_SPOT = "PHOTO_SPOT", "จุดถ่ายรูป / จุดเช็คอินธรรมชาติ"
+    HOMESTAY = "HOMESTAY", gettext_lazy("โฮมสเตย์ / ที่พักชุมชน")
+    FOOD = "FOOD", gettext_lazy("ร้านอาหารสุขภาพ")
+    WELLNESS = "WELLNESS", gettext_lazy("ศูนย์นวดแผนไทยและสปา")
+    OTOP = "OTOP", gettext_lazy("ศูนย์จำหน่ายสินค้า OTOP")
+    PHOTO_SPOT = "PHOTO_SPOT", gettext_lazy("จุดถ่ายรูป / จุดเช็คอินธรรมชาติ")
 
 
 class MapLocation(models.Model):
@@ -40,7 +41,7 @@ class MapLocation(models.Model):
         unique=True,
         default=uuid.uuid4,
         db_index=True,
-        help_text="รหัสความลับเฉพาะสำหรับพิมพ์ลงบนป้าย QR ณ สถานที่จริง",
+        help_text=gettext_lazy("รหัสความลับเฉพาะสำหรับพิมพ์ลงบนป้าย QR ณ สถานที่จริง"),
     )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -123,12 +124,12 @@ class Coupon(models.Model):
     def is_valid_for(self, order_amount: Decimal) -> tuple[bool, str]:
         from django.utils import timezone
         if not self.is_active:
-            return False, "คูปองนี้ถูกระงับการใช้งานแล้ว"
+            return False, _("คูปองนี้ถูกระงับการใช้งานแล้ว")
         if timezone.now() > self.expires_at:
-            return False, "คูปองนี้หมดอายุการใช้งานแล้ว"
+            return False, _("คูปองนี้หมดอายุการใช้งานแล้ว")
         if order_amount < self.min_purchase:
-            return False, f"ยอดสั่งซื้อขั้นต่ำสำหรับคูปองนี้คือ ฿{self.min_purchase:,.2f}"
-        return True, "ใช้คูปองส่วนลดสำเร็จ"
+            return False, _("ยอดสั่งซื้อขั้นต่ำสำหรับคูปองนี้คือ ฿{min_purchase:,.2f}").format(min_purchase=self.min_purchase)
+        return True, _("ใช้คูปองส่วนลดสำเร็จ")
 
     def __str__(self):
         return f"Coupon {self.code} (-฿{self.discount_amount})"
@@ -139,9 +140,9 @@ class EditorialEntry(models.Model):
     Cultural stories, community wisdom, festivals, and travel articles (Bilingual TH/EN).
     """
     class Kind(models.TextChoices):
-        STORY = "STORY", "เรื่องเล่าชุมชน (Story)"
-        COMMUNITY = "COMMUNITY", "วิสาหกิจชุมชน (Community)"
-        ATTRACTION = "ATTRACTION", "แหล่งท่องเที่ยว (Attraction)"
+        STORY = "STORY", gettext_lazy("เรื่องเล่าชุมชน (Story)")
+        COMMUNITY = "COMMUNITY", gettext_lazy("วิสาหกิจชุมชน (Community)")
+        ATTRACTION = "ATTRACTION", gettext_lazy("แหล่งท่องเที่ยว (Attraction)")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     kind = models.CharField(max_length=16, choices=Kind.choices, default=Kind.STORY, db_index=True)
@@ -199,10 +200,10 @@ class LocationEvent(models.Model):
     Strictly complies with PDPA data minimization guidelines.
     """
     class Outcome(models.TextChoices):
-        GRANTED = "granted", "ยินยอมระบุตำแหน่ง (Granted)"
-        DENIED = "denied", "ปฏิเสธ (Denied)"
-        UNAVAILABLE = "unavailable", "ไม่สามารถระบุได้ (Unavailable)"
-        TIMEOUT = "timeout", "หมดเวลาเชื่อมต่อ (Timeout)"
+        GRANTED = "granted", gettext_lazy("ยินยอมระบุตำแหน่ง (Granted)")
+        DENIED = "denied", gettext_lazy("ปฏิเสธ (Denied)")
+        UNAVAILABLE = "unavailable", gettext_lazy("ไม่สามารถระบุได้ (Unavailable)")
+        TIMEOUT = "timeout", gettext_lazy("หมดเวลาเชื่อมต่อ (Timeout)")
 
     id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(
@@ -226,3 +227,60 @@ class LocationEvent(models.Model):
     def __str__(self):
         return f"LocationEvent ({self.user.email}) - {self.outcome} at {self.created_at:%Y-%m-%d %H:%M}"
 
+
+
+def event_image_path(instance, filename):
+    return secure_upload_path(instance, filename, model_subdir="events")
+
+
+class Event(models.Model):
+    """
+    A dated happening in Sisaket (festival, concert, contest, sports...).
+    Shown on the events calendar and homepage until end_date passes.
+    """
+
+    class Category(models.TextChoices):
+        FESTIVAL = "FESTIVAL", gettext_lazy("เทศกาลและงานประเพณี")
+        MUSIC = "MUSIC", gettext_lazy("ดนตรีและคอนเสิร์ต")
+        CONTEST = "CONTEST", gettext_lazy("การประกวด")
+        SPORT = "SPORT", gettext_lazy("กีฬา")
+        FOOD = "FOOD", gettext_lazy("อาหารและกาแฟ")
+        OUTDOOR = "OUTDOOR", gettext_lazy("แคมป์และกิจกรรมกลางแจ้ง")
+        OTHER = "OTHER", gettext_lazy("อื่นๆ")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200)
+    title_en = models.CharField(max_length=200, blank=True)
+    category = models.CharField(max_length=16, choices=Category.choices, default=Category.FESTIVAL)
+    summary = models.TextField(blank=True)
+    summary_en = models.TextField(blank=True)
+    start_date = models.DateField(db_index=True)
+    end_date = models.DateField(db_index=True)
+    # Free-text override for split schedules, e.g. "12–13 และ 19–20 ธ.ค."
+    date_note = models.CharField(max_length=120, blank=True)
+    date_note_en = models.CharField(max_length=120, blank=True)
+    venue = models.CharField(max_length=200, blank=True)
+    venue_en = models.CharField(max_length=200, blank=True)
+    google_maps_url = models.URLField(max_length=500, blank=True, default="")
+    check_in_point = models.ForeignKey(
+        MapLocation, on_delete=models.SET_NULL, null=True, blank=True, related_name="events"
+    )
+    organizer = models.CharField(max_length=200, blank=True)
+    source_url = models.URLField(max_length=500, blank=True, default="")
+    image = models.ImageField(upload_to=event_image_path, null=True, blank=True)
+    is_published = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "community_events"
+        ordering = ("start_date", "title")
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(end_date__gte=models.F("start_date")),
+                name="event_end_after_start",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.title} ({self.start_date:%Y-%m-%d})"

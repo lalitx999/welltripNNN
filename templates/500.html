@@ -1,9 +1,10 @@
+{% load i18n %}
 {% load static %}<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>500 - ระบบขัดข้อง - WellTrip</title>
+  <title>{% translate "500 - ระบบขัดข้อง - WellTrip" %}</title>
   <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/welltrip.css' %}">
 </head>
@@ -13,9 +14,9 @@
     <div class="wt-card wt-empty mx-auto py-5 px-4" style="max-width: 34rem;">
       <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip" width="64" height="64" class="rounded-circle mb-3">
       <div class="wt-eyebrow justify-content-center mb-1">500 Server error</div>
-      <h1 class="h3 fw-bold">ระบบขัดข้องชั่วคราว</h1>
-      <p class="text-secondary mb-4">ระบบบันทึกข้อผิดพลาดนี้ไว้แล้ว ทีมงานกำลังตรวจสอบ กรุณาลองใหม่อีกครั้งในอีกสักครู่</p>
-      <a href="/" class="btn btn-green rounded-pill px-4">กลับหน้าแรก</a>
+      <h1 class="h3 fw-bold">{% translate "ระบบขัดข้องชั่วคราว" %}</h1>
+      <p class="text-secondary mb-4">{% translate "ระบบบันทึกข้อผิดพลาดนี้ไว้แล้ว ทีมงานกำลังตรวจสอบ กรุณาลองใหม่อีกครั้งในอีกสักครู่" %}</p>
+      <a href="/" class="btn btn-green rounded-pill px-4">{% translate "กลับหน้าแรก" %}</a>
     </div>
   </main>
 </body>

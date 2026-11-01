@@ -1,0 +1,58 @@
+{% extends "layouts/public.html" %}
+{% load static i18n welltrip_i18n %}
+
+{% block title %}{{ event|loc:'title' }} - WellTrip Sisaket{% endblock %}
+
+{% block content %}
+<div class="container-xl py-4 py-md-5" style="max-width: 60rem;">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{% url 'community:events_list' %}" class="text-green">{% translate "ปฏิทินกิจกรรม" %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ event|loc:'title'|truncatechars:40 }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-md-5">
+      <img src="{% if event.image %}{{ event.image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ event|loc:'title' }}" class="w-100 rounded-4 border object-fit-cover">
+    </div>
+    <div class="col-md-7">
+      <span class="badge badge-green mb-2">{{ event.get_category_display }}</span>
+      <h1 class="h2 fw-bold mb-3">{{ event|loc:'title' }}</h1>
+      <ul class="list-unstyled d-grid gap-2 mb-4">
+        <li><i data-lucide="calendar-days" class="text-green me-2"></i><strong>{{ event|event_dates }}</strong></li>
+        {% with venue=event|loc:'venue' %}{% if venue %}<li><i data-lucide="map-pin" class="text-green me-2"></i>{{ venue }}</li>{% endif %}{% endwith %}
+        {% if event.organizer %}<li><i data-lucide="users" class="text-green me-2"></i>{% translate "ผู้จัด" %}: {{ event.organizer }}</li>{% endif %}
+      </ul>
+      {% with summary=event|loc:'summary' %}{% if summary %}<p class="text-secondary" style="white-space: pre-line;">{{ summary }}</p>{% endif %}{% endwith %}
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        <a href="{{ calendar_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-green rounded-pill"><i data-lucide="calendar-plus" class="me-1"></i>{% translate "เพิ่มลง Google Calendar" %}</a>
+        {% if event.google_maps_url %}<a href="{{ event.google_maps_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-ink rounded-pill"><i data-lucide="navigation" class="me-1"></i>{% translate "นำทาง" %}</a>{% endif %}
+        {% if event.source_url %}<a href="{{ event.source_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-ink rounded-pill"><i data-lucide="external-link" class="me-1"></i>{% translate "ข้อมูลจากผู้จัด" %}</a>{% endif %}
+      </div>
+      {% if event.check_in_point %}
+        <div class="alert alert-success rounded-4 small mt-4 mb-0"><i data-lucide="stamp" class="me-1"></i>{% blocktranslate with place=event.check_in_point.title %}สแกน QR ที่จุดเช็คอิน "{{ place }}" ในงาน เพื่อรับตราประทับในพาสปอร์ต{% endblocktranslate %} <a href="{% url 'community:passport' %}" class="fw-semibold">{% translate "พาสปอร์ตของฉัน" %}</a></div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if more_events %}
+    <h2 class="h5 fw-bold mt-5 mb-3">{% translate "กิจกรรมอื่นที่กำลังจะมาถึง" %}</h2>
+    <div class="row row-cols-1 row-cols-sm-3 g-3">
+      {% for event in more_events %}<div class="col">{% include "community/partials/event_card.html" %}</div>{% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "{{ event.title|escapejs }}",
+  "startDate": "{{ event.start_date|date:'Y-m-d' }}",
+  "endDate": "{{ event.end_date|date:'Y-m-d' }}",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "location": {"@type": "Place", "name": "{{ event.venue|default:'Sisaket'|escapejs }}", "address": "Sisaket, Thailand"}
+}
+</script>
+{% endblock %}

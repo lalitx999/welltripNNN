@@ -11,6 +11,7 @@ from apps.accounts.permissions import role_required, can_edit_object
 from apps.accounts.services.audit import record_audit_log
 from apps.accommodations.models import Accommodation, Room, RoomImage, RoomPricingCalendar, AccommodationStatus
 from apps.accommodations.forms import AccommodationForm, RoomForm, RoomImageForm, RoomPricingCalendarForm
+from django.utils.translation import gettext as _
 
 
 def list_view(request):
@@ -108,7 +109,7 @@ def homestay_studio_view(request):
         # Starts hidden; the owner publishes it once details and rooms are filled in
         accommodation = Accommodation.objects.create(
             owner=request.user,
-            name=f"โฮมสเตย์ของ {request.user.first_name or request.user.email}",
+            name=_("โฮมสเตย์ของ {value}").format(value=request.user.first_name or request.user.email),
             status=AccommodationStatus.PENDING_VERIFICATION,
         )
         owner_accommodations = Accommodation.objects.filter(owner=request.user)
@@ -116,9 +117,9 @@ def homestay_studio_view(request):
     status_action = request.POST.get('status_action')
     if request.method == "POST" and status_action in ('publish', 'unpublish'):
         if accommodation.status == AccommodationStatus.SUSPENDED:
-            messages.error(request, "ที่พักนี้ถูกระงับโดยผู้ดูแลระบบ กรุณาติดต่อทีมงาน")
+            messages.error(request, _("ที่พักนี้ถูกระงับโดยผู้ดูแลระบบ กรุณาติดต่อทีมงาน"))
         elif status_action == 'publish' and not accommodation.rooms.filter(is_active=True).exists():
-            messages.error(request, "เพิ่มห้องพักอย่างน้อย 1 ห้องก่อนเปิดให้จอง")
+            messages.error(request, _("เพิ่มห้องพักอย่างน้อย 1 ห้องก่อนเปิดให้จอง"))
         else:
             accommodation.status = (
                 AccommodationStatus.ACTIVE if status_action == 'publish' else AccommodationStatus.PENDING_VERIFICATION
@@ -128,7 +129,7 @@ def homestay_studio_view(request):
                 request=request, action="UPDATE", model_name="Accommodation",
                 object_id=str(accommodation.id), changes={"status": accommodation.status},
             )
-            messages.success(request, "เปิดให้จองแล้ว" if status_action == 'publish' else "ซ่อนที่พักจากหน้าเว็บแล้ว")
+            messages.success(request, _("เปิดให้จองแล้ว") if status_action == 'publish' else _("ซ่อนที่พักจากหน้าเว็บแล้ว"))
         return redirect(f"{request.path}?acc_id={accommodation.id}")
 
     if request.method == "POST":
@@ -142,7 +143,7 @@ def homestay_studio_view(request):
                 object_id=str(acc.id),
                 changes=form.cleaned_data,
             )
-            messages.success(request, f"บันทึกข้อมูล '{acc.name}' เรียบร้อยแล้ว")
+            messages.success(request, _("บันทึกข้อมูล '{name}' เรียบร้อยแล้ว").format(name=acc.name))
             return redirect(f"{request.path}?acc_id={acc.id}")
     else:
         form = AccommodationForm(instance=accommodation)
@@ -184,9 +185,9 @@ def room_create_view(request):
             object_id=str(room.id),
             changes=form.cleaned_data,
         )
-        messages.success(request, f"เพิ่มห้องพัก '{room.name}' เรียบร้อยแล้ว")
+        messages.success(request, _("เพิ่มห้องพัก '{name}' เรียบร้อยแล้ว").format(name=room.name))
     else:
-        messages.error(request, "ข้อมูลห้องพักไม่ถูกต้อง กรุณาตรวจสอบ")
+        messages.error(request, _("ข้อมูลห้องพักไม่ถูกต้อง กรุณาตรวจสอบ"))
 
     return redirect(f"/accommodations/studio/?acc_id={accommodation.id}")
 
@@ -195,7 +196,7 @@ def _attach_room_image(request, room):
     """Validates and stores an uploaded photo for a room; the first photo becomes the cover."""
     image_form = RoomImageForm(files=request.FILES)
     if not image_form.is_valid():
-        messages.error(request, " ".join(image_form.errors.get('image', ["รูปภาพไม่ถูกต้อง"])))
+        messages.error(request, " ".join(image_form.errors.get('image', [_("รูปภาพไม่ถูกต้อง")])))
         return None
     is_first = not room.images.exists()
     return RoomImage.objects.create(
@@ -212,7 +213,7 @@ def room_image_add_view(request, room_id):
     else:
         room = get_object_or_404(Room, id=room_id, accommodation__owner=request.user)
     if _attach_room_image(request, room):
-        messages.success(request, f"เพิ่มรูปห้อง '{room.name}' เรียบร้อยแล้ว")
+        messages.success(request, _("เพิ่มรูปห้อง '{name}' เรียบร้อยแล้ว").format(name=room.name))
     return redirect(f"/accommodations/studio/?acc_id={room.accommodation_id}")
 
 
@@ -227,7 +228,7 @@ def room_image_delete_view(request, image_id):
     acc_id = image.room.accommodation_id
     image.image.delete(save=False)
     image.delete()
-    messages.success(request, "ลบรูปภาพเรียบร้อยแล้ว")
+    messages.success(request, _("ลบรูปภาพเรียบร้อยแล้ว"))
     return redirect(f"/accommodations/studio/?acc_id={acc_id}")
 
 
@@ -243,7 +244,7 @@ def room_delete_view(request, room_id):
     acc_id = room.accommodation_id
     room_name = room.name
     room.delete()
-    messages.success(request, f"ลบห้องพัก '{room_name}' เรียบร้อยแล้ว")
+    messages.success(request, _("ลบห้องพัก '{room_name}' เรียบร้อยแล้ว").format(room_name=room_name))
     return redirect(f"/accommodations/studio/?acc_id={acc_id}")
 
 
@@ -266,7 +267,7 @@ def calendar_view(request):
         accommodation = owner_accommodations.first()
 
     if not accommodation:
-        messages.warning(request, "ยังไม่มีข้อมูลที่พัก กรุณาสร้างที่พักก่อนจัดการปฏิทิน")
+        messages.warning(request, _("ยังไม่มีข้อมูลที่พัก กรุณาสร้างที่พักก่อนจัดการปฏิทิน"))
         return redirect('accommodations:homestay_studio')
 
     rooms = accommodation.rooms.all()
@@ -330,7 +331,7 @@ def calendar_view(request):
                     'available_count': pricing.available_count
                 },
             )
-            messages.success(request, f"อัปเดตราคาและจำนวนห้องว่างวันที่ {pricing.date} สำเร็จ")
+            messages.success(request, _("อัปเดตราคาและจำนวนห้องว่างวันที่ {date} สำเร็จ").format(date=pricing.date))
             return redirect(f"{request.path}?acc_id={accommodation.id}&room_id={selected_room.id}&year={p_date.year}&month={p_date.month}")
 
     # Build Calendar Matrix

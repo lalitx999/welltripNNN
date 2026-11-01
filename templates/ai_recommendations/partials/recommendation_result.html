@@ -1,15 +1,16 @@
+{% load i18n %}
 <div class="d-grid gap-3">
   <div class="wt-card p-4">
     <div class="d-flex align-items-center gap-3 mb-3">
       <span class="wt-stat-icon" style="--c:#fff;--bg:var(--wt-green)"><i data-lucide="sparkles" class="icon-lg"></i></span>
       <div>
-        <h3 class="h6 fw-bold mb-0">ผลวิเคราะห์สุขภาพเฉพาะบุคคล</h3>
+        <h3 class="h6 fw-bold mb-0">{% translate "ผลวิเคราะห์สุขภาพเฉพาะบุคคล" %}</h3>
         <small class="text-secondary">AI wellness reasoning</small>
       </div>
     </div>
     <div class="row text-center g-2 bg-mint rounded-4 p-2 mb-3 mx-0">
       <div class="col-4"><small class="text-secondary d-block">BMI</small><strong>{{ result.health_metrics.bmi }}</strong></div>
-      <div class="col-4"><small class="text-secondary d-block">สถานะ</small><strong class="text-green">{{ result.health_metrics.bmi_category }}</strong></div>
+      <div class="col-4"><small class="text-secondary d-block">{% translate "สถานะ" %}</small><strong class="text-green">{{ result.health_metrics.bmi_category }}</strong></div>
       <div class="col-4"><small class="text-secondary d-block">BMR</small><strong>{{ result.health_metrics.bmr }} kcal</strong></div>
     </div>
     <p class="text-secondary mb-3" style="white-space: pre-line;">{{ result.deepseek_analysis }}</p>
@@ -23,7 +24,7 @@
         <h3 class="h5 fw-bold mb-0">{{ result.recommended_package.package_title }}</h3>
       </div>
       <div class="text-sm-end">
-        <small class="text-secondary d-block">ประมาณการราคารวม</small>
+        <small class="text-secondary d-block">{% translate "ประมาณการราคารวม" %}</small>
         <span class="fs-4 fw-bold text-green">฿{{ result.recommended_package.total_package_price|floatformat:"0g" }}</span>
       </div>
     </div>
@@ -41,14 +42,14 @@
           </div>
           <div class="d-flex align-items-center gap-2 flex-shrink-0">
             <span class="fw-bold">฿{{ item.unit_price|floatformat:"0g" }}</span>
-            <a href="{{ item.detail_url }}" class="btn btn-outline-ink btn-sm rounded-pill">ดู</a>
+            <a href="{{ item.detail_url }}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ดู" %}</a>
           </div>
         </div>
       {% endfor %}
     </div>
     <div class="d-flex flex-column flex-sm-row gap-2 mt-3">
-      <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill px-4">เริ่มจองที่พัก</a>
-      <a href="{% url 'community:map' %}" class="btn btn-outline-ink rounded-pill px-4">ดูบนแผนที่</a>
+      <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill px-4">{% translate "เริ่มจองที่พัก" %}</a>
+      <a href="{% url 'community:map' %}" class="btn btn-outline-ink rounded-pill px-4">{% translate "ดูบนแผนที่" %}</a>
     </div>
   </div>
 </div>

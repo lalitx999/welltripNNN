@@ -2,6 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from apps.payments.models import PaymentSlip, SlipVerificationStatus
 from apps.core.services.media import sanitize_and_strip_image
+from django.utils.translation import gettext as _, gettext_lazy
 
 
 class SlipUploadForm(forms.ModelForm):
@@ -10,17 +11,17 @@ class SlipUploadForm(forms.ModelForm):
     Validates image, strips EXIF, and checks for duplicate bank transfer references.
     """
     provider_reference = forms.CharField(
-        label="รหัสอ้างอิงธุรกรรมธนาคาร (Transaction Ref)",
+        label=gettext_lazy("รหัสอ้างอิงธุรกรรมธนาคาร (Transaction Ref)"),
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'เช่น 20261027XXXXXX (ระบุเพื่อความรวดเร็วในการตรวจสอบ)',
+            'placeholder': gettext_lazy("เช่น 20261027XXXXXX (ระบุเพื่อความรวดเร็วในการตรวจสอบ)"),
         }),
-        help_text="รหัสอ้างอิงที่ระบุบนสลิปของธนาคาร (ถ้ามี)"
+        help_text=gettext_lazy("รหัสอ้างอิงที่ระบุบนสลิปของธนาคาร (ถ้ามี)")
     )
 
     image = forms.ImageField(
-        label="รูปภาพสลิปการโอนเงิน",
+        label=gettext_lazy("รูปภาพสลิปการโอนเงิน"),
         required=True,
         widget=forms.FileInput(attrs={
             'class': 'form-control',
@@ -48,5 +49,5 @@ class SlipUploadForm(forms.ModelForm):
                 provider_reference=ref,
                 verification_status=SlipVerificationStatus.VERIFIED,
             ).exists():
-                raise ValidationError("รหัสอ้างอิงสลิปนี้ถูกใช้งานและยืนยันการชำระเงินไปแล้วในระบบ")
+                raise ValidationError(_("รหัสอ้างอิงสลิปนี้ถูกใช้งานและยืนยันการชำระเงินไปแล้วในระบบ"))
         return ref

@@ -1,7 +1,8 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ{% endblock %}
+{% block title %}{% translate "WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ" %}{% endblock %}
 
 {% block content %}
 <div>
@@ -11,7 +12,7 @@
     <div class="wt-hero-bg">
       <picture>
         <source media="(max-width: 767px)" srcset="{% static 'images/c/fields-mobile.webp' %}">
-        <img src="{% static 'images/c/fields.webp' %}" alt="ทุ่งนาและกระท่อมยามเช้าในศรีสะเกษ" fetchpriority="high">
+        <img src="{% static 'images/c/fields.webp' %}" alt="{% translate 'ทุ่งนาและกระท่อมยามเช้าในศรีสะเกษ' %}" fetchpriority="high">
       </picture>
     </div>
     <div class="container-xl wt-hero-body">
@@ -19,8 +20,8 @@
         <span class="badge rounded-pill text-wrap text-start lh-base bg-white bg-opacity-25 border border-light border-opacity-25 px-3 py-2 mb-3 fw-semibold">
           <i data-lucide="sun" class="text-warning me-1"></i>Slow Days · Sisaket Wellness Tourism
         </span>
-        <h1 class="mb-3">พักใจที่<span class="wt-highlight">ศรีสะเกษ</span><br>สัมผัสวิถีสุขภาวะชุมชน</h1>
-        <p class="wt-hero-lead mb-4">โฮมสเตย์กลางธรรมชาติ อาหารสุขภาพจากดินภูเขาไฟ นวดสปาสมุนไพรสด และของดี 4 ชนเผ่า ในที่เดียว</p>
+        <h1 class="mb-3">{% translate "พักใจที่" %}<span class="wt-highlight">{% translate "ศรีสะเกษ" %}</span><br>{% translate "สัมผัสวิถีสุขภาวะชุมชน" %}</h1>
+        <p class="wt-hero-lead mb-4">{% translate "โฮมสเตย์กลางธรรมชาติ อาหารสุขภาพจากดินภูเขาไฟ นวดสปาสมุนไพรสด และของดี 4 ชนเผ่า ในที่เดียว" %}</p>
 
         <div class="position-relative" x-data="heroLiveSearch()" @click.outside="open = false">
           <form id="hero-search-form" action="{% url 'accommodations:list' %}" method="get">
@@ -39,23 +40,23 @@
                      @keydown.arrow-up.prevent="selectPrev()"
                      @keydown.enter="onEnter($event)"
                      autocomplete="off"
-                     placeholder="อยากไปพักที่ไหน กินอะไร ผ่อนคลายแบบไหน?"
-                     aria-label="ค้นหา">
+                     placeholder="{% translate 'อยากไปพักที่ไหน กินอะไร ผ่อนคลายแบบไหน?' %}"
+                     aria-label="{% translate 'ค้นหา' %}">
               <span x-show="loading" x-cloak class="spinner-border spinner-border-sm text-success me-2" role="status"></span>
-              <button type="button" x-show="query.length > 0" x-cloak @click="clear()" class="btn-close me-2" aria-label="ล้างคำค้น"></button>
+              <button type="button" x-show="query.length > 0" x-cloak @click="clear()" class="btn-close me-2" aria-label="{% translate 'ล้างคำค้น' %}"></button>
               <button type="button" class="btn btn-light rounded-pill d-flex align-items-center gap-1 me-1" data-bs-toggle="modal" data-bs-target="#filterModal">
-                <i data-lucide="sliders-horizontal"></i><span class="d-none d-sm-inline small text-nowrap">ตัวกรอง</span>
+                <i data-lucide="sliders-horizontal"></i><span class="d-none d-sm-inline small text-nowrap">{% translate "ตัวกรอง" %}</span>
               </button>
               <button type="submit" class="btn btn-gold rounded-pill px-3 px-sm-4 d-flex align-items-center gap-1">
-                <span class="d-none d-sm-inline">ค้นหา</span><i data-lucide="arrow-right"></i>
+                <span class="d-none d-sm-inline">{% translate "ค้นหา" %}</span><i data-lucide="arrow-right"></i>
               </button>
             </div>
           </form>
 
           <div class="wt-live-results card shadow-lg border-0 rounded-4" x-show="open && (results.length > 0 || (query.trim().length >= 1 && !loading))" x-cloak>
             <div class="card-header bg-white small d-flex justify-content-between">
-              <span class="fw-bold"><span class="pulse-dot bg-success me-1"></span>ผลการค้นหาด่วน</span>
-              <span class="text-secondary" x-show="results.length > 0">พบ <strong x-text="results.length"></strong> รายการ</span>
+              <span class="fw-bold"><span class="pulse-dot bg-success me-1"></span>{% translate "ผลการค้นหาด่วน" %}</span>
+              <span class="text-secondary" x-show="results.length > 0">{% translate "พบ" %} <strong x-text="results.length"></strong> {% translate "รายการ" %}</span>
             </div>
             <div class="list-group list-group-flush">
               <template x-for="(item, index) in results" :key="index">
@@ -73,17 +74,17 @@
                 </a>
               </template>
               <div class="list-group-item text-center small text-secondary py-4" x-show="results.length === 0 && !loading">
-                ไม่พบรายการที่ตรงกับ "<span x-text="query"></span>" — กด Enter เพื่อค้นหาทั้งหมด
+                {% translate 'ไม่พบรายการที่ตรงกับ "' %}<span x-text="query"></span>{% translate '" — กด Enter เพื่อค้นหาทั้งหมด' %}
               </div>
             </div>
           </div>
         </div>
 
         <div class="d-flex flex-wrap gap-2 mt-3">
-          <a class="wt-quick-tag" href="{% url 'accommodations:list' %}?district=ขุนหาญ"><i data-lucide="mountain"></i>ขุนหาญ</a>
-          <a class="wt-quick-tag" href="{% url 'accommodations:list' %}?district=กันทรลักษ์"><i data-lucide="sunrise"></i>กันทรลักษ์</a>
-          <a class="wt-quick-tag" href="/services/?category=SPA"><i data-lucide="leaf"></i>สปาสมุนไพร</a>
-          <a class="wt-quick-tag d-none d-sm-inline-flex" href="/services/?category=FOOD"><i data-lucide="salad"></i>อาหารสุขภาพ</a>
+          <a class="wt-quick-tag" href="{% url 'accommodations:list' %}?district=ขุนหาญ"><i data-lucide="mountain"></i>{% translate "ขุนหาญ" %}</a>
+          <a class="wt-quick-tag" href="{% url 'accommodations:list' %}?district=กันทรลักษ์"><i data-lucide="sunrise"></i>{% translate "กันทรลักษ์" %}</a>
+          <a class="wt-quick-tag" href="/services/?category=SPA"><i data-lucide="leaf"></i>{% translate "สปาสมุนไพร" %}</a>
+          <a class="wt-quick-tag d-none d-sm-inline-flex" href="/services/?category=FOOD"><i data-lucide="salad"></i>{% translate "อาหารสุขภาพ" %}</a>
         </div>
       </div>
     </div>
@@ -94,46 +95,46 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content rounded-4 border-0">
         <div class="modal-header">
-          <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="filterModalLabel"><i data-lucide="sliders-horizontal" class="text-green"></i>ตัวกรองการค้นหา</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="filterModalLabel"><i data-lucide="sliders-horizontal" class="text-green"></i>{% translate "ตัวกรองการค้นหา" %}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'ปิด' %}"></button>
         </div>
         <div class="modal-body d-grid gap-3">
           <div>
-            <label for="modal-select-category" class="form-label small fw-semibold">ประเภทบริการ</label>
+            <label for="modal-select-category" class="form-label small fw-semibold">{% translate "ประเภทบริการ" %}</label>
             <select id="modal-select-category" class="form-select">
-              <option value="">ทุกประเภทบริการ</option>
-              <option value="HOMESTAY">โฮมสเตย์และที่พักชุมชน</option>
-              <option value="FOOD">อาหารสุขภาพ</option>
-              <option value="SPA">นวดแผนไทยและสปาสมุนไพร</option>
-              <option value="OTOP">ของดีชุมชน OTOP</option>
+              <option value="">{% translate "ทุกประเภทบริการ" %}</option>
+              <option value="HOMESTAY">{% translate "โฮมสเตย์และที่พักชุมชน" %}</option>
+              <option value="FOOD">{% translate "อาหารสุขภาพ" %}</option>
+              <option value="SPA">{% translate "นวดแผนไทยและสปาสมุนไพร" %}</option>
+              <option value="OTOP">{% translate "ของดีชุมชน OTOP" %}</option>
             </select>
           </div>
           <div>
-            <label for="modal-select-district" class="form-label small fw-semibold">อำเภอ / โซนท่องเที่ยว</label>
+            <label for="modal-select-district" class="form-label small fw-semibold">{% translate "อำเภอ / โซนท่องเที่ยว" %}</label>
             <select id="modal-select-district" class="form-select">
-              <option value="">ทุกอำเภอในศรีสะเกษ</option>
-              <option value="เมืองศรีสะเกษ">อำเภอเมืองศรีสะเกษ</option>
-              <option value="กันทรลักษ์">อำเภอกันทรลักษ์</option>
-              <option value="ขุนหาญ">อำเภอขุนหาญ</option>
-              <option value="อุทุมพรพิสัย">อำเภออุทุมพรพิสัย</option>
-              <option value="ราษีไศล">อำเภอราษีไศล</option>
-              <option value="ปรางค์กู่">อำเภอปรางค์กู่</option>
-              <option value="ไพรบึง">อำเภอไพรบึง</option>
+              <option value="">{% translate "ทุกอำเภอในศรีสะเกษ" %}</option>
+              <option value="เมืองศรีสะเกษ">{% translate "อำเภอเมืองศรีสะเกษ" %}</option>
+              <option value="กันทรลักษ์">{% translate "อำเภอกันทรลักษ์" %}</option>
+              <option value="ขุนหาญ">{% translate "อำเภอขุนหาญ" %}</option>
+              <option value="อุทุมพรพิสัย">{% translate "อำเภออุทุมพรพิสัย" %}</option>
+              <option value="ราษีไศล">{% translate "อำเภอราษีไศล" %}</option>
+              <option value="ปรางค์กู่">{% translate "อำเภอปรางค์กู่" %}</option>
+              <option value="ไพรบึง">{% translate "อำเภอไพรบึง" %}</option>
             </select>
           </div>
           <div>
-            <label for="modal-select-price" class="form-label small fw-semibold">ช่วงราคาที่พักต่อคืน</label>
+            <label for="modal-select-price" class="form-label small fw-semibold">{% translate "ช่วงราคาที่พักต่อคืน" %}</label>
             <select id="modal-select-price" class="form-select">
-              <option value="">ทุกช่วงราคา</option>
-              <option value="economy">ต่ำกว่า 800 บาท</option>
-              <option value="moderate">800 - 1,500 บาท</option>
-              <option value="luxury">มากกว่า 1,500 บาท</option>
+              <option value="">{% translate "ทุกช่วงราคา" %}</option>
+              <option value="economy">{% translate "ต่ำกว่า 800 บาท" %}</option>
+              <option value="moderate">{% translate "800 - 1,500 บาท" %}</option>
+              <option value="luxury">{% translate "มากกว่า 1,500 บาท" %}</option>
             </select>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-ink" onclick="resetFilterModal()">ล้างค่า</button>
-          <button type="button" class="btn btn-ink flex-grow-1" onclick="applyFiltersAndSubmit()"><i data-lucide="check" class="me-1"></i>ค้นหาตามตัวกรอง</button>
+          <button type="button" class="btn btn-outline-ink" onclick="resetFilterModal()">{% translate "ล้างค่า" %}</button>
+          <button type="button" class="btn btn-ink flex-grow-1" onclick="applyFiltersAndSubmit()"><i data-lucide="check" class="me-1"></i>{% translate "ค้นหาตามตัวกรอง" %}</button>
         </div>
       </div>
     </div>
@@ -144,27 +145,45 @@
     <div class="container-xl">
       {% url 'accommodations:list' as url_stays %}{% url 'otop:list' as url_otop %}{% url 'ai_recommendations:assessment' as url_ai %}{% url 'community:map' as url_map %}{% url 'community:passport' as url_passport %}{% url 'community:stories_list' as url_stories %}
       <div class="wt-cat-grid">
-        <a class="wt-category" href="{{ url_stays }}"><span class="wt-cat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="house"></i></span><span class="label">ที่พักโฮมสเตย์</span></a>
-        <a class="wt-category" href="/services/?category=FOOD"><span class="wt-cat-icon" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="utensils"></i></span><span class="label">อาหารสุขภาพ</span></a>
-        <a class="wt-category" href="/services/?category=SPA"><span class="wt-cat-icon" style="--c:#c2255c;--bg:#fdebf1"><i data-lucide="flower-2"></i></span><span class="label">นวดและสปา</span></a>
-        <a class="wt-category" href="{{ url_otop }}"><span class="wt-cat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shopping-basket"></i></span><span class="label">ของดี OTOP</span></a>
-        <a class="wt-category" href="{{ url_ai }}"><span class="wt-cat-icon" style="--c:#6741d9;--bg:#f0ebff"><i data-lucide="heart-pulse"></i></span><span class="label">สุขภาพ AI</span></a>
-        <a class="wt-category" href="{{ url_map }}"><span class="wt-cat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map"></i></span><span class="label">แผนที่ชุมชน</span></a>
-        <a class="wt-category" href="{{ url_passport }}"><span class="wt-cat-icon" style="--c:#0c8599;--bg:#e3f7f9"><i data-lucide="stamp"></i></span><span class="label">พาสปอร์ต</span></a>
-        <a class="wt-category" href="{{ url_stories }}"><span class="wt-cat-icon" style="--c:#5c7cfa;--bg:#edf0ff"><i data-lucide="book-open"></i></span><span class="label">เรื่องเล่าวิถี</span></a>
+        <a class="wt-category" href="{{ url_stays }}"><span class="wt-cat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="house"></i></span><span class="label">{% translate "ที่พักโฮมสเตย์" %}</span></a>
+        <a class="wt-category" href="/services/?category=FOOD"><span class="wt-cat-icon" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="utensils"></i></span><span class="label">{% translate "อาหารสุขภาพ" %}</span></a>
+        <a class="wt-category" href="/services/?category=SPA"><span class="wt-cat-icon" style="--c:#c2255c;--bg:#fdebf1"><i data-lucide="flower-2"></i></span><span class="label">{% translate "นวดและสปา" %}</span></a>
+        <a class="wt-category" href="{{ url_otop }}"><span class="wt-cat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shopping-basket"></i></span><span class="label">{% translate "ของดี OTOP" %}</span></a>
+        <a class="wt-category" href="{{ url_ai }}"><span class="wt-cat-icon" style="--c:#6741d9;--bg:#f0ebff"><i data-lucide="heart-pulse"></i></span><span class="label">{% translate "สุขภาพ AI" %}</span></a>
+        <a class="wt-category" href="{{ url_map }}"><span class="wt-cat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map"></i></span><span class="label">{% translate "แผนที่ชุมชน" %}</span></a>
+        <a class="wt-category" href="{{ url_passport }}"><span class="wt-cat-icon" style="--c:#0c8599;--bg:#e3f7f9"><i data-lucide="stamp"></i></span><span class="label">{% translate "พาสปอร์ต" %}</span></a>
+        <a class="wt-category" href="{{ url_stories }}"><span class="wt-cat-icon" style="--c:#5c7cfa;--bg:#edf0ff"><i data-lucide="book-open"></i></span><span class="label">{% translate "เรื่องเล่าวิถี" %}</span></a>
       </div>
     </div>
   </section>
+
+  {% if upcoming_events %}
+  <!-- Upcoming events -->
+  <section class="wt-section-sm bg-white">
+    <div class="container-xl wt-reveal">
+      <div class="d-flex align-items-end justify-content-between mb-4">
+        <div>
+          <span class="wt-eyebrow"><i data-lucide="calendar-days"></i>Sisaket events</span>
+          <h2 class="wt-section-title mb-0">{% translate "กิจกรรมที่กำลังจะมาถึง" %}</h2>
+        </div>
+        <a href="{% url 'community:events_list' %}" class="btn btn-outline-ink rounded-pill btn-sm flex-shrink-0">{% translate "ดูปฏิทินทั้งหมด" %}</a>
+      </div>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+        {% for event in upcoming_events %}<div class="col">{% include "community/partials/event_card.html" %}</div>{% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
 
   <!-- 4. Featured catalog (live data) -->
   <section class="wt-section bg-mint">
     <div class="container-xl wt-reveal">
       <div class="d-flex align-items-end justify-content-between mb-4">
         <div>
-          <span class="wt-eyebrow"><i data-lucide="sparkles"></i>แนะนำจากชุมชน</span>
-          <h2 class="wt-section-title mb-0">ไฮไลท์ชุมชนศรีสะเกษ</h2>
+          <span class="wt-eyebrow"><i data-lucide="sparkles"></i>{% translate "แนะนำจากชุมชน" %}</span>
+          <h2 class="wt-section-title mb-0">{% translate "ไฮไลท์ชุมชนศรีสะเกษ" %}</h2>
         </div>
-        <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink rounded-pill btn-sm d-flex align-items-center gap-1">ดูทั้งหมด <i data-lucide="arrow-right"></i></a>
+        <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink rounded-pill btn-sm d-flex align-items-center gap-1">{% translate "ดูทั้งหมด" %} <i data-lucide="arrow-right"></i></a>
       </div>
 
       {% if featured_experiences %}
@@ -184,7 +203,7 @@
                   {% if item.price %}
                     <span><span class="fs-5 fw-bold text-green">{{ item.price }}</span> <small class="text-secondary">{{ item.period }}</small></span>
                   {% else %}
-                    <small class="text-secondary">ยังไม่ระบุราคา</small>
+                    <small class="text-secondary">{% translate "ยังไม่ระบุราคา" %}</small>
                   {% endif %}
                   <span class="wt-icon-pill rounded-circle"><i data-lucide="arrow-up-right"></i></span>
                 </div>
@@ -195,9 +214,9 @@
       {% else %}
         <div class="wt-card text-center p-5">
           <span class="wt-icon-pill mb-2"><i data-lucide="sprout"></i></span>
-          <h3 class="h6 fw-bold">ยังไม่มีรายการในระบบ</h3>
-          <p class="small text-secondary mb-3">ผู้ประกอบการชุมชนกำลังทยอยลงทะเบียนที่พัก อาหาร สปา และสินค้า OTOP</p>
-          <a href="{% url 'accounts:register_merchant' %}" class="btn btn-green btn-sm rounded-pill px-3">สมัครเป็นผู้ประกอบการ</a>
+          <h3 class="h6 fw-bold">{% translate "ยังไม่มีรายการในระบบ" %}</h3>
+          <p class="small text-secondary mb-3">{% translate "ผู้ประกอบการชุมชนกำลังทยอยลงทะเบียนที่พัก อาหาร สปา และสินค้า OTOP" %}</p>
+          <a href="{% url 'accounts:register_merchant' %}" class="btn btn-green btn-sm rounded-pill px-3">{% translate "สมัครเป็นผู้ประกอบการ" %}</a>
         </div>
       {% endif %}
     </div>
@@ -208,10 +227,10 @@
     <div class="container-xl wt-reveal">
       <div class="d-flex align-items-end justify-content-between mb-4">
         <div>
-          <span class="wt-eyebrow"><i data-lucide="compass"></i>แรงบันดาลใจ</span>
-          <h2 class="wt-section-title mb-0">เที่ยวไหนดีในศรีสะเกษ</h2>
+          <span class="wt-eyebrow"><i data-lucide="compass"></i>{% translate "แรงบันดาลใจ" %}</span>
+          <h2 class="wt-section-title mb-0">{% translate "เที่ยวไหนดีในศรีสะเกษ" %}</h2>
         </div>
-        <a href="{{ url_map }}" class="btn btn-outline-ink rounded-pill btn-sm d-flex align-items-center gap-1"><i data-lucide="map"></i>เปิดแผนที่</a>
+        <a href="{{ url_map }}" class="btn btn-outline-ink rounded-pill btn-sm d-flex align-items-center gap-1"><i data-lucide="map"></i>{% translate "เปิดแผนที่" %}</a>
       </div>
       <div class="wt-scroller">
         {% for d in destinations %}
@@ -235,8 +254,8 @@
         <div class="row align-items-center g-4">
           <div class="col-lg-8">
             <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-3"><i data-lucide="heart-pulse" class="me-1"></i>AI Wellness Trip Curator</span>
-            <h2 class="fw-bold mb-2">ให้ AI ช่วยวางแผนทริปที่เหมาะกับสุขภาพของคุณ</h2>
-            <p class="opacity-75 mb-3">ประเมิน BMI / BMR และเป้าหมายสุขภาพ แล้วรับคำแนะนำที่พัก อาหาร และสปาที่เหมาะกับคุณ ใช้เวลาไม่ถึง 2 นาที</p>
+            <h2 class="fw-bold mb-2">{% translate "ให้ AI ช่วยวางแผนทริปที่เหมาะกับสุขภาพของคุณ" %}</h2>
+            <p class="opacity-75 mb-3">{% translate "ประเมิน BMI / BMR และเป้าหมายสุขภาพ แล้วรับคำแนะนำที่พัก อาหาร และสปาที่เหมาะกับคุณ ใช้เวลาไม่ถึง 2 นาที" %}</p>
             <div class="d-flex flex-wrap gap-2">
               {% for goal in wellness_goals %}
                 <a class="wt-chip" href="{% url 'ai_recommendations:assessment' %}">{{ goal.label }}</a>
@@ -245,7 +264,7 @@
           </div>
           <div class="col-lg-4 text-lg-end">
             <a href="{% url 'ai_recommendations:assessment' %}" class="btn btn-gold btn-lg rounded-pill px-4 shadow">
-              <i data-lucide="sparkles" class="me-1"></i>เริ่มประเมินฟรี
+              <i data-lucide="sparkles" class="me-1"></i>{% translate "เริ่มประเมินฟรี" %}
             </a>
           </div>
         </div>
@@ -265,7 +284,7 @@
               {% else %}<span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shopping-basket" class="icon-lg"></i></span>{% endif %}
               <div>
                 <div class="wt-stat-value">{{ s.value }}</div>
-                <div class="small text-secondary">{{ s.label }}ในระบบ</div>
+                <div class="small text-secondary">{% blocktranslate trimmed with label=s.label %}{{ label }}ในระบบ{% endblocktranslate %}</div>
               </div>
             </div>
           </div>
@@ -277,18 +296,18 @@
           <div class="d-flex align-items-center gap-3 text-center text-sm-start">
             <span class="wt-stat-icon d-none d-sm-inline-flex" style="--c:#b86e00;--bg:#fff1d6"><i data-lucide="locate-fixed" class="icon-lg"></i></span>
             <div>
-              <div class="fw-bold">แชร์ตำแหน่งเพื่อดูทริปใกล้คุณ <span class="badge badge-gold fw-normal">ความแม่นยำ ~1.1 กม.</span></div>
-              <div class="small text-secondary">ใช้คำนวณระยะทางสู่ที่พักและร้านอาหาร ลบประวัติตำแหน่งได้ตลอดเวลา (PDPA)</div>
+              <div class="fw-bold">{% translate "แชร์ตำแหน่งเพื่อดูทริปใกล้คุณ" %} <span class="badge badge-gold fw-normal">{% translate "ความแม่นยำ ~1.1 กม." %}</span></div>
+              <div class="small text-secondary">{% translate "ใช้คำนวณระยะทางสู่ที่พักและร้านอาหาร ลบประวัติตำแหน่งได้ตลอดเวลา (PDPA)" %}</div>
             </div>
           </div>
           <div class="flex-shrink-0">
-            <span x-show="success" x-cloak class="small fw-bold text-success"><i data-lucide="check-circle-2" class="me-1"></i>บันทึกตำแหน่งเรียบร้อย</span>
+            <span x-show="success" x-cloak class="small fw-bold text-success"><i data-lucide="check-circle-2" class="me-1"></i>{% translate "บันทึกตำแหน่งเรียบร้อย" %}</span>
             <template x-if="!success">
               <div class="d-flex gap-2">
                 <button type="button" class="btn btn-gold btn-sm rounded-pill px-3" @click="grantLocation()" :disabled="busy">
-                  <i data-lucide="map-pin" class="me-1"></i><span x-text="busy ? 'กำลังระบุ...' : 'ยินยอม'"></span>
+                  <i data-lucide="map-pin" class="me-1"></i><span x-text="busy ? '{{ _("กำลังระบุ...")|escapejs }}' : '{{ _("ยินยอม")|escapejs }}'"></span>
                 </button>
-                <button type="button" class="btn btn-outline-ink btn-sm rounded-pill px-3" @click="denyLocation()">ไว้คราวหลัง</button>
+                <button type="button" class="btn btn-outline-ink btn-sm rounded-pill px-3" @click="denyLocation()">{% translate "ไว้คราวหลัง" %}</button>
               </div>
             </template>
           </div>
@@ -302,10 +321,10 @@
     <div class="container-xl wt-reveal">
       <div class="row g-4 g-lg-5">
         <div class="col-lg-4">
-          <span class="wt-eyebrow"><i data-lucide="help-circle"></i>คำถามที่พบบ่อย</span>
-          <h2 id="aeo-faq-heading" class="wt-section-title">มีคำถาม? เรามีคำตอบ</h2>
-          <p class="text-secondary">การจอง การชำระเงิน และวิถีชุมชนศรีสะเกษ ถ้ายังไม่เจอคำตอบ ติดต่อทีมงานได้เลย</p>
-          <a href="{% url 'core:contact' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="message-circle" class="me-1"></i>ติดต่อเรา</a>
+          <span class="wt-eyebrow"><i data-lucide="help-circle"></i>{% translate "คำถามที่พบบ่อย" %}</span>
+          <h2 id="aeo-faq-heading" class="wt-section-title">{% translate "มีคำถาม? เรามีคำตอบ" %}</h2>
+          <p class="text-secondary">{% translate "การจอง การชำระเงิน และวิถีชุมชนศรีสะเกษ ถ้ายังไม่เจอคำตอบ ติดต่อทีมงานได้เลย" %}</p>
+          <a href="{% url 'core:contact' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="message-circle" class="me-1"></i>{% translate "ติดต่อเรา" %}</a>
         </div>
         <div class="col-lg-8">
           <div class="accordion" id="faqAccordion">
@@ -330,11 +349,11 @@
   <!-- 9. Partners -->
   <section class="wt-section-sm bg-white">
     <div class="container-xl wt-reveal text-center">
-      <div class="small fw-semibold text-secondary text-uppercase mb-3" style="letter-spacing: .08em;">ได้รับการสนับสนุนโดย</div>
+      <div class="small fw-semibold text-secondary text-uppercase mb-3" style="letter-spacing: .08em;">{% translate "ได้รับการสนับสนุนโดย" %}</div>
       <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
-        <span class="wt-partner-logo"><img src="{% static 'images/partners/logo-nia.png' %}" alt="สำนักงานนวัตกรรมแห่งชาติ (NIA)"><span class="small text-start lh-sm d-none d-sm-inline"><strong>สำนักงานนวัตกรรมแห่งชาติ</strong><br><span class="text-secondary">NIA</span></span></span>
-        <span class="wt-partner-logo"><img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี"><span class="small text-start lh-sm d-none d-sm-inline"><strong>อุทยานวิทยาศาสตร์ ม.อุบลฯ</strong><br><span class="text-secondary">SIP UBU</span></span></span>
-        <span class="wt-partner-logo"><span class="badge badge-green fs-6">SSKRU</span><span class="small text-start lh-sm"><strong>มหาวิทยาลัยราชภัฏศรีสะเกษ</strong><br><span class="text-secondary">หน่วยบริหารโครงการ</span></span></span>
+        <span class="wt-partner-logo"><img src="{% static 'images/partners/logo-nia.png' %}" alt="{% translate 'สำนักงานนวัตกรรมแห่งชาติ (NIA)' %}"><span class="small text-start lh-sm d-none d-sm-inline"><strong>{% translate "สำนักงานนวัตกรรมแห่งชาติ" %}</strong><br><span class="text-secondary">NIA</span></span></span>
+        <span class="wt-partner-logo"><img src="{% static 'images/partners/logo-sip-ubu.png' %}" alt="{% translate 'อุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี' %}"><span class="small text-start lh-sm d-none d-sm-inline"><strong>{% translate "อุทยานวิทยาศาสตร์ ม.อุบลฯ" %}</strong><br><span class="text-secondary">SIP UBU</span></span></span>
+        <span class="wt-partner-logo"><span class="badge badge-green fs-6">SSKRU</span><span class="small text-start lh-sm"><strong>{% translate "มหาวิทยาลัยราชภัฏศรีสะเกษ" %}</strong><br><span class="text-secondary">{% translate "หน่วยบริหารโครงการ" %}</span></span></span>
       </div>
     </div>
   </section>
@@ -347,8 +366,8 @@
         "@type": "TouristDestination",
         "@id": "{{ request.scheme }}://{{ request.get_host }}/#destination",
         "name": "WellTrip Sisaket Wellness Tourism Destination",
-        "alternateName": "การท่องเที่ยวเชิงสุขภาพและวิถีบำบัด 4 ชนเผ่า จังหวัดศรีสะเกษ",
-        "description": "แหล่งท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน จ.ศรีสะเกษ โฮมสเตย์ธรรมชาติ อาหารสุขภาพ สปาสมุนไพรสด และภูมิปัญญา 4 ชนเผ่า",
+        "alternateName": "{{ _("การท่องเที่ยวเชิงสุขภาพและวิถีบำบัด 4 ชนเผ่า จังหวัดศรีสะเกษ")|escapejs }}",
+        "description": "{{ _("แหล่งท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน จ.ศรีสะเกษ โฮมสเตย์ธรรมชาติ อาหารสุขภาพ สปาสมุนไพรสด และภูมิปัญญา 4 ชนเผ่า")|escapejs }}",
         "url": "{{ request.scheme }}://{{ request.get_host }}/",
         "touristType": ["Wellness Tourism", "Ecotourism", "Cultural Tourism", "Culinary Tourism"],
         "geo": { "@type": "GeoCoordinates", "latitude": 15.1186, "longitude": 104.3220 },
@@ -366,7 +385,7 @@
         "@type": "WebPage",
         "@id": "{{ request.scheme }}://{{ request.get_host }}/#webpage",
         "url": "{{ request.scheme }}://{{ request.get_host }}/",
-        "name": "WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ",
+        "name": "{{ _("WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ")|escapejs }}",
         "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["#aeo-faq-heading", ".aeo-answer"] }
       }
     ]

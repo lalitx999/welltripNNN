@@ -2,6 +2,7 @@ import uuid
 from decimal import Decimal
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy
 
 
 class HealthProfile(models.Model):
@@ -45,9 +46,9 @@ class AIRecommendationLog(models.Model):
     """
 
     class Status(models.TextChoices):
-        PENDING = "PENDING", "กำลังวิเคราะห์"
-        DONE = "DONE", "เสร็จแล้ว"
-        FAILED = "FAILED", "ไม่สำเร็จ"
+        PENDING = "PENDING", gettext_lazy("กำลังวิเคราะห์")
+        DONE = "DONE", gettext_lazy("เสร็จแล้ว")
+        FAILED = "FAILED", gettext_lazy("ไม่สำเร็จ")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(

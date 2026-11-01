@@ -1,10 +1,11 @@
+{% load i18n %}
 <div class="wt-card">
   <div class="p-3 border-bottom d-flex justify-content-end">
-    <button type="button" class="btn btn-green btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addContentModal"><i data-lucide="plus" class="me-1"></i>เขียนเรื่องใหม่</button>
+    <button type="button" class="btn btn-green btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#addContentModal"><i data-lucide="plus" class="me-1"></i>{% translate "เขียนเรื่องใหม่" %}</button>
   </div>
   <div class="table-responsive">
     <table class="table wt-table mb-0">
-      <thead><tr><th>เรื่อง</th><th>ประเภท</th><th>สถานะ</th><th>อัปเดต</th><th class="text-end">จัดการ</th></tr></thead>
+      <thead><tr><th>{% translate "เรื่อง" %}</th><th>{% translate "ประเภท" %}</th><th>{% translate "สถานะ" %}</th><th>{% translate "อัปเดต" %}</th><th class="text-end">{% translate "จัดการ" %}</th></tr></thead>
       <tbody>
         {% for story in stories %}
           <tr>
@@ -15,16 +16,16 @@
               </div>
             </td>
             <td><span class="badge bg-light text-secondary border">{{ story.get_kind_display }}</span></td>
-            <td>{% if story.is_published %}<span class="badge badge-green">เผยแพร่</span>{% else %}<span class="badge text-bg-secondary">ฉบับร่าง</span>{% endif %}</td>
+            <td>{% if story.is_published %}<span class="badge badge-green">{% translate "เผยแพร่" %}</span>{% else %}<span class="badge text-bg-secondary">{% translate "ฉบับร่าง" %}</span>{% endif %}</td>
             <td class="small text-secondary">{{ story.updated_at|date:"d/m/Y H:i" }}</td>
             <td class="text-end text-nowrap">
-              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="แก้ไข" aria-label="แก้ไขเรื่อง"
+              <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="{% translate 'แก้ไข' %}" aria-label="{% translate 'แก้ไขเรื่อง' %}"
                       @click="open('story', { id: '{{ story.id }}', title: '{{ story.title|escapejs }}', kind: '{{ story.kind }}', summary: '{{ story.summary|escapejs }}', body: '{{ story.body|escapejs }}', google_maps_url: '{{ story.google_maps_url|default:''|escapejs }}', location: '{{ story.location|escapejs }}', is_published: {{ story.is_published|yesno:'true,false' }} }, 'editContentModal')"><i data-lucide="pencil"></i></button>
-              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="ลบ" aria-label="ลบเรื่อง" @click="confirmDelete('{% url 'accounts:admin_content_delete' story.id %}', 'เรื่อง {{ story.title|escapejs }}')"><i data-lucide="trash-2"></i></button>
+              <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="{% translate 'ลบ' %}" aria-label="{% translate 'ลบเรื่อง' %}" @click="confirmDelete('{% url 'accounts:admin_content_delete' story.id %}', '{{ _("เรื่อง")|escapejs }} {{ story.title|escapejs }}')"><i data-lucide="trash-2"></i></button>
             </td>
           </tr>
         {% empty %}
-          <tr><td colspan="5" class="text-center text-secondary small py-4">ยังไม่มีเรื่องเล่า</td></tr>
+          <tr><td colspan="5" class="text-center text-secondary small py-4">{% translate "ยังไม่มีเรื่องเล่า" %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

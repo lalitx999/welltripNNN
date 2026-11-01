@@ -1,17 +1,18 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ไม่พบหน้าที่คุณต้องการ - WellTrip{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ไม่พบหน้าที่คุณต้องการ - WellTrip" %}{% endblock %}
 
 {% block content %}
 <section class="container-xl py-5">
   <div class="wt-card wt-empty mx-auto py-5 px-4" style="max-width: 34rem;">
     <span class="wt-stat-icon mb-3" style="--c:#1971c2;--bg:#e7f2fd;width:4.5rem;height:4.5rem;border-radius:1.5rem"><i data-lucide="compass" style="width:2rem;height:2rem"></i></span>
     <div class="wt-eyebrow justify-content-center mb-1">404 Page not found</div>
-    <h1 class="h3 fw-bold">ไม่พบหน้าที่คุณต้องการ</h1>
-    <p class="text-secondary mb-4">หน้านี้อาจถูกย้าย เปลี่ยนชื่อ หรือไม่มีอยู่แล้ว ลองกลับไปหน้าแรกหรือค้นหาที่พักแทน</p>
+    <h1 class="h3 fw-bold">{% translate "ไม่พบหน้าที่คุณต้องการ" %}</h1>
+    <p class="text-secondary mb-4">{% translate "หน้านี้อาจถูกย้าย เปลี่ยนชื่อ หรือไม่มีอยู่แล้ว ลองกลับไปหน้าแรกหรือค้นหาที่พักแทน" %}</p>
     <div class="d-flex flex-wrap justify-content-center gap-2">
-      <a href="{% url 'core:landing' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="home" class="me-1"></i>กลับหน้าแรก</a>
-      <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink rounded-pill px-4"><i data-lucide="search" class="me-1"></i>ค้นหาที่พัก</a>
+      <a href="{% url 'core:landing' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="home" class="me-1"></i>{% translate "กลับหน้าแรก" %}</a>
+      <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink rounded-pill px-4"><i data-lucide="search" class="me-1"></i>{% translate "ค้นหาที่พัก" %}</a>
     </div>
   </div>
 </section>

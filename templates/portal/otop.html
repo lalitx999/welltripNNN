@@ -1,20 +1,21 @@
 {% extends "layouts/merchant.html" %}
 
-{% block title %}สินค้า OTOP - Partner Studio{% endblock %}
-{% block page_heading %}สินค้า OTOP และสต็อก{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "สินค้า OTOP - Partner Studio" %}{% endblock %}
+{% block page_heading %}{% translate "สินค้า OTOP และสต็อก" %}{% endblock %}
 
 {% block content %}
 <div class="row g-4">
   <div class="col-xl-7">
     <div class="wt-card">
       <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
-        <span class="fw-bold"><i data-lucide="package-check" class="text-green me-1"></i>สินค้าของคุณ ({{ products|length }})</span>
-        <a href="{% url 'otop:list' %}" target="_blank" rel="noopener" class="small text-green">ดูหน้าเว็บ <i data-lucide="arrow-up-right"></i></a>
+        <span class="fw-bold"><i data-lucide="package-check" class="text-green me-1"></i>{% blocktranslate trimmed with products=products|length %}สินค้าของคุณ ({{ products }}){% endblocktranslate %}</span>
+        <a href="{% url 'otop:list' %}" target="_blank" rel="noopener" class="small text-green">{% translate "ดูหน้าเว็บ" %} <i data-lucide="arrow-up-right"></i></a>
       </div>
       {% if products %}
         <div class="table-responsive">
           <table class="table wt-table mb-0">
-            <thead><tr><th>สินค้า</th><th class="text-end">ราคา</th><th class="text-center">สต็อก</th></tr></thead>
+            <thead><tr><th>{% translate "สินค้า" %}</th><th class="text-end">{% translate "ราคา" %}</th><th class="text-center">{% translate "สต็อก" %}</th></tr></thead>
             <tbody>
               {% for p in products %}
                 <tr>
@@ -32,24 +33,24 @@
           </table>
         </div>
       {% else %}
-        <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="package"></i></span><div class="fw-bold">ยังไม่มีสินค้า</div><small class="text-secondary">เพิ่มสินค้าแรกจากแบบฟอร์ม</small></div>
+        <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="package"></i></span><div class="fw-bold">{% translate "ยังไม่มีสินค้า" %}</div><small class="text-secondary">{% translate "เพิ่มสินค้าแรกจากแบบฟอร์ม" %}</small></div>
       {% endif %}
     </div>
   </div>
   <div class="col-xl-5">
     <div class="wt-card p-4">
-      <h2 class="h6 fw-bold mb-3"><i data-lucide="plus-circle" class="text-green me-1"></i>เพิ่มสินค้า</h2>
+      <h2 class="h6 fw-bold mb-3"><i data-lucide="plus-circle" class="text-green me-1"></i>{% translate "เพิ่มสินค้า" %}</h2>
       <form method="post" action="{% url 'otop:otop_studio' %}" enctype="multipart/form-data" class="d-grid gap-3">
         {% csrf_token %}
-        {% include "portal/partials/form_field.html" with field=form.name label="ชื่อสินค้า" %}
-        {% include "portal/partials/form_field.html" with field=form.category label="หมวดหมู่" %}
-        {% include "portal/partials/form_field.html" with field=form.description label="รายละเอียดและเรื่องราว" %}
+        {% include "portal/partials/form_field.html" with field=form.name label=_("ชื่อสินค้า") %}
+        {% include "portal/partials/form_field.html" with field=form.category label=_("หมวดหมู่") %}
+        {% include "portal/partials/form_field.html" with field=form.description label=_("รายละเอียดและเรื่องราว") %}
         <div class="row g-2">
-          <div class="col-6">{% include "portal/partials/form_field.html" with field=form.price label="ราคา (บาท)" %}</div>
-          <div class="col-6">{% include "portal/partials/form_field.html" with field=form.stock_quantity label="จำนวนสต็อก" %}</div>
+          <div class="col-6">{% include "portal/partials/form_field.html" with field=form.price label=_("ราคา (บาท)") %}</div>
+          <div class="col-6">{% include "portal/partials/form_field.html" with field=form.stock_quantity label=_("จำนวนสต็อก") %}</div>
         </div>
-        {% include "portal/partials/form_field.html" with field=form.image label="รูปสินค้า" %}
-        <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="plus" class="me-1"></i>บันทึกสินค้า</button>
+        {% include "portal/partials/form_field.html" with field=form.image label=_("รูปสินค้า") %}
+        <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="plus" class="me-1"></i>{% translate "บันทึกสินค้า" %}</button>
       </form>
     </div>
   </div>

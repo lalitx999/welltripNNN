@@ -10,6 +10,8 @@ from apps.ai_recommendations import views as views_ai
 from apps.payments import views as views_payments
 
 urlpatterns = [
+    # POST /i18n/setlang/ — the TH/EN switch
+    path('i18n/', include('django.conf.urls.i18n')),
     path('', include('apps.core.urls')),
     path('accounts/', include('apps.accounts.urls')),
     path('accommodations/', include('apps.accommodations.urls')),

@@ -2,6 +2,7 @@ from decimal import Decimal
 from django import forms
 from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot, FoodWellnessCategory
 from apps.core.services.media import sanitize_and_strip_image
+from django.utils.translation import gettext_lazy
 
 
 class FoodMenuForm(forms.ModelForm):
@@ -10,11 +11,11 @@ class FoodMenuForm(forms.ModelForm):
         fields = ['name', 'description', 'price', 'wellness_category', 'calorie_estimate', 'image']
         widgets = {
             'image': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/jpeg,image/png,image/webp'}),
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ชื่อเมนูสุขภาพ'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("ชื่อเมนูสุขภาพ")}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'step': '0.01'}),
             'wellness_category': forms.Select(attrs={'class': 'form-select'}),
-            'calorie_estimate': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'เช่น 250 kcal'}),
+            'calorie_estimate': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("เช่น 250 kcal")}),
         }
 
     def clean_image(self):
@@ -30,7 +31,7 @@ class WellnessServiceForm(forms.ModelForm):
         fields = ['name', 'description', 'price', 'duration_minutes', 'image']
         widgets = {
             'image': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/jpeg,image/png,image/webp'}),
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'เช่น นวดประคบสมุนไพรสด'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("เช่น นวดประคบสมุนไพรสด")}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'step': '0.01'}),
             'duration_minutes': forms.NumberInput(attrs={'class': 'form-control', 'min': 15, 'step': 15}),

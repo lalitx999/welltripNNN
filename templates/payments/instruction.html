@@ -1,13 +1,14 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ชำระเงิน {{ booking.booking_code }} - WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% blocktranslate trimmed with booking_code=booking.booking_code %}ชำระเงิน {{ booking_code }} - WellTrip Sisaket{% endblocktranslate %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head pb-3">
   <div class="container-xl" style="max-width: 56rem;">
     {% include "bookings/partials/checkout_steps.html" with step=3 %}
-    <h1 class="mb-1">ชำระเงิน <span class="font-monospace">{{ booking.booking_code }}</span></h1>
-    <p class="text-secondary mb-0">โอนเงินตามยอดด้านล่าง แล้วแนบสลิปเพื่อยืนยันการจอง</p>
+    <h1 class="mb-1">{% translate "ชำระเงิน" %} <span class="font-monospace">{{ booking.booking_code }}</span></h1>
+    <p class="text-secondary mb-0">{% translate "โอนเงินตามยอดด้านล่าง แล้วแนบสลิปเพื่อยืนยันการจอง" %}</p>
   </div>
 </section>
 
@@ -17,26 +18,26 @@
   {% endif %}
 
   {% if booking.customer_notes %}
-    <div class="wt-card p-3 small"><span class="fw-semibold"><i data-lucide="message-square" class="text-green me-1"></i>ข้อความของคุณ:</span> {{ booking.customer_notes }}</div>
+    <div class="wt-card p-3 small"><span class="fw-semibold"><i data-lucide="message-square" class="text-green me-1"></i>{% translate "ข้อความของคุณ:" %}</span> {{ booking.customer_notes }}</div>
   {% endif %}
 
   <div class="wt-card p-4">
-    <h2 class="h6 fw-bold mb-3"><i data-lucide="landmark" class="text-green me-1"></i>บัญชีสำหรับโอนเงิน</h2>
+    <h2 class="h6 fw-bold mb-3"><i data-lucide="landmark" class="text-green me-1"></i>{% translate "บัญชีสำหรับโอนเงิน" %}</h2>
     <div class="row g-3 align-items-center">
       <div class="col-md-7 d-grid gap-2">
-        <div><small class="text-secondary d-block">ธนาคาร</small><span class="fw-semibold">{{ payment.payee_bank_name }}</span></div>
-        <div><small class="text-secondary d-block">ชื่อบัญชี</small><span class="fw-semibold">{{ payment.payee_account_name }}</span></div>
+        <div><small class="text-secondary d-block">{% translate "ธนาคาร" %}</small><span class="fw-semibold">{{ payment.payee_bank_name }}</span></div>
+        <div><small class="text-secondary d-block">{% translate "ชื่อบัญชี" %}</small><span class="fw-semibold">{{ payment.payee_account_name }}</span></div>
         <div x-data="{ copied: false }">
-          <small class="text-secondary d-block">เลขที่บัญชี</small>
+          <small class="text-secondary d-block">{% translate "เลขที่บัญชี" %}</small>
           <span class="fs-4 fw-bold font-monospace me-2">{{ payment.payee_account_number }}</span>
           <button type="button" class="btn btn-outline-ink btn-sm rounded-pill" @click="navigator.clipboard.writeText('{{ payment.payee_account_number|escapejs }}'); copied = true; setTimeout(() => copied = false, 2000)">
-            <i data-lucide="copy" class="me-1"></i><span x-text="copied ? 'คัดลอกแล้ว' : 'คัดลอก'">คัดลอก</span>
+            <i data-lucide="copy" class="me-1"></i><span x-text="copied ? '{{ _("คัดลอกแล้ว")|escapejs }}' : '{{ _("คัดลอก")|escapejs }}'">{% translate "คัดลอก" %}</span>
           </button>
         </div>
       </div>
       <div class="col-md-5">
         <div class="bg-mint rounded-4 p-4 text-center">
-          <small class="text-secondary d-block">ยอดที่ต้องโอน (โอนให้ตรงยอด)</small>
+          <small class="text-secondary d-block">{% translate "ยอดที่ต้องโอน (โอนให้ตรงยอด)" %}</small>
           <span class="display-6 fw-bold text-green">฿{{ payment.amount|default:booking.total_amount|floatformat:"2g" }}</span>
         </div>
       </div>
@@ -44,8 +45,8 @@
   </div>
 
   <div class="wt-card p-4" x-data="{ previewUrl: null, pick(e) { const f = e.target.files[0]; this.previewUrl = f ? URL.createObjectURL(f) : null; } }">
-    <h2 class="h6 fw-bold mb-1"><i data-lucide="upload-cloud" class="text-green me-1"></i>แนบสลิปการโอนเงิน</h2>
-    <p class="small text-secondary">ไฟล์ JPG, PNG หรือ WEBP ไม่เกิน 10MB เห็นยอดเงิน วันที่ และเวลาชัดเจน</p>
+    <h2 class="h6 fw-bold mb-1"><i data-lucide="upload-cloud" class="text-green me-1"></i>{% translate "แนบสลิปการโอนเงิน" %}</h2>
+    <p class="small text-secondary">{% translate "ไฟล์ JPG, PNG หรือ WEBP ไม่เกิน 10MB เห็นยอดเงิน วันที่ และเวลาชัดเจน" %}</p>
     {% if form.errors %}
       <div class="alert alert-danger rounded-4 small">{% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
     {% endif %}
@@ -56,38 +57,38 @@
         <template x-if="!previewUrl">
           <span class="d-block">
             <span class="wt-icon-pill mb-2"><i data-lucide="image-plus"></i></span>
-            <span class="d-block fw-semibold">แตะเพื่อเลือกรูปสลิป</span>
+            <span class="d-block fw-semibold">{% translate "แตะเพื่อเลือกรูปสลิป" %}</span>
           </span>
         </template>
         <template x-if="previewUrl">
           <span class="d-block">
-            <img :src="previewUrl" alt="ตัวอย่างสลิป" class="img-fluid rounded-3 mb-2" style="max-height: 16rem;">
-            <span class="d-block small text-secondary">แตะเพื่อเปลี่ยนรูป</span>
+            <img :src="previewUrl" alt="{% translate 'ตัวอย่างสลิป' %}" class="img-fluid rounded-3 mb-2" style="max-height: 16rem;">
+            <span class="d-block small text-secondary">{% translate "แตะเพื่อเปลี่ยนรูป" %}</span>
           </span>
         </template>
       </label>
       <div>
-        <label for="id_provider_reference" class="form-label small fw-semibold">เลขอ้างอิงธุรกรรม (ถ้ามี)</label>
-        <input type="text" name="provider_reference" id="id_provider_reference" class="form-control" placeholder="เลขอ้างอิงที่อยู่บนสลิป">
+        <label for="id_provider_reference" class="form-label small fw-semibold">{% translate "เลขอ้างอิงธุรกรรม (ถ้ามี)" %}</label>
+        <input type="text" name="provider_reference" id="id_provider_reference" class="form-control" placeholder="{% translate 'เลขอ้างอิงที่อยู่บนสลิป' %}">
       </div>
-      <button type="submit" class="btn btn-gold btn-lg rounded-pill" :disabled="expired"><i data-lucide="send" class="me-1"></i>ส่งสลิป</button>
+      <button type="submit" class="btn btn-gold btn-lg rounded-pill" :disabled="expired"><i data-lucide="send" class="me-1"></i>{% translate "ส่งสลิป" %}</button>
     </form>
 
     {% if slips %}
-      <h3 class="h6 fw-bold mt-4 mb-2">สลิปที่ส่งแล้ว ({{ slips|length }})</h3>
+      <h3 class="h6 fw-bold mt-4 mb-2">{% blocktranslate trimmed with slips=slips|length %}สลิปที่ส่งแล้ว ({{ slips }}){% endblocktranslate %}</h3>
       <div class="list-group list-group-flush">
         {% for slip in slips %}
           <div class="list-group-item px-0 d-flex justify-content-between align-items-center gap-3">
             <div class="d-flex align-items-center gap-3 min-w-0">
-              {% if slip.image %}<a href="{{ slip.image.url }}" target="_blank" rel="noopener"><img src="{{ slip.image.url }}" alt="สลิป" width="48" height="48" class="rounded-3 object-fit-cover border"></a>{% endif %}
+              {% if slip.image %}<a href="{{ slip.image.url }}" target="_blank" rel="noopener"><img src="{{ slip.image.url }}" alt="{% translate 'สลิป' %}" width="48" height="48" class="rounded-3 object-fit-cover border"></a>{% endif %}
               <div class="min-w-0">
-                <div class="small fw-semibold text-truncate font-monospace">{{ slip.provider_reference|default:"ไม่ระบุเลขอ้างอิง" }}</div>
+                <div class="small fw-semibold text-truncate font-monospace">{{ slip.provider_reference|default:_("ไม่ระบุเลขอ้างอิง") }}</div>
                 <small class="text-secondary">{{ slip.uploaded_at|date:"d/m/Y H:i" }}</small>
               </div>
             </div>
-            {% if slip.verification_status == 'VERIFIED' %}<span class="badge badge-green">ตรวจสอบผ่าน</span>
-            {% elif slip.verification_status == 'REJECTED' %}<span class="badge text-bg-danger">ไม่ผ่าน</span>
-            {% else %}<span class="badge badge-gold">รอตรวจสอบ</span>{% endif %}
+            {% if slip.verification_status == 'VERIFIED' %}<span class="badge badge-green">{% translate "ตรวจสอบผ่าน" %}</span>
+            {% elif slip.verification_status == 'REJECTED' %}<span class="badge text-bg-danger">{% translate "ไม่ผ่าน" %}</span>
+            {% else %}<span class="badge badge-gold">{% translate "รอตรวจสอบ" %}</span>{% endif %}
           </div>
         {% endfor %}
       </div>

@@ -1,5 +1,6 @@
+{% load i18n %}
 <div class="wt-card wt-empty" hx-get="{% url 'ai_recommendations:result_htmx' log.id %}" hx-trigger="load delay:2s" hx-swap="outerHTML">
   <div class="spinner-border text-success mb-3" role="status"></div>
-  <div class="fw-bold">AI กำลังวิเคราะห์...</div>
-  <small class="text-secondary">กำลังค้นหาที่พัก เมนูอาหาร และสปาที่ตรงกับเป้าหมายของคุณ</small>
+  <div class="fw-bold">{% translate "AI กำลังวิเคราะห์..." %}</div>
+  <small class="text-secondary">{% translate "กำลังค้นหาที่พัก เมนูอาหาร และสปาที่ตรงกับเป้าหมายของคุณ" %}</small>
 </div>

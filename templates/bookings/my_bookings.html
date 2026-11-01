@@ -1,24 +1,25 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}การจองของฉัน — WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "การจองของฉัน — WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head pb-3">
   <div class="container-xl d-flex flex-column flex-sm-row justify-content-between align-items-sm-end gap-3">
     <div>
-      <h1 class="mb-1">การจองของฉัน</h1>
-      <p class="text-secondary mb-0">สถานะการจองที่พัก สปา อาหาร และสินค้า OTOP</p>
+      <h1 class="mb-1">{% translate "การจองของฉัน" %}</h1>
+      <p class="text-secondary mb-0">{% translate "สถานะการจองที่พัก สปา อาหาร และสินค้า OTOP" %}</p>
     </div>
-    <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="plus" class="me-1"></i>จองเพิ่ม</a>
+    <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill px-4"><i data-lucide="plus" class="me-1"></i>{% translate "จองเพิ่ม" %}</a>
   </div>
 </section>
 
 <div class="container-xl pb-5">
   <ul class="nav nav-underline mb-4 flex-nowrap overflow-auto">
-    <li class="nav-item"><a class="nav-link text-nowrap {% if active_tab == 'all' %}active text-green{% else %}text-secondary{% endif %}" href="?tab=all">ทั้งหมด <span class="badge bg-light text-secondary border">{{ all_count }}</span></a></li>
-    <li class="nav-item"><a class="nav-link text-nowrap {% if active_tab == 'active' %}active text-green{% else %}text-secondary{% endif %}" href="?tab=active">กำลังดำเนินการ <span class="badge {% if active_count %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ active_count }}</span></a></li>
-    <li class="nav-item"><a class="nav-link text-nowrap {% if active_tab == 'completed' %}active text-green{% else %}text-secondary{% endif %}" href="?tab=completed">สำเร็จแล้ว <span class="badge bg-light text-secondary border">{{ completed_count }}</span></a></li>
-    <li class="nav-item"><a class="nav-link text-nowrap {% if active_tab == 'cancelled' %}active text-green{% else %}text-secondary{% endif %}" href="?tab=cancelled">ยกเลิก / หมดเวลา <span class="badge bg-light text-secondary border">{{ cancelled_count }}</span></a></li>
+    <li class="nav-item"><a class="nav-link text-nowrap {% if active_tab == 'all' %}active text-green{% else %}text-secondary{% endif %}" href="?tab=all">{% translate "ทั้งหมด" %} <span class="badge bg-light text-secondary border">{{ all_count }}</span></a></li>
+    <li class="nav-item"><a class="nav-link text-nowrap {% if active_tab == 'active' %}active text-green{% else %}text-secondary{% endif %}" href="?tab=active">{% translate "กำลังดำเนินการ" %} <span class="badge {% if active_count %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ active_count }}</span></a></li>
+    <li class="nav-item"><a class="nav-link text-nowrap {% if active_tab == 'completed' %}active text-green{% else %}text-secondary{% endif %}" href="?tab=completed">{% translate "สำเร็จแล้ว" %} <span class="badge bg-light text-secondary border">{{ completed_count }}</span></a></li>
+    <li class="nav-item"><a class="nav-link text-nowrap {% if active_tab == 'cancelled' %}active text-green{% else %}text-secondary{% endif %}" href="?tab=cancelled">{% translate "ยกเลิก / หมดเวลา" %} <span class="badge bg-light text-secondary border">{{ cancelled_count }}</span></a></li>
   </ul>
 
   {% if bookings %}
@@ -30,7 +31,7 @@
               <span class="fw-bold font-monospace">{{ b.booking_code }}</span>
               {% include "bookings/partials/status_badge.html" with status=b.status label=b.get_status_display %}
             </div>
-            <small class="text-secondary">{{ b.created_at|date:"d M Y H:i" }} น.</small>
+            <small class="text-secondary">{% blocktranslate trimmed with created_at=b.created_at|date:"d M Y H:i" %}{{ created_at }} น.{% endblocktranslate %}</small>
           </div>
           <div class="d-grid gap-1 small">
             {% for item in b.items.all %}
@@ -42,13 +43,13 @@
           </div>
           {% if b.status == 'AWAITING_PAYMENT' %}
             <div class="alert alert-warning rounded-4 py-2 px-3 small d-flex justify-content-between align-items-center mt-3 mb-0">
-              <span><i data-lucide="clock" class="me-1"></i>รอชำระเงินและแนบสลิป</span>
-              <a href="{% url 'payments:payment_instruction' b.id %}" class="btn btn-gold btn-sm rounded-pill">ชำระเงิน</a>
+              <span><i data-lucide="clock" class="me-1"></i>{% translate "รอชำระเงินและแนบสลิป" %}</span>
+              <a href="{% url 'payments:payment_instruction' b.id %}" class="btn btn-gold btn-sm rounded-pill">{% translate "ชำระเงิน" %}</a>
             </div>
           {% endif %}
           <div class="d-flex justify-content-between align-items-center border-top mt-3 pt-3">
-            <span><small class="text-secondary">ยอดรวม</small> <strong class="text-green fs-5">฿{{ b.total_amount|floatformat:"2g" }}</strong></span>
-            <a href="{% url 'bookings:detail' b.id %}" class="btn btn-outline-ink btn-sm rounded-pill">{% if b.status == 'CONFIRMED' %}<i data-lucide="ticket" class="me-1"></i>บัตรเข้าใช้บริการ{% else %}รายละเอียด{% endif %}</a>
+            <span><small class="text-secondary">{% translate "ยอดรวม" %}</small> <strong class="text-green fs-5">฿{{ b.total_amount|floatformat:"2g" }}</strong></span>
+            <a href="{% url 'bookings:detail' b.id %}" class="btn btn-outline-ink btn-sm rounded-pill">{% if b.status == 'CONFIRMED' %}<i data-lucide="ticket" class="me-1"></i>{% translate "บัตรเข้าใช้บริการ" %}{% else %}{% translate "รายละเอียด" %}{% endif %}</a>
           </div>
         </div>
       {% endfor %}
@@ -56,9 +57,9 @@
   {% else %}
     <div class="wt-card wt-empty">
       <span class="wt-icon-pill"><i data-lucide="inbox"></i></span>
-      <div class="fw-bold">ยังไม่มีการจองในแท็บนี้</div>
-      <p class="small text-secondary">เริ่มสำรวจที่พักและบริการเพื่อสุขภาพได้เลย</p>
-      <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill btn-sm px-3">สำรวจที่พัก</a>
+      <div class="fw-bold">{% translate "ยังไม่มีการจองในแท็บนี้" %}</div>
+      <p class="small text-secondary">{% translate "เริ่มสำรวจที่พักและบริการเพื่อสุขภาพได้เลย" %}</p>
+      <a href="{% url 'accommodations:list' %}" class="btn btn-green rounded-pill btn-sm px-3">{% translate "สำรวจที่พัก" %}</a>
     </div>
   {% endif %}
 </div>

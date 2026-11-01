@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext as _, gettext_lazy
 
 BOOKING_TTL_MINUTES = 15
 
@@ -23,18 +24,18 @@ def default_expires_at():
 
 
 class BookingStatus(models.TextChoices):
-    AWAITING_PAYMENT = "AWAITING_PAYMENT", "รอชำระเงิน (Awaiting Payment)"
-    PAYMENT_EXPIRED = "PAYMENT_EXPIRED", "หมดเวลาชำระเงิน (Expired)"
-    CONFIRMED = "CONFIRMED", "ยืนยันแล้ว (Confirmed)"
-    CANCELLED = "CANCELLED", "ยกเลิก (Cancelled)"
-    COMPLETED = "COMPLETED", "เสร็จสิ้น (Completed)"
+    AWAITING_PAYMENT = "AWAITING_PAYMENT", gettext_lazy("รอชำระเงิน (Awaiting Payment)")
+    PAYMENT_EXPIRED = "PAYMENT_EXPIRED", gettext_lazy("หมดเวลาชำระเงิน (Expired)")
+    CONFIRMED = "CONFIRMED", gettext_lazy("ยืนยันแล้ว (Confirmed)")
+    CANCELLED = "CANCELLED", gettext_lazy("ยกเลิก (Cancelled)")
+    COMPLETED = "COMPLETED", gettext_lazy("เสร็จสิ้น (Completed)")
 
 
 class BookingItemType(models.TextChoices):
-    ROOM = "ROOM", "ที่พัก / โฮมสเตย์"
-    FOOD = "FOOD", "อาหารสุขภาพ"
-    WELLNESS = "WELLNESS", "นวดแผนไทย / สปา"
-    OTOP = "OTOP", "สินค้าชุมชน OTOP"
+    ROOM = "ROOM", gettext_lazy("ที่พัก / โฮมสเตย์")
+    FOOD = "FOOD", gettext_lazy("อาหารสุขภาพ")
+    WELLNESS = "WELLNESS", gettext_lazy("นวดแผนไทย / สปา")
+    OTOP = "OTOP", gettext_lazy("สินค้าชุมชน OTOP")
 
 
 class Booking(models.Model):
@@ -142,27 +143,27 @@ class ShippingSetting(models.Model):
         decimal_places=2,
         default=Decimal("40.00"),
         validators=[MinValueValidator(Decimal("0.00"))],
-        verbose_name="ค่าจัดส่งเริ่มต้น (บาท)",
+        verbose_name=gettext_lazy("ค่าจัดส่งเริ่มต้น (บาท)"),
     )
     is_free_shipping_enabled = models.BooleanField(
         default=False,
-        verbose_name="เปิดโปรโมชันส่งฟรีทุกออเดอร์",
+        verbose_name=gettext_lazy("เปิดโปรโมชันส่งฟรีทุกออเดอร์"),
     )
     free_shipping_min_order = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=Decimal("500.00"),
         validators=[MinValueValidator(Decimal("0.00"))],
-        verbose_name="ยอดสั่งซื้อขั้นต่ำสำหรับส่งฟรี (บาท)",
+        verbose_name=gettext_lazy("ยอดสั่งซื้อขั้นต่ำสำหรับส่งฟรี (บาท)"),
     )
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = "shipping_settings"
-        verbose_name = "การตั้งค่าค่าจัดส่ง"
+        verbose_name = gettext_lazy("การตั้งค่าค่าจัดส่ง")
 
     def __str__(self):
-        status = "ส่งฟรีทุกรายการ" if self.is_free_shipping_enabled else f"เริ่มต้น ฿{self.base_shipping_fee}"
+        status = _("ส่งฟรีทุกรายการ") if self.is_free_shipping_enabled else _("เริ่มต้น ฿{base_shipping_fee}").format(base_shipping_fee=self.base_shipping_fee)
         return f"Shipping Settings ({status})"
 
     @classmethod

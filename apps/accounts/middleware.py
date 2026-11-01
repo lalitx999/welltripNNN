@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.utils.translation import gettext as _
 
 
 class SessionIdleTimeoutMiddleware:
@@ -26,7 +27,7 @@ class SessionIdleTimeoutMiddleware:
                 # Session has been idle too long
                 logout(request)
                 request.session.flush()
-                messages.warning(request, "เซสชันของคุณหมดอายุเนื่องจากไม่มีการใช้งานเกิน 30 นาที กรุณาเข้าสู่ระบบใหม่")
+                messages.warning(request, _("เซสชันของคุณหมดอายุเนื่องจากไม่มีการใช้งานเกิน 30 นาที กรุณาเข้าสู่ระบบใหม่"))
                 return redirect('accounts:login')
 
             # Update last activity timestamp on active requests

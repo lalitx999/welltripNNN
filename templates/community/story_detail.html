@@ -1,13 +1,14 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}{{ story.title }} - เรื่องเล่าชุมชน WellTrip Sisaket{% endblock %}
+{% block title %}{% blocktranslate trimmed with title=story.title %}{{ title }} - เรื่องเล่าชุมชน WellTrip Sisaket{% endblocktranslate %}{% endblock %}
 
 {% block content %}
 <article class="container-xl py-4 py-md-5" style="max-width: 50rem;">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb small">
-      <li class="breadcrumb-item"><a href="{% url 'community:stories_list' %}" class="text-green">เรื่องเล่าชุมชน</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'community:stories_list' %}" class="text-green">{% translate "เรื่องเล่าชุมชน" %}</a></li>
       <li class="breadcrumb-item active text-truncate" aria-current="page" style="max-width: 18rem;">{{ story.title }}</li>
     </ol>
   </nav>
@@ -18,7 +19,7 @@
   </div>
   <h1 class="fw-bold mb-1">{{ story.title }}</h1>
   {% if story.title_en %}<p class="text-secondary fst-italic mb-2">{{ story.title_en }}</p>{% endif %}
-  <div class="small text-secondary mb-4"><i data-lucide="calendar" class="me-1"></i>เผยแพร่เมื่อ {{ story.updated_at|date:"d F Y" }}</div>
+  <div class="small text-secondary mb-4"><i data-lucide="calendar" class="me-1"></i>{% blocktranslate trimmed with updated_at=story.updated_at|date:"d F Y" %}เผยแพร่เมื่อ {{ updated_at }}{% endblocktranslate %}</div>
 
   {% if story.image_url %}
     <div class="ratio ratio-16x9 rounded-4 overflow-hidden mb-4">
@@ -31,7 +32,7 @@
   {% endif %}
   <div class="fs-6 lh-lg">{{ story.body|linebreaks }}</div>
 
-  <a href="{% url 'community:stories_list' %}" class="btn btn-outline-ink rounded-pill mt-4"><i data-lucide="arrow-left" class="me-1"></i>เรื่องเล่าทั้งหมด</a>
+  <a href="{% url 'community:stories_list' %}" class="btn btn-outline-ink rounded-pill mt-4"><i data-lucide="arrow-left" class="me-1"></i>{% translate "เรื่องเล่าทั้งหมด" %}</a>
 </article>
 
 <script type="application/ld+json">

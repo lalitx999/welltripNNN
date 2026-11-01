@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from apps.core.services.media import secure_upload_path
+from django.utils.translation import gettext as _, gettext_lazy
 
 
 def service_image_path(instance, filename):
@@ -11,11 +12,11 @@ def service_image_path(instance, filename):
 
 
 class FoodWellnessCategory(models.TextChoices):
-    LOW_SUGAR = "LOW_SUGAR", "น้ำตาลน้อย (Low Sugar)"
-    LOW_SODIUM = "LOW_SODIUM", "โซเดียมต่ำ (Low Sodium)"
-    ORGANIC = "ORGANIC", "เกษตรอินทรีย์ (Organic)"
-    HERBAL = "HERBAL", "สมุนไพรพื้นบ้าน (Herbal)"
-    VEGAN = "VEGAN", "มังสวิรัติ/เจ (Vegan)"
+    LOW_SUGAR = "LOW_SUGAR", gettext_lazy("น้ำตาลน้อย (Low Sugar)")
+    LOW_SODIUM = "LOW_SODIUM", gettext_lazy("โซเดียมต่ำ (Low Sodium)")
+    ORGANIC = "ORGANIC", gettext_lazy("เกษตรอินทรีย์ (Organic)")
+    HERBAL = "HERBAL", gettext_lazy("สมุนไพรพื้นบ้าน (Herbal)")
+    VEGAN = "VEGAN", gettext_lazy("มังสวิรัติ/เจ (Vegan)")
 
 
 class FoodMenu(models.Model):
@@ -76,7 +77,7 @@ class WellnessService(models.Model):
         ordering = ("name",)
 
     def __str__(self):
-        return f"{self.name} ({self.duration_minutes} นาที) - ฿{self.price}"
+        return _("{name} ({duration_minutes} นาที) - ฿{price}").format(name=self.name, duration_minutes=self.duration_minutes, price=self.price)
 
 
 class WellnessTimeSlot(models.Model):

@@ -22,6 +22,7 @@ from apps.bookings.models import Booking, BookingStatus
 from apps.community.models import MapLocation, MapLocationCategory, PassportStamp, LocationEvent, EditorialEntry
 from apps.core.services.media import sanitize_and_strip_image
 from apps.core.tasks import send_merchant_kyc_decision_task
+from django.utils.translation import gettext as _
 
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
@@ -83,7 +84,7 @@ def admin_command_center_view(request):
     # 2. Module-Specific Data Loading
     # -------------------------------------------------------------------------
     context = {
-        'page_title': 'ศูนย์ควบคุมระบบแอดมิน (Admin Command Center) — WellTrip',
+        'page_title': _("ศูนย์ควบคุมระบบแอดมิน (Admin Command Center) — WellTrip"),
         'active_tab': active_tab,
         'total_users_count': total_users_count,
         'tourists_count': tourists_count,
@@ -180,6 +181,12 @@ def admin_command_center_view(request):
     elif active_tab == 'content':
         context['stories'] = EditorialEntry.objects.all().order_by('-updated_at')
 
+    # TAB: EVENTS CALENDAR
+    elif active_tab == 'events':
+        from apps.community.selectors.event_selector import admin_event_list
+        context['events'] = admin_event_list()
+        context['today'] = timezone.localdate()
+
     # TAB 8: VOUCHERS & SHIPPING SETTINGS
     elif active_tab == 'vouchers':
         from apps.community.models import Coupon
@@ -232,7 +239,7 @@ def admin_approve_merchant_view(request, user_id):
     # Email goes out from the worker so SMTP never delays the admin
     send_merchant_kyc_decision_task.delay_on_commit(merchant.id, True)
 
-    messages.success(request, f"อนุมัติพาร์ทเนอร์ {merchant.email} เรียบร้อยแล้ว (สินค้า/ห้องพักเปิดให้บริการทันที พร้อมส่งอีเมลแจ้งเตือน)")
+    messages.success(request, _("อนุมัติพาร์ทเนอร์ {email} เรียบร้อยแล้ว (สินค้า/ห้องพักเปิดให้บริการทันที พร้อมส่งอีเมลแจ้งเตือน)").format(email=merchant.email))
     return redirect('/accounts/admin-center/?tab=approvals')
 
 
@@ -244,7 +251,7 @@ def admin_reject_merchant_view(request, user_id):
     Marks rejection, updates MerchantProfile with reason, and dispatches explanation email.
     """
     merchant = get_object_or_404(User, id=user_id)
-    reason = request.POST.get('reason', '').strip() or "ข้อมูลเอกสารประกอบการยืนยันตัวตนไม่ครบถ้วนหรือไม่สอดคล้องตามเกณฑ์มาตรฐาน"
+    reason = request.POST.get('reason', '').strip() or _("ข้อมูลเอกสารประกอบการยืนยันตัวตนไม่ครบถ้วนหรือไม่สอดคล้องตามเกณฑ์มาตรฐาน")
 
     with transaction.atomic():
         MerchantProfile.objects.filter(user=merchant).update(
@@ -263,7 +270,7 @@ def admin_reject_merchant_view(request, user_id):
 
     send_merchant_kyc_decision_task.delay_on_commit(merchant.id, False, reason)
 
-    messages.warning(request, f"ปฏิเสธการอนุมัติพาร์ทเนอร์ {merchant.email} และส่งอีเมลแจ้งเหตุผลเรียบร้อยแล้ว")
+    messages.warning(request, _("ปฏิเสธการอนุมัติพาร์ทเนอร์ {email} และส่งอีเมลแจ้งเหตุผลเรียบร้อยแล้ว").format(email=merchant.email))
     return redirect('/accounts/admin-center/?tab=approvals')
 
 
@@ -288,16 +295,16 @@ def admin_delete_user_view(request, user_id):
 
     # 1. Self-Deletion Guard
     if request.user.id == target_user.id:
-        messages.error(request, "ความปลอดภัย: ไม่อนุญาตให้ลบบัญชีของตนเองผ่านระบบผู้ดูแล")
+        messages.error(request, _("ความปลอดภัย: ไม่อนุญาตให้ลบบัญชีของตนเองผ่านระบบผู้ดูแล"))
         return redirect('accounts:admin_users')
 
     # 2. Hierarchy Guard
     if request.user.role == UserRoles.COMMUNITY_ADMIN:
         if target_user.role == UserRoles.SUPER_ADMIN:
-            messages.error(request, "การละเมิดสิทธิ์: ผู้ดูแลชุมชน (Community Admin) ไม่มีสิทธิ์ลบบัญชีผู้ดูแลระบบสูงสุด (Super Admin)")
+            messages.error(request, _("การละเมิดสิทธิ์: ผู้ดูแลชุมชน (Community Admin) ไม่มีสิทธิ์ลบบัญชีผู้ดูแลระบบสูงสุด (Super Admin)"))
             return redirect('accounts:admin_users')
         if target_user.role == UserRoles.COMMUNITY_ADMIN:
-            messages.error(request, "การละเมิดสิทธิ์: ผู้ดูแลชุมชนไม่สามารถลบบัญชีผู้ดูแลชุมชนอื่นได้ (สงวนสิทธิ์เฉพาะ Super Admin)")
+            messages.error(request, _("การละเมิดสิทธิ์: ผู้ดูแลชุมชนไม่สามารถลบบัญชีผู้ดูแลชุมชนอื่นได้ (สงวนสิทธิ์เฉพาะ Super Admin)"))
             return redirect('accounts:admin_users')
 
     # 3. Cascade Guard with Soft-Delete Fallback
@@ -313,7 +320,7 @@ def admin_delete_user_view(request, user_id):
                 changes={"deleted_user": user_email},
                 user=request.user,
             )
-            messages.success(request, f"ลบบัญชีผู้ใช้ {user_email} ออกจากระบบเรียบร้อยแล้ว")
+            messages.success(request, _("ลบบัญชีผู้ใช้ {user_email} ออกจากระบบเรียบร้อยแล้ว").format(user_email=user_email))
     except (models.ProtectedError, models.RestrictedError, IntegrityError) as exc:
         # Fallback to Soft-Delete to protect integrity and financial logs
         target_user.is_active = False
@@ -331,7 +338,7 @@ def admin_delete_user_view(request, user_id):
         )
         messages.warning(
             request,
-            f"ผู้ใช้ {user_email} มีข้อมูลประวัติการเงิน การจอง หรือบริการผูกอยู่ จึงได้ทำการระงับ/ปิดการใช้งาน (Soft-Delete) เพื่อรักษาหลักฐานทางบัญชีตามมาตรฐานความปลอดภัย"
+            _("ผู้ใช้ {user_email} มีข้อมูลประวัติการเงิน การจอง หรือบริการผูกอยู่ จึงได้ทำการระงับ/ปิดการใช้งาน (Soft-Delete) เพื่อรักษาหลักฐานทางบัญชีตามมาตรฐานความปลอดภัย").format(user_email=user_email)
         )
 
     return redirect('accounts:admin_users')
@@ -388,13 +395,13 @@ def admin_catalog_add_view(request):
         price = Decimal("100.00")
 
     if not title:
-        messages.error(request, "กรุณาระบุชื่อรายการ")
+        messages.error(request, _("กรุณาระบุชื่อรายการ"))
         return redirect('/accounts/admin-center/?tab=catalog')
 
     try:
         with transaction.atomic():
             if item_type == "ACCOMMODATION":
-                district = request.POST.get('district', 'เมืองศรีสะเกษ').strip()
+                district = request.POST.get('district', _("เมืองศรีสะเกษ")).strip()
                 address = request.POST.get('address', '').strip()
                 acc = Accommodation.objects.create(
                     owner=owner,
@@ -407,7 +414,7 @@ def admin_catalog_add_view(request):
                 from apps.accommodations.models import Room
                 room = Room.objects.create(
                     accommodation=acc,
-                    name="ห้องพักมาตรฐาน",
+                    name=_("ห้องพักมาตรฐาน"),
                     base_price_per_night=price,
                     capacity_people=2,
                     total_rooms_count=5,
@@ -462,7 +469,7 @@ def admin_catalog_add_view(request):
                 created_id = str(otop.id)
 
             else:
-                messages.error(request, f"ไม่พบประเภทแคตตาล็อก: {item_type}")
+                messages.error(request, _("ไม่พบประเภทแคตตาล็อก: {item_type}").format(item_type=item_type))
                 return redirect('/accounts/admin-center/?tab=catalog')
 
             record_audit_log(
@@ -473,9 +480,9 @@ def admin_catalog_add_view(request):
                 changes={"title": title, "price": str(price), "created_by": request.user.email},
                 user=request.user,
             )
-            messages.success(request, f"เพิ่มรายการ [{item_type}] '{title}' สำเร็จ")
+            messages.success(request, _("เพิ่มรายการ [{item_type}] '{title}' สำเร็จ").format(item_type=item_type, title=title))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาดในการเพิ่มรายการ: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาดในการเพิ่มรายการ: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=catalog')
 
@@ -550,7 +557,7 @@ def admin_catalog_edit_view(request, item_type, item_id):
                 item.save()
 
             else:
-                messages.error(request, f"ไม่พบประเภทรายการ {item_type}")
+                messages.error(request, _("ไม่พบประเภทรายการ {item_type}").format(item_type=item_type))
                 return redirect('/accounts/admin-center/?tab=catalog')
 
             record_audit_log(
@@ -561,9 +568,9 @@ def admin_catalog_edit_view(request, item_type, item_id):
                 changes={"title": title, "price": price_val, "is_active": is_active_val},
                 user=request.user,
             )
-            messages.success(request, f"แก้ไขข้อมูล [{item_type}] สำเร็จ")
+            messages.success(request, _("แก้ไขข้อมูล [{item_type}] สำเร็จ").format(item_type=item_type))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาดในการแก้ไข: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาดในการแก้ไข: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=catalog')
 
@@ -584,7 +591,7 @@ def admin_catalog_delete_view(request, item_type, item_id):
             elif item_type == "OTOP":
                 item = get_object_or_404(OTOPProduct, id=item_id)
             else:
-                messages.error(request, f"ไม่พบประเภทรายการ {item_type}")
+                messages.error(request, _("ไม่พบประเภทรายการ {item_type}").format(item_type=item_type))
                 return redirect('/accounts/admin-center/?tab=catalog')
 
             item_name = getattr(item, 'name', str(item_id))
@@ -598,9 +605,9 @@ def admin_catalog_delete_view(request, item_type, item_id):
                 changes={"deleted_title": item_name},
                 user=request.user,
             )
-            messages.success(request, f"ลบรายการ [{item_type}] '{item_name}' เรียบร้อยแล้ว")
+            messages.success(request, _("ลบรายการ [{item_type}] '{item_name}' เรียบร้อยแล้ว").format(item_type=item_type, item_name=item_name))
     except Exception as exc:
-        messages.error(request, f"ไม่สามารถลบรายการได้เนื่องจากมีข้อมูลออเดอร์ผูกอยู่ ({str(exc)})")
+        messages.error(request, _("ไม่สามารถลบรายการได้เนื่องจากมีข้อมูลออเดอร์ผูกอยู่ ({str})").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=catalog')
 
@@ -632,13 +639,13 @@ def admin_catalog_toggle_view(request, item_type, item_id):
             item.save(update_fields=['is_active', 'updated_at'])
             is_now = item.is_active
         else:
-            messages.error(request, "ไม่พบหมวดหมู่")
+            messages.error(request, _("ไม่พบหมวดหมู่"))
             return redirect('/accounts/admin-center/?tab=catalog')
 
-        status_text = "เปิดให้บริการ/พร้อมขาย" if is_now else "ระงับ/ปิดบริการชั่วคราว"
-        messages.success(request, f"เปลี่ยนสถานะ [{item_type}] เป็น '{status_text}' เรียบร้อยแล้ว")
+        status_text = _("เปิดให้บริการ/พร้อมขาย") if is_now else _("ระงับ/ปิดบริการชั่วคราว")
+        messages.success(request, _("เปลี่ยนสถานะ [{item_type}] เป็น '{status_text}' เรียบร้อยแล้ว").format(item_type=item_type, status_text=status_text))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาด: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาด: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=catalog')
 
@@ -667,16 +674,16 @@ def admin_partner_add_view(request):
     role = role_map.get(category, UserRoles.HOMESTAY_OWNER)
 
     if not email or not business_name:
-        messages.error(request, "กรุณาระบุอีเมลและชื่อสถานประกอบการ")
+        messages.error(request, _("กรุณาระบุอีเมลและชื่อสถานประกอบการ"))
         return redirect('/accounts/admin-center/?tab=approvals')
 
     problem = _password_problem(password)
     if problem:
-        messages.error(request, f"รหัสผ่านไม่ผ่านเกณฑ์: {problem}")
+        messages.error(request, _("รหัสผ่านไม่ผ่านเกณฑ์: {problem}").format(problem=problem))
         return redirect('/accounts/admin-center/?tab=approvals')
 
     if User.objects.filter(email=email).exists():
-        messages.error(request, f"อีเมล {email} มีอยู่ในระบบแล้ว")
+        messages.error(request, _("อีเมล {email} มีอยู่ในระบบแล้ว").format(email=email))
         return redirect('/accounts/admin-center/?tab=approvals')
 
     try:
@@ -706,9 +713,9 @@ def admin_partner_add_view(request):
                 changes={"email": email, "business_name": business_name, "category": category},
                 user=request.user,
             )
-            messages.success(request, f"เพิ่มพาร์ทเนอร์ '{business_name}' ({email}) เรียบร้อยแล้ว (รหัสผ่านเริ่มต้น: {password})")
+            messages.success(request, _("เพิ่มพาร์ทเนอร์ '{business_name}' ({email}) เรียบร้อยแล้ว (รหัสผ่านเริ่มต้น: {password})").format(business_name=business_name, email=email, password=password))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาดในการเพิ่มพาร์ทเนอร์: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาดในการเพิ่มพาร์ทเนอร์: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=approvals')
 
@@ -745,7 +752,7 @@ def admin_partner_edit_view(request, user_id):
         changes={"business_name": business_name, "phone": phone},
         user=request.user,
     )
-    messages.success(request, f"แก้ไขข้อมูลพาร์ทเนอร์ '{profile.business_name}' เรียบร้อยแล้ว")
+    messages.success(request, _("แก้ไขข้อมูลพาร์ทเนอร์ '{business_name}' เรียบร้อยแล้ว").format(business_name=profile.business_name))
     return redirect('/accounts/admin-center/?tab=approvals')
 
 
@@ -772,9 +779,9 @@ def admin_partner_delete_view(request, user_id):
                 changes={"deleted_partner": business_name},
                 user=request.user,
             )
-            messages.success(request, f"ลบข้อมูลพาร์ทเนอร์ '{business_name}' และระงับบัญชีเรียบร้อยแล้ว")
+            messages.success(request, _("ลบข้อมูลพาร์ทเนอร์ '{business_name}' และระงับบัญชีเรียบร้อยแล้ว").format(business_name=business_name))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาดในการลบพาร์ทเนอร์: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาดในการลบพาร์ทเนอร์: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=approvals')
 
@@ -812,7 +819,7 @@ def _can_manage(actor, target):
 def _password_problem(password, user=None):
     """Returns a Thai error message if the admin-supplied password is missing or weak."""
     if not password:
-        return "กรุณากำหนดรหัสผ่าน"
+        return _("กรุณากำหนดรหัสผ่าน")
     try:
         validate_password(password, user)
     except ValidationError as exc:
@@ -832,20 +839,20 @@ def admin_user_add_view(request):
     phone = request.POST.get('phone_number', '').strip()
 
     if not email:
-        messages.error(request, "กรุณาระบุอีเมลผู้ใช้งาน")
+        messages.error(request, _("กรุณาระบุอีเมลผู้ใช้งาน"))
         return redirect('/accounts/admin-center/?tab=users')
 
     if role not in _assignable_roles(request.user):
-        messages.error(request, "ไม่มีสิทธิ์กำหนดบทบาทนี้")
+        messages.error(request, _("ไม่มีสิทธิ์กำหนดบทบาทนี้"))
         return redirect('/accounts/admin-center/?tab=users')
 
     problem = _password_problem(password)
     if problem:
-        messages.error(request, f"รหัสผ่านไม่ผ่านเกณฑ์: {problem}")
+        messages.error(request, _("รหัสผ่านไม่ผ่านเกณฑ์: {problem}").format(problem=problem))
         return redirect('/accounts/admin-center/?tab=users')
 
     if User.objects.filter(email=email).exists():
-        messages.error(request, f"อีเมล {email} มีผู้ใช้งานในระบบแล้ว")
+        messages.error(request, _("อีเมล {email} มีผู้ใช้งานในระบบแล้ว").format(email=email))
         return redirect('/accounts/admin-center/?tab=users')
 
     try:
@@ -868,9 +875,9 @@ def admin_user_add_view(request):
             changes={"email": email, "role": role},
             user=request.user,
         )
-        messages.success(request, f"สร้างบัญชีผู้ใช้ {email} (บทบาท: {user.get_role_display()}) สำเร็จ")
+        messages.success(request, _("สร้างบัญชีผู้ใช้ {email} (บทบาท: {role}) สำเร็จ").format(email=email, role=user.get_role_display()))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาดในการสร้างบัญชี: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาดในการสร้างบัญชี: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=users')
 
@@ -882,7 +889,7 @@ def admin_user_edit_view(request, user_id):
     target_user = get_object_or_404(User, id=user_id)
 
     if not _can_manage(request.user, target_user):
-        messages.error(request, "ไม่มีสิทธิ์แก้ไขบัญชี Super Admin")
+        messages.error(request, _("ไม่มีสิทธิ์แก้ไขบัญชี Super Admin"))
         return redirect('/accounts/admin-center/?tab=users')
 
     first_name = request.POST.get('first_name', '').strip()
@@ -905,7 +912,7 @@ def admin_user_edit_view(request, user_id):
         changes={"name": f"{first_name} {last_name}", "phone": phone, "role": role},
         user=request.user,
     )
-    messages.success(request, f"อัปเดตข้อมูลผู้ใช้ {target_user.email} เรียบร้อยแล้ว")
+    messages.success(request, _("อัปเดตข้อมูลผู้ใช้ {email} เรียบร้อยแล้ว").format(email=target_user.email))
     return redirect('/accounts/admin-center/?tab=users')
 
 
@@ -915,16 +922,16 @@ def admin_user_toggle_view(request, user_id):
     """Toggles user is_active status (Suspend / Activate)."""
     target_user = get_object_or_404(User, id=user_id)
     if request.user.id == target_user.id:
-        messages.error(request, "ไม่สามารถระงับบัญชีของตนเองได้")
+        messages.error(request, _("ไม่สามารถระงับบัญชีของตนเองได้"))
         return redirect('/accounts/admin-center/?tab=users')
     if not _can_manage(request.user, target_user):
-        messages.error(request, "ไม่มีสิทธิ์ระงับบัญชี Super Admin")
+        messages.error(request, _("ไม่มีสิทธิ์ระงับบัญชี Super Admin"))
         return redirect('/accounts/admin-center/?tab=users')
 
     target_user.is_active = not target_user.is_active
     target_user.save(update_fields=['is_active'])
 
-    status_str = "เปิดใช้งาน" if target_user.is_active else "ระงับการใช้งาน"
+    status_str = _("เปิดใช้งาน") if target_user.is_active else _("ระงับการใช้งาน")
     record_audit_log(
         request=request,
         action="UPDATE",
@@ -933,7 +940,7 @@ def admin_user_toggle_view(request, user_id):
         changes={"is_active": target_user.is_active},
         user=request.user,
     )
-    messages.success(request, f"เปลี่ยนสถานะบัญชี {target_user.email} เป็น '{status_str}' เรียบร้อยแล้ว")
+    messages.success(request, _("เปลี่ยนสถานะบัญชี {email} เป็น '{status_str}' เรียบร้อยแล้ว").format(email=target_user.email, status_str=status_str))
     return redirect('/accounts/admin-center/?tab=users')
 
 
@@ -943,13 +950,13 @@ def admin_user_reset_password_view(request, user_id):
     """Admin resets a user password."""
     target_user = get_object_or_404(User, id=user_id)
     if not _can_manage(request.user, target_user):
-        messages.error(request, "ไม่มีสิทธิ์รีเซ็ตรหัสผ่านของ Super Admin")
+        messages.error(request, _("ไม่มีสิทธิ์รีเซ็ตรหัสผ่านของ Super Admin"))
         return redirect('/accounts/admin-center/?tab=users')
 
     new_password = request.POST.get('new_password', '').strip()
     problem = _password_problem(new_password, target_user)
     if problem:
-        messages.error(request, f"รหัสผ่านไม่ผ่านเกณฑ์: {problem}")
+        messages.error(request, _("รหัสผ่านไม่ผ่านเกณฑ์: {problem}").format(problem=problem))
         return redirect('/accounts/admin-center/?tab=users')
 
     target_user.set_password(new_password)
@@ -963,7 +970,7 @@ def admin_user_reset_password_view(request, user_id):
         changes={"action": "PASSWORD_RESET_BY_ADMIN"},
         user=request.user,
     )
-    messages.success(request, f"รีเซ็ตรหัสผ่านสำหรับ {target_user.email} เรียบร้อยแล้ว")
+    messages.success(request, _("รีเซ็ตรหัสผ่านสำหรับ {email} เรียบร้อยแล้ว").format(email=target_user.email))
     return redirect('/accounts/admin-center/?tab=users')
 
 
@@ -1021,7 +1028,7 @@ def admin_location_add_view(request):
     address = request.POST.get('address', '').strip()
 
     if not title:
-        messages.error(request, "กรุณาระบุชื่อจุดเช็คอิน")
+        messages.error(request, _("กรุณาระบุชื่อจุดเช็คอิน"))
         return redirect('/accounts/admin-center/?tab=locations')
 
     lat, lng = _parse_coords_from_google_maps(google_maps_url)
@@ -1047,9 +1054,9 @@ def admin_location_add_view(request):
             changes={"title": title, "category": category, "google_maps_url": google_maps_url},
             user=request.user,
         )
-        messages.success(request, f"เพิ่มจุดเช็คอิน '{title}' เรียบร้อยแล้ว (QR Secret: {loc.qr_secret[:8]}...)")
+        messages.success(request, _("เพิ่มจุดเช็คอิน '{title}' เรียบร้อยแล้ว (QR Secret: {value}...)").format(title=title, value=loc.qr_secret[:8]))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาดในการสร้างจุดเช็คอิน: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาดในการสร้างจุดเช็คอิน: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=locations')
 
@@ -1087,7 +1094,7 @@ def admin_location_edit_view(request, location_id):
         changes={"title": title, "is_active": is_active, "google_maps_url": google_maps_url},
         user=request.user,
     )
-    messages.success(request, f"แก้ไขจุดเช็คอิน '{loc.title}' สำเร็จ")
+    messages.success(request, _("แก้ไขจุดเช็คอิน '{title}' สำเร็จ").format(title=loc.title))
     return redirect('/accounts/admin-center/?tab=locations')
 
 
@@ -1107,7 +1114,7 @@ def admin_location_delete_view(request, location_id):
         changes={"title": title},
         user=request.user,
     )
-    messages.success(request, f"ลบจุดเช็คอิน '{title}' เรียบร้อยแล้ว")
+    messages.success(request, _("ลบจุดเช็คอิน '{title}' เรียบร้อยแล้ว").format(title=title))
     return redirect('/accounts/admin-center/?tab=locations')
 
 
@@ -1132,7 +1139,7 @@ def admin_content_add_view(request):
     is_published = request.POST.get('is_published') == '1'
 
     if not title:
-        messages.error(request, "กรุณาระบุหัวข้อเรื่องเล่า/บทความ")
+        messages.error(request, _("กรุณาระบุหัวข้อเรื่องเล่า/บทความ"))
         return redirect('/accounts/admin-center/?tab=content')
 
     lat, lng = _parse_coords_from_google_maps(google_maps_url)
@@ -1158,9 +1165,9 @@ def admin_content_add_view(request):
             changes={"title": title, "kind": kind, "is_published": is_published, "google_maps_url": google_maps_url},
             user=request.user,
         )
-        messages.success(request, f"สร้างบทความ/เรื่องเล่า '{title}' สำเร็จ")
+        messages.success(request, _("สร้างบทความ/เรื่องเล่า '{title}' สำเร็จ").format(title=title))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาดในการสร้างบทความ: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาดในการสร้างบทความ: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=content')
 
@@ -1208,7 +1215,7 @@ def admin_content_edit_view(request, entry_id):
         changes={"title": title, "is_published": is_published, "google_maps_url": google_maps_url},
         user=request.user,
     )
-    messages.success(request, f"แก้ไขบทความ '{story.title}' สำเร็จ")
+    messages.success(request, _("แก้ไขบทความ '{title}' สำเร็จ").format(title=story.title))
     return redirect('/accounts/admin-center/?tab=content')
     return redirect('/accounts/admin-center/?tab=content')
 
@@ -1229,7 +1236,7 @@ def admin_content_delete_view(request, entry_id):
         changes={"title": title},
         user=request.user,
     )
-    messages.success(request, f"ลบบทความ '{title}' เรียบร้อยแล้ว")
+    messages.success(request, _("ลบบทความ '{title}' เรียบร้อยแล้ว").format(title=title))
     return redirect('/accounts/admin-center/?tab=content')
 
 
@@ -1261,9 +1268,9 @@ def admin_payment_edit_view(request, payment_id):
             changes={"status": new_status, "booking_code": payment.booking.booking_code},
             user=request.user,
         )
-        messages.success(request, f"อัปเดตสถานะการชำระเงินรหัส {payment.booking.booking_code} เป็น '{payment.get_status_display()}'")
+        messages.success(request, _("อัปเดตสถานะการชำระเงินรหัส {booking_code} เป็น '{status}'").format(booking_code=payment.booking.booking_code, status=payment.get_status_display()))
     else:
-        messages.error(request, "สถานะการชำระเงินไม่ถูกต้อง")
+        messages.error(request, _("สถานะการชำระเงินไม่ถูกต้อง"))
 
     return redirect('/accounts/admin-center/?tab=payments')
 
@@ -1286,7 +1293,7 @@ def admin_slip_delete_view(request, slip_id):
         changes={"booking_code": booking_code, "deleted_slip_ref": slip_ref},
         user=request.user,
     )
-    messages.success(request, f"ลบหลักฐานสลิป ({slip_ref}) ของรายการ {booking_code} เรียบร้อยแล้ว")
+    messages.success(request, _("ลบหลักฐานสลิป ({slip_ref}) ของรายการ {booking_code} เรียบร้อยแล้ว").format(slip_ref=slip_ref, booking_code=booking_code))
     return redirect('/accounts/admin-center/?tab=payments')
 
 
@@ -1313,9 +1320,9 @@ def admin_payment_delete_view(request, payment_id):
                 changes={"booking_code": booking_code, "customer_email": customer_email},
                 user=request.user,
             )
-            messages.success(request, f"ลบรายการชำระเงินและคำสั่งจองรหัส {booking_code} ({customer_email}) เรียบร้อยแล้ว")
+            messages.success(request, _("ลบรายการชำระเงินและคำสั่งจองรหัส {booking_code} ({customer_email}) เรียบร้อยแล้ว").format(booking_code=booking_code, customer_email=customer_email))
     except Exception as exc:
-        messages.error(request, f"เกิดข้อผิดพลาดในการลบรายการ: {str(exc)}")
+        messages.error(request, _("เกิดข้อผิดพลาดในการลบรายการ: {str}").format(str=str(exc)))
 
     return redirect('/accounts/admin-center/?tab=payments')
 
@@ -1333,20 +1340,20 @@ def admin_coupon_create_view(request):
     days_valid = request.POST.get('days_valid', '30').strip()
 
     if not code:
-        messages.error(request, "กรุณาระบุรหัสคูปอง (Coupon Code)")
+        messages.error(request, _("กรุณาระบุรหัสคูปอง (Coupon Code)"))
         return redirect('/accounts/admin-center/?tab=vouchers')
 
     if Coupon.objects.filter(code=code).exists():
-        messages.error(request, f"รหัสคูปอง '{code}' มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น")
+        messages.error(request, _("รหัสคูปอง '{code}' มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น").format(code=code))
         return redirect('/accounts/admin-center/?tab=vouchers')
 
     try:
         discount_val = Decimal(discount_amount)
         if discount_val <= Decimal('0'):
-            messages.error(request, "มูลค่าส่วนลดต้องมากกว่า 0 บาท")
+            messages.error(request, _("มูลค่าส่วนลดต้องมากกว่า 0 บาท"))
             return redirect('/accounts/admin-center/?tab=vouchers')
     except Exception:
-        messages.error(request, "มูลค่าส่วนลดไม่ถูกต้อง")
+        messages.error(request, _("มูลค่าส่วนลดไม่ถูกต้อง"))
         return redirect('/accounts/admin-center/?tab=vouchers')
 
     try:
@@ -1376,7 +1383,7 @@ def admin_coupon_create_view(request):
         changes={"code": code, "discount_amount": str(discount_val), "min_purchase": str(min_purch_val)},
         user=request.user,
     )
-    messages.success(request, f"สร้างคูปองส่วนลดรหัส '{code}' (ส่วนลด ฿{discount_val:,.2f}) เรียบร้อยแล้ว")
+    messages.success(request, _("สร้างคูปองส่วนลดรหัส '{code}' (ส่วนลด ฿{discount_val:,.2f}) เรียบร้อยแล้ว").format(code=code, discount_val=discount_val))
     return redirect('/accounts/admin-center/?tab=vouchers')
 
 
@@ -1388,8 +1395,8 @@ def admin_coupon_toggle_view(request, coupon_id):
     coupon = get_object_or_404(Coupon, id=coupon_id)
     coupon.is_active = not coupon.is_active
     coupon.save(update_fields=['is_active'])
-    status_str = "เปิดใช้งาน" if coupon.is_active else "ปิดการใช้งาน"
-    messages.success(request, f"{status_str} คูปอง '{coupon.code}' เรียบร้อยแล้ว")
+    status_str = _("เปิดใช้งาน") if coupon.is_active else _("ปิดการใช้งาน")
+    messages.success(request, _("{status_str} คูปอง '{code}' เรียบร้อยแล้ว").format(status_str=status_str, code=coupon.code))
     return redirect('/accounts/admin-center/?tab=vouchers')
 
 
@@ -1409,7 +1416,7 @@ def admin_coupon_delete_view(request, coupon_id):
         changes={"code": code},
         user=request.user,
     )
-    messages.success(request, f"ลบคูปองส่วนลด '{code}' เรียบร้อยแล้ว")
+    messages.success(request, _("ลบคูปองส่วนลด '{code}' เรียบร้อยแล้ว").format(code=code))
     return redirect('/accounts/admin-center/?tab=vouchers')
 
 
@@ -1449,7 +1456,7 @@ def admin_shipping_settings_update_view(request):
         },
         user=request.user,
     )
-    messages.success(request, "บันทึกการตั้งค่าค่าจัดส่งเรียบร้อยแล้ว")
+    messages.success(request, _("บันทึกการตั้งค่าค่าจัดส่งเรียบร้อยแล้ว"))
     return redirect('/accounts/admin-center/?tab=vouchers')
 
 

@@ -1,13 +1,14 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ตรวจสอบคำสั่งซื้อ - WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ตรวจสอบคำสั่งซื้อ - WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
 <section class="wt-page-head pb-3">
   <div class="container-xl">
     {% include "bookings/partials/checkout_steps.html" with step=2 %}
-    <h1 class="mb-1">ตรวจสอบคำสั่งซื้อ</h1>
-    <p class="text-secondary mb-0">ตรวจสอบรายการ ที่อยู่จัดส่ง และยอดเงินก่อนยืนยัน</p>
+    <h1 class="mb-1">{% translate "ตรวจสอบคำสั่งซื้อ" %}</h1>
+    <p class="text-secondary mb-0">{% translate "ตรวจสอบรายการ ที่อยู่จัดส่ง และยอดเงินก่อนยืนยัน" %}</p>
   </div>
 </section>
 
@@ -17,8 +18,8 @@
     <div class="col-lg-8 d-grid gap-4">
       <div class="wt-card p-3 p-sm-4">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h2 class="h6 fw-bold mb-0"><i data-lucide="package" class="text-green me-1"></i>รายการ ({{ item_count }})</h2>
-          <a href="{% url 'bookings:cart' %}" class="small text-green"><i data-lucide="pencil" class="me-1"></i>แก้ไขตะกร้า</a>
+          <h2 class="h6 fw-bold mb-0"><i data-lucide="package" class="text-green me-1"></i>{% blocktranslate trimmed with item_count=item_count %}รายการ ({{ item_count }}){% endblocktranslate %}</h2>
+          <a href="{% url 'bookings:cart' %}" class="small text-green"><i data-lucide="pencil" class="me-1"></i>{% translate "แก้ไขตะกร้า" %}</a>
         </div>
         <div class="list-group list-group-flush">
           {% for item in cart %}
@@ -26,7 +27,7 @@
               <div class="min-w-0">
                 <div class="fw-semibold">{{ item.title }}</div>
                 <small class="text-secondary">
-                  ฿{{ item.price|floatformat:"0g" }} × {{ item.quantity|default:1 }}{% if item.item_type == 'ROOM' %} ห้อง × {{ item.nights|default:1 }} คืน{% endif %}
+                  ฿{{ item.price|floatformat:"0g" }} × {{ item.quantity|default:1 }}{% if item.item_type == 'ROOM' %} {% blocktranslate trimmed with nights=item.nights|default:1 %}ห้อง × {{ nights }} คืน{% endblocktranslate %}{% endif %}
                   {% if item.date %} · {{ item.date }}{% endif %}
                 </small>
               </div>
@@ -38,37 +39,37 @@
 
       <div class="wt-card p-3 p-sm-4">
         <div class="d-flex justify-content-between align-items-center mb-2">
-          <h2 class="h6 fw-bold mb-0"><i data-lucide="map-pin" class="text-green me-1"></i>ที่อยู่จัดส่ง</h2>
-          <a href="{% url 'bookings:cart' %}" class="small text-green"><i data-lucide="pencil" class="me-1"></i>เปลี่ยน</a>
+          <h2 class="h6 fw-bold mb-0"><i data-lucide="map-pin" class="text-green me-1"></i>{% translate "ที่อยู่จัดส่ง" %}</h2>
+          <a href="{% url 'bookings:cart' %}" class="small text-green"><i data-lucide="pencil" class="me-1"></i>{% translate "เปลี่ยน" %}</a>
         </div>
         {% if shipping_address %}
-          <div class="fw-semibold">{{ shipping_address.recipient_name }} · {{ shipping_address.phone_number }} <span class="badge bg-light text-secondary border">{{ shipping_address.label|default:"ที่อยู่จัดส่ง" }}</span></div>
-          <div class="small text-secondary">{{ shipping_address.address_line }} อ.{{ shipping_address.district }} จ.{{ shipping_address.province }} {{ shipping_address.postal_code }}</div>
+          <div class="fw-semibold">{{ shipping_address.recipient_name }} · {{ shipping_address.phone_number }} <span class="badge bg-light text-secondary border">{{ shipping_address.label|default:_("ที่อยู่จัดส่ง") }}</span></div>
+          <div class="small text-secondary">{% blocktranslate trimmed with address_line=shipping_address.address_line district=shipping_address.district province=shipping_address.province postal_code=shipping_address.postal_code %}{{ address_line }} อ.{{ district }} จ.{{ province }} {{ postal_code }}{% endblocktranslate %}</div>
         {% else %}
-          <div class="small text-secondary">ยังไม่ได้เลือกที่อยู่จัดส่ง (จำเป็นเฉพาะสินค้า OTOP)</div>
+          <div class="small text-secondary">{% translate "ยังไม่ได้เลือกที่อยู่จัดส่ง (จำเป็นเฉพาะสินค้า OTOP)" %}</div>
         {% endif %}
       </div>
 
       <div class="wt-card p-3 p-sm-4">
-        <label for="id_customer_notes" class="form-label fw-bold small"><i data-lucide="message-square" class="text-green me-1"></i>ข้อความถึงผู้ประกอบการ (ถ้ามี)</label>
-        <textarea name="customer_notes" id="id_customer_notes" rows="3" class="form-control" placeholder="เช่น เดินทางถึงประมาณ 15:00 น., แพ้อาหารทะเล"></textarea>
+        <label for="id_customer_notes" class="form-label fw-bold small"><i data-lucide="message-square" class="text-green me-1"></i>{% translate "ข้อความถึงผู้ประกอบการ (ถ้ามี)" %}</label>
+        <textarea name="customer_notes" id="id_customer_notes" rows="3" class="form-control" placeholder="{% translate 'เช่น เดินทางถึงประมาณ 15:00 น., แพ้อาหารทะเล' %}"></textarea>
       </div>
     </div>
 
     <div class="col-lg-4">
       <div class="wt-card p-4 position-sticky" style="top: 6rem;">
-        <h2 class="h6 fw-bold mb-3"><i data-lucide="receipt" class="text-green me-1"></i>สรุปยอด</h2>
+        <h2 class="h6 fw-bold mb-3"><i data-lucide="receipt" class="text-green me-1"></i>{% translate "สรุปยอด" %}</h2>
         <div class="d-grid gap-2 small">
-          <div class="d-flex justify-content-between"><span class="text-secondary">ยอดรวม</span><span>฿{{ totals.subtotal|floatformat:"0g" }}</span></div>
-          <div class="d-flex justify-content-between"><span class="text-secondary">ค่าจัดส่ง</span><span>{{ totals.shipping_status_text }}</span></div>
-          {% if totals.discount_amount > 0 %}<div class="d-flex justify-content-between text-success"><span>ส่วนลด ({{ totals.coupon_code }})</span><span>-฿{{ totals.discount_amount|floatformat:"0g" }}</span></div>{% endif %}
+          <div class="d-flex justify-content-between"><span class="text-secondary">{% translate "ยอดรวม" %}</span><span>฿{{ totals.subtotal|floatformat:"0g" }}</span></div>
+          <div class="d-flex justify-content-between"><span class="text-secondary">{% translate "ค่าจัดส่ง" %}</span><span>{{ totals.shipping_status_text }}</span></div>
+          {% if totals.discount_amount > 0 %}<div class="d-flex justify-content-between text-success"><span>{% blocktranslate trimmed with coupon_code=totals.coupon_code %}ส่วนลด ({{ coupon_code }}){% endblocktranslate %}</span><span>-฿{{ totals.discount_amount|floatformat:"0g" }}</span></div>{% endif %}
         </div>
         <div class="d-flex justify-content-between align-items-baseline border-top mt-3 pt-3">
-          <span class="fw-bold">ยอดชำระสุทธิ</span>
+          <span class="fw-bold">{% translate "ยอดชำระสุทธิ" %}</span>
           <span class="fs-3 fw-bold text-green">฿{{ totals.final_total|floatformat:"0g" }}</span>
         </div>
-        <button type="submit" class="btn btn-gold btn-lg rounded-pill w-100 mt-3"><i data-lucide="check-circle" class="me-1"></i>ยืนยันคำสั่งซื้อ</button>
-        <p class="small text-secondary mt-3 mb-0"><i data-lucide="clock" class="me-1"></i>เมื่อยืนยัน ระบบจะกันห้องพักและสินค้าไว้ให้ 15 นาทีเพื่อชำระเงินและแนบสลิป</p>
+        <button type="submit" class="btn btn-gold btn-lg rounded-pill w-100 mt-3"><i data-lucide="check-circle" class="me-1"></i>{% translate "ยืนยันคำสั่งซื้อ" %}</button>
+        <p class="small text-secondary mt-3 mb-0"><i data-lucide="clock" class="me-1"></i>{% translate "เมื่อยืนยัน ระบบจะกันห้องพักและสินค้าไว้ให้ 15 นาทีเพื่อชำระเงินและแนบสลิป" %}</p>
       </div>
     </div>
   </div>

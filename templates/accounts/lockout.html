@@ -1,6 +1,7 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ระงับการเข้าสู่ระบบชั่วคราว - WellTrip{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ระงับการเข้าสู่ระบบชั่วคราว - WellTrip" %}{% endblock %}
 
 {% block content %}
 <section class="container-xl py-5">
@@ -14,16 +15,16 @@
          init() { const t = setInterval(() => { this.timeLeft > 0 ? this.timeLeft-- : clearInterval(t); }, 1000); }
        }">
     <span class="wt-stat-icon mb-3" style="--c:#c92a2a;--bg:#fff0f0;width:4.5rem;height:4.5rem;border-radius:1.5rem"><i data-lucide="shield-alert" style="width:2rem;height:2rem"></i></span>
-    <h1 class="h4 fw-bold">ระงับการเข้าสู่ระบบชั่วคราว</h1>
-    <p class="text-secondary">มีการใส่รหัสผ่านผิดเกิน 5 ครั้งติดต่อกัน ระบบจึงระงับการเข้าสู่ระบบ 15 นาทีเพื่อปกป้องบัญชีของคุณ</p>
+    <h1 class="h4 fw-bold">{% translate "ระงับการเข้าสู่ระบบชั่วคราว" %}</h1>
+    <p class="text-secondary">{% translate "มีการใส่รหัสผ่านผิดเกิน 5 ครั้งติดต่อกัน ระบบจึงระงับการเข้าสู่ระบบ 15 นาทีเพื่อปกป้องบัญชีของคุณ" %}</p>
     <div class="bg-mint rounded-4 p-3 mb-4">
-      <small class="text-secondary d-block">ลองใหม่ได้ในอีก</small>
+      <small class="text-secondary d-block">{% translate "ลองใหม่ได้ในอีก" %}</small>
       <span class="display-6 fw-bold font-monospace" x-text="formattedTime">15:00</span>
     </div>
-    <p class="small text-secondary">ถ้าลืมรหัสผ่านหรือสงสัยว่ามีคนพยายามเข้าบัญชีของคุณ กรุณาติดต่อทีมงาน</p>
+    <p class="small text-secondary">{% translate "ถ้าลืมรหัสผ่านหรือสงสัยว่ามีคนพยายามเข้าบัญชีของคุณ กรุณาติดต่อทีมงาน" %}</p>
     <div class="d-flex flex-wrap justify-content-center gap-2">
-      <a href="{% url 'core:contact' %}" class="btn btn-green rounded-pill px-4">ติดต่อทีมงาน</a>
-      <a href="{% url 'core:landing' %}" class="btn btn-outline-ink rounded-pill px-4">กลับหน้าแรก</a>
+      <a href="{% url 'core:contact' %}" class="btn btn-green rounded-pill px-4">{% translate "ติดต่อทีมงาน" %}</a>
+      <a href="{% url 'core:landing' %}" class="btn btn-outline-ink rounded-pill px-4">{% translate "กลับหน้าแรก" %}</a>
     </div>
   </div>
 </section>

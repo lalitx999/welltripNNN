@@ -1,18 +1,19 @@
+{% load i18n %}
 <div class="d-grid gap-4">
   <div class="row g-3">
-    <div class="col-sm-6 col-xl-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="users" class="icon-lg"></i></span><div class="wt-stat-value">{{ total_users_count }}</div><small class="text-secondary">สมาชิก · นักท่องเที่ยว {{ tourists_count }} · ร้านค้า {{ merchants_count }}</small></div></div>
-    <div class="col-sm-6 col-xl-3"><a href="?tab=approvals" class="wt-card wt-card-hover p-4 h-100 d-block"><span class="wt-stat-icon mb-2" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shield-alert" class="icon-lg"></i></span><div class="wt-stat-value">{{ total_pending_kyc }}</div><small class="text-secondary">ร้านค้ารออนุมัติ</small></a></div>
-    <div class="col-sm-6 col-xl-3"><a href="?tab=payments&status=PENDING" class="wt-card wt-card-hover p-4 h-100 d-block"><span class="wt-stat-icon mb-2" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="receipt" class="icon-lg"></i></span><div class="wt-stat-value">{{ pending_slips_count }}</div><small class="text-secondary">สลิปรอตรวจ</small></a></div>
-    <div class="col-sm-6 col-xl-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="coins" class="icon-lg"></i></span><div class="wt-stat-value">฿{{ total_revenue|floatformat:"0g" }}</div><small class="text-secondary">ยอดชำระสำเร็จ · {{ total_bookings_count }} คำสั่งซื้อ</small></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="users" class="icon-lg"></i></span><div class="wt-stat-value">{{ total_users_count }}</div><small class="text-secondary">{% blocktranslate trimmed with tourists_count=tourists_count merchants_count=merchants_count %}สมาชิก · นักท่องเที่ยว {{ tourists_count }} · ร้านค้า {{ merchants_count }}{% endblocktranslate %}</small></div></div>
+    <div class="col-sm-6 col-xl-3"><a href="?tab=approvals" class="wt-card wt-card-hover p-4 h-100 d-block"><span class="wt-stat-icon mb-2" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shield-alert" class="icon-lg"></i></span><div class="wt-stat-value">{{ total_pending_kyc }}</div><small class="text-secondary">{% translate "ร้านค้ารออนุมัติ" %}</small></a></div>
+    <div class="col-sm-6 col-xl-3"><a href="?tab=payments&status=PENDING" class="wt-card wt-card-hover p-4 h-100 d-block"><span class="wt-stat-icon mb-2" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="receipt" class="icon-lg"></i></span><div class="wt-stat-value">{{ pending_slips_count }}</div><small class="text-secondary">{% translate "สลิปรอตรวจ" %}</small></a></div>
+    <div class="col-sm-6 col-xl-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="coins" class="icon-lg"></i></span><div class="wt-stat-value">฿{{ total_revenue|floatformat:"0g" }}</div><small class="text-secondary">{% blocktranslate trimmed with total_bookings_count=total_bookings_count %}ยอดชำระสำเร็จ · {{ total_bookings_count }} คำสั่งซื้อ{% endblocktranslate %}</small></div></div>
   </div>
 
   <div class="row g-4">
     <div class="col-xl-7">
       <div class="wt-card h-100">
-        <div class="p-3 border-bottom d-flex justify-content-between"><span class="fw-bold"><i data-lucide="calendar" class="text-green me-1"></i>คำสั่งซื้อล่าสุด</span><a href="?tab=payments" class="small text-green">ดูทั้งหมด</a></div>
+        <div class="p-3 border-bottom d-flex justify-content-between"><span class="fw-bold"><i data-lucide="calendar" class="text-green me-1"></i>{% translate "คำสั่งซื้อล่าสุด" %}</span><a href="?tab=payments" class="small text-green">{% translate "ดูทั้งหมด" %}</a></div>
         <div class="table-responsive">
           <table class="table wt-table mb-0">
-            <thead><tr><th>รหัส</th><th>ลูกค้า</th><th class="text-end">ยอด</th><th>สถานะ</th></tr></thead>
+            <thead><tr><th>{% translate "รหัส" %}</th><th>{% translate "ลูกค้า" %}</th><th class="text-end">{% translate "ยอด" %}</th><th>{% translate "สถานะ" %}</th></tr></thead>
             <tbody>
               {% for b in recent_bookings %}
                 <tr>
@@ -22,7 +23,7 @@
                   <td>{% include "bookings/partials/status_badge.html" with status=b.status label=b.get_status_display %}</td>
                 </tr>
               {% empty %}
-                <tr><td colspan="4" class="text-center text-secondary small py-4">ยังไม่มีคำสั่งซื้อ</td></tr>
+                <tr><td colspan="4" class="text-center text-secondary small py-4">{% translate "ยังไม่มีคำสั่งซื้อ" %}</td></tr>
               {% endfor %}
             </tbody>
           </table>
@@ -31,15 +32,15 @@
     </div>
     <div class="col-xl-5">
       <div class="wt-card h-100">
-        <div class="p-3 border-bottom d-flex justify-content-between"><span class="fw-bold"><i data-lucide="user-check" class="text-green me-1"></i>ร้านค้ารออนุมัติ</span><a href="?tab=approvals" class="small text-green">ทั้งหมด ({{ total_pending_kyc }})</a></div>
+        <div class="p-3 border-bottom d-flex justify-content-between"><span class="fw-bold"><i data-lucide="user-check" class="text-green me-1"></i>{% translate "ร้านค้ารออนุมัติ" %}</span><a href="?tab=approvals" class="small text-green">{% blocktranslate trimmed with total_pending_kyc=total_pending_kyc %}ทั้งหมด ({{ total_pending_kyc }}){% endblocktranslate %}</a></div>
         <div class="list-group list-group-flush">
           {% for p in pending_merchants %}
             <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
               <div class="min-w-0"><div class="fw-semibold small text-truncate">{{ p.business_name }}</div><small class="text-secondary text-truncate d-block">{{ p.user.email }}</small></div>
-              <form method="post" action="{% url 'accounts:admin_approve_merchant' p.user.id %}">{% csrf_token %}<button type="submit" class="btn btn-green btn-sm rounded-pill">อนุมัติ</button></form>
+              <form method="post" action="{% url 'accounts:admin_approve_merchant' p.user.id %}">{% csrf_token %}<button type="submit" class="btn btn-green btn-sm rounded-pill">{% translate "อนุมัติ" %}</button></form>
             </div>
           {% empty %}
-            <div class="wt-empty py-4"><span class="wt-icon-pill"><i data-lucide="check-circle"></i></span><div class="small text-secondary">ไม่มีร้านค้าค้างอนุมัติ</div></div>
+            <div class="wt-empty py-4"><span class="wt-icon-pill"><i data-lucide="check-circle"></i></span><div class="small text-secondary">{% translate "ไม่มีร้านค้าค้างอนุมัติ" %}</div></div>
           {% endfor %}
         </div>
       </div>

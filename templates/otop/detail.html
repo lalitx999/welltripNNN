@@ -1,13 +1,14 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}{{ product.name }} - สินค้า OTOP ศรีสะเกษ WellTrip{% endblock %}
+{% block title %}{% blocktranslate trimmed with name=product.name %}{{ name }} - สินค้า OTOP ศรีสะเกษ WellTrip{% endblocktranslate %}{% endblock %}
 
 {% block content %}
 <div class="container-xl py-4 py-md-5">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb small">
-      <li class="breadcrumb-item"><a href="{% url 'otop:list' %}" class="text-green">ของดี OTOP</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'otop:list' %}" class="text-green">{% translate "ของดี OTOP" %}</a></li>
       <li class="breadcrumb-item"><a href="{% url 'otop:list' %}?category={{ product.category }}" class="text-green">{{ product.get_category_display }}</a></li>
       <li class="breadcrumb-item active text-truncate" aria-current="page" style="max-width: 16rem;">{{ product.name }}</li>
     </ol>
@@ -25,31 +26,31 @@
       <h1 class="fw-bold mb-3">{{ product.name }}</h1>
       <div class="d-flex align-items-baseline gap-2 mb-4">
         <span class="display-6 fw-bold text-green">฿{{ product.price|floatformat:"0g" }}</span>
-        <span class="text-secondary">/ ชิ้น</span>
+        <span class="text-secondary">{% translate "/ ชิ้น" %}</span>
       </div>
 
       {% if product.description %}
-        <h2 class="h6 fw-bold text-secondary text-uppercase small">รายละเอียดสินค้า</h2>
+        <h2 class="h6 fw-bold text-secondary text-uppercase small">{% translate "รายละเอียดสินค้า" %}</h2>
         <p class="text-secondary" style="white-space: pre-line;">{{ product.description }}</p>
       {% endif %}
 
       <div class="wt-card p-3 d-flex align-items-center gap-3 mb-4">
         <span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="store" class="icon-lg"></i></span>
         <div>
-          <div class="small text-secondary">ผู้ผลิต</div>
+          <div class="small text-secondary">{% translate "ผู้ผลิต" %}</div>
           <div class="fw-bold">{{ product.owner.full_name|default:product.owner.email }}</div>
         </div>
       </div>
 
       {% if product.stock_quantity > 0 %}
         <div class="d-flex align-items-center gap-3 mb-3">
-          <span class="small fw-semibold">จำนวน</span>
-          <div class="btn-group" role="group" aria-label="จำนวน">
-            <button type="button" class="btn btn-outline-ink" @click="if (qty > 1) qty--" :disabled="qty <= 1" aria-label="ลด"><i data-lucide="minus"></i></button>
+          <span class="small fw-semibold">{% translate "จำนวน" %}</span>
+          <div class="btn-group" role="group" aria-label="{% translate 'จำนวน' %}">
+            <button type="button" class="btn btn-outline-ink" @click="if (qty > 1) qty--" :disabled="qty <= 1" aria-label="{% translate 'ลด' %}"><i data-lucide="minus"></i></button>
             <span class="btn btn-outline-ink disabled fw-bold" style="min-width: 3rem;" x-text="qty">1</span>
-            <button type="button" class="btn btn-outline-ink" @click="if (qty < max) qty++" :disabled="qty >= max" aria-label="เพิ่ม"><i data-lucide="plus"></i></button>
+            <button type="button" class="btn btn-outline-ink" @click="if (qty < max) qty++" :disabled="qty >= max" aria-label="{% translate 'เพิ่ม' %}"><i data-lucide="plus"></i></button>
           </div>
-          <small class="text-secondary">คงเหลือ {{ product.stock_quantity }} ชิ้น</small>
+          <small class="text-secondary">{% blocktranslate trimmed with stock_quantity=product.stock_quantity %}คงเหลือ {{ stock_quantity }} ชิ้น{% endblocktranslate %}</small>
         </div>
         <form method="post" action="{% url 'bookings:cart_add' %}" class="d-flex flex-column flex-sm-row gap-2">
           {% csrf_token %}
@@ -58,12 +59,12 @@
           <input type="hidden" name="title" value="{{ product.name }}">
           <input type="hidden" name="price" value="{{ product.price }}">
           <input type="hidden" name="quantity" :value="qty" value="1">
-          <button type="submit" class="btn btn-gold btn-lg rounded-pill flex-grow-1"><i data-lucide="shopping-bag" class="me-1"></i>เพิ่มลงตะกร้า</button>
-          <a href="{% url 'otop:list' %}" class="btn btn-outline-ink btn-lg rounded-pill">ดูสินค้าอื่น</a>
+          <button type="submit" class="btn btn-gold btn-lg rounded-pill flex-grow-1"><i data-lucide="shopping-bag" class="me-1"></i>{% translate "เพิ่มลงตะกร้า" %}</button>
+          <a href="{% url 'otop:list' %}" class="btn btn-outline-ink btn-lg rounded-pill">{% translate "ดูสินค้าอื่น" %}</a>
         </form>
       {% else %}
-        <div class="alert alert-warning rounded-4 d-flex align-items-center gap-2 mb-3"><i data-lucide="package-x"></i>สินค้าหมดชั่วคราว</div>
-        <a href="{% url 'otop:list' %}" class="btn btn-outline-ink rounded-pill">ดูสินค้าอื่น</a>
+        <div class="alert alert-warning rounded-4 d-flex align-items-center gap-2 mb-3"><i data-lucide="package-x"></i>{% translate "สินค้าหมดชั่วคราว" %}</div>
+        <a href="{% url 'otop:list' %}" class="btn btn-outline-ink rounded-pill">{% translate "ดูสินค้าอื่น" %}</a>
       {% endif %}
     </div>
   </div>

@@ -1,19 +1,20 @@
 {% extends "layouts/auth.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}สมัครสมาชิก - WellTrip Sisaket{% endblock %}
+{% block title %}{% translate "สมัครสมาชิก - WellTrip Sisaket" %}{% endblock %}
 {% block auth_image %}{% static 'images/c/sunset.webp' %}{% endblock %}
-{% block auth_headline %}ให้ทริปครั้งใหม่<br>พาคุณใกล้ธรรมชาติ{% endblock %}
+{% block auth_headline %}{% translate "ให้ทริปครั้งใหม่" %}<br>{% translate "พาคุณใกล้ธรรมชาติ" %}{% endblock %}
 
 {% block auth_form %}
 <div class="wt-role-tabs mb-4">
-  <a href="{% url 'accounts:register' %}" class="active"><i data-lucide="user-round" class="me-1"></i>นักท่องเที่ยว</a>
-  <a href="{% url 'accounts:register_merchant' %}"><i data-lucide="store" class="me-1"></i>ผู้ประกอบการ</a>
+  <a href="{% url 'accounts:register' %}" class="active"><i data-lucide="user-round" class="me-1"></i>{% translate "นักท่องเที่ยว" %}</a>
+  <a href="{% url 'accounts:register_merchant' %}"><i data-lucide="store" class="me-1"></i>{% translate "ผู้ประกอบการ" %}</a>
 </div>
 
 <span class="wt-eyebrow">Begin your journey</span>
-<h1 class="h2 fw-bold mb-1">สร้างบัญชีนักท่องเที่ยว</h1>
-<p class="text-secondary mb-4">ติดตามสถานะการจองและสะสมตราประทับพาสปอร์ตชุมชน</p>
+<h1 class="h2 fw-bold mb-1">{% translate "สร้างบัญชีนักท่องเที่ยว" %}</h1>
+<p class="text-secondary mb-4">{% translate "ติดตามสถานะการจองและสะสมตราประทับพาสปอร์ตชุมชน" %}</p>
 
 {% if form.non_field_errors %}
   <div class="alert alert-danger rounded-4" role="alert">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
@@ -24,40 +25,40 @@
   <input type="hidden" name="role" value="TOURIST">
   <div class="row g-2">
     <div class="col-6">
-      <label for="first_name" class="form-label fw-semibold small">ชื่อ</label>
+      <label for="first_name" class="form-label fw-semibold small">{% translate "ชื่อ" %}</label>
       <input type="text" id="first_name" name="first_name" value="{{ form.first_name.value|default:'' }}" required autocomplete="given-name" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}">
       {% if form.first_name.errors %}<div class="invalid-feedback">{{ form.first_name.errors.0 }}</div>{% endif %}
     </div>
     <div class="col-6">
-      <label for="last_name" class="form-label fw-semibold small">นามสกุล</label>
+      <label for="last_name" class="form-label fw-semibold small">{% translate "นามสกุล" %}</label>
       <input type="text" id="last_name" name="last_name" value="{{ form.last_name.value|default:'' }}" required autocomplete="family-name" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}">
       {% if form.last_name.errors %}<div class="invalid-feedback">{{ form.last_name.errors.0 }}</div>{% endif %}
     </div>
   </div>
   <div>
-    <label for="email" class="form-label fw-semibold small">อีเมล</label>
+    <label for="email" class="form-label fw-semibold small">{% translate "อีเมล" %}</label>
     <input type="email" id="email" name="email" value="{{ form.email.value|default:'' }}" required autocomplete="email" placeholder="name@example.com" class="form-control {% if form.email.errors %}is-invalid{% endif %}">
     {% if form.email.errors %}<div class="invalid-feedback">{{ form.email.errors.0 }}</div>{% endif %}
   </div>
   <div>
-    <label for="phone_number" class="form-label fw-semibold small">เบอร์โทรศัพท์</label>
+    <label for="phone_number" class="form-label fw-semibold small">{% translate "เบอร์โทรศัพท์" %}</label>
     <input type="tel" id="phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}" inputmode="numeric" autocomplete="tel-national" placeholder="08xxxxxxxx" class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}">
     {% if form.phone_number.errors %}<div class="invalid-feedback">{{ form.phone_number.errors.0 }}</div>{% endif %}
   </div>
   <div class="row g-2">
     <div class="col-sm-6">
-      <label for="password" class="form-label fw-semibold small">รหัสผ่าน (10 ตัวขึ้นไป)</label>
+      <label for="password" class="form-label fw-semibold small">{% translate "รหัสผ่าน (10 ตัวขึ้นไป)" %}</label>
       <input type="password" id="password" name="password" required autocomplete="new-password" class="form-control {% if form.password.errors %}is-invalid{% endif %}">
       {% if form.password.errors %}<div class="invalid-feedback">{{ form.password.errors.0 }}</div>{% endif %}
     </div>
     <div class="col-sm-6">
-      <label for="confirm_password" class="form-label fw-semibold small">ยืนยันรหัสผ่าน</label>
+      <label for="confirm_password" class="form-label fw-semibold small">{% translate "ยืนยันรหัสผ่าน" %}</label>
       <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password" class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}">
       {% if form.confirm_password.errors %}<div class="invalid-feedback">{{ form.confirm_password.errors.0 }}</div>{% endif %}
     </div>
   </div>
-  <button type="submit" class="btn btn-green btn-lg rounded-pill">สร้างบัญชี</button>
+  <button type="submit" class="btn btn-green btn-lg rounded-pill">{% translate "สร้างบัญชี" %}</button>
 </form>
 
-<p class="text-center text-secondary mt-4 mb-0">มีบัญชีอยู่แล้ว? <a href="{% url 'accounts:login' %}" class="fw-semibold text-green">เข้าสู่ระบบ</a></p>
+<p class="text-center text-secondary mt-4 mb-0">{% translate "มีบัญชีอยู่แล้ว?" %} <a href="{% url 'accounts:login' %}" class="fw-semibold text-green">{% translate "เข้าสู่ระบบ" %}</a></p>
 {% endblock %}

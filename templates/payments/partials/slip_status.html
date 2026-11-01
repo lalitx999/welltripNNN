@@ -1,17 +1,18 @@
+{% load i18n %}
 {# Slip check progress on the booking page. While auto-check runs it polls slip_status; HX-Refresh reloads the page once there is a result. #}
 {% if slip.verification_status == 'PENDING_CHECK' %}
   {% if polling %}
     <div class="alert alert-info rounded-4 d-flex align-items-center gap-3 mb-0" hx-get="{% url 'payments:slip_status' booking.id %}" hx-trigger="every 3s" hx-swap="outerHTML">
       <div class="spinner-border spinner-border-sm text-info flex-shrink-0" role="status"></div>
-      <div><div class="fw-bold">กำลังตรวจสอบสลิปอัตโนมัติ</div><small>หน้านี้จะอัปเดตเองเมื่อได้ผล ไม่ต้องรีเฟรช</small></div>
+      <div><div class="fw-bold">{% translate "กำลังตรวจสอบสลิปอัตโนมัติ" %}</div><small>{% translate "หน้านี้จะอัปเดตเองเมื่อได้ผล ไม่ต้องรีเฟรช" %}</small></div>
     </div>
   {% else %}
-    <div class="alert alert-info rounded-4 mb-0"><i data-lucide="hourglass" class="me-1"></i><span class="fw-bold">ได้รับสลิปแล้ว</span> รอเจ้าหน้าที่ตรวจสอบ ระบบจะแจ้งผลทางอีเมล</div>
+    <div class="alert alert-info rounded-4 mb-0"><i data-lucide="hourglass" class="me-1"></i><span class="fw-bold">{% translate "ได้รับสลิปแล้ว" %}</span> {% translate "รอเจ้าหน้าที่ตรวจสอบ ระบบจะแจ้งผลทางอีเมล" %}</div>
   {% endif %}
 {% elif slip.verification_status == 'REJECTED' and booking.status == 'AWAITING_PAYMENT' %}
   <div class="alert alert-danger rounded-4 mb-0">
-    <div class="fw-bold"><i data-lucide="x-circle" class="me-1"></i>สลิปล่าสุดไม่ผ่านการตรวจสอบ</div>
+    <div class="fw-bold"><i data-lucide="x-circle" class="me-1"></i>{% translate "สลิปล่าสุดไม่ผ่านการตรวจสอบ" %}</div>
     {% if slip.verification_notes %}<small class="d-block">{{ slip.verification_notes }}</small>{% endif %}
-    <a href="{% url 'payments:payment_instruction' booking.id %}" class="btn btn-sm btn-outline-danger rounded-pill mt-2">แนบสลิปใหม่</a>
+    <a href="{% url 'payments:payment_instruction' booking.id %}" class="btn btn-sm btn-outline-danger rounded-pill mt-2">{% translate "แนบสลิปใหม่" %}</a>
   </div>
 {% endif %}

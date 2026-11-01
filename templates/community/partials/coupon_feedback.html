@@ -1,8 +1,9 @@
+{% load i18n %}
 <div class="mt-2 small">
   {% if is_valid %}
     <div class="alert alert-success rounded-4 py-2 mb-0">
       <div class="d-flex justify-content-between fw-semibold"><span>{{ message }} ({{ coupon.code }})</span><span>-฿{{ discount|floatformat:2 }}</span></div>
-      <div class="d-flex justify-content-between border-top border-success-subtle mt-1 pt-1"><span>ยอดชำระหลังหักส่วนลด</span><strong>฿{{ final_amount|floatformat:2 }}</strong></div>
+      <div class="d-flex justify-content-between border-top border-success-subtle mt-1 pt-1"><span>{% translate "ยอดชำระหลังหักส่วนลด" %}</span><strong>฿{{ final_amount|floatformat:2 }}</strong></div>
     </div>
   {% else %}
     <div class="alert alert-danger rounded-4 py-2 mb-0 d-flex align-items-center gap-2"><i data-lucide="alert-circle"></i>{{ message }}</div>

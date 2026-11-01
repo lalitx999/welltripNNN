@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 
 from .models import AIRecommendationLog, HealthProfile
 from .services import start_recommendation
+from django.utils.translation import gettext as _
 
 SESSION_KEY = "ai_recommendation_ids"
 # A job still PENDING after this is treated as lost (worker down or crashed)
@@ -24,7 +25,7 @@ def assessment_view(request):
         existing_profile = HealthProfile.objects.filter(user=request.user).first()
 
     context = {
-        "page_title": "AI Wellness Assistant - วิเคราะห์สุขภาพและวางแผนทริป",
+        "page_title": _("AI Wellness Assistant - วิเคราะห์สุขภาพและวางแผนทริป"),
         "profile": existing_profile,
     }
     return render(request, "ai_recommendations/assessment.html", context)
@@ -45,10 +46,10 @@ def assess_htmx_view(request):
         lifestyle = request.POST.get("lifestyle", "")
         dietary_restrictions = request.POST.getlist("dietary_restrictions")
     except (ValueError, TypeError) as exc:
-        return HttpResponseBadRequest("ข้อมูลสุขภาพที่ส่งมาไม่ถูกต้อง")
+        return HttpResponseBadRequest(_("ข้อมูลสุขภาพที่ส่งมาไม่ถูกต้อง"))
 
     if weight_kg <= 20 or weight_kg >= 300 or height_cm <= 50 or height_cm >= 250:
-        return HttpResponseBadRequest("ค่าน้ำหนักหรือส่วนสูงไม่อยู่ในเกณฑ์ที่เป็นไปได้")
+        return HttpResponseBadRequest(_("ค่าน้ำหนักหรือส่วนสูงไม่อยู่ในเกณฑ์ที่เป็นไปได้"))
 
     input_data = {
         "weight_kg": weight_kg,

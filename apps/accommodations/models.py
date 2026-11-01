@@ -5,6 +5,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.text import slugify
 from apps.core.services.media import secure_upload_path
+from django.utils.translation import gettext_lazy
 
 
 def accommodation_image_path(instance, filename):
@@ -12,9 +13,9 @@ def accommodation_image_path(instance, filename):
 
 
 class AccommodationStatus(models.TextChoices):
-    PENDING_VERIFICATION = "PENDING_VERIFICATION", "รอการตรวจสอบ (Pending)"
-    ACTIVE = "ACTIVE", "เปิดให้บริการ (Active)"
-    SUSPENDED = "SUSPENDED", "ระงับชั่วคราว (Suspended)"
+    PENDING_VERIFICATION = "PENDING_VERIFICATION", gettext_lazy("รอการตรวจสอบ (Pending)")
+    ACTIVE = "ACTIVE", gettext_lazy("เปิดให้บริการ (Active)")
+    SUSPENDED = "SUSPENDED", gettext_lazy("ระงับชั่วคราว (Suspended)")
 
 
 class Accommodation(models.Model):

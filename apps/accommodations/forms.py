@@ -2,6 +2,7 @@ from decimal import Decimal
 from django import forms
 from apps.accommodations.models import Accommodation, Room, RoomPricingCalendar
 from apps.core.services.media import sanitize_and_strip_image
+from django.utils.translation import gettext_lazy
 
 
 class AccommodationForm(forms.ModelForm):
@@ -16,7 +17,7 @@ class AccommodationForm(forms.ModelForm):
             'district': forms.TextInput(attrs={'class': 'form-control'}),
             'province': forms.TextInput(attrs={'class': 'form-control'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control'}),
-            'google_maps_url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225'}),
+            'google_maps_url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225")}),
         }
 
 
@@ -25,7 +26,7 @@ class RoomForm(forms.ModelForm):
         model = Room
         fields = ['name', 'room_type', 'capacity_people', 'base_price_per_night', 'total_rooms_count']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'เช่น ห้องระเบียงชมดาว'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("เช่น ห้องระเบียงชมดาว")}),
             'room_type': forms.TextInput(attrs={'class': 'form-control'}),
             'capacity_people': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
             'base_price_per_night': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'step': '0.01'}),

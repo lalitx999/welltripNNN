@@ -1,14 +1,15 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
-{% block title %}{{ item.name }} - {% if service_type == 'food' %}อาหารสุขภาพ{% else %}นวดและสปา{% endif %} WellTrip Sisaket{% endblock %}
+{% block title %}{{ item.name }} - {% if service_type == 'food' %}{% translate "อาหารสุขภาพ" %}{% else %}{% translate "นวดและสปา" %}{% endif %} WellTrip Sisaket{% endblock %}
 
 {% block content %}
 <div class="container-xl py-4 py-md-5">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb small">
-      <li class="breadcrumb-item"><a href="{% url 'services:list' %}" class="text-green">อาหารสุขภาพ &amp; สปา</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'services:list' %}?category={% if service_type == 'food' %}FOOD{% else %}SPA{% endif %}" class="text-green">{% if service_type == 'food' %}อาหารสุขภาพ{% else %}นวดและสปา{% endif %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'services:list' %}" class="text-green">{% translate "อาหารสุขภาพ &amp; สปา" %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'services:list' %}?category={% if service_type == 'food' %}FOOD{% else %}SPA{% endif %}" class="text-green">{% if service_type == 'food' %}{% translate "อาหารสุขภาพ" %}{% else %}{% translate "นวดและสปา" %}{% endif %}</a></li>
       <li class="breadcrumb-item active text-truncate" aria-current="page" style="max-width: 16rem;">{{ item.name }}</li>
     </ol>
   </nav>
@@ -24,27 +25,27 @@
       {% if service_type == 'food' %}
         <span class="badge badge-gold mb-2">{{ item.get_wellness_category_display }}</span>
       {% else %}
-        <span class="badge badge-green mb-2">นวดแผนไทยและสปา</span>
+        <span class="badge badge-green mb-2">{% translate "นวดแผนไทยและสปา" %}</span>
       {% endif %}
       <h1 class="fw-bold mb-3">{{ item.name }}</h1>
 
       <div class="d-flex align-items-baseline gap-2 mb-4">
         <span class="display-6 fw-bold text-green">฿{{ item.price|floatformat:"0g" }}</span>
         <span class="text-secondary">
-          {% if service_type == 'food' %}/ จาน{% if item.calorie_estimate %} · ประมาณ {{ item.calorie_estimate }} kcal{% endif %}
-          {% else %}/ ครั้ง · {{ item.duration_minutes }} นาที{% endif %}
+          {% if service_type == 'food' %}{% translate "/ จาน" %}{% if item.calorie_estimate %} {% blocktranslate trimmed with calorie_estimate=item.calorie_estimate %}· ประมาณ {{ calorie_estimate }} kcal{% endblocktranslate %}{% endif %}
+          {% else %}{% blocktranslate trimmed with duration_minutes=item.duration_minutes %}/ ครั้ง · {{ duration_minutes }} นาที{% endblocktranslate %}{% endif %}
         </span>
       </div>
 
       {% if item.description %}
-        <h2 class="h6 fw-bold text-secondary text-uppercase small">รายละเอียด</h2>
+        <h2 class="h6 fw-bold text-secondary text-uppercase small">{% translate "รายละเอียด" %}</h2>
         <p class="text-secondary" style="white-space: pre-line;">{{ item.description }}</p>
       {% endif %}
 
       <div class="wt-card p-3 d-flex align-items-center gap-3 mb-4">
         <span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="store" class="icon-lg"></i></span>
         <div>
-          <div class="small text-secondary">ผู้ให้บริการ</div>
+          <div class="small text-secondary">{% translate "ผู้ให้บริการ" %}</div>
           <div class="fw-bold">{{ item.owner.full_name|default:item.owner.email }}</div>
         </div>
       </div>
@@ -56,8 +57,8 @@
         <input type="hidden" name="title" value="{{ item.name }}">
         <input type="hidden" name="price" value="{{ item.price }}">
         <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="btn btn-gold btn-lg rounded-pill flex-grow-1"><i data-lucide="shopping-bag" class="me-1"></i>{% if service_type == 'food' %}สั่งเมนูนี้{% else %}จองบริการนี้{% endif %}</button>
-        <a href="{% url 'services:list' %}" class="btn btn-outline-ink btn-lg rounded-pill">ดูบริการอื่น</a>
+        <button type="submit" class="btn btn-gold btn-lg rounded-pill flex-grow-1"><i data-lucide="shopping-bag" class="me-1"></i>{% if service_type == 'food' %}{% translate "สั่งเมนูนี้" %}{% else %}{% translate "จองบริการนี้" %}{% endif %}</button>
+        <a href="{% url 'services:list' %}" class="btn btn-outline-ink btn-lg rounded-pill">{% translate "ดูบริการอื่น" %}</a>
       </form>
     </div>
   </div>
@@ -70,7 +71,7 @@
   "name": "{{ item.name|escapejs }}",
   "description": "{{ item.description|default:item.name|truncatewords:30|escapejs }}",
   {% if item.image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ item.image.url }}",{% endif %}
-  "address": { "@type": "PostalAddress", "addressRegion": "ศรีสะเกษ", "addressCountry": "TH" },
+  "address": { "@type": "PostalAddress", "addressRegion": "{{ _("ศรีสะเกษ")|escapejs }}", "addressCountry": "TH" },
   "offers": { "@type": "Offer", "price": "{{ item.price|floatformat:2 }}", "priceCurrency": "THB" }
 }
 </script>

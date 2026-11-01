@@ -15,6 +15,7 @@ from apps.payments.forms import SlipUploadForm
 from apps.payments.tasks import verify_slip_task
 from apps.payments.selectors.slip_selector import slip_status_context
 from apps.core.tasks import send_booking_voucher_task, send_slip_rejected_task
+from django.utils.translation import gettext as _
 
 
 @login_required
@@ -30,11 +31,11 @@ def payment_instruction_view(request, booking_id):
 
     # Anti-IDOR Ownership check
     if not can_view_object(request.user, booking):
-        messages.error(request, "คุณไม่มีสิทธิ์เข้าถึงหน้านี้")
+        messages.error(request, _("คุณไม่มีสิทธิ์เข้าถึงหน้านี้"))
         return redirect('bookings:my_bookings')
 
     if booking.status == BookingStatus.PAYMENT_EXPIRED:
-        messages.warning(request, "คำสั่งซื้อนี้หมดเวลาชำระเงิน 15 นาทีแล้ว ระบบได้ทำการปลดสต็อกคืนชุมชน")
+        messages.warning(request, _("คำสั่งซื้อนี้หมดเวลาชำระเงิน 15 นาทีแล้ว ระบบได้ทำการปลดสต็อกคืนชุมชน"))
         return redirect('bookings:detail', booking_id=booking.id)
 
     # Get or create payment record
@@ -75,13 +76,13 @@ def payment_instruction_view(request, booking_id):
 
             if settings.EASYSLIP_API_KEY:
                 verify_slip_task.delay_on_commit(slip.id)
-                messages.success(request, "แนบสลิปเรียบร้อยแล้ว ระบบกำลังตรวจสอบอัตโนมัติ")
+                messages.success(request, _("แนบสลิปเรียบร้อยแล้ว ระบบกำลังตรวจสอบอัตโนมัติ"))
             else:
-                messages.success(request, "แนบสลิปเรียบร้อยแล้ว รอเจ้าหน้าที่ตรวจสอบ")
+                messages.success(request, _("แนบสลิปเรียบร้อยแล้ว รอเจ้าหน้าที่ตรวจสอบ"))
 
             return redirect('bookings:detail', booking_id=booking.id)
         else:
-            messages.error(request, "สลิปที่อัปโหลดไม่ถูกต้อง กรุณาตรวจสอบรูปภาพและรหัสอ้างอิง")
+            messages.error(request, _("สลิปที่อัปโหลดไม่ถูกต้อง กรุณาตรวจสอบรูปภาพและรหัสอ้างอิง"))
     else:
         form = SlipUploadForm()
 
@@ -149,7 +150,7 @@ def admin_payment_review_view(request, payment_id):
             )
 
             send_booking_voucher_task.delay_on_commit(payment.id)
-            messages.success(request, f"อนุมัติการชำระเงินสำหรับรหัส {booking.booking_code} สำเร็จ")
+            messages.success(request, _("อนุมัติการชำระเงินสำหรับรหัส {booking_code} สำเร็จ").format(booking_code=booking.booking_code))
             return redirect('payments:admin_list')
 
         elif action == "REJECT" and latest_slip:
@@ -174,8 +175,8 @@ def admin_payment_review_view(request, payment_id):
                 user=request.user,
             )
 
-            send_slip_rejected_task.delay_on_commit(payment.id, notes or "สลิปไม่ผ่านการตรวจสอบ")
-            messages.warning(request, f"ปฏิเสธสลิปการโอนเงิน รหัส {payment.booking.booking_code}")
+            send_slip_rejected_task.delay_on_commit(payment.id, notes or _("สลิปไม่ผ่านการตรวจสอบ"))
+            messages.warning(request, _("ปฏิเสธสลิปการโอนเงิน รหัส {booking_code}").format(booking_code=payment.booking.booking_code))
             return redirect('payments:admin_list')
 
     return render(request, 'payments/admin_review.html', {

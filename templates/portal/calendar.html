@@ -1,7 +1,8 @@
 {% extends "layouts/merchant.html" %}
 
-{% block title %}ปฏิทินราคา - Partner Studio{% endblock %}
-{% block page_heading %}ปฏิทินราคาและห้องว่าง{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ปฏิทินราคา - Partner Studio" %}{% endblock %}
+{% block page_heading %}{% translate "ปฏิทินราคาและห้องว่าง" %}{% endblock %}
 
 {% block content %}
 <div class="d-grid gap-4" x-data="{
@@ -22,7 +23,7 @@
   <div class="wt-card p-3 p-sm-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
     <div>
       <div class="small text-secondary">{{ accommodation.name }}</div>
-      {% if selected_room %}<div class="fw-bold">{{ selected_room.name }} · ราคาปกติ ฿{{ selected_room.base_price_per_night|floatformat:"0g" }} · {{ selected_room.total_rooms_count }} ห้อง</div>{% endif %}
+      {% if selected_room %}<div class="fw-bold">{% blocktranslate trimmed with name=selected_room.name base_price_per_night=selected_room.base_price_per_night|floatformat:"0g" total_rooms_count=selected_room.total_rooms_count %}{{ name }} · ราคาปกติ ฿{{ base_price_per_night }} · {{ total_rooms_count }} ห้อง{% endblocktranslate %}</div>{% endif %}
     </div>
     <div class="d-flex gap-2">
       {% if rooms %}
@@ -30,28 +31,28 @@
           <input type="hidden" name="acc_id" value="{{ accommodation.id }}">
           <input type="hidden" name="year" value="{{ year }}">
           <input type="hidden" name="month" value="{{ month }}">
-          <select name="room_id" class="form-select form-select-sm" onchange="this.form.submit()" aria-label="เลือกห้อง">
+          <select name="room_id" class="form-select form-select-sm" onchange="this.form.submit()" aria-label="{% translate 'เลือกห้อง' %}">
             {% for r in rooms %}<option value="{{ r.id }}" {% if selected_room and selected_room.id == r.id %}selected{% endif %}>{{ r.name }}</option>{% endfor %}
           </select>
         </form>
       {% endif %}
-      <a href="{% url 'accommodations:homestay_studio' %}?acc_id={{ accommodation.id }}" class="btn btn-outline-ink btn-sm rounded-pill text-nowrap"><i data-lucide="arrow-left" class="me-1"></i>ที่พัก</a>
+      <a href="{% url 'accommodations:homestay_studio' %}?acc_id={{ accommodation.id }}" class="btn btn-outline-ink btn-sm rounded-pill text-nowrap"><i data-lucide="arrow-left" class="me-1"></i>{% translate "ที่พัก" %}</a>
     </div>
   </div>
 
   {% if selected_room %}
     <div class="wt-card p-3 p-sm-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}&year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="chevron-left"></i><span class="d-none d-sm-inline">ก่อนหน้า</span></a>
+        <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}&year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="chevron-left"></i><span class="d-none d-sm-inline">{% translate "ก่อนหน้า" %}</span></a>
         <div class="text-center">
           <div class="fw-bold">{{ month_name }}</div>
-          <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}" class="small text-green">เดือนนี้</a>
+          <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}" class="small text-green">{% translate "เดือนนี้" %}</a>
         </div>
-        <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}&year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-ink btn-sm rounded-pill"><span class="d-none d-sm-inline">ถัดไป</span><i data-lucide="chevron-right"></i></a>
+        <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ selected_room.id }}&year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-ink btn-sm rounded-pill"><span class="d-none d-sm-inline">{% translate "ถัดไป" %}</span><i data-lucide="chevron-right"></i></a>
       </div>
 
       <div class="wt-cal mb-2">
-        <div class="wt-cal-head">จ.</div><div class="wt-cal-head">อ.</div><div class="wt-cal-head">พ.</div><div class="wt-cal-head">พฤ.</div><div class="wt-cal-head">ศ.</div><div class="wt-cal-head">ส.</div><div class="wt-cal-head">อา.</div>
+        <div class="wt-cal-head">{% translate "จ." %}</div><div class="wt-cal-head">{% translate "อ." %}</div><div class="wt-cal-head">{% translate "พ." %}</div><div class="wt-cal-head">{% translate "พฤ." %}</div><div class="wt-cal-head">{% translate "ศ." %}</div><div class="wt-cal-head">{% translate "ส." %}</div><div class="wt-cal-head">{% translate "อา." %}</div>
       </div>
       <div class="wt-cal">
         {% for week in calendar_weeks %}{% for d in week %}
@@ -61,7 +62,7 @@
               <span class="fw-bold">{{ d.day }}</span>
               <span>
                 <span class="d-block fw-semibold small">฿{{ d.price|floatformat:"0g" }}</span>
-                <span class="d-block small {% if d.is_sold_out %}text-danger{% else %}text-secondary{% endif %}">{% if d.is_sold_out %}เต็ม{% else %}ว่าง {{ d.available_count }}{% endif %}</span>
+                <span class="d-block small {% if d.is_sold_out %}text-danger{% else %}text-secondary{% endif %}">{% if d.is_sold_out %}{% translate "เต็ม" %}{% else %}{% blocktranslate trimmed with available_count=d.available_count %}ว่าง {{ available_count }}{% endblocktranslate %}{% endif %}</span>
               </span>
             </button>
           {% else %}
@@ -70,10 +71,10 @@
         {% endfor %}{% endfor %}
       </div>
       <div class="d-flex flex-wrap gap-3 small text-secondary mt-3">
-        <span><span class="d-inline-block rounded-2 border me-1 align-middle" style="width:.9rem;height:.9rem"></span>ราคาปกติ</span>
-        <span><span class="d-inline-block rounded-2 me-1 align-middle" style="width:.9rem;height:.9rem;background:#fff8ea;border:1px solid #ffd99a"></span>ราคาพิเศษ</span>
-        <span><span class="d-inline-block rounded-2 me-1 align-middle" style="width:.9rem;height:.9rem;background:#fff0f0;border:1px solid #ffc9c9"></span>ห้องเต็ม</span>
-        <span>แตะวันที่เพื่อแก้ราคาหรือจำนวนห้องว่าง</span>
+        <span><span class="d-inline-block rounded-2 border me-1 align-middle" style="width:.9rem;height:.9rem"></span>{% translate "ราคาปกติ" %}</span>
+        <span><span class="d-inline-block rounded-2 me-1 align-middle" style="width:.9rem;height:.9rem;background:#fff8ea;border:1px solid #ffd99a"></span>{% translate "ราคาพิเศษ" %}</span>
+        <span><span class="d-inline-block rounded-2 me-1 align-middle" style="width:.9rem;height:.9rem;background:#fff0f0;border:1px solid #ffc9c9"></span>{% translate "ห้องเต็ม" %}</span>
+        <span>{% translate "แตะวันที่เพื่อแก้ราคาหรือจำนวนห้องว่าง" %}</span>
       </div>
     </div>
 
@@ -83,30 +84,30 @@
           {% csrf_token %}
           <input type="hidden" name="date" :value="editDate">
           <div class="modal-header">
-            <h2 class="modal-title h6 fw-bold" id="editDayLabel">ราคาและห้องว่าง วันที่ <span x-text="editDate"></span></h2>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+            <h2 class="modal-title h6 fw-bold" id="editDayLabel">{% translate "ราคาและห้องว่าง วันที่" %} <span x-text="editDate"></span></h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'ปิด' %}"></button>
           </div>
           <div class="modal-body d-grid gap-3">
             <div>
-              <label class="form-label small fw-semibold" for="cal_price">ราคาต่อคืน (บาท)</label>
+              <label class="form-label small fw-semibold" for="cal_price">{% translate "ราคาต่อคืน (บาท)" %}</label>
               <input type="number" id="cal_price" name="price" x-model="editPrice" step="0.01" min="1" required class="form-control">
-              <div class="form-text">ราคาปกติ ฿{{ selected_room.base_price_per_night|floatformat:"0g" }}</div>
+              <div class="form-text">{% blocktranslate trimmed with base_price_per_night=selected_room.base_price_per_night|floatformat:"0g" %}ราคาปกติ ฿{{ base_price_per_night }}{% endblocktranslate %}</div>
             </div>
             <div>
-              <label class="form-label small fw-semibold" for="cal_count">ห้องว่างที่เปิดรับจอง</label>
+              <label class="form-label small fw-semibold" for="cal_count">{% translate "ห้องว่างที่เปิดรับจอง" %}</label>
               <input type="number" id="cal_count" name="available_count" x-model="editCount" min="0" :max="editMaxCount" required class="form-control">
-              <div class="form-text">มีทั้งหมด <span x-text="editMaxCount"></span> ห้อง (ใส่ 0 เพื่อปิดรับจองวันนั้น)</div>
+              <div class="form-text">{% translate "มีทั้งหมด" %} <span x-text="editMaxCount"></span> {% translate "ห้อง (ใส่ 0 เพื่อปิดรับจองวันนั้น)" %}</div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">ยกเลิก</button>
-            <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="check" class="me-1"></i>บันทึก</button>
+            <button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">{% translate "ยกเลิก" %}</button>
+            <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="check" class="me-1"></i>{% translate "บันทึก" %}</button>
           </div>
         </form>
       </div>
     </div>
   {% else %}
-    <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="bed"></i></span><div class="fw-bold">ยังไม่มีห้องพัก</div><a href="{% url 'accommodations:homestay_studio' %}?acc_id={{ accommodation.id }}" class="btn btn-green btn-sm rounded-pill mt-2">เพิ่มห้องพัก</a></div>
+    <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="bed"></i></span><div class="fw-bold">{% translate "ยังไม่มีห้องพัก" %}</div><a href="{% url 'accommodations:homestay_studio' %}?acc_id={{ accommodation.id }}" class="btn btn-green btn-sm rounded-pill mt-2">{% translate "เพิ่มห้องพัก" %}</a></div>
   {% endif %}
 </div>
 {% endblock %}

@@ -1,32 +1,33 @@
 {% extends "layouts/dashboard.html" %}
 
+{% load i18n %}
 {% block home_url %}{% url 'accounts:portal_dashboard' %}{% endblock %}
 {% block console_name %}Partner Studio{% endblock %}
-{% block page_subheading %}จัดการร้านค้าของคุณบน WellTrip Sisaket{% endblock %}
+{% block page_subheading %}{% translate "จัดการร้านค้าของคุณบน WellTrip Sisaket" %}{% endblock %}
 
 {% block sidebar %}
 {% with current=request.resolver_match.url_name %}
-  <a class="nav-link {% if current == 'portal_dashboard' %}active{% endif %}" href="{% url 'accounts:portal_dashboard' %}"><i data-lucide="layout-dashboard"></i>ภาพรวม</a>
+  <a class="nav-link {% if current == 'portal_dashboard' %}active{% endif %}" href="{% url 'accounts:portal_dashboard' %}"><i data-lucide="layout-dashboard"></i>{% translate "ภาพรวม" %}</a>
 
   {% if user.role == "HOMESTAY_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
-    <div class="wt-nav-label">ที่พัก</div>
-    <a class="nav-link {% if current == 'homestay_studio' %}active{% endif %}" href="{% url 'accommodations:homestay_studio' %}"><i data-lucide="house"></i>ที่พักและห้องพัก</a>
-    <a class="nav-link {% if current == 'calendar' %}active{% endif %}" href="{% url 'accommodations:calendar' %}"><i data-lucide="calendar-days"></i>ปฏิทินราคาและห้องว่าง</a>
+    <div class="wt-nav-label">{% translate "ที่พัก" %}</div>
+    <a class="nav-link {% if current == 'homestay_studio' %}active{% endif %}" href="{% url 'accommodations:homestay_studio' %}"><i data-lucide="house"></i>{% translate "ที่พักและห้องพัก" %}</a>
+    <a class="nav-link {% if current == 'calendar' %}active{% endif %}" href="{% url 'accommodations:calendar' %}"><i data-lucide="calendar-days"></i>{% translate "ปฏิทินราคาและห้องว่าง" %}</a>
   {% endif %}
   {% if user.role == "RESTAURANT_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
-    <div class="wt-nav-label">อาหาร</div>
-    <a class="nav-link {% if current == 'restaurant_studio' %}active{% endif %}" href="{% url 'services:restaurant_studio' %}"><i data-lucide="utensils"></i>เมนูอาหาร</a>
+    <div class="wt-nav-label">{% translate "อาหาร" %}</div>
+    <a class="nav-link {% if current == 'restaurant_studio' %}active{% endif %}" href="{% url 'services:restaurant_studio' %}"><i data-lucide="utensils"></i>{% translate "เมนูอาหาร" %}</a>
   {% endif %}
   {% if user.role == "WELLNESS_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
-    <div class="wt-nav-label">สปา</div>
-    <a class="nav-link {% if current == 'wellness_studio' %}active{% endif %}" href="{% url 'services:wellness_studio' %}"><i data-lucide="flower-2"></i>บริการและรอบเวลา</a>
+    <div class="wt-nav-label">{% translate "สปา" %}</div>
+    <a class="nav-link {% if current == 'wellness_studio' %}active{% endif %}" href="{% url 'services:wellness_studio' %}"><i data-lucide="flower-2"></i>{% translate "บริการและรอบเวลา" %}</a>
   {% endif %}
   {% if user.role == "OTOP_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
-    <div class="wt-nav-label">สินค้า OTOP</div>
-    <a class="nav-link {% if current == 'otop_studio' %}active{% endif %}" href="{% url 'otop:otop_studio' %}"><i data-lucide="shopping-basket"></i>สินค้าและสต็อก</a>
+    <div class="wt-nav-label">{% translate "สินค้า OTOP" %}</div>
+    <a class="nav-link {% if current == 'otop_studio' %}active{% endif %}" href="{% url 'otop:otop_studio' %}"><i data-lucide="shopping-basket"></i>{% translate "สินค้าและสต็อก" %}</a>
   {% endif %}
   {% if user.is_community_admin %}
-    <div class="wt-nav-label">ผู้ดูแลระบบ</div>
+    <div class="wt-nav-label">{% translate "ผู้ดูแลระบบ" %}</div>
     <a class="nav-link" href="{% url 'accounts:admin_dashboard' %}"><i data-lucide="shield-check"></i>Admin Center</a>
   {% endif %}
 {% endwith %}

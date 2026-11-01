@@ -140,6 +140,7 @@ h1, h2, h3, .h1, .h2, .h3 { letter-spacing: -.01em; }
 }
 .wt-navbar.is-scrolled { border-color: var(--wt-line); box-shadow: 0 .25rem 1rem rgba(21, 38, 30, .06); }
 .wt-navbar .nav-link {
+  white-space: nowrap;
   font-weight: 600;
   font-size: .9rem;
   color: var(--wt-ink-2);
@@ -444,3 +445,25 @@ h1, h2, h3, .h1, .h2, .h3 { letter-spacing: -.01em; }
 /* Bootstrap has no min-width utility; flex children need it to truncate text */
 .min-w-0 { min-width: 0 !important; }
 .wt-sidebar .offcanvas-body { overflow-x: hidden; }
+
+/* ---------- TH/EN language switch ---------- */
+.wt-lang-switch {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--wt-line);
+  border-radius: 999px;
+  background: #fff;
+}
+.wt-lang-switch button {
+  border: 0;
+  background: transparent;
+  color: var(--wt-ink-2);
+  font-size: .75rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: .4rem .6rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.wt-lang-switch button:hover { color: var(--wt-green-dark); }
+.wt-lang-switch button.active { background: var(--wt-green); color: #fff; }

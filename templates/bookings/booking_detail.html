@@ -1,21 +1,22 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}การจอง {{ booking.booking_code }} - WellTrip Sisaket{% endblock %}
+{% load i18n %}
+{% block title %}{% blocktranslate trimmed with booking_code=booking.booking_code %}การจอง {{ booking_code }} - WellTrip Sisaket{% endblocktranslate %}{% endblock %}
 
 {% block content %}
 <div class="container-xl py-4 py-md-5" style="max-width: 56rem;">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb small">
-      <li class="breadcrumb-item"><a href="{% url 'bookings:my_bookings' %}" class="text-green">การจองของฉัน</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'bookings:my_bookings' %}" class="text-green">{% translate "การจองของฉัน" %}</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ booking.booking_code }}</li>
     </ol>
   </nav>
 
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
-      <small class="text-secondary">รหัสการจอง</small>
+      <small class="text-secondary">{% translate "รหัสการจอง" %}</small>
       <h1 class="fw-bold font-monospace mb-0">{{ booking.booking_code }}</h1>
-      <small class="text-secondary">สร้างเมื่อ {{ booking.created_at|date:"d M Y H:i" }} น.</small>
+      <small class="text-secondary">{% blocktranslate trimmed with created_at=booking.created_at|date:"d M Y H:i" %}สร้างเมื่อ {{ created_at }} น.{% endblocktranslate %}</small>
     </div>
     {% include "bookings/partials/status_badge.html" with status=booking.status label=booking.get_status_display %}
   </div>
@@ -26,19 +27,19 @@
       {% url 'payments:payment_instruction' booking.id as pay_url %}
       {% include "bookings/partials/payment_timer.html" with pay_url=pay_url %}
     {% elif booking.status == 'PAYMENT_EXPIRED' %}
-      <div class="alert alert-danger rounded-4 mb-0"><i data-lucide="alert-circle" class="me-1"></i>คำสั่งซื้อนี้หมดเวลาชำระเงินแล้ว ระบบปล่อยห้องพักและสินค้าคืนแล้ว</div>
+      <div class="alert alert-danger rounded-4 mb-0"><i data-lucide="alert-circle" class="me-1"></i>{% translate "คำสั่งซื้อนี้หมดเวลาชำระเงินแล้ว ระบบปล่อยห้องพักและสินค้าคืนแล้ว" %}</div>
     {% endif %}
 
     {% if booking.status == 'CONFIRMED' %}
       <div class="wt-panel-green p-4 text-center">
-        <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-2"><i data-lucide="ticket" class="me-1"></i>บัตรเข้าใช้บริการ</span>
+        <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-2"><i data-lucide="ticket" class="me-1"></i>{% translate "บัตรเข้าใช้บริการ" %}</span>
         <div class="display-6 fw-bold font-monospace">{{ booking.booking_code }}</div>
-        <p class="opacity-75 mb-0">แสดงรหัสนี้กับเจ้าของที่พักหรือผู้ให้บริการเพื่อยืนยันสิทธิ์</p>
+        <p class="opacity-75 mb-0">{% translate "แสดงรหัสนี้กับเจ้าของที่พักหรือผู้ให้บริการเพื่อยืนยันสิทธิ์" %}</p>
       </div>
     {% endif %}
 
     <div class="wt-card p-3 p-sm-4">
-      <h2 class="h6 fw-bold mb-2"><i data-lucide="list-checks" class="text-green me-1"></i>รายการ</h2>
+      <h2 class="h6 fw-bold mb-2"><i data-lucide="list-checks" class="text-green me-1"></i>{% translate "รายการ" %}</h2>
       <div class="list-group list-group-flush">
         {% for item in items %}
           <div class="list-group-item px-0 d-flex justify-content-between gap-3">
@@ -54,12 +55,12 @@
         {% endfor %}
       </div>
       <div class="d-flex justify-content-between align-items-baseline border-top mt-2 pt-3">
-        <span class="fw-bold">ยอดรวม</span>
+        <span class="fw-bold">{% translate "ยอดรวม" %}</span>
         <span class="fs-4 fw-bold text-green">฿{{ booking.total_amount|floatformat:"2g" }}</span>
       </div>
     </div>
 
-    <a href="{% url 'bookings:my_bookings' %}" class="small fw-semibold text-green"><i data-lucide="arrow-left" class="me-1"></i>การจองทั้งหมด</a>
+    <a href="{% url 'bookings:my_bookings' %}" class="small fw-semibold text-green"><i data-lucide="arrow-left" class="me-1"></i>{% translate "การจองทั้งหมด" %}</a>
   </div>
 </div>
 {% endblock %}

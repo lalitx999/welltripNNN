@@ -1,7 +1,8 @@
 {% extends "layouts/admin.html" %}
 
+{% load i18n %}
 {% block title %}Admin Center - WellTrip{% endblock %}
-{% block page_heading %}{% if active_tab == 'approvals' %}อนุมัติร้านค้า{% elif active_tab == 'payments' %}ตรวจสลิปการโอนเงิน{% elif active_tab == 'catalog' %}แคตตาล็อก{% elif active_tab == 'users' %}ผู้ใช้งาน{% elif active_tab == 'locations' %}จุดเช็คอินและแผนที่{% elif active_tab == 'content' %}เรื่องเล่าชุมชน{% elif active_tab == 'vouchers' %}คูปองและค่าจัดส่ง{% else %}ภาพรวมระบบ{% endif %}{% endblock %}
+{% block page_heading %}{% if active_tab == 'approvals' %}{% translate "อนุมัติร้านค้า" %}{% elif active_tab == 'payments' %}{% translate "ตรวจสลิปการโอนเงิน" %}{% elif active_tab == 'catalog' %}{% translate "แคตตาล็อก" %}{% elif active_tab == 'users' %}{% translate "ผู้ใช้งาน" %}{% elif active_tab == 'locations' %}{% translate "จุดเช็คอินและแผนที่" %}{% elif active_tab == 'content' %}{% translate "เรื่องเล่าชุมชน" %}{% elif active_tab == 'events' %}{% translate "ปฏิทินกิจกรรม" %}{% elif active_tab == 'vouchers' %}{% translate "คูปองและค่าจัดส่ง" %}{% else %}{% translate "ภาพรวมระบบ" %}{% endif %}{% endblock %}
 
 {% block content %}
 <div x-data="adminCenter()">
@@ -11,6 +12,7 @@
   {% elif active_tab == 'users' %}{% include "admin/tabs/users.html" %}
   {% elif active_tab == 'locations' %}{% include "admin/tabs/locations.html" %}
   {% elif active_tab == 'content' %}{% include "admin/tabs/content.html" %}
+  {% elif active_tab == 'events' %}{% include "admin/tabs/events.html" %}
   {% elif active_tab == 'vouchers' %}{% include "admin/tabs/vouchers.html" %}
   {% else %}{% include "admin/tabs/overview.html" %}{% endif %}
 

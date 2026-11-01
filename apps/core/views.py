@@ -10,54 +10,56 @@ from apps.otop.models import OTOPProduct
 
 from apps.bookings.models import Booking, BookingStatus
 from apps.community.models import PassportStamp, LocationEvent, MapLocation
+from apps.community.selectors.event_selector import upcoming_events
+from django.utils.translation import gettext as _, gettext_lazy
 
 
 # Well-known Sisaket places shown on the homepage (photos in static/images/attractions)
 LANDING_DESTINATIONS = [
-    {'name': 'ผามออีแดง', 'district': 'อ.กันทรลักษ์', 'tag': 'จุดชมวิว', 'image': 'images/attractions/pha-mo-e-daeng.jpeg'},
-    {'name': 'ปราสาทสระกำแพงใหญ่', 'district': 'อ.อุทุมพรพิสัย', 'tag': 'โบราณสถาน', 'image': 'images/attractions/prasat-sa-kamphaeng-yai.jpg'},
-    {'name': 'วัดป่ามหาเจดีย์แก้ว (วัดล้านขวด)', 'district': 'อ.ขุนหาญ', 'tag': 'วัด', 'image': 'images/attractions/wat-pa-maha-chedi-kaew.jpg'},
-    {'name': 'น้ำตกห้วยจันทร์', 'district': 'อ.ขุนหาญ', 'tag': 'น้ำตก', 'image': 'images/attractions/namtok-huai-chan.jpg'},
-    {'name': 'ปราสาทปรางค์กู่', 'district': 'อ.ปรางค์กู่', 'tag': 'โบราณสถาน', 'image': 'images/attractions/prasat-prang-ku.jpeg'},
+    {'name': gettext_lazy("ผามออีแดง"), 'district': gettext_lazy("อ.กันทรลักษ์"), 'tag': gettext_lazy("จุดชมวิว"), 'image': 'images/attractions/pha-mo-e-daeng.jpeg'},
+    {'name': gettext_lazy("ปราสาทสระกำแพงใหญ่"), 'district': gettext_lazy("อ.อุทุมพรพิสัย"), 'tag': gettext_lazy("โบราณสถาน"), 'image': 'images/attractions/prasat-sa-kamphaeng-yai.jpg'},
+    {'name': gettext_lazy("วัดป่ามหาเจดีย์แก้ว (วัดล้านขวด)"), 'district': gettext_lazy("อ.ขุนหาญ"), 'tag': gettext_lazy("วัด"), 'image': 'images/attractions/wat-pa-maha-chedi-kaew.jpg'},
+    {'name': gettext_lazy("น้ำตกห้วยจันทร์"), 'district': gettext_lazy("อ.ขุนหาญ"), 'tag': gettext_lazy("น้ำตก"), 'image': 'images/attractions/namtok-huai-chan.jpg'},
+    {'name': gettext_lazy("ปราสาทปรางค์กู่"), 'district': gettext_lazy("อ.ปรางค์กู่"), 'tag': gettext_lazy("โบราณสถาน"), 'image': 'images/attractions/prasat-prang-ku.jpeg'},
 ]
 
 # Homepage FAQ: rendered as the accordion and as FAQPage JSON-LD
 LANDING_FAQ = [
     {
-        'question': 'WellTrip Sisaket คืออะไร และตอบโจทย์การท่องเที่ยวเชิงสุขภาพอย่างไร?',
-        'answer': 'WellTrip Sisaket คือแพลตฟอร์มการท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน (Wellness & Community-Based Tourism) ในจังหวัดศรีสะเกษ รวบรวมโฮมสเตย์ธรรมชาติ อาหารสุขภาพ นวดสปาสมุนไพรสด และผลิตภัณฑ์ภูมิปัญญา 4 ชนเผ่า (ลาว เขมร ส่วย เยอ) โดยรายได้ส่งตรงถึงผู้ประกอบการชุมชน',
+        'question': gettext_lazy("WellTrip Sisaket คืออะไร และตอบโจทย์การท่องเที่ยวเชิงสุขภาพอย่างไร?"),
+        'answer': gettext_lazy("WellTrip Sisaket คือแพลตฟอร์มการท่องเที่ยวเชิงสุขภาพและวิถีบำบัดชุมชน (Wellness & Community-Based Tourism) ในจังหวัดศรีสะเกษ รวบรวมโฮมสเตย์ธรรมชาติ อาหารสุขภาพ นวดสปาสมุนไพรสด และผลิตภัณฑ์ภูมิปัญญา 4 ชนเผ่า (ลาว เขมร ส่วย เยอ) โดยรายได้ส่งตรงถึงผู้ประกอบการชุมชน"),
     },
     {
-        'question': 'การจองโฮมสเตย์และบริการสุขภาพผ่าน WellTrip มีขั้นตอนอย่างไร?',
-        'answer': 'เลือกที่พัก อาหารสุขภาพ หรือบริการสปาลงตะกร้า แล้วกดดำเนินการสั่งซื้อ ระบบจะสรุปยอดและแสดงข้อมูลบัญชีสำหรับโอนเงิน เมื่อโอนแล้วให้แนบสลิปผ่านหน้าเว็บ ระบบจะตรวจสอบและยืนยันการจองให้',
+        'question': gettext_lazy("การจองโฮมสเตย์และบริการสุขภาพผ่าน WellTrip มีขั้นตอนอย่างไร?"),
+        'answer': gettext_lazy("เลือกที่พัก อาหารสุขภาพ หรือบริการสปาลงตะกร้า แล้วกดดำเนินการสั่งซื้อ ระบบจะสรุปยอดและแสดงข้อมูลบัญชีสำหรับโอนเงิน เมื่อโอนแล้วให้แนบสลิปผ่านหน้าเว็บ ระบบจะตรวจสอบและยืนยันการจองให้"),
     },
     {
-        'question': 'ระบบ AI Wellness Curator วางแผนทริปและเมนูอาหารอย่างไร?',
-        'answer': 'AI จะคำนวณดัชนีมวลกาย (BMI) อัตราการเผาผลาญ (BMR) และเป้าหมายสุขภาพของคุณ เช่น การคลายเครียดหรือการควบคุมโซเดียม แล้วจับคู่กับที่พัก เมนูอาหารสุขภาพ และโปรแกรมสปาในศรีสะเกษที่เหมาะสม',
+        'question': gettext_lazy("ระบบ AI Wellness Curator วางแผนทริปและเมนูอาหารอย่างไร?"),
+        'answer': gettext_lazy("AI จะคำนวณดัชนีมวลกาย (BMI) อัตราการเผาผลาญ (BMR) และเป้าหมายสุขภาพของคุณ เช่น การคลายเครียดหรือการควบคุมโซเดียม แล้วจับคู่กับที่พัก เมนูอาหารสุขภาพ และโปรแกรมสปาในศรีสะเกษที่เหมาะสม"),
     },
     {
-        'question': 'ระบบตรวจสอบสลิปโอนเงินปลอดภัยและป้องกันสลิปซ้ำอย่างไร?',
-        'answer': 'ระบบตรวจสลิปอัตโนมัติและบันทึกเลขอ้างอิงธุรกรรมของธนาคาร สลิปที่เลขอ้างอิงซ้ำจะถูกปฏิเสธ ไฟล์สลิปเปิดดูได้เฉพาะเจ้าของรายการและผู้ดูแลระบบ',
+        'question': gettext_lazy("ระบบตรวจสอบสลิปโอนเงินปลอดภัยและป้องกันสลิปซ้ำอย่างไร?"),
+        'answer': gettext_lazy("ระบบตรวจสลิปอัตโนมัติและบันทึกเลขอ้างอิงธุรกรรมของธนาคาร สลิปที่เลขอ้างอิงซ้ำจะถูกปฏิเสธ ไฟล์สลิปเปิดดูได้เฉพาะเจ้าของรายการและผู้ดูแลระบบ"),
     },
     {
-        'question': 'ผู้ประกอบการชุมชนในศรีสะเกษต้องการเข้าร่วมต้องทำอย่างไร?',
-        'answer': 'สมัครสมาชิกแบบผู้ประกอบการ ระบุข้อมูลที่พัก ร้านอาหาร สปา หรือสินค้า OTOP และส่งเอกสารยืนยันตัวตน เมื่อผู้ดูแลระบบอนุมัติแล้ว สินค้าและบริการจะแสดงในระบบค้นหา',
+        'question': gettext_lazy("ผู้ประกอบการชุมชนในศรีสะเกษต้องการเข้าร่วมต้องทำอย่างไร?"),
+        'answer': gettext_lazy("สมัครสมาชิกแบบผู้ประกอบการ ระบุข้อมูลที่พัก ร้านอาหาร สปา หรือสินค้า OTOP และส่งเอกสารยืนยันตัวตน เมื่อผู้ดูแลระบบอนุมัติแล้ว สินค้าและบริการจะแสดงในระบบค้นหา"),
     },
     {
-        'question': 'Digital Passport และระบบสะสมตราประทับชุมชนใช้งานอย่างไร?',
-        'answer': 'เมื่อเดินทางถึงชุมชน สแกน QR Code ประจำจุดท่องเที่ยวผ่านหน้าพาสปอร์ตดิจิทัล เพื่อปลดล็อกตราประทับและรับสิทธิพิเศษสำหรับการเดินทางครั้งถัดไป',
+        'question': gettext_lazy("Digital Passport และระบบสะสมตราประทับชุมชนใช้งานอย่างไร?"),
+        'answer': gettext_lazy("เมื่อเดินทางถึงชุมชน สแกน QR Code ประจำจุดท่องเที่ยวผ่านหน้าพาสปอร์ตดิจิทัล เพื่อปลดล็อกตราประทับและรับสิทธิพิเศษสำหรับการเดินทางครั้งถัดไป"),
     },
     {
-        'question': 'วิถีบำบัด 4 ชนเผ่าศรีสะเกษ ประกอบด้วยชนเผ่าใดและมีเอกลักษณ์อย่างไร?',
-        'answer': 'ลาว: อาหารหมักดองธรรมชาติ สมุนไพรสวนครัว และดนตรีบำบัด · เขมร: สมุนไพรป่าพนมดงรัก แช่เท้าสมุนไพร และนวดคลายเส้น · ส่วย (กูย): ภูมิปัญญาคนเลี้ยงช้างและการย้อมผ้ามะเกลือ · เยอ: เกษตรอินทรีย์และการประคบสมุนไพรสด',
+        'question': gettext_lazy("วิถีบำบัด 4 ชนเผ่าศรีสะเกษ ประกอบด้วยชนเผ่าใดและมีเอกลักษณ์อย่างไร?"),
+        'answer': gettext_lazy("ลาว: อาหารหมักดองธรรมชาติ สมุนไพรสวนครัว และดนตรีบำบัด · เขมร: สมุนไพรป่าพนมดงรัก แช่เท้าสมุนไพร และนวดคลายเส้น · ส่วย (กูย): ภูมิปัญญาคนเลี้ยงช้างและการย้อมผ้ามะเกลือ · เยอ: เกษตรอินทรีย์และการประคบสมุนไพรสด"),
     },
     {
-        'question': 'อาหารสุขภาพจากดินภูเขาไฟศรีสะเกษมีจุดเด่นอะไร?',
-        'answer': 'ดินภูเขาไฟโบราณในศรีสะเกษอุดมด้วยแร่ธาตุ ทำให้ผลผลิตอย่างทุเรียนภูเขาไฟศรีสะเกษ (GI) หอมแดง และกระเทียม มีรสชาติเฉพาะตัว และถูกนำมาปรุงเป็นเมนูอาหารเพื่อสุขภาพ',
+        'question': gettext_lazy("อาหารสุขภาพจากดินภูเขาไฟศรีสะเกษมีจุดเด่นอะไร?"),
+        'answer': gettext_lazy("ดินภูเขาไฟโบราณในศรีสะเกษอุดมด้วยแร่ธาตุ ทำให้ผลผลิตอย่างทุเรียนภูเขาไฟศรีสะเกษ (GI) หอมแดง และกระเทียม มีรสชาติเฉพาะตัว และถูกนำมาปรุงเป็นเมนูอาหารเพื่อสุขภาพ"),
     },
     {
-        'question': 'โครงการ WellTrip ได้รับการสนับสนุนจากหน่วยงานใด?',
-        'answer': 'ได้รับการสนับสนุนทุนนวัตกรรมเพื่อสังคมจากสำนักงานนวัตกรรมแห่งชาติ (NIA) ภายใต้การบ่มเพาะโดยอุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU) และดำเนินการวิจัยพัฒนาโดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)',
+        'question': gettext_lazy("โครงการ WellTrip ได้รับการสนับสนุนจากหน่วยงานใด?"),
+        'answer': gettext_lazy("ได้รับการสนับสนุนทุนนวัตกรรมเพื่อสังคมจากสำนักงานนวัตกรรมแห่งชาติ (NIA) ภายใต้การบ่มเพาะโดยอุทยานวิทยาศาสตร์ มหาวิทยาลัยอุบลราชธานี (SIP UBU) และดำเนินการวิจัยพัฒนาโดยมหาวิทยาลัยราชภัฏศรีสะเกษ (SSKRU)"),
     },
 ]
 
@@ -86,10 +88,10 @@ def landing_view(request):
         featured_items.append({
             'id': str(s.id),
             'title': s.name,
-            'category': 'ที่พักชุมชน',
+            'category': _("ที่พักชุมชน"),
             'location': f"{s.district}, {s.province}" if s.district else s.province,
             'price': f"฿{s.min_price_per_night:,.0f}" if s.min_price_per_night else None,
-            'period': '/ คืน',
+            'period': _("/ คืน"),
             'image': s.hero_image.url if s.hero_image else placeholder,
             'href': f"/accommodations/{s.slug or s.id}/",
         })
@@ -97,10 +99,10 @@ def landing_view(request):
         featured_items.append({
             'id': str(w.id),
             'title': w.name,
-            'category': 'สปาและกิจกรรม',
-            'location': 'ศรีสะเกษ',
+            'category': _("สปาและกิจกรรม"),
+            'location': _("ศรีสะเกษ"),
             'price': f"฿{w.price:,.0f}",
-            'period': f"/ {w.duration_minutes} นาที" if w.duration_minutes else '/ รอบ',
+            'period': _("/ {duration_minutes} นาที").format(duration_minutes=w.duration_minutes) if w.duration_minutes else _("/ รอบ"),
             'image': w.image.url if w.image else placeholder,
             'href': '/services/?category=SPA',
         })
@@ -108,10 +110,10 @@ def landing_view(request):
         featured_items.append({
             'id': str(f.id),
             'title': f.name,
-            'category': 'อาหารเพื่อสุขภาพ',
-            'location': 'ศรีสะเกษ',
+            'category': _("อาหารเพื่อสุขภาพ"),
+            'location': _("ศรีสะเกษ"),
             'price': f"฿{f.price:,.0f}",
-            'period': '/ ชุด',
+            'period': _("/ ชุด"),
             'image': f.image.url if f.image else placeholder,
             'href': '/services/?category=FOOD',
         })
@@ -119,30 +121,30 @@ def landing_view(request):
         featured_items.append({
             'id': str(p.id),
             'title': p.name,
-            'category': 'หัตถกรรม OTOP',
-            'location': 'ศรีสะเกษ',
+            'category': _("หัตถกรรม OTOP"),
+            'location': _("ศรีสะเกษ"),
             'price': f"฿{p.price:,.0f}",
-            'period': '/ ชิ้น',
+            'period': _("/ ชิ้น"),
             'image': p.image.url if p.image else placeholder,
             'href': f"/otop/{p.id}/",
         })
 
     wellness_goals = [
-        {'id': 'STRESS_RELIEF', 'label': 'พักผ่อนและคลายความเครียด', 'target': '/services/?category=SPA'},
-        {'id': 'DETOX', 'label': 'สรรหาความสงบและสปาบำบัด', 'target': '/services/?category=SPA'},
-        {'id': 'BLOOD_SUGAR_CONTROL', 'label': 'อาหารสุขภาพโซเดียมต่ำ', 'target': '/services/?category=FOOD'},
-        {'id': 'FATIGUE_RECOVERY', 'label': 'ชาร์จพลังโฮมสเตย์ธรรมชาติ', 'target': '/accommodations/'},
+        {'id': 'STRESS_RELIEF', 'label': _("พักผ่อนและคลายความเครียด"), 'target': '/services/?category=SPA'},
+        {'id': 'DETOX', 'label': _("สรรหาความสงบและสปาบำบัด"), 'target': '/services/?category=SPA'},
+        {'id': 'BLOOD_SUGAR_CONTROL', 'label': _("อาหารสุขภาพโซเดียมต่ำ"), 'target': '/services/?category=FOOD'},
+        {'id': 'FATIGUE_RECOVERY', 'label': _("ชาร์จพลังโฮมสเตย์ธรรมชาติ"), 'target': '/accommodations/'},
     ]
 
     # Live counts only; no invented figures
     stats = [
-        {'value': total_stays, 'label': 'ที่พักชุมชน'},
-        {'value': total_wellness + total_foods, 'label': 'บริการ & อาหารสุขภาพ'},
-        {'value': total_products, 'label': 'สินค้าภูมิปัญญา OTOP'},
+        {'value': total_stays, 'label': _("ที่พักชุมชน")},
+        {'value': total_wellness + total_foods, 'label': _("บริการ & อาหารสุขภาพ")},
+        {'value': total_products, 'label': _("สินค้าภูมิปัญญา OTOP")},
     ]
 
     context = {
-        'page_title': 'WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ',
+        'page_title': _("WellTrip - สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ"),
         'total_stays': total_stays,
         'total_wellness': total_wellness,
         'total_foods': total_foods,
@@ -152,6 +154,7 @@ def landing_view(request):
         'stats': stats,
         'faq': LANDING_FAQ,
         'destinations': LANDING_DESTINATIONS,
+        'upcoming_events': upcoming_events(limit=4),
     }
     return render(request, 'core/home.html', context)
 
@@ -193,7 +196,7 @@ def tourist_home_view(request):
     map_locations = MapLocation.objects.filter(is_active=True)[:6]
 
     context = {
-        'page_title': 'หน้าหลักนักท่องเที่ยว — WellTrip สุขภาวะชุมชนศรีสะเกษ',
+        'page_title': _("หน้าหลักนักท่องเที่ยว — WellTrip สุขภาวะชุมชนศรีสะเกษ"),
         'active_bookings': active_bookings,
         'active_bookings_count': active_bookings_count,
         'total_bookings_count': total_bookings_count,
@@ -216,9 +219,9 @@ def manifest_view(request):
     maskable icons, shortcuts, and localization.
     """
     manifest_data = {
-        "name": "WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญา 4 ชนเผ่า",
+        "name": _("WellTrip Sisaket - สัมผัสวิถีสุขภาวะและภูมิปัญญา 4 ชนเผ่า"),
         "short_name": "WellTrip",
-        "description": "แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟศรีสะเกษ",
+        "description": _("แพลตฟอร์มการท่องเที่ยวเชิงสร้างสรรค์และสุขภาวะชุมชน 4 เผ่าไท (กูย ลาว เขมร เยอ) ดินแดนดินภูเขาไฟศรีสะเกษ"),
         "start_url": "/?source=pwa",
         "scope": "/",
         "display": "standalone",
@@ -251,30 +254,30 @@ def manifest_view(request):
         ],
         "shortcuts": [
             {
-                "name": "ค้นหาโฮมสเตย์",
-                "short_name": "ที่พัก",
-                "description": "จองโฮมสเตย์ชุมชนนิเวศและบ้านพักธรรมชาติในศรีสะเกษ",
+                "name": _("ค้นหาโฮมสเตย์"),
+                "short_name": _("ที่พัก"),
+                "description": _("จองโฮมสเตย์ชุมชนนิเวศและบ้านพักธรรมชาติในศรีสะเกษ"),
                 "url": "/accommodations/",
                 "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
             },
             {
-                "name": "อาหารเพื่อสุขภาพ",
-                "short_name": "อาหาร",
-                "description": "สั่งเมนูอาหารสุขภาพดินภูเขาไฟและวัตถุดิบอินทรีย์",
+                "name": _("อาหารเพื่อสุขภาพ"),
+                "short_name": _("อาหาร"),
+                "description": _("สั่งเมนูอาหารสุขภาพดินภูเขาไฟและวัตถุดิบอินทรีย์"),
                 "url": "/services/?category=FOOD",
                 "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
             },
             {
-                "name": "นวดสปาสมุนไพร",
-                "short_name": "สปา",
-                "description": "บริการนวดแผนไทยและอบสมุนไพรพื้นบ้าน 4 ชนเผ่า",
+                "name": _("นวดสปาสมุนไพร"),
+                "short_name": _("สปา"),
+                "description": _("บริการนวดแผนไทยและอบสมุนไพรพื้นบ้าน 4 ชนเผ่า"),
                 "url": "/services/?category=SPA",
                 "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
             },
             {
-                "name": "ของดี OTOP ศรีสะเกษ",
+                "name": _("ของดี OTOP ศรีสะเกษ"),
                 "short_name": "OTOP",
-                "description": "ช้อปสินค้าภูมิปัญญา ผ้าไหมมะเกลือ และผลผลิต GI",
+                "description": _("ช้อปสินค้าภูมิปัญญา ผ้าไหมมะเกลือ และผลผลิต GI"),
                 "url": "/otop/",
                 "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
             }
@@ -292,7 +295,7 @@ def service_worker_view(request):
     Strictly forbids caching of /admin/*, /accounts/*, /payments/*, /bookings/cart/, and mutation endpoints.
     """
     sw_code = """
-    const CACHE_NAME = 'welltrip-pwa-v4';
+    const CACHE_NAME = 'welltrip-pwa-v5';
     const PRECACHE_ASSETS = [
         '/',
         '/offline/',
@@ -534,7 +537,7 @@ def offline_view(request):
 def about_view(request):
     """About Us page: Mission, cultural heritage of Sisaket's 4 tribes, and wellness ecosystem."""
     return render(request, 'core/about.html', {
-        'page_title': 'เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ',
+        'page_title': _("เกี่ยวกับเรา — WellTrip สัมผัสวิถีสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ"),
     })
 
 
@@ -542,7 +545,7 @@ def about_view(request):
 def contact_view(request):
     """Contact Us page: Official support channels, office address, and contact forms."""
     return render(request, 'core/contact.html', {
-        'page_title': 'ติดต่อเรา — WellTrip ช่องทางติดต่อและศูนย์ประสานงานชุมชน',
+        'page_title': _("ติดต่อเรา — WellTrip ช่องทางติดต่อและศูนย์ประสานงานชุมชน"),
     })
 
 
@@ -550,7 +553,7 @@ def contact_view(request):
 def terms_view(request):
     """Terms of Service and PDPA Privacy Policy page."""
     return render(request, 'core/terms.html', {
-        'page_title': 'ข้อตกลงการใช้งานและนโยบายคุ้มครองข้อมูลส่วนบุคคล — WellTrip',
+        'page_title': _("ข้อตกลงการใช้งานและนโยบายคุ้มครองข้อมูลส่วนบุคคล — WellTrip"),
     })
 
 
@@ -593,11 +596,11 @@ def live_search_api(request):
     )[:4]
     for a in accs:
         results.append({
-            'type': 'โฮมสเตย์',
+            'type': _("โฮมสเตย์"),
             'type_badge': 'bg-emerald-50 text-emerald-800 border-emerald-200',
             'icon': 'hotel',
             'title': a.name,
-            'subtitle': f"อ.{a.district} จ.{a.province}" + (f" · เริ่มต้น ฿{a.min_price_per_night:,.0f}/คืน" if a.min_price_per_night else ""),
+            'subtitle': _("อ.{district} จ.{province}").format(district=a.district, province=a.province) + (_(" · เริ่มต้น ฿{min_price_per_night:,.0f}/คืน").format(min_price_per_night=a.min_price_per_night) if a.min_price_per_night else ""),
             'url': f"/accommodations/{a.slug or a.id}/",
             'price': f"฿{a.min_price_per_night:,.0f}" if a.min_price_per_night else "",
         })
@@ -609,7 +612,7 @@ def live_search_api(request):
     )[:3]
     for f in foods:
         results.append({
-            'type': 'อาหารสุขภาพ',
+            'type': _("อาหารสุขภาพ"),
             'type_badge': 'bg-amber-50 text-amber-800 border-amber-200',
             'icon': 'utensils',
             'title': f.name,
@@ -625,11 +628,11 @@ def live_search_api(request):
     )[:3]
     for sp in spas:
         results.append({
-            'type': 'สปา/นวด',
+            'type': _("สปา/นวด"),
             'type_badge': 'bg-teal-50 text-teal-800 border-teal-200',
             'icon': 'sparkles',
             'title': sp.name,
-            'subtitle': f"{sp.duration_minutes} นาที · ฿{sp.price:,.0f}",
+            'subtitle': _("{duration_minutes} นาที · ฿{price:,.0f}").format(duration_minutes=sp.duration_minutes, price=sp.price),
             'url': f"/services/?category=SPA&q={sp.name}",
             'price': f"฿{sp.price:,.0f}",
         })
@@ -641,7 +644,7 @@ def live_search_api(request):
     )[:3]
     for o in otops:
         results.append({
-            'type': 'ของดี OTOP',
+            'type': _("ของดี OTOP"),
             'type_badge': 'bg-indigo-50 text-indigo-800 border-indigo-200',
             'icon': 'package',
             'title': o.name,
@@ -660,11 +663,11 @@ def live_search_api(request):
     matching_districts = [d for d in sisaket_districts if q in d][:2]
     for md in matching_districts:
         results.append({
-            'type': 'อำเภอ',
+            'type': _("อำเภอ"),
             'type_badge': 'bg-stone-100 text-stone-800 border-stone-200',
             'icon': 'map-pin',
-            'title': f"อำเภอ{md}",
-            'subtitle': f"ค้นหาที่พักและบริการทั้งหมดใน อ.{md}",
+            'title': _("อำเภอ{md}").format(md=md),
+            'subtitle': _("ค้นหาที่พักและบริการทั้งหมดใน อ.{md}").format(md=md),
             'url': f"/accommodations/?district={md}",
             'price': '',
         })

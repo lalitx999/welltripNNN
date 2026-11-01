@@ -15,7 +15,12 @@ from apps.community.models import (
     Coupon,
     EditorialEntry,
     LocationEvent,
+    Event,
 )
+from apps.community.selectors.event_selector import events_by_month, get_public_event, upcoming_events
+from apps.community.services.event_service import google_calendar_url
+from apps.core.templatetags.welltrip_i18n import loc
+from django.utils.translation import gettext as _
 
 
 @require_GET
@@ -67,7 +72,7 @@ def passport_view(request):
     stamps = PassportStamp.objects.filter(user=request.user).select_related('location').order_by('-stamped_at')
     stamp_count = stamps.count()
 
-    points_obj, _ = UserPoints.objects.get_or_create(user=request.user)
+    points_obj, _created = UserPoints.objects.get_or_create(user=request.user)
 
     # Determine Explorer Level
     if stamp_count >= 10:
@@ -104,7 +109,7 @@ def claim_stamp_view(request, qr_secret):
     )
 
     if created:
-        points_obj, _ = UserPoints.objects.get_or_create(user=request.user)
+        points_obj, _created = UserPoints.objects.get_or_create(user=request.user)
         points_obj.total_earned += 50
         points_obj.current_balance += 50
         points_obj.save(update_fields=["total_earned", "current_balance", "updated_at"])
@@ -121,9 +126,9 @@ def claim_stamp_view(request, qr_secret):
             },
             user=request.user,
         )
-        messages.success(request, f"ยินดีด้วย! คุณได้รับตราประทับ '{location.title}' และรับ 50 คะแนนสะสม")
+        messages.success(request, _("ยินดีด้วย! คุณได้รับตราประทับ '{title}' และรับ 50 คะแนนสะสม").format(title=location.title))
     else:
-        messages.info(request, f"คุณเคยได้รับตราประทับของ '{location.title}' ไปแล้ว")
+        messages.info(request, _("คุณเคยได้รับตราประทับของ '{title}' ไปแล้ว").format(title=location.title))
 
     return redirect('community:passport')
 
@@ -178,7 +183,7 @@ def validate_coupon_htmx_view(request):
     if not code:
         return render(request, "community/partials/coupon_feedback.html", {
             "is_valid": False,
-            "message": "กรุณาระบุรหัสคูปองส่วนลด",
+            "message": _("กรุณาระบุรหัสคูปองส่วนลด"),
             "discount": Decimal("0.00"),
             "final_amount": order_amount,
         })
@@ -187,7 +192,7 @@ def validate_coupon_htmx_view(request):
     if not coupon:
         return render(request, "community/partials/coupon_feedback.html", {
             "is_valid": False,
-            "message": f"ไม่พบคูปองรหัส '{code}' ในระบบ",
+            "message": _("ไม่พบคูปองรหัส '{code}' ในระบบ").format(code=code),
             "discount": Decimal("0.00"),
             "final_amount": order_amount,
         })
@@ -217,7 +222,7 @@ def my_location_events_view(request):
     DELETE: Purge all historical location records for this user immediately.
     """
     if request.method == "DELETE":
-        deleted_count, _ = LocationEvent.objects.filter(user=request.user).delete()
+        deleted_count, _details = LocationEvent.objects.filter(user=request.user).delete()
         record_audit_log(
             request=request,
             action="DELETE",
@@ -246,7 +251,7 @@ def my_location_events_view(request):
     # Browser navigation: Render full PDPA Privacy Settings HTML page
     return render(request, "community/privacy_settings.html", {
         "latest_event": latest_event,
-        "page_title": "ตั้งค่าความเป็นส่วนตัวและพิกัดตำแหน่ง (PDPA) — WellTrip",
+        "page_title": _("ตั้งค่าความเป็นส่วนตัวและพิกัดตำแหน่ง (PDPA) — WellTrip"),
     })
 
 
@@ -290,3 +295,29 @@ def record_location_consent_api_view(request):
         )
 
     return JsonResponse({"status": "ok", "outcome": outcome})
+
+
+# ==============================================================================
+# EVENTS CALENDAR (public)
+# ==============================================================================
+@require_GET
+def events_list_view(request):
+    category = request.GET.get("category", "")
+    if category not in Event.Category.values:
+        category = ""
+    return render(request, "community/events_list.html", {
+        "months": events_by_month(category=category or None),
+        "categories": Event.Category.choices,
+        "selected_category": category,
+    })
+
+
+@require_GET
+def event_detail_view(request, event_id):
+    event = get_public_event(event_id)
+    title, venue = loc(event, "title"), loc(event, "venue")
+    return render(request, "community/event_detail.html", {
+        "event": event,
+        "calendar_url": google_calendar_url(event, title, venue),
+        "more_events": [e for e in upcoming_events(limit=4) if e.id != event.id][:3],
+    })

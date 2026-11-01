@@ -1,0 +1,33 @@
+{% extends "layouts/public.html" %}
+{% load i18n welltrip_i18n %}
+
+{% block title %}{% translate "ปฏิทินกิจกรรมศรีสะเกษ" %} - WellTrip Sisaket{% endblock %}
+
+{% block content %}
+<section class="wt-page-head">
+  <div class="container-xl">
+    <span class="wt-eyebrow"><i data-lucide="calendar-days"></i>Sisaket events</span>
+    <h1 class="mb-2">{% translate "ปฏิทินกิจกรรมศรีสะเกษ" %}</h1>
+    <p class="text-secondary mb-4" style="max-width: 40rem;">{% translate "เทศกาล ดนตรี กีฬา และงานประเพณีที่กำลังจะมาถึง เลือกงานที่ชอบแล้วเพิ่มลงปฏิทินของคุณได้เลย" %}</p>
+    <div class="wt-pills">
+      <a href="{% url 'community:events_list' %}" class="wt-pill {% if not selected_category %}active{% endif %}">{% translate "ทั้งหมด" %}</a>
+      {% for code, label in categories %}
+        <a href="?category={{ code }}" class="wt-pill {% if selected_category == code %}active{% endif %}">{{ label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="container-xl pb-5">
+  {% for month, events in months %}
+    <h2 class="h5 fw-bold mb-3 {% if not forloop.first %}mt-5{% endif %}">{{ month|month_label }}</h2>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+      {% for event in events %}
+        <div class="col">{% include "community/partials/event_card.html" %}</div>
+      {% endfor %}
+    </div>
+  {% empty %}
+    <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="calendar-x"></i></span><div class="fw-bold">{% translate "ยังไม่มีกิจกรรมที่กำลังจะมาถึง" %}</div><small class="text-secondary">{% translate "แวะกลับมาดูใหม่เร็วๆ นี้" %}</small></div>
+  {% endfor %}
+</div>
+{% endblock %}

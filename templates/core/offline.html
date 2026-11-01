@@ -1,16 +1,17 @@
 {% extends "layouts/public.html" %}
 
-{% block title %}ออฟไลน์ - WellTrip{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "ออฟไลน์ - WellTrip" %}{% endblock %}
 
 {% block content %}
 <section class="container-xl py-5">
   <div class="wt-card wt-empty mx-auto py-5 px-4" style="max-width: 34rem;" x-data="{ isChecking: false }">
     <span class="wt-stat-icon mb-3" style="--c:#5c6a63;--bg:#eef1ef;width:4.5rem;height:4.5rem;border-radius:1.5rem"><i data-lucide="wifi-off" style="width:2rem;height:2rem"></i></span>
     <div class="wt-eyebrow justify-content-center mb-1">Offline mode</div>
-    <h1 class="h3 fw-bold">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</h1>
-    <p class="text-secondary mb-4">หน้าที่คุณเคยเปิดไว้ยังดูได้จากแคชในเครื่อง เมื่อสัญญาณกลับมาให้ลองโหลดหน้าใหม่อีกครั้ง</p>
+    <h1 class="h3 fw-bold">{% translate "ไม่มีการเชื่อมต่ออินเทอร์เน็ต" %}</h1>
+    <p class="text-secondary mb-4">{% translate "หน้าที่คุณเคยเปิดไว้ยังดูได้จากแคชในเครื่อง เมื่อสัญญาณกลับมาให้ลองโหลดหน้าใหม่อีกครั้ง" %}</p>
     <button type="button" class="btn btn-green rounded-pill px-4" @click="isChecking = true; setTimeout(() => window.location.reload(), 600)" :disabled="isChecking">
-      <i data-lucide="refresh-cw" class="me-1"></i><span x-text="isChecking ? 'กำลังตรวจสอบ...' : 'ลองเชื่อมต่อใหม่'">ลองเชื่อมต่อใหม่</span>
+      <i data-lucide="refresh-cw" class="me-1"></i><span x-text="isChecking ? '{{ _("กำลังตรวจสอบ...")|escapejs }}' : '{{ _("ลองเชื่อมต่อใหม่")|escapejs }}'">{% translate "ลองเชื่อมต่อใหม่" %}</span>
     </button>
   </div>
 </section>

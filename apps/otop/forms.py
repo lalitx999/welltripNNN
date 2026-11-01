@@ -2,6 +2,7 @@ from decimal import Decimal
 from django import forms
 from apps.otop.models import OTOPProduct, OTOPCategory
 from apps.core.services.media import sanitize_and_strip_image
+from django.utils.translation import gettext_lazy
 
 
 class OTOPProductForm(forms.ModelForm):
@@ -10,7 +11,7 @@ class OTOPProductForm(forms.ModelForm):
         fields = ['name', 'category', 'description', 'price', 'stock_quantity', 'image']
         widgets = {
             'image': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/jpeg,image/png,image/webp'}),
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'ชื่อผลิตภัณฑ์ OTOP'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("ชื่อผลิตภัณฑ์ OTOP")}),
             'category': forms.Select(attrs={'class': 'form-select'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'step': '0.01'}),

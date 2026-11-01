@@ -1,0 +1,38 @@
+{% extends "layouts/admin.html" %}
+
+{% load i18n %}
+{% block title %}{% if event %}{% translate "แก้ไขกิจกรรม" %}{% else %}{% translate "เพิ่มกิจกรรม" %}{% endif %} - Admin Center{% endblock %}
+{% block page_heading %}{% if event %}{% translate "แก้ไขกิจกรรม" %}{% else %}{% translate "เพิ่มกิจกรรม" %}{% endif %}{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="wt-card p-4 d-grid gap-4" style="max-width: 56rem;">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="alert alert-danger rounded-4 small mb-0">{{ form.non_field_errors }}</div>{% endif %}
+
+  <div class="row g-3">
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.title label=_("ชื่องาน (ไทย)") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.title_en label=_("ชื่องาน (English)") %}</div>
+    <div class="col-md-4">{% include "portal/partials/form_field.html" with field=form.category label=_("ประเภท") %}</div>
+    <div class="col-6 col-md-4">{% include "portal/partials/form_field.html" with field=form.start_date label=_("วันเริ่ม") %}</div>
+    <div class="col-6 col-md-4">{% include "portal/partials/form_field.html" with field=form.end_date label=_("วันสิ้นสุด") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.date_note label=_("ข้อความวันที่แทน (ไทย)") help=_("ใช้เมื่อจัดหลายช่วง เช่น 12–13 และ 19–20 ธ.ค.") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.date_note_en label=_("ข้อความวันที่แทน (English)") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.venue label=_("สถานที่ (ไทย)") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.venue_en label=_("สถานที่ (English)") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.google_maps_url label=_("ลิงก์ Google Maps") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.check_in_point label=_("จุดเช็คอินพาสปอร์ต") help=_("เลือกจุดที่วาง QR ในงาน") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.summary label=_("รายละเอียด (ไทย)") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.summary_en label=_("รายละเอียด (English)") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.organizer label=_("ผู้จัด") %}</div>
+    <div class="col-md-6">{% include "portal/partials/form_field.html" with field=form.source_url label=_("ลิงก์ข้อมูลจากผู้จัด") %}</div>
+    <div class="col-12">{% include "portal/partials/form_field.html" with field=form.image label=_("รูปภาพ") help=_("JPG, PNG หรือ WebP") %}</div>
+  </div>
+
+  <div class="form-check">{{ form.is_published }}<label class="form-check-label fw-semibold" for="{{ form.is_published.id_for_label }}">{% translate "เผยแพร่บนหน้าเว็บ" %}</label></div>
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-green rounded-pill px-4"><i data-lucide="save" class="me-1"></i>{% translate "บันทึก" %}</button>
+    <a href="{% url 'accounts:admin_dashboard' %}?tab=events" class="btn btn-outline-ink rounded-pill">{% translate "ยกเลิก" %}</a>
+  </div>
+</form>
+{% endblock %}

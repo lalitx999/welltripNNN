@@ -1,4 +1,5 @@
 {% extends "layouts/public.html" %}
+{% load i18n %}
 {% load static %}
 
 {% block content %}
@@ -10,7 +11,7 @@
         <div>
           <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-3"><i data-lucide="map-pin" class="me-1"></i>WellTrip Sisaket</span>
           <h2 class="display-6 fw-bold mb-2">{% block auth_headline %}{% endblock %}</h2>
-          <p class="opacity-75 mb-0">โฮมสเตย์กลางธรรมชาติ อาหารสุขภาพ และสปาสมุนไพรจากชุมชนศรีสะเกษ</p>
+          <p class="opacity-75 mb-0">{% translate "โฮมสเตย์กลางธรรมชาติ อาหารสุขภาพ และสปาสมุนไพรจากชุมชนศรีสะเกษ" %}</p>
         </div>
       </div>
     </div>
