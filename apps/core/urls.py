@@ -6,6 +6,7 @@ app_name = 'core'
 urlpatterns = [
     path('', views.landing_view, name='landing'),
     path('home/', views.tourist_home_view, name='home'),
+    path('shops/<uuid:profile_id>/', views.shop_detail_view, name='shop_detail'),
     path('about/', views.about_view, name='about'),
     path('contact/', views.contact_view, name='contact'),
     path('terms/', views.terms_view, name='terms'),

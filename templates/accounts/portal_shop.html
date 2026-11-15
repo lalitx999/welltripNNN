@@ -1,0 +1,86 @@
+{% extends "layouts/merchant.html" %}
+{% load i18n %}
+{% block title %}{% translate "ตกแต่งร้าน - Partner Studio" %}{% endblock %}
+{% block page_heading %}{% translate "ตกแต่งร้าน" %}{% endblock %}
+
+{% block content %}
+<div class="d-grid gap-4">
+
+  {# Where the shop stands: partners may decorate before approval; the page goes public once approved #}
+  {% if profile.status == 'APPROVED' %}
+    <div class="alert alert-success rounded-4 d-flex flex-wrap align-items-center justify-content-between gap-2 mb-0">
+      <span><i data-lucide="store" class="me-1"></i>{% translate "หน้าร้านของคุณเปิดให้ลูกค้าเห็นแล้ว" %}</span>
+      <a href="{% url 'core:shop_detail' profile.id %}" target="_blank" rel="noopener" class="btn btn-sm btn-green rounded-pill"><i data-lucide="eye" class="me-1"></i>{% translate "ดูหน้าร้าน" %}</a>
+    </div>
+  {% elif profile.status == 'REJECTED' %}
+    <div class="alert alert-danger rounded-4 mb-0">
+      <div class="fw-bold">{% translate "ใบสมัครยังไม่ผ่านการอนุมัติ" %}</div>
+      {% if profile.rejection_reason %}<small>{% blocktranslate trimmed with reason=profile.rejection_reason %}เหตุผล: {{ reason }}{% endblocktranslate %}</small>{% endif %}
+      <small class="d-block">{% translate "แก้ไขข้อมูลร้านด้านล่างได้ แล้วติดต่อทีมงานเพื่อตรวจสอบใหม่" %}</small>
+    </div>
+  {% else %}
+    <div class="alert alert-warning rounded-4 d-flex flex-wrap align-items-center justify-content-between gap-2 mb-0">
+      <span><i data-lucide="hourglass" class="me-1"></i>{% translate "กำลังรอการอนุมัติ ตกแต่งร้านไว้ก่อนได้เลย หน้าร้านจะเปิดให้ลูกค้าเห็นทันทีที่อนุมัติ" %}</span>
+      <a href="{% url 'core:shop_detail' profile.id %}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-ink rounded-pill"><i data-lucide="eye" class="me-1"></i>{% translate "ดูตัวอย่างหน้าร้าน" %}</a>
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+    {# Photos: at most 3, the first is the cover #}
+    <div class="col-xl-6">
+      <div class="wt-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <h2 class="h6 fw-bold mb-0"><i data-lucide="images" class="text-green me-1"></i>{% translate "รูปหน้าร้าน" %}</h2>
+          <span class="badge {% if slots_left %}badge-gold{% else %}badge-green{% endif %}">{{ images|length }}/{{ max_images }}</span>
+        </div>
+        <p class="small text-secondary">{% blocktranslate trimmed with n=max_images %}ใส่ได้สูงสุด {{ n }} รูป รูปแรกคือรูปหน้าปกร้าน (JPG, PNG หรือ WEBP ไม่เกิน 10MB){% endblocktranslate %}</p>
+
+        <div class="row row-cols-3 g-2 mb-3">
+          {% for shot in images %}
+            <div class="col">
+              <div class="position-relative rounded-3 overflow-hidden border" style="aspect-ratio: 1;">
+                <img src="{{ shot.image.url }}" alt="{% blocktranslate with n=forloop.counter %}รูปร้าน {{ n }}{% endblocktranslate %}" class="w-100 h-100 object-fit-cover">
+                {% if forloop.first %}<span class="badge badge-green position-absolute top-0 start-0 m-1">{% translate "ปก" %}</span>{% endif %}
+              </div>
+              <div class="d-flex gap-1 mt-1">
+                {% if not forloop.first %}
+                  <form method="post" action="{% url 'accounts:portal_shop_image' %}" class="flex-grow-1">{% csrf_token %}<input type="hidden" name="action" value="cover"><input type="hidden" name="image_id" value="{{ shot.id }}"><button type="submit" class="btn btn-outline-ink btn-sm rounded-pill w-100 px-1" style="font-size:.7rem">{% translate "ตั้งเป็นปก" %}</button></form>
+                {% endif %}
+                <form method="post" action="{% url 'accounts:portal_shop_image' %}" {% if forloop.first %}class="flex-grow-1"{% endif %} onsubmit="return confirm('{{ _("ลบรูปนี้หรือไม่?")|escapejs }}');">{% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="image_id" value="{{ shot.id }}"><button type="submit" class="btn btn-outline-danger btn-sm rounded-pill w-100 px-2" aria-label="{% translate 'ลบรูป' %}"><i data-lucide="trash-2"></i></button></form>
+              </div>
+            </div>
+          {% endfor %}
+          {% for slot in ""|ljust:slots_left %}
+            <div class="col"><div class="rounded-3 border border-2 d-flex align-items-center justify-content-center text-secondary" style="aspect-ratio: 1; border-style: dashed !important;"><i data-lucide="image-plus"></i></div></div>
+          {% endfor %}
+        </div>
+
+        {% if slots_left %}
+          <form method="post" action="{% url 'accounts:portal_shop_image' %}" enctype="multipart/form-data" class="d-flex flex-wrap gap-2">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add">
+            <input type="file" name="image" accept="image/jpeg,image/png,image/webp" required class="form-control" style="max-width: 20rem;" aria-label="{% translate 'เลือกรูปร้าน' %}">
+            <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="upload" class="me-1"></i>{% translate "อัปโหลด" %}</button>
+          </form>
+        {% else %}
+          <div class="small text-secondary"><i data-lucide="info" class="me-1"></i>{% translate "ครบ 3 รูปแล้ว ลบรูปเดิมก่อนถ้าต้องการเปลี่ยน" %}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Details #}
+    <div class="col-xl-6">
+      <div class="wt-card p-4 h-100">
+        <h2 class="h6 fw-bold mb-3"><i data-lucide="pencil" class="text-green me-1"></i>{% translate "ข้อมูลร้าน" %}</h2>
+        <form method="post" class="d-grid gap-3">
+          {% csrf_token %}
+          {% for field in form %}
+            {% include "portal/partials/form_field.html" with field=field label=field.label %}
+          {% endfor %}
+          <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="save" class="me-1"></i>{% translate "บันทึกข้อมูลร้าน" %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

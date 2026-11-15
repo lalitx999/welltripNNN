@@ -632,3 +632,27 @@ def live_search_api(request):
         'results': results,
     })
 
+
+
+@require_GET
+def shop_detail_view(request, profile_id):
+    """Public storefront of an approved partner: photos, story, contact and what they sell."""
+    from django.http import Http404
+    from apps.accounts.models import MerchantApprovalStatus, MerchantProfile
+    from apps.accounts.permissions import is_platform_admin
+
+    profile = MerchantProfile.objects.select_related('user').prefetch_related('shop_images').filter(pk=profile_id).first()
+    # Unapproved shops: only the owner (preview) and admins may look
+    if profile is None or not (
+        profile.status == MerchantApprovalStatus.APPROVED
+        or (request.user.is_authenticated and (profile.user_id == request.user.id or is_platform_admin(request.user)))
+    ):
+        raise Http404
+    owner = profile.user
+    items = stay_cards(12, owner) + food_cards(12, owner) + spa_cards(12, owner) + otop_cards(12, owner)
+    return render(request, 'core/shop_detail.html', {
+        'profile': profile,
+        'images': list(profile.shop_images.all()),
+        'is_preview': profile.status != MerchantApprovalStatus.APPROVED,
+        'items': items,
+    })

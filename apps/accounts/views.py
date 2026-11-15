@@ -409,6 +409,76 @@ def portal_fulfillment_view(request, item_id):
     return redirect(next_url)
 
 
+def _own_shop_profile(request):
+    """The signed-in partner's MerchantProfile, whatever its approval status (None for everyone else)."""
+    if not request.user.is_authenticated or not request.user.is_merchant:
+        return None
+    from apps.accounts.models import MerchantProfile
+    return MerchantProfile.objects.filter(user=request.user).first()
+
+
+@require_http_methods(["GET", "POST"])
+def portal_shop_view(request):
+    """
+    "ตกแต่งร้าน": shop name, story, contact, hours, map and up to 3 photos.
+    Open right after sign-up, so partners can prepare the storefront while the admin reviews them.
+    """
+    from apps.accounts.forms import ShopImageForm, ShopProfileForm
+    from apps.accounts.models import MerchantShopImage
+
+    if not request.user.is_authenticated:
+        return redirect(f"/accounts/login/?next={request.path}")
+    profile = _own_shop_profile(request)
+    if profile is None:
+        messages.error(request, _("หน้านี้สำหรับบัญชีผู้ประกอบการ"))
+        return redirect('core:landing')
+
+    form = ShopProfileForm(request.POST or None, instance=profile)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        record_audit_log(request=request, action="UPDATE", model_name="MerchantProfile", object_id=str(profile.id),
+                         changes={k: str(v) for k, v in form.cleaned_data.items()}, user=request.user)
+        messages.success(request, _("บันทึกข้อมูลร้านแล้ว"))
+        return redirect('accounts:portal_shop')
+
+    images = list(profile.shop_images.all())
+    return render(request, 'accounts/portal_shop.html', {
+        'page_title': _("ตกแต่งร้าน - Partner Studio"),
+        'profile': profile,
+        'form': form,
+        'image_form': ShopImageForm(),
+        'images': images,
+        'max_images': MerchantShopImage.MAX_PER_SHOP,
+        'slots_left': max(0, MerchantShopImage.MAX_PER_SHOP - len(images)),
+    })
+
+
+@require_http_methods(["POST"])
+def portal_shop_image_view(request):
+    """Add / delete / make-cover for storefront photos (max 3)."""
+    from apps.accounts.forms import ShopImageForm
+    from apps.accounts.services import shop_service
+
+    profile = _own_shop_profile(request)
+    if profile is None:
+        return redirect('core:landing')
+    action = request.POST.get('action')
+    if action == 'add':
+        image_form = ShopImageForm(files=request.FILES)
+        if image_form.is_valid():
+            ok, message = shop_service.add_shop_image(request, profile, image_form.cleaned_data['image'])
+        else:
+            ok, message = False, " ".join(image_form.errors.get('image', [_("รูปภาพไม่ถูกต้อง")]))
+    elif action == 'delete':
+        ok, message = shop_service.delete_shop_image(request, profile, request.POST.get('image_id'))
+    elif action == 'cover':
+        ok, message = shop_service.make_cover(request, profile, request.POST.get('image_id'))
+    else:
+        ok, message = False, _("คำสั่งไม่ถูกต้อง")
+    (messages.success if ok else messages.error)(request, message)
+    return redirect('accounts:portal_shop')
+
+
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 def admin_dashboard_view(request):
     """Admin Operations Landing Dashboard: Forward to Unified Command Center."""

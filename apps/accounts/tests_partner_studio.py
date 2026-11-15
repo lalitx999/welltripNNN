@@ -225,3 +225,57 @@ class AdminCatalogTestCase(TestCase):
         self.assertNotContains(listing, "cat-admin@example.com")
         self.assertNotContains(self.client.get(f"/otop/{product.id}/"), "shop@example.com")
         self.assertNotContains(self.client.get(f"/otop/{admin_product.id}/"), "cat-admin@example.com")
+
+
+class ShopSetupTestCase(TestCase):
+    """Partners decorate their shop right after sign-up; at most 3 photos; public only once approved."""
+
+    def setUp(self):
+        import io
+        from PIL import Image
+        self.Image, self.io = Image, io
+        self.partner = User.objects.create_user(email="new-shop@example.com", password="x", role=UserRoles.OTOP_OWNER)
+        self.profile = MerchantProfile.objects.create(user=self.partner, business_name="ร้านใหม่", business_category="OTOP")
+        self.client.force_login(self.partner)
+
+    def _image(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        buf = self.io.BytesIO()
+        self.Image.new("RGB", (60, 40), color="orange").save(buf, format="JPEG")
+        return SimpleUploadedFile("shop.jpg", buf.getvalue(), content_type="image/jpeg")
+
+    def test_pending_partner_can_set_up_the_shop(self):
+        self.assertEqual(self.client.get(reverse("accounts:portal_shop")).status_code, 200)
+        self.client.post(reverse("accounts:portal_shop"), {
+            "business_name": "ร้านผ้าไหมแม่มาลี", "description": "ผ้าไหมทอมือ", "phone_number": "0812345678",
+            "opening_hours": "ทุกวัน 08:00-17:00", "google_maps_url": "",
+        })
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.business_name, "ร้านผ้าไหมแม่มาลี")
+        self.assertContains(self.client.get(reverse("accounts:portal_dashboard"), follow=True), "ตกแต่งร้าน", status_code=403)
+
+    def test_at_most_three_photos(self):
+        from apps.accounts.models import MerchantShopImage
+        for _ in range(4):
+            self.client.post(reverse("accounts:portal_shop_image"), {"action": "add", "image": self._image()})
+        self.assertEqual(MerchantShopImage.objects.filter(profile=self.profile).count(), 3)
+        last = MerchantShopImage.objects.filter(profile=self.profile).last()
+        self.client.post(reverse("accounts:portal_shop_image"), {"action": "cover", "image_id": last.id})
+        self.assertEqual(MerchantShopImage.objects.filter(profile=self.profile).first(), last)
+
+    def test_shop_page_public_only_after_approval(self):
+        url = reverse("core:shop_detail", args=[self.profile.id])
+        self.assertEqual(self.client.get(url).status_code, 200)  # owner preview
+        self.client.logout()
+        self.assertEqual(self.client.get(url).status_code, 404)
+        self.profile.status = MerchantApprovalStatus.APPROVED
+        self.profile.save()
+        OTOPProduct.objects.create(owner=self.partner, name="ผ้าไหมลายลูกแก้ว", price=Decimal("900"), stock_quantity=1)
+        page = self.client.get(url)
+        self.assertContains(page, "ร้านใหม่")
+        self.assertContains(page, "ผ้าไหมลายลูกแก้ว")
+        self.assertNotContains(page, "new-shop@example.com")
+
+    def test_tourist_cannot_open_shop_setup(self):
+        self.client.force_login(User.objects.create_user(email="t2@example.com", password="x", role=UserRoles.TOURIST))
+        self.assertEqual(self.client.get(reverse("accounts:portal_shop")).status_code, 302)

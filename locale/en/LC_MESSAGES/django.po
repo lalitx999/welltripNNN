@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 19:36+0700\n"
+"POT-Creation-Date: 2026-11-15 20:14+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,7 +82,7 @@ msgstr "Added room “{name}”"
 msgid "ข้อมูลห้องพักไม่ถูกต้อง กรุณาตรวจสอบ"
 msgstr "Room details are invalid. Please check the form."
 
-#: apps/accommodations/views.py:211
+#: apps/accommodations/views.py:211 apps/accounts/views.py:471
 msgid "รูปภาพไม่ถูกต้อง"
 msgstr "Invalid image"
 
@@ -418,7 +418,8 @@ msgstr "Deleted story “{title}”"
 #: apps/accounts/admin_views.py:1313
 #, python-brace-format
 msgid "ตั้งเป็นชำระสำเร็จไม่ได้: การจอง {booking_code} หมดเวลาหรือถูกยกเลิกแล้ว"
-msgstr "Cannot mark as paid: booking {booking_code} has expired or was cancelled"
+msgstr ""
+"Cannot mark as paid: booking {booking_code} has expired or was cancelled"
 
 #: apps/accounts/admin_views.py:1333
 #, python-brace-format
@@ -602,7 +603,7 @@ msgstr "08:00 - 18:00"
 msgid "วันและเวลาเปิดทำการ"
 msgstr "Opening days and hours"
 
-#: apps/accounts/forms.py:189
+#: apps/accounts/forms.py:189 apps/accounts/forms.py:271
 msgid "ลิงก์ Google Maps ของร้าน"
 msgstr "Google Maps link of your business"
 
@@ -613,6 +614,34 @@ msgstr "Business description / highlights"
 #: apps/accounts/forms.py:198
 msgid "อีเมลนี้ถูกลงทะเบียนไว้ในระบบแล้ว กรุณาเข้าสู่ระบบ"
 msgstr "This email is already registered. Please log in."
+
+#: apps/accounts/forms.py:267
+msgid "ชื่อร้าน"
+msgstr "Shop name"
+
+#: apps/accounts/forms.py:268
+msgid "แนะนำร้าน"
+msgstr "About the shop"
+
+#: apps/accounts/forms.py:269
+msgid "เบอร์ติดต่อ"
+msgstr "Contact number"
+
+#: apps/accounts/forms.py:270
+msgid "เวลาเปิด-ปิด"
+msgstr "Opening hours"
+
+#: apps/accounts/forms.py:276
+msgid "เล่าเรื่องร้าน จุดเด่น และสิ่งที่ลูกค้าจะได้รับ"
+msgstr "Tell your shop's story, what makes it special and what customers get"
+
+#: apps/accounts/forms.py:278 templates/accounts/register_merchant.html:76
+msgid "เช่น ทุกวัน 08:00 - 18:00 น."
+msgstr "e.g. Daily 08:00 - 18:00"
+
+#: apps/accounts/forms.py:285
+msgid "ชื่อร้านต้องไม่ใช่อีเมล"
+msgstr "The shop name cannot be an email address"
 
 #: apps/accounts/middleware.py:32
 msgid "เซสชันของคุณหมดอายุเนื่องจากไม่มีการใช้งานเกิน 30 นาที กรุณาเข้าสู่ระบบใหม่"
@@ -704,6 +733,29 @@ msgstr "This email is already linked to another Google account"
 msgid "บัญชีผู้ดูแลระบบต้องเข้าสู่ระบบด้วยรหัสผ่าน"
 msgstr "Admin accounts must sign in with a password"
 
+#: apps/accounts/services/shop_service.py:15
+#, python-brace-format
+msgid "ใส่รูปร้านได้สูงสุด {n} รูป กรุณาลบรูปเดิมก่อน"
+msgstr "Up to {n} shop photos. Please delete one first"
+
+#: apps/accounts/services/shop_service.py:19
+#, python-brace-format
+msgid "เพิ่มรูปร้านแล้ว ({n}/{max})"
+msgstr "Shop photo added ({n}/{max})"
+
+#: apps/accounts/services/shop_service.py:25
+#: apps/accounts/services/shop_service.py:42
+msgid "ไม่พบรูปนี้"
+msgstr "Photo not found"
+
+#: apps/accounts/services/shop_service.py:34
+msgid "ลบรูปแล้ว"
+msgstr "Photo deleted"
+
+#: apps/accounts/services/shop_service.py:48
+msgid "ตั้งเป็นรูปหน้าปกร้านแล้ว"
+msgstr "Set as the shop cover"
+
 #: apps/accounts/views.py:70 apps/accounts/views.py:299
 #, python-brace-format
 msgid "ยินดีต้อนรับ {value}"
@@ -754,11 +806,27 @@ msgstr "Partner Studio - Business overview"
 msgid "คำสั่งซื้อของร้าน - Partner Studio"
 msgstr "Shop orders - Partner Studio"
 
-#: apps/accounts/views.py:444
+#: apps/accounts/views.py:433
+msgid "หน้านี้สำหรับบัญชีผู้ประกอบการ"
+msgstr "This page is for partner accounts"
+
+#: apps/accounts/views.py:441
+msgid "บันทึกข้อมูลร้านแล้ว"
+msgstr "Shop details saved"
+
+#: apps/accounts/views.py:446 templates/accounts/portal_shop.html:3
+msgid "ตกแต่งร้าน - Partner Studio"
+msgstr "Shop setup - Partner Studio"
+
+#: apps/accounts/views.py:477
+msgid "คำสั่งไม่ถูกต้อง"
+msgstr "Invalid action"
+
+#: apps/accounts/views.py:514
 msgid "บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว"
 msgstr "Profile saved"
 
-#: apps/accounts/views.py:459
+#: apps/accounts/views.py:529
 msgid "โปรไฟล์ส่วนตัว — WellTrip"
 msgstr "My profile — WellTrip"
 
@@ -877,7 +945,9 @@ msgstr "The selected room was not found or is closed for booking"
 #: apps/bookings/services/checkout.py:67
 #, python-brace-format
 msgid "วันเช็คอินของ '{name}' ผ่านมาแล้ว กรุณาลบออกแล้วเลือกวันใหม่"
-msgstr "The check-in date for '{name}' has passed. Please remove it and choose a new date"
+msgstr ""
+"The check-in date for '{name}' has passed. Please remove it and choose a new "
+"date"
 
 #: apps/bookings/services/checkout.py:89
 #, python-brace-format
@@ -1099,7 +1169,9 @@ msgstr "Could not continue: {str}"
 
 #: apps/bookings/views.py:511
 msgid "สั่งซื้อไม่สำเร็จ มีรายการในตะกร้าที่ไม่พร้อมขายแล้ว กรุณาลบรายการนั้นแล้วลองใหม่"
-msgstr "Order failed: an item in your cart is no longer available. Please remove it and try again"
+msgstr ""
+"Order failed: an item in your cart is no longer available. Please remove it "
+"and try again"
 
 #: apps/bookings/views.py:566
 msgid "คุณไม่มีสิทธิ์เข้าถึงข้อมูลการจองนี้"
@@ -1609,7 +1681,7 @@ msgstr "Find homestays"
 #: apps/core/views.py:212 templates/admin/tabs/modals.html:28
 #: templates/admin/tabs/modals.html:98 templates/admin/tabs/modals.html:121
 #: templates/admin/tabs/modals.html:197 templates/admin/tabs/modals.html:215
-#: templates/bookings/cart.html:30 templates/layouts/merchant.html:14
+#: templates/bookings/cart.html:30 templates/layouts/merchant.html:15
 #: templates/layouts/public.html:238 templates/portal/calendar.html:39
 msgid "ที่พัก"
 msgstr "Stays"
@@ -1619,7 +1691,7 @@ msgid "จองโฮมสเตย์ชุมชนนิเวศและ�
 msgstr "Book eco community homestays and nature lodges in Sisaket"
 
 #: apps/core/views.py:219 templates/bookings/cart.html:30
-#: templates/layouts/merchant.html:19
+#: templates/layouts/merchant.html:20
 msgid "อาหาร"
 msgstr "Food"
 
@@ -1633,7 +1705,7 @@ msgstr "Herbal massage & spa"
 
 #: apps/core/views.py:226 templates/admin/tabs/modals.html:98
 #: templates/admin/tabs/modals.html:121 templates/bookings/cart.html:30
-#: templates/layouts/merchant.html:23
+#: templates/layouts/merchant.html:24
 msgid "สปา"
 msgstr "Spa"
 
@@ -1738,7 +1810,9 @@ msgstr "{name} - ฿{price} ({stock_quantity} left)"
 
 #: apps/otop/views.py:66
 msgid "ผู้ดูแลระบบแก้ไขหรือปิดสินค้าได้ แต่การเพิ่มสินค้าต้องทำจากบัญชีร้านค้า"
-msgstr "Admins can edit or close products, but new products must be added from a shop account"
+msgstr ""
+"Admins can edit or close products, but new products must be added from a "
+"shop account"
 
 #: apps/otop/views.py:82
 #, python-brace-format
@@ -1763,7 +1837,7 @@ msgid "บันทึก '{name}' เรียบร้อยแล้ว"
 msgstr "'{name}' saved"
 
 #: apps/otop/views.py:155 templates/admin/tabs/catalog.html:10
-#: templates/admin/tabs/modals.html:28 templates/layouts/merchant.html:27
+#: templates/admin/tabs/modals.html:28 templates/layouts/merchant.html:28
 msgid "สินค้า OTOP"
 msgstr "OTOP products"
 
@@ -1842,12 +1916,16 @@ msgstr "No slip is waiting for review (it may have been checked already)"
 msgid ""
 "อนุมัติไม่ได้: การจอง {code} อยู่ในสถานะ '{status}' สต็อกอาจถูกคืนไปแล้ว "
 "กรุณาติดต่อลูกค้าเพื่อจองใหม่หรือคืนเงิน"
-msgstr "Cannot approve: booking {code} is '{status}' and its stock may have been released. Please contact the customer to rebook or refund"
+msgstr ""
+"Cannot approve: booking {code} is '{status}' and its stock may have been "
+"released. Please contact the customer to rebook or refund"
 
 #: apps/payments/services.py:417
 #, python-brace-format
 msgid "อนุมัติไม่ได้: เลขอ้างอิงสลิป {ref} ถูกใช้ยืนยันการชำระเงินอื่นไปแล้ว"
-msgstr "Cannot approve: slip reference {ref} was already used to confirm another payment"
+msgstr ""
+"Cannot approve: slip reference {ref} was already used to confirm another "
+"payment"
 
 #: apps/payments/services.py:424
 #, python-brace-format
@@ -1876,7 +1954,9 @@ msgstr ""
 #: apps/payments/views.py:56
 msgid ""
 "คำสั่งซื้อนี้ไม่อยู่ในสถานะรอชำระเงินแล้ว จึงแนบสลิปไม่ได้ หากโอนเงินไปแล้วกรุณาติดต่อเจ้าหน้าที่"
-msgstr "This order is no longer awaiting payment, so a slip cannot be attached. If you have already transferred, please contact our staff"
+msgstr ""
+"This order is no longer awaiting payment, so a slip cannot be attached. If "
+"you have already transferred, please contact our staff"
 
 #: apps/payments/views.py:85
 msgid "แนบสลิปเรียบร้อยแล้ว ระบบกำลังตรวจสอบอัตโนมัติ"
@@ -1930,7 +2010,9 @@ msgstr "{name} ({duration_minutes} min) - ฿{price}"
 
 #: apps/services/views.py:85
 msgid "ผู้ดูแลระบบแก้ไขหรือปิดเมนูได้ แต่การเพิ่มเมนูต้องทำจากบัญชีร้านค้า"
-msgstr "Admins can edit or close menu items, but new items must be added from a shop account"
+msgstr ""
+"Admins can edit or close menu items, but new items must be added from a shop "
+"account"
 
 #: apps/services/views.py:101
 #, python-brace-format
@@ -1948,7 +2030,9 @@ msgstr "Deleted dish “{name}”"
 
 #: apps/services/views.py:145
 msgid "ผู้ดูแลระบบแก้ไขหรือปิดบริการได้ แต่การเพิ่มบริการต้องทำจากบัญชีร้านค้า"
-msgstr "Admins can edit or close services, but new services must be added from a shop account"
+msgstr ""
+"Admins can edit or close services, but new services must be added from a "
+"shop account"
 
 #: apps/services/views.py:161
 #, python-brace-format
@@ -1969,7 +2053,7 @@ msgid "ลบรอบบริการเรียบร้อยแล้ว"
 msgstr "Time slot deleted"
 
 #: apps/services/views.py:237 templates/accounts/portal_dashboard.html:64
-#: templates/layouts/merchant.html:20
+#: templates/layouts/merchant.html:21
 msgid "เมนูอาหาร"
 msgstr "Menu"
 
@@ -1998,7 +2082,7 @@ msgstr ""
 
 #: templates/403.html:14 templates/404.html:14 templates/500.html:19
 #: templates/accounts/lockout.html:27
-#: templates/accounts/merchant_pending.html:21 templates/core/terms.html:45
+#: templates/accounts/merchant_pending.html:28 templates/core/terms.html:45
 msgid "กลับหน้าแรก"
 msgstr "Back to home"
 
@@ -2357,7 +2441,7 @@ msgstr ""
 "account, please contact our team"
 
 #: templates/accounts/lockout.html:26
-#: templates/accounts/merchant_pending.html:20
+#: templates/accounts/merchant_pending.html:27
 msgid "ติดต่อทีมงาน"
 msgstr "Contact our team"
 
@@ -2451,6 +2535,20 @@ msgstr ""
 msgid "บัญชีนี้ยังไม่มีข้อมูลร้านค้าสำหรับตรวจสอบ กรุณาติดต่อทีมงาน"
 msgstr "This account has no store details to review. Please contact our team."
 
+#: templates/accounts/merchant_pending.html:21
+msgid "ระหว่างรอ ตกแต่งร้านได้เลย"
+msgstr "Set up your shop while you wait"
+
+#: templates/accounts/merchant_pending.html:22
+msgid ""
+"ใส่รูปร้านได้ 3 รูป แนะนำร้าน เบอร์โทร เวลาเปิด และแผนที่ หน้าร้านจะเปิดให้ลูกค้าเห็นทันทีที่อนุมัติ"
+msgstr "Add 3 shop photos, an introduction, phone, opening hours and a map. Your shop page goes live as soon as you are approved"
+
+#: templates/accounts/merchant_pending.html:23
+#: templates/accounts/portal_shop.html:4 templates/layouts/merchant.html:12
+msgid "ตกแต่งร้าน"
+msgstr "Shop setup"
+
 #: templates/accounts/portal_dashboard.html:5
 msgid "ภาพรวมร้านค้า"
 msgstr "Store overview"
@@ -2540,7 +2638,7 @@ msgid "จัดการร้าน"
 msgstr "Manage store"
 
 #: templates/accounts/portal_dashboard.html:60
-#: templates/layouts/merchant.html:15 templates/portal/homestay.html:5
+#: templates/layouts/merchant.html:16 templates/portal/homestay.html:5
 msgid "ที่พักและห้องพัก"
 msgstr "Stays and rooms"
 
@@ -2549,7 +2647,7 @@ msgid "ข้อมูลที่พัก รูป และประเภ�
 msgstr "Property details, photos and room types"
 
 #: templates/accounts/portal_dashboard.html:61
-#: templates/layouts/merchant.html:16 templates/portal/calendar.html:5
+#: templates/layouts/merchant.html:17 templates/portal/calendar.html:5
 msgid "ปฏิทินราคาและห้องว่าง"
 msgstr "Price and availability calendar"
 
@@ -2657,6 +2755,85 @@ msgstr "Next"
 #: templates/accounts/portal_orders.html:77
 msgid "ยังไม่มีคำสั่งซื้อในหมวดนี้"
 msgstr "No orders in this tab yet"
+
+#: templates/accounts/portal_shop.html:12
+msgid "หน้าร้านของคุณเปิดให้ลูกค้าเห็นแล้ว"
+msgstr "Your shop page is live"
+
+#: templates/accounts/portal_shop.html:13
+msgid "ดูหน้าร้าน"
+msgstr "View shop page"
+
+#: templates/accounts/portal_shop.html:17
+msgid "ใบสมัครยังไม่ผ่านการอนุมัติ"
+msgstr "Your application has not been approved yet"
+
+#: templates/accounts/portal_shop.html:18
+#, python-format
+msgid "เหตุผล: %(reason)s"
+msgstr "Reason: %(reason)s"
+
+#: templates/accounts/portal_shop.html:19
+msgid "แก้ไขข้อมูลร้านด้านล่างได้ แล้วติดต่อทีมงานเพื่อตรวจสอบใหม่"
+msgstr "You can edit your shop details below, then contact our team for another review"
+
+#: templates/accounts/portal_shop.html:23
+msgid "กำลังรอการอนุมัติ ตกแต่งร้านไว้ก่อนได้เลย หน้าร้านจะเปิดให้ลูกค้าเห็นทันทีที่อนุมัติ"
+msgstr "Awaiting approval. Set up your shop now; the page goes live as soon as you are approved"
+
+#: templates/accounts/portal_shop.html:24
+msgid "ดูตัวอย่างหน้าร้าน"
+msgstr "Preview shop page"
+
+#: templates/accounts/portal_shop.html:33
+msgid "รูปหน้าร้าน"
+msgstr "Shop photos"
+
+#: templates/accounts/portal_shop.html:36
+#, python-format
+msgid "ใส่ได้สูงสุด %(n)s รูป รูปแรกคือรูปหน้าปกร้าน (JPG, PNG หรือ WEBP ไม่เกิน 10MB)"
+msgstr "Up to %(n)s photos; the first one is the shop cover (JPG, PNG or WEBP, max 10MB)"
+
+#: templates/accounts/portal_shop.html:42
+#, python-format
+msgid "รูปร้าน %(n)s"
+msgstr "Shop photo %(n)s"
+
+#: templates/accounts/portal_shop.html:43
+msgid "ปก"
+msgstr "Cover"
+
+#: templates/accounts/portal_shop.html:47
+msgid "ตั้งเป็นปก"
+msgstr "Make cover"
+
+#: templates/accounts/portal_shop.html:49 templates/portal/homestay.html:85
+msgid "ลบรูปนี้หรือไม่?"
+msgstr "Delete this photo?"
+
+#: templates/accounts/portal_shop.html:49 templates/portal/homestay.html:85
+msgid "ลบรูป"
+msgstr "Delete photo"
+
+#: templates/accounts/portal_shop.html:62
+msgid "เลือกรูปร้าน"
+msgstr "Choose a shop photo"
+
+#: templates/accounts/portal_shop.html:63
+msgid "อัปโหลด"
+msgstr "Upload"
+
+#: templates/accounts/portal_shop.html:66
+msgid "ครบ 3 รูปแล้ว ลบรูปเดิมก่อนถ้าต้องการเปลี่ยน"
+msgstr "3 photos added. Delete one to replace it"
+
+#: templates/accounts/portal_shop.html:74
+msgid "ข้อมูลร้าน"
+msgstr "Shop details"
+
+#: templates/accounts/portal_shop.html:80
+msgid "บันทึกข้อมูลร้าน"
+msgstr "Save shop details"
 
 #: templates/accounts/profile.html:4
 msgid "โปรไฟล์ส่วนตัว — WellTrip Sisaket"
@@ -2818,10 +2995,6 @@ msgstr "Store manager name"
 #: templates/accounts/register_merchant.html:74
 msgid "ชื่อร้าน / สถานประกอบการ"
 msgstr "Store / business name"
-
-#: templates/accounts/register_merchant.html:76
-msgid "เช่น ทุกวัน 08:00 - 18:00 น."
-msgstr "e.g. Daily 08:00 - 18:00"
 
 #: templates/accounts/register_merchant.html:77
 #: templates/admin/event_form.html:22
@@ -5436,7 +5609,8 @@ msgstr "BMI %(bmi)s · last assessed %(updated)s"
 
 #: templates/core/home_tourist.html:109
 msgid "ตอบไม่กี่ข้อ ใช้เวลาไม่ถึง 2 นาที แล้วรับคำแนะนำที่พัก อาหาร และสปา"
-msgstr "Answer a few questions in under 2 minutes for stay, food and spa suggestions"
+msgstr ""
+"Answer a few questions in under 2 minutes for stay, food and spa suggestions"
 
 #: templates/core/home_tourist.html:114
 msgid "ประเมินใหม่ / ดูคำแนะนำ"
@@ -5487,6 +5661,26 @@ msgstr "Price not set"
 #: templates/core/partials/catalog_row.html:15
 msgid "ผู้ประกอบการชุมชนกำลังทยอยเพิ่มรายการ"
 msgstr "Community partners are adding listings"
+
+#: templates/core/shop_detail.html:9
+msgid "ตัวอย่างหน้าร้าน: ลูกค้ายังไม่เห็นหน้านี้จนกว่าร้านจะได้รับอนุมัติ"
+msgstr "Shop preview: customers cannot see this page until the shop is approved"
+
+#: templates/core/shop_detail.html:36
+msgid "ร้านค้าชุมชนในจังหวัดศรีสะเกษ"
+msgstr "A community shop in Sisaket"
+
+#: templates/core/shop_detail.html:48
+msgid "นำทางไปที่ร้าน"
+msgstr "Directions to the shop"
+
+#: templates/core/shop_detail.html:57
+msgid "สินค้าและบริการของร้าน"
+msgstr "Products and services"
+
+#: templates/core/shop_detail.html:63
+msgid "ร้านกำลังเตรียมรายการ"
+msgstr "This shop is preparing its listings"
 
 #: templates/core/terms.html:4
 msgid "ข้อตกลงการใช้งานและนโยบายความเป็นส่วนตัว (PDPA) — WellTrip Sisaket"
@@ -5683,15 +5877,15 @@ msgstr "Website"
 msgid "จัดการร้านค้าของคุณบน WellTrip Sisaket"
 msgstr "Manage your store on WellTrip Sisaket"
 
-#: templates/layouts/merchant.html:24
+#: templates/layouts/merchant.html:25
 msgid "บริการและรอบเวลา"
 msgstr "Services and time slots"
 
-#: templates/layouts/merchant.html:28
+#: templates/layouts/merchant.html:29
 msgid "สินค้าและสต็อก"
 msgstr "Products and stock"
 
-#: templates/layouts/merchant.html:31
+#: templates/layouts/merchant.html:32
 msgid "ผู้ดูแลระบบ"
 msgstr "Administrator"
 
@@ -6394,14 +6588,6 @@ msgstr "Edit room"
 #: templates/portal/homestay.html:78
 msgid "ลบห้อง"
 msgstr "Delete room"
-
-#: templates/portal/homestay.html:85
-msgid "ลบรูปนี้หรือไม่?"
-msgstr "Delete this photo?"
-
-#: templates/portal/homestay.html:85
-msgid "ลบรูป"
-msgstr "Delete photo"
 
 #: templates/portal/homestay.html:90
 msgid "เพิ่มรูป"

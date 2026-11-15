@@ -46,7 +46,7 @@
         <span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="store" class="icon-lg"></i></span>
         <div>
           <div class="small text-secondary">{% translate "ผู้ให้บริการ" %}</div>
-          <div class="fw-bold">{{ item.owner.display_name }}</div>
+          <div class="fw-bold">{% if item.owner.merchant_profile.is_public %}<a href="{% url 'core:shop_detail' item.owner.merchant_profile.id %}" class="text-reset">{{ item.owner.display_name }} <i data-lucide="chevron-right"></i></a>{% else %}{{ item.owner.display_name }}{% endif %}</div>
         </div>
       </div>
 

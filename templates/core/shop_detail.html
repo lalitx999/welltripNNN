@@ -1,0 +1,67 @@
+{% extends "layouts/public.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ profile.business_name }} - WellTrip Sisaket{% endblock %}
+
+{% block content %}
+{% if is_preview %}
+  <div class="bg-warning-subtle border-bottom py-2 small text-center"><i data-lucide="eye" class="me-1"></i>{% translate "ตัวอย่างหน้าร้าน: ลูกค้ายังไม่เห็นหน้านี้จนกว่าร้านจะได้รับอนุมัติ" %}</div>
+{% endif %}
+
+<section class="container-xl py-4">
+  {# Up to 3 photos: the first large, the other two stacked beside it #}
+  {% if images %}
+    <div class="row g-2 mb-4 wt-shop-gallery">
+      <div class="{% if images|length > 1 %}col-md-8{% else %}col-12{% endif %}">
+        <img src="{{ images.0.image.url }}" alt="{{ profile.business_name }}" class="w-100 rounded-4 object-fit-cover wt-shop-cover" fetchpriority="high">
+      </div>
+      {% if images|length > 1 %}
+        <div class="col-md-4 d-grid gap-2">
+          {% for shot in images|slice:"1:" %}
+            <img src="{{ shot.image.url }}" alt="{{ profile.business_name }}" class="w-100 rounded-4 object-fit-cover wt-shop-side" loading="lazy">
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <span class="badge badge-green mb-2">{{ profile.get_business_category_display }}</span>
+      <h1 class="fw-bold mb-3">{{ profile.business_name }}</h1>
+      {% if profile.description %}
+        <div class="fs-6 lh-lg text-break">{{ profile.description|linebreaks }}</div>
+      {% else %}
+        <p class="text-secondary">{% translate "ร้านค้าชุมชนในจังหวัดศรีสะเกษ" %}</p>
+      {% endif %}
+    </div>
+    <div class="col-lg-4">
+      <div class="wt-card p-4 d-grid gap-3">
+        {% if profile.opening_hours %}
+          <div class="d-flex gap-2"><i data-lucide="clock" class="text-green flex-shrink-0"></i><span>{{ profile.opening_hours }}</span></div>
+        {% endif %}
+        {% if profile.phone_number %}
+          <a href="tel:{{ profile.phone_number|cut:' '|cut:'-' }}" class="d-flex gap-2 text-reset"><i data-lucide="phone" class="text-green flex-shrink-0"></i><span>{{ profile.phone_number }}</span></a>
+        {% endif %}
+        {% if profile.google_maps_url %}
+          <a href="{{ profile.google_maps_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-ink rounded-pill"><i data-lucide="navigation" class="me-1"></i>{% translate "นำทางไปที่ร้าน" %}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wt-section bg-mint">
+  <div class="container-xl">
+    <h2 class="wt-section-title mb-3">{% translate "สินค้าและบริการของร้าน" %}</h2>
+    {% if items %}
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 g-md-4">
+        {% for item in items %}<div class="col">{% include "core/partials/catalog_card.html" %}</div>{% endfor %}
+      </div>
+    {% else %}
+      <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="store"></i></span><div class="fw-bold">{% translate "ร้านกำลังเตรียมรายการ" %}</div></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -16,6 +16,13 @@
       <h1 class="h4 fw-bold">{% translate "ร้านค้าของคุณกำลังรอการอนุมัติ" %}</h1>
       <p class="text-secondary mb-4">{% if profile %}{% blocktranslate trimmed with business_name=profile.business_name %}ทีมงานกำลังตรวจสอบข้อมูล "{{ business_name }}" เมื่ออนุมัติแล้วจะแจ้งทางอีเมล และคุณจะเข้า Partner Studio ได้ทันที{% endblocktranslate %}{% else %}{% translate "บัญชีนี้ยังไม่มีข้อมูลร้านค้าสำหรับตรวจสอบ กรุณาติดต่อทีมงาน" %}{% endif %}</p>
     {% endif %}
+    {% if profile %}
+      <div class="bg-mint rounded-4 p-3 mb-4 text-start">
+        <div class="fw-bold mb-1"><i data-lucide="store" class="text-green me-1"></i>{% translate "ระหว่างรอ ตกแต่งร้านได้เลย" %}</div>
+        <small class="text-secondary d-block mb-2">{% translate "ใส่รูปร้านได้ 3 รูป แนะนำร้าน เบอร์โทร เวลาเปิด และแผนที่ หน้าร้านจะเปิดให้ลูกค้าเห็นทันทีที่อนุมัติ" %}</small>
+        <a href="{% url 'accounts:portal_shop' %}" class="btn btn-gold rounded-pill px-4"><i data-lucide="paintbrush" class="me-1"></i>{% translate "ตกแต่งร้าน" %}</a>
+      </div>
+    {% endif %}
     <div class="d-flex flex-wrap justify-content-center gap-2">
       <a href="{% url 'core:contact' %}" class="btn btn-green rounded-pill px-4">{% translate "ติดต่อทีมงาน" %}</a>
       <a href="{% url 'core:landing' %}" class="btn btn-outline-ink rounded-pill px-4">{% translate "กลับหน้าแรก" %}</a>

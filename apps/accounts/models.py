@@ -198,4 +198,32 @@ class MerchantProfile(models.Model):
     def __str__(self):
         return f"{self.business_name} ({self.status}) - {self.user.email}"
 
+    @property
+    def is_public(self):
+        """The storefront page is visible only once an admin approved the shop."""
+        return self.status == MerchantApprovalStatus.APPROVED
+
+
+def shop_image_path(instance, filename):
+    from apps.core.services.media import secure_upload_path
+    return secure_upload_path(instance, filename, model_subdir="shops")
+
+
+class MerchantShopImage(models.Model):
+    """Storefront photos a partner sets up (also while waiting for approval). At most 3 per shop."""
+    MAX_PER_SHOP = 3
+
+    id = models.BigAutoField(primary_key=True)
+    profile = models.ForeignKey(MerchantProfile, on_delete=models.CASCADE, related_name="shop_images")
+    image = models.ImageField(upload_to=shop_image_path)
+    order = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "merchant_shop_images"
+        ordering = ("order", "id")
+
+    def __str__(self):
+        return f"Shop image {self.order} of {self.profile.business_name}"
+
 

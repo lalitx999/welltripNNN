@@ -532,3 +532,8 @@ h1, h2, h3, .h1, .h2, .h3 { letter-spacing: -.01em; }
 /* Rows with the wide g-lg-5 gutter reach 0.75rem past .container-xl on 992–1320px screens;
    clip that empty gutter so pages never scroll sideways (clip keeps sticky elements working) */
 main { overflow-x: clip; }
+
+/* Public shop page gallery: one large cover, up to two photos beside it */
+.wt-shop-cover { aspect-ratio: 16 / 9; max-height: 26rem; }
+.wt-shop-side { aspect-ratio: 16 / 9; height: 100%; max-height: 12.75rem; }
+@media (max-width: 767.98px) { .wt-shop-side { max-height: none; } }

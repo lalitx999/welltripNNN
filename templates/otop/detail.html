@@ -38,7 +38,7 @@
         <span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="store" class="icon-lg"></i></span>
         <div>
           <div class="small text-secondary">{% translate "ผู้ผลิต" %}</div>
-          <div class="fw-bold">{{ product.owner.display_name }}</div>
+          <div class="fw-bold">{% if product.owner.merchant_profile.is_public %}<a href="{% url 'core:shop_detail' product.owner.merchant_profile.id %}" class="text-reset">{{ product.owner.display_name }} <i data-lucide="chevron-right"></i></a>{% else %}{{ product.owner.display_name }}{% endif %}</div>
         </div>
       </div>
 

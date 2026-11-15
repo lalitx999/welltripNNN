@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from apps.accounts.models import User, UserRoles
+from apps.accounts.models import MerchantProfile, User, UserRoles
 from django.utils.translation import gettext as _, gettext_lazy
 
 
@@ -255,3 +255,43 @@ class MerchantRegistrationForm(forms.Form):
 
         return user, merchant_profile
 
+
+
+class ShopProfileForm(forms.ModelForm):
+    """Storefront details a partner can edit any time, including while awaiting approval."""
+
+    class Meta:
+        model = MerchantProfile
+        fields = ['business_name', 'description', 'phone_number', 'opening_hours', 'google_maps_url']
+        labels = {
+            'business_name': gettext_lazy("ชื่อร้าน"),
+            'description': gettext_lazy("แนะนำร้าน"),
+            'phone_number': gettext_lazy("เบอร์ติดต่อ"),
+            'opening_hours': gettext_lazy("เวลาเปิด-ปิด"),
+            'google_maps_url': gettext_lazy("ลิงก์ Google Maps ของร้าน"),
+        }
+        widgets = {
+            'business_name': forms.TextInput(attrs={'class': 'form-control', 'maxlength': 200}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'maxlength': 1500,
+                                                 'placeholder': gettext_lazy("เล่าเรื่องร้าน จุดเด่น และสิ่งที่ลูกค้าจะได้รับ")}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control', 'inputmode': 'tel'}),
+            'opening_hours': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("เช่น ทุกวัน 08:00 - 18:00 น.")}),
+            'google_maps_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://maps.app.goo.gl/...'}),
+        }
+
+    def clean_business_name(self):
+        name = self.cleaned_data['business_name'].strip()
+        if '@' in name:
+            raise forms.ValidationError(gettext_lazy("ชื่อร้านต้องไม่ใช่อีเมล"))
+        return name
+
+    def clean_description(self):
+        return self.cleaned_data['description'].strip()[:1500]
+
+
+class ShopImageForm(forms.Form):
+    image = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/jpeg,image/png,image/webp'}))
+
+    def clean_image(self):
+        from apps.core.services.media import sanitize_and_strip_image
+        return sanitize_and_strip_image(self.cleaned_data['image'])

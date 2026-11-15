@@ -9,6 +9,7 @@
 {% with current=request.resolver_match.url_name %}
   <a class="nav-link {% if current == 'portal_dashboard' %}active{% endif %}" href="{% url 'accounts:portal_dashboard' %}"><i data-lucide="layout-dashboard"></i>{% translate "ภาพรวม" %}</a>
   <a class="nav-link {% if current == 'portal_orders' %}active{% endif %}" href="{% url 'accounts:portal_orders' %}"><i data-lucide="receipt"></i>{% translate "คำสั่งซื้อของร้าน" %}</a>
+  {% if user.is_merchant %}<a class="nav-link {% if current == 'portal_shop' %}active{% endif %}" href="{% url 'accounts:portal_shop' %}"><i data-lucide="paintbrush"></i>{% translate "ตกแต่งร้าน" %}</a>{% endif %}
 
   {% if user.role == "HOMESTAY_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
     <div class="wt-nav-label">{% translate "ที่พัก" %}</div>

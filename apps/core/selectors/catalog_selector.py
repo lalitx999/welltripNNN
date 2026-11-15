@@ -22,10 +22,10 @@ def _stay_price_and_image(stay):
     return price, image
 
 
-def stay_cards(limit):
+def stay_cards(limit, owner=None):
     rooms = Room.objects.filter(is_active=True).order_by('base_price_per_night').prefetch_related('images')
     stays = (
-        Accommodation.objects.filter(status=AccommodationStatus.ACTIVE)
+        Accommodation.objects.filter(status=AccommodationStatus.ACTIVE, **({"owner": owner} if owner else {}))
         .prefetch_related(Prefetch('rooms', queryset=rooms, to_attr='active_rooms'))[:limit]
     )
     cards = []
@@ -43,7 +43,7 @@ def stay_cards(limit):
     return cards
 
 
-def spa_cards(limit):
+def spa_cards(limit, owner=None):
     return [
         {
             'title': w.name,
@@ -54,11 +54,11 @@ def spa_cards(limit):
             'image': w.image.url if w.image else PLACEHOLDER,
             'href': f"/services/detail/wellness/{w.id}/",
         }
-        for w in WellnessService.objects.filter(is_active=True).order_by('-created_at')[:limit]
+        for w in WellnessService.objects.filter(is_active=True, **({"owner": owner} if owner else {})).order_by('-created_at')[:limit]
     ]
 
 
-def food_cards(limit):
+def food_cards(limit, owner=None):
     return [
         {
             'title': f.name,
@@ -69,11 +69,11 @@ def food_cards(limit):
             'image': f.image.url if f.image else PLACEHOLDER,
             'href': f"/services/detail/food/{f.id}/",
         }
-        for f in FoodMenu.objects.filter(is_available=True).order_by('-created_at')[:limit]
+        for f in FoodMenu.objects.filter(is_available=True, **({"owner": owner} if owner else {})).order_by('-created_at')[:limit]
     ]
 
 
-def otop_cards(limit):
+def otop_cards(limit, owner=None):
     return [
         {
             'title': p.name,
@@ -84,7 +84,7 @@ def otop_cards(limit):
             'image': p.image.url if p.image else PLACEHOLDER,
             'href': f"/otop/{p.id}/",
         }
-        for p in OTOPProduct.objects.filter(is_active=True).order_by('-created_at')[:limit]
+        for p in OTOPProduct.objects.filter(is_active=True, **({"owner": owner} if owner else {})).order_by('-created_at')[:limit]
     ]
 
 
