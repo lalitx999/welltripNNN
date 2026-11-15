@@ -1,3 +1,4 @@
+import logging
 import json
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
@@ -14,6 +15,10 @@ from apps.bookings.services.checkout import process_checkout, StockUnavailableEr
 from apps.payments.selectors.slip_selector import slip_status_context
 from apps.bookings.services.pricing import cart_line_total, resolve_cart_item
 from django.utils.translation import gettext as _, gettext_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_cart(request):
@@ -284,7 +289,10 @@ def cart_add_view(request):
     )
     if resolved.error:
         messages.error(request, resolved.error)
-        return redirect(request.META.get('HTTP_REFERER') or 'bookings:cart')
+        referer = request.META.get('HTTP_REFERER', '')
+        if not url_has_allowed_host_and_scheme(referer, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+            referer = 'bookings:cart'
+        return redirect(referer)
 
     found = False
     for item in cart:
@@ -303,6 +311,7 @@ def cart_add_view(request):
             'quantity': quantity,
             'date': resolved.date,
             'nights': resolved.nights,
+            'stay_total': str(resolved.stay_total) if resolved.stay_total is not None else '',
         })
 
     save_cart(request, cart)
@@ -496,8 +505,10 @@ def checkout_view(request):
         except StockUnavailableError as e:
             messages.error(request, _("ไม่สามารถดำเนินการได้: {str}").format(str=str(e)))
             return redirect('bookings:cart')
-        except Exception as e:
-            messages.error(request, _("เกิดข้อผิดพลาดในระบบ: {str}").format(str=str(e)))
+        except Exception:
+            # Never show internals (query errors, ids) to customers; the log keeps the detail
+            logger.exception("Checkout failed for user %s", request.user.pk)
+            messages.error(request, _("สั่งซื้อไม่สำเร็จ มีรายการในตะกร้าที่ไม่พร้อมขายแล้ว กรุณาลบรายการนั้นแล้วลองใหม่"))
             return redirect('bookings:cart')
 
     return redirect('bookings:review')

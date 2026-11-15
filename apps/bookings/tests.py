@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.accounts.models import User, UserRoles
-from apps.accommodations.models import Accommodation, Room, RoomPricingCalendar
+from apps.accommodations.models import AccommodationStatus, Accommodation, Room, RoomPricingCalendar
 from apps.services.models import WellnessService, WellnessTimeSlot
 from apps.otop.models import OTOPProduct, OTOPCategory
 from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType
@@ -59,6 +59,7 @@ class ConcurrencyBookingSecurityTestCase(TestCase):
         self.accommodation = Accommodation.objects.create(
             owner=self.merchant,
             name="โฮมสเตย์ศรีสะเกษ",
+            status=AccommodationStatus.ACTIVE,
         )
         self.room = Room.objects.create(
             accommodation=self.accommodation,
@@ -66,7 +67,8 @@ class ConcurrencyBookingSecurityTestCase(TestCase):
             base_price_per_night=Decimal("1000.00"),
             total_rooms_count=1,
         )
-        self.booking_date = datetime.date(2026, 11, 20)
+        # Always in the future: checkout refuses nights that have passed
+        self.booking_date = datetime.date.today() + datetime.timedelta(days=5)
         self.calendar = RoomPricingCalendar.objects.create(
             room=self.room,
             date=self.booking_date,
@@ -104,7 +106,7 @@ class ConcurrencyBookingSecurityTestCase(TestCase):
         cart = [{
             "item_type": BookingItemType.ROOM,
             "entity_id": str(self.room.id),
-            "date": "2026-11-20",
+            "date": self.booking_date.isoformat(),
             "quantity": 1,
         }]
 

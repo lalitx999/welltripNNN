@@ -14,7 +14,7 @@ from django.utils import timezone
 from apps.accounts.services.audit import record_audit_log
 from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType
 from apps.bookings.services.pricing import parse_date, stay_dates
-from apps.accommodations.models import Room, RoomPricingCalendar
+from apps.accommodations.models import AccommodationStatus, Room, RoomPricingCalendar
 from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot
 from apps.otop.models import OTOPProduct
 from django.utils.translation import gettext as _
@@ -55,11 +55,16 @@ def process_checkout(
         if item_type == BookingItemType.ROOM:
             # Book room for specified date
             try:
-                room = Room.objects.select_related("accommodation__owner").get(id=entity_id, is_active=True)
+                room = Room.objects.select_related("accommodation__owner").get(
+                    id=entity_id, is_active=True, accommodation__status=AccommodationStatus.ACTIVE,
+                )
             except (Room.DoesNotExist, ValueError, DjangoValidationError):
                 raise StockUnavailableError(_("ไม่พบห้องพักที่เลือก หรือห้องพักนี้ปิดการจองแล้ว"))
 
-            check_in = parse_date(item.get("date")) or timezone.now().date()
+            check_in = parse_date(item.get("date"))
+            if check_in is None or check_in < timezone.localdate():
+                # The cart can sit in the session overnight: never sell a night that has passed
+                raise StockUnavailableError(_("วันเช็คอินของ '{name}' ผ่านมาแล้ว กรุณาลบออกแล้วเลือกวันใหม่").format(name=room.name))
             nights = max(1, int(item.get("nights", 1) or 1))
 
             # Lock and decrement availability for every night of the stay
@@ -112,6 +117,8 @@ def process_checkout(
                 slot = None
 
             if slot:
+                if not slot.service.is_active or slot.date < timezone.localdate():
+                    raise StockUnavailableError(_("รอบเวลาบริการ '{name}' ปิดรับจองแล้ว").format(name=slot.service.name))
                 if slot.capacity_available < quantity:
                     raise StockUnavailableError(_("รอบเวลาบริการ '{name}' เต็มแล้ว").format(name=slot.service.name))
 
@@ -132,10 +139,9 @@ def process_checkout(
                     "booking_metadata": {"date": str(slot.date), "slot_id": slot.id},
                 })
             else:
-                service = (
-                    WellnessService.objects.select_related("owner")
-                    .get(id=entity_id)
-                )
+                service = WellnessService.objects.select_related("owner").filter(id=entity_id, is_active=True).first()
+                if service is None:
+                    raise StockUnavailableError(_("บริการนี้ปิดรับจองแล้ว กรุณาลบออกจากตะกร้า"))
                 subtotal = service.price * quantity
                 total_booking_amount += subtotal
 
@@ -154,8 +160,11 @@ def process_checkout(
             product = (
                 OTOPProduct.objects.select_for_update()
                 .select_related("owner")
-                .get(id=entity_id)
+                .filter(id=entity_id, is_active=True)
+                .first()
             )
+            if product is None:
+                raise StockUnavailableError(_("สินค้านี้ปิดการขายแล้ว กรุณาลบออกจากตะกร้า"))
 
             if product.stock_quantity < quantity:
                 raise StockUnavailableError(_("สินค้า '{name}' คงเหลือไม่เพียงพอ (เหลือ {stock_quantity} ชิ้น)").format(name=product.name, stock_quantity=product.stock_quantity))
@@ -178,7 +187,9 @@ def process_checkout(
             })
 
         elif item_type == BookingItemType.FOOD:
-            menu = FoodMenu.objects.select_related("owner").get(id=entity_id)
+            menu = FoodMenu.objects.select_related("owner").filter(id=entity_id, is_available=True).first()
+            if menu is None:
+                raise StockUnavailableError(_("เมนูนี้ปิดการขายแล้ว กรุณาลบออกจากตะกร้า"))
             subtotal = menu.price * quantity
             total_booking_amount += subtotal
 

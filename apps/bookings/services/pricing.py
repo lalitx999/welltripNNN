@@ -13,7 +13,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from apps.accommodations.models import AccommodationStatus, Room
+from apps.accommodations.models import AccommodationStatus, Room, RoomPricingCalendar
 from apps.bookings.models import BookingItemType
 from apps.otop.models import OTOPProduct
 from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot
@@ -28,6 +28,7 @@ class ResolvedItem:
     unit_price: Decimal = Decimal("0.00")
     date: str = ""
     nights: int = 1
+    stay_total: Decimal | None = None  # rooms: sum of each night's calendar price, per room
     error: str = ""
 
 
@@ -53,11 +54,22 @@ def resolve_cart_item(item_type, entity_id, check_in="", check_out=""):
             nights = (end - start).days
             if nights > MAX_NIGHTS:
                 return ResolvedItem(error=_("จองได้สูงสุด {MAX_NIGHTS} คืนต่อครั้ง").format(MAX_NIGHTS=MAX_NIGHTS))
+            # Same nightly prices checkout will charge: special calendar price, else the base price
+            calendar = {
+                c.date: c for c in RoomPricingCalendar.objects.filter(room=room, date__in=stay_dates(start, nights))
+            }
+            full = [d for d, c in calendar.items() if c.available_count <= 0]
+            if full:
+                return ResolvedItem(error=_("ห้องนี้เต็มแล้วในวันที่ {date}").format(date=min(full).strftime("%d/%m/%Y")))
+            stay_total = sum(
+                (calendar[d].price if d in calendar else room.base_price_per_night) for d in stay_dates(start, nights)
+            )
             return ResolvedItem(
                 title=f"{room.name} ({room.accommodation.name})",
                 unit_price=room.base_price_per_night,
                 date=start.isoformat(),
                 nights=nights,
+                stay_total=stay_total,
             )
 
         if item_type == BookingItemType.FOOD:
@@ -66,7 +78,11 @@ def resolve_cart_item(item_type, entity_id, check_in="", check_out=""):
 
         if item_type == BookingItemType.WELLNESS:
             if str(entity_id).isdigit():
-                slot = WellnessTimeSlot.objects.select_related("service").get(id=int(entity_id), service__is_active=True)
+                slot = WellnessTimeSlot.objects.select_related("service").get(
+                    id=int(entity_id), service__is_active=True, date__gte=timezone.localdate(),
+                )
+                if slot.capacity_available <= 0:
+                    return ResolvedItem(error=_("รอบเวลานี้เต็มแล้ว"))
                 return ResolvedItem(
                     title=f"{slot.service.name} [{slot.start_time:%H:%M}-{slot.end_time:%H:%M}]",
                     unit_price=slot.service.price,
@@ -89,6 +105,8 @@ def resolve_cart_item(item_type, entity_id, check_in="", check_out=""):
 
 def cart_line_total(item):
     """Line total for a session cart entry: unit price x quantity x nights (rooms)."""
+    if item.get("stay_total"):
+        return Decimal(str(item["stay_total"])) * int(item.get("quantity", 1))
     nights = max(1, int(item.get("nights", 1) or 1))
     return Decimal(str(item.get("price", 0))) * int(item.get("quantity", 1)) * nights
 

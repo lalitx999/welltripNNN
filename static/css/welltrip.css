@@ -494,3 +494,10 @@ h1, h2, h3, .h1, .h2, .h3 { letter-spacing: -.01em; }
 }
 @media (min-width: 992px) { .wt-welcome { min-height: 300px; display: flex; align-items: center; } .wt-welcome > .row { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .wt-welcome-bg img { animation: none; } }
+
+/* Small laptops (992–1199px): the full menu is shown but must fit without a sideways scroll */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .navbar .navbar-nav { gap: 0 !important; }
+  .navbar .navbar-nav .nav-link { font-size: .85rem; padding-left: .45rem !important; padding-right: .45rem !important; }
+  .navbar .navbar-brand small, .navbar .wt-brand-tagline { display: none; }
+}

@@ -269,3 +269,44 @@ class EasySlipV2ClientTestCase(TestCase):
         data, name, ctype = _image_bytes_for_easyslip(SimpleUploadedFile("big.png", buf.getvalue()))
         self.assertLessEqual(len(data), EASYSLIP_MAX_BYTES)
         self.assertEqual(ctype, "image/jpeg")
+
+
+class StaleCartTestCase(TestCase):
+    """Items closed or dated in the past after they went into the cart are refused at checkout."""
+
+    def setUp(self):
+        from apps.otop.models import OTOPProduct
+        self.tourist = User.objects.create_user(email="cart@example.com", password="x", role=UserRoles.TOURIST)
+        seller = User.objects.create_user(email="s@example.com", password="x", role=UserRoles.OTOP_OWNER)
+        self.product = OTOPProduct.objects.create(owner=seller, name="กาแฟ", price=Decimal("100"), stock_quantity=5)
+
+    def test_closed_product_is_refused_with_a_clear_message(self):
+        from apps.bookings.services.checkout import StockUnavailableError, process_checkout
+        self.product.is_active = False
+        self.product.save()
+        with self.assertRaisesMessage(StockUnavailableError, "ปิดการขาย"):
+            process_checkout(self.tourist, [{"item_type": "OTOP", "entity_id": str(self.product.id), "quantity": 1}])
+        self.product.refresh_from_db()
+        self.assertEqual(self.product.stock_quantity, 5)
+
+    def test_room_night_in_the_past_is_refused(self):
+        from apps.accommodations.models import Accommodation, AccommodationStatus, Room
+        from apps.bookings.services.checkout import StockUnavailableError, process_checkout
+        host = User.objects.create_user(email="h@example.com", password="x", role=UserRoles.HOMESTAY_OWNER)
+        acc = Accommodation.objects.create(owner=host, name="บ้าน", status=AccommodationStatus.ACTIVE)
+        room = Room.objects.create(accommodation=acc, name="ห้อง", base_price_per_night=Decimal("500"))
+        yesterday = (timezone.localdate() - timedelta(days=1)).isoformat()
+        with self.assertRaisesMessage(StockUnavailableError, "ผ่านมาแล้ว"):
+            process_checkout(self.tourist, [{"item_type": "ROOM", "entity_id": str(room.id), "quantity": 1, "date": yesterday}])
+
+    def test_cart_room_price_follows_the_pricing_calendar(self):
+        from apps.accommodations.models import Accommodation, AccommodationStatus, Room, RoomPricingCalendar
+        from apps.bookings.services.pricing import cart_line_total, resolve_cart_item
+        host = User.objects.create_user(email="h2@example.com", password="x", role=UserRoles.HOMESTAY_OWNER)
+        acc = Accommodation.objects.create(owner=host, name="บ้าน", status=AccommodationStatus.ACTIVE)
+        room = Room.objects.create(accommodation=acc, name="ห้อง", base_price_per_night=Decimal("500"))
+        start = timezone.localdate() + timedelta(days=3)
+        RoomPricingCalendar.objects.create(room=room, date=start, price=Decimal("900"), available_count=1)
+        resolved = resolve_cart_item("ROOM", str(room.id), start.isoformat(), (start + timedelta(days=2)).isoformat())
+        self.assertEqual(resolved.stay_total, Decimal("1400"))  # 900 special night + 500 base night
+        self.assertEqual(cart_line_total({"stay_total": str(resolved.stay_total), "quantity": 1}), Decimal("1400"))

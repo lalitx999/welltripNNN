@@ -419,6 +419,9 @@ class TouristHomeTestCase(TestCase):
         for name in ("บ้านสวน 0", "ส้มตำสมุนไพร", "นวดประคบ", "กาแฟภูเขาไฟ", "฿700"):
             self.assertContains(page, name)
         self.assertLess(len(ctx.captured_queries), 30)
+        for heading in ("อาหารสุขภาพ", "นวดและสปา", "ของดี OTOP"):
+            self.assertContains(page, heading)
+        self.assertNotContains(page, "wt-consent")  # PDPA card removed from /home
 
     def test_landing_still_renders(self):
         self.assertEqual(self.client.get("/").status_code, 200)

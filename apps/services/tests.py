@@ -53,7 +53,7 @@ class ServicesStudioSecurityTestCase(TestCase):
         )
         self.spa_slot = WellnessTimeSlot.objects.create(
             service=self.spa_service,
-            date=datetime.date(2026, 12, 10),
+            date=datetime.date.today() + datetime.timedelta(days=25),
             start_time=datetime.time(10, 0),
             end_time=datetime.time(11, 0),
             capacity_total=2,
