@@ -1,0 +1,81 @@
+{% extends "layouts/merchant.html" %}
+{% load i18n %}
+{% block title %}{% translate "คำสั่งซื้อของร้าน - Partner Studio" %}{% endblock %}
+{% block page_heading %}{% translate "คำสั่งซื้อของร้าน" %}{% endblock %}
+
+{% block content %}
+<div class="d-grid gap-3">
+  <div class="wt-pills">
+    <a href="?tab=all" class="wt-pill {% if tab == 'all' %}active{% endif %}">{% translate "ทั้งหมด" %}</a>
+    <a href="?tab=awaiting" class="wt-pill {% if tab == 'awaiting' %}active{% endif %}">{% translate "รอชำระเงิน" %}</a>
+    <a href="?tab=confirmed" class="wt-pill {% if tab == 'confirmed' %}active{% endif %}">{% translate "ชำระแล้ว" %}</a>
+    <a href="?tab=to_ship" class="wt-pill {% if tab == 'to_ship' %}active{% endif %}">{% translate "รอจัดส่ง" %}{% if to_ship_count %} <span class="badge badge-gold ms-1">{{ to_ship_count }}</span>{% endif %}</a>
+  </div>
+
+  <div class="wt-card">
+    {% if page_obj.object_list %}
+      <div class="list-group list-group-flush">
+        {% for item in page_obj %}
+          <div class="list-group-item p-3">
+            <div class="d-flex flex-wrap justify-content-between gap-2">
+              <div class="min-w-0">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                  <span class="font-monospace fw-semibold small">{{ item.booking.booking_code }}</span>
+                  {% include "bookings/partials/status_badge.html" with status=item.booking.status label=item.booking.get_status_display %}
+                  {% if item.item_type == 'OTOP' and item.booking.status == 'CONFIRMED' or item.item_type == 'OTOP' and item.booking.status == 'COMPLETED' %}
+                    <span class="badge {% if item.fulfillment_status == 'PENDING' %}badge-gold{% else %}badge-green{% endif %}">{{ item.get_fulfillment_status_display }}</span>
+                  {% endif %}
+                </div>
+                <div class="fw-semibold mt-1">{{ item.item_title_snapshot }} × {{ item.quantity }}</div>
+                <small class="text-secondary">
+                  {{ item.booking.created_at|date:"d/m/Y H:i" }}
+                  {% if item.booking_metadata.date %} · {% translate "วันที่ใช้บริการ" %} {{ item.booking_metadata.date }}{% endif %}
+                  {% if item.booking.status == 'CONFIRMED' or item.booking.status == 'COMPLETED' %} · {{ item.booking.customer.full_name|default:item.booking.customer.email }}{% endif %}
+                  {% if user.is_community_admin %} · {% translate "ร้าน" %} {{ item.vendor.email }}{% endif %}
+                </small>
+              </div>
+              <div class="fw-bold text-green text-nowrap">฿{{ item.subtotal|floatformat:"0g" }}</div>
+            </div>
+
+            {% if item.item_type == 'OTOP' and item.booking.status == 'CONFIRMED' %}
+              {% with addr=item.booking.shipping_address %}
+                {% if addr %}
+                  <div class="small bg-mint rounded-3 p-2 mt-2"><i data-lucide="map-pin" class="text-green me-1"></i>{{ addr.recipient_name }} ({{ addr.phone_number }}) {{ addr.address_line }} {% translate "อ." %}{{ addr.district }} {% translate "จ." %}{{ addr.province }} {{ addr.postal_code }}</div>
+                {% endif %}
+              {% endwith %}
+              {% if item.fulfillment_status == 'PENDING' %}
+                <form method="post" action="{% url 'accounts:portal_fulfillment' item.id %}" class="d-flex flex-wrap gap-2 mt-2">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="SHIPPED">
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <input type="text" name="tracking_number" required maxlength="60" class="form-control form-control-sm" style="max-width: 16rem;" placeholder="{% translate 'เลขพัสดุ เช่น TH123456789' %}" aria-label="{% translate 'เลขพัสดุ' %}">
+                  <button type="submit" class="btn btn-green btn-sm rounded-pill"><i data-lucide="truck" class="me-1"></i>{% translate "แจ้งจัดส่งแล้ว" %}</button>
+                </form>
+              {% elif item.fulfillment_status == 'SHIPPED' %}
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2 small">
+                  <span><i data-lucide="truck" class="text-green me-1"></i>{% translate "เลขพัสดุ" %} <span class="font-monospace">{{ item.tracking_number }}</span> · {{ item.shipped_at|date:"d/m/Y" }}</span>
+                  <form method="post" action="{% url 'accounts:portal_fulfillment' item.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="DELIVERED">
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ลูกค้าได้รับแล้ว" %}</button>
+                  </form>
+                </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {% if page_obj.has_other_pages %}
+        <nav class="p-3 border-top d-flex justify-content-between align-items-center small" aria-label="{% translate 'แบ่งหน้า' %}">
+          {% if page_obj.has_previous %}<a href="?tab={{ tab }}&page={{ page_obj.previous_page_number }}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ก่อนหน้า" %}</a>{% else %}<span></span>{% endif %}
+          <span class="text-secondary">{% blocktranslate trimmed with n=page_obj.number total=page_obj.paginator.num_pages %}หน้า {{ n }} / {{ total }}{% endblocktranslate %}</span>
+          {% if page_obj.has_next %}<a href="?tab={{ tab }}&page={{ page_obj.next_page_number }}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ถัดไป" %}</a>{% else %}<span></span>{% endif %}
+        </nav>
+      {% endif %}
+    {% else %}
+      <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="inbox"></i></span><div class="fw-bold">{% translate "ยังไม่มีคำสั่งซื้อในหมวดนี้" %}</div></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

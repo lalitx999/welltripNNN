@@ -11,6 +11,8 @@ urlpatterns = [
     path('studio/restaurant/', views.restaurant_studio_view, name='restaurant_studio'),
     path('studio/restaurant/delete/<uuid:food_id>/', views.food_delete_view, name='food_delete'),
     path('studio/wellness/', views.wellness_studio_view, name='wellness_studio'),
+    path('studio/<str:kind>/<uuid:item_id>/edit/', views.service_item_edit_view, name='item_edit'),
+    path('studio/<str:kind>/<uuid:item_id>/toggle/', views.service_item_toggle_view, name='item_toggle'),
     path('studio/wellness/slot/create/', views.wellness_slot_create_view, name='wellness_slot_create'),
     path('studio/wellness/slot/delete/<int:slot_id>/', views.wellness_slot_delete_view, name='wellness_slot_delete'),
 ]

@@ -8,7 +8,7 @@ from django_ratelimit.decorators import ratelimit
 
 from apps.accounts.forms import EmailOTPForm, LoginForm, UserRegistrationForm, MerchantRegistrationForm
 from apps.accounts.models import User, UserRoles
-from apps.accounts.permissions import role_required
+from apps.accounts.permissions import role_required, scope_to_owner
 from apps.accounts.services import email_verification_service, google_auth_service
 from apps.accounts.services.audit import record_audit_log, get_client_ip
 from django.utils.translation import gettext as _
@@ -342,6 +342,7 @@ def redirect_after_auth(user):
     UserRoles.RESTAURANT_OWNER,
     UserRoles.WELLNESS_OWNER,
     UserRoles.OTOP_OWNER,
+    UserRoles.COMMUNITY_ADMIN,
 )
 def portal_dashboard_view(request):
     """Partner Studio landing page with the merchant's real listing and order figures."""
@@ -357,7 +358,7 @@ def portal_dashboard_view(request):
         UserRoles.WELLNESS_OWNER: lambda: WellnessService.objects.filter(owner=user).count(),
         UserRoles.OTOP_OWNER: lambda: OTOPProduct.objects.filter(owner=user).count(),
     }
-    vendor_items = BookingItem.objects.filter(vendor=user).select_related('booking')
+    vendor_items = scope_to_owner(BookingItem.objects.select_related('booking'), user, 'vendor')
     return render(request, 'accounts/portal_dashboard.html', {
         'page_title': _("Partner Studio - ภาพรวมธุรกิจชุมชน"),
         'listing_count': listing_counts.get(user.role, lambda: 0)(),
@@ -365,6 +366,47 @@ def portal_dashboard_view(request):
         'confirmed_count': vendor_items.filter(booking__status=BookingStatus.CONFIRMED).count(),
         'recent_items': vendor_items.order_by('-booking__created_at')[:8],
     })
+
+
+PARTNER_ROLES = (
+    UserRoles.HOMESTAY_OWNER,
+    UserRoles.RESTAURANT_OWNER,
+    UserRoles.WELLNESS_OWNER,
+    UserRoles.OTOP_OWNER,
+)
+
+
+@role_required(*PARTNER_ROLES, UserRoles.COMMUNITY_ADMIN)
+def portal_orders_view(request):
+    """Every order line the partner sold, with tabs, paging and OTOP shipping."""
+    from django.core.paginator import Paginator
+    from apps.bookings.selectors.vendor_orders import ORDER_TABS, to_ship_count, vendor_order_items
+
+    tab = request.GET.get('tab', 'all')
+    if tab not in ORDER_TABS:
+        tab = 'all'
+    page = Paginator(vendor_order_items(request.user, tab), 20).get_page(request.GET.get('page'))
+    return render(request, 'accounts/portal_orders.html', {
+        'page_title': _("คำสั่งซื้อของร้าน - Partner Studio"),
+        'tab': tab,
+        'page_obj': page,
+        'to_ship_count': to_ship_count(request.user),
+    })
+
+
+@role_required(*PARTNER_ROLES, UserRoles.COMMUNITY_ADMIN)
+@require_http_methods(["POST"])
+def portal_fulfillment_view(request, item_id):
+    from apps.bookings.services.fulfillment import update_fulfillment
+
+    ok, message = update_fulfillment(
+        request, item_id, request.POST.get('status', ''), request.POST.get('tracking_number', '')
+    )
+    (messages.success if ok else messages.error)(request, message)
+    next_url = request.POST.get('next', '')
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+        next_url = 'accounts:portal_orders'
+    return redirect(next_url)
 
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)

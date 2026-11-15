@@ -1,0 +1,28 @@
+{% extends "layouts/merchant.html" %}
+{% load i18n %}
+{% block title %}{% blocktranslate trimmed with name=item.name %}แก้ไข {{ name }} - Partner Studio{% endblocktranslate %}{% endblock %}
+{% block page_heading %}{% blocktranslate trimmed with label=item_label %}แก้ไข{{ label }}{% endblocktranslate %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-xl-7">
+    <div class="wt-card p-4">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.name }}" width="64" height="64" class="rounded-3 object-fit-cover">{% endif %}
+        <h2 class="h5 fw-bold mb-0">{{ item.name }}</h2>
+      </div>
+      <form method="post" enctype="multipart/form-data" class="d-grid gap-3">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger rounded-4 small mb-0">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+          {% include "portal/partials/form_field.html" with field=field label=field.label %}
+        {% endfor %}
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-green rounded-pill px-4"><i data-lucide="save" class="me-1"></i>{% translate "บันทึก" %}</button>
+          <a href="{{ back_url }}" class="btn btn-outline-ink rounded-pill">{% translate "ยกเลิก" %}</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

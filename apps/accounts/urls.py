@@ -16,6 +16,8 @@ urlpatterns = [
     path('verify-email/resend/', views.resend_verification_view, name='resend_verification'),
     path('profile/', views.profile_view, name='profile'),
     path('portal/', views.portal_dashboard_view, name='portal_dashboard'),
+    path('portal/orders/', views.portal_orders_view, name='portal_orders'),
+    path('portal/orders/<int:item_id>/fulfillment/', views.portal_fulfillment_view, name='portal_fulfillment'),
     path('admin-center/', views.admin_dashboard_view, name='admin_dashboard'),
     
     # Admin Operations Center

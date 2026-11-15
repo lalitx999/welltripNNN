@@ -73,6 +73,7 @@
                     <small class="text-secondary">{% blocktranslate trimmed with room_type=r.room_type capacity_people=r.capacity_people total_rooms_count=r.total_rooms_count %}{{ room_type }} · {{ capacity_people }} คน · {{ total_rooms_count }} ห้อง ·{% endblocktranslate %} <strong class="text-green">฿{{ r.base_price_per_night|floatformat:"0g" }}</strong>{% translate "/คืน" %}</small>
                   </div>
                   <div class="d-flex gap-1 flex-shrink-0">
+                    <a href="{% url 'accommodations:room_edit' r.id %}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'แก้ไขห้อง' %}" aria-label="{% translate 'แก้ไขห้อง' %}"><i data-lucide="pencil"></i></a>
                     <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ r.id }}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'ปฏิทินราคา' %}" aria-label="{% translate 'ปฏิทินราคา' %}"><i data-lucide="calendar"></i></a>
                     <form method="post" action="{% url 'accommodations:room_delete' r.id %}" onsubmit="return confirm('{{ _("ลบห้อง")|escapejs }} {{ r.name|escapejs }} {{ _("หรือไม่?")|escapejs }}');">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2 lh-1" title="{% translate 'ลบห้อง' %}" aria-label="{% translate 'ลบห้อง' %}"><i data-lucide="trash-2"></i></button></form>
                   </div>

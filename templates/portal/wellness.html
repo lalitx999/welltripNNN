@@ -20,7 +20,13 @@
               <div class="min-w-0 flex-grow-1">
                 <div class="d-flex justify-content-between gap-2"><span class="fw-bold">{{ s.name }}</span><span class="fw-bold text-green text-nowrap">฿{{ s.price|floatformat:"0g" }}</span></div>
                 <small class="text-secondary"><i data-lucide="clock" class="me-1"></i>{% blocktranslate trimmed with duration_minutes=s.duration_minutes %}{{ duration_minutes }} นาที{% endblocktranslate %}</small>
+                {% if not s.is_active %}<span class="badge text-bg-secondary ms-1">{% translate "ปิดการขาย" %}</span>{% endif %}
+                {% if can_create is False %}<small class="text-secondary ms-1">{{ s.owner.email }}</small>{% endif %}
                 {% if s.description %}<div class="small text-secondary line-clamp-2">{{ s.description }}</div>{% endif %}
+              </div>
+              <div class="d-flex flex-column gap-1 flex-shrink-0">
+                <a href="{% url 'services:item_edit' 'wellness' s.id %}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'แก้ไข' %}" aria-label="{% translate 'แก้ไขบริการ' %}"><i data-lucide="pencil"></i></a>
+                <form method="post" action="{% url 'services:item_toggle' 'wellness' s.id %}" {% if s.is_active %}onsubmit="return confirm('{{ _("ปิดการขายบริการ")|escapejs }} {{ s.name|escapejs }} {{ _("หรือไม่? ประวัติการจองยังอยู่ครบ")|escapejs }}');"{% endif %}>{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% if s.is_active %}{% translate 'ปิดการขาย' %}{% else %}{% translate 'เปิดขาย' %}{% endif %}" aria-label="{% if s.is_active %}{% translate 'ปิดการขาย' %}{% else %}{% translate 'เปิดขาย' %}{% endif %}"><i data-lucide="{% if s.is_active %}eye-off{% else %}eye{% endif %}"></i></button></form>
               </div>
             </div>
           {% endfor %}
@@ -77,6 +83,7 @@
       {% endif %}
     </div>
 
+    {% if can_create %}
     <div class="wt-card p-4">
       <h2 class="h6 fw-bold mb-3"><i data-lucide="plus-circle" class="text-green me-1"></i>{% translate "เพิ่มบริการ" %}</h2>
       <form method="post" action="{% url 'services:wellness_studio' %}" enctype="multipart/form-data" class="d-grid gap-3">
@@ -91,6 +98,7 @@
         <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="plus" class="me-1"></i>{% translate "บันทึกบริการ" %}</button>
       </form>
     </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

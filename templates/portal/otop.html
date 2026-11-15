@@ -15,18 +15,22 @@
       {% if products %}
         <div class="table-responsive">
           <table class="table wt-table mb-0">
-            <thead><tr><th>{% translate "สินค้า" %}</th><th class="text-end">{% translate "ราคา" %}</th><th class="text-center">{% translate "สต็อก" %}</th></tr></thead>
+            <thead><tr><th>{% translate "สินค้า" %}</th><th class="text-end">{% translate "ราคา" %}</th><th class="text-center">{% translate "สต็อก" %}</th><th class="text-end">{% translate "จัดการ" %}</th></tr></thead>
             <tbody>
               {% for p in products %}
                 <tr>
                   <td>
                     <div class="d-flex gap-2 align-items-center">
                       {% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.name }}" width="44" height="44" class="rounded-3 object-fit-cover">{% endif %}
-                      <div class="min-w-0"><div class="fw-semibold small">{{ p.name }}</div><small class="text-secondary">{{ p.get_category_display }}</small></div>
+                      <div class="min-w-0"><div class="fw-semibold small">{{ p.name }}{% if not p.is_active %} <span class="badge text-bg-secondary">{% translate "ปิดการขาย" %}</span>{% endif %}</div><small class="text-secondary">{{ p.get_category_display }}{% if can_create is False %} · {{ p.owner.email }}{% endif %}</small></div>
                     </div>
                   </td>
                   <td class="text-end small fw-semibold">฿{{ p.price|floatformat:"0g" }}</td>
                   <td class="text-center">{% include "portal/partials/otop_stock_counter.html" with product=p %}</td>
+                  <td class="text-end text-nowrap">
+                    <a href="{% url 'otop:product_edit' p.id %}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'แก้ไข' %}" aria-label="{% translate 'แก้ไขสินค้า' %}"><i data-lucide="pencil"></i></a>
+                    <form method="post" action="{% url 'otop:product_toggle' p.id %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% if p.is_active %}{% translate 'ปิดการขาย' %}{% else %}{% translate 'เปิดขาย' %}{% endif %}" aria-label="{% if p.is_active %}{% translate 'ปิดการขาย' %}{% else %}{% translate 'เปิดขาย' %}{% endif %}"><i data-lucide="{% if p.is_active %}eye-off{% else %}eye{% endif %}"></i></button></form>
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -37,6 +41,7 @@
       {% endif %}
     </div>
   </div>
+  {% if can_create %}
   <div class="col-xl-5">
     <div class="wt-card p-4">
       <h2 class="h6 fw-bold mb-3"><i data-lucide="plus-circle" class="text-green me-1"></i>{% translate "เพิ่มสินค้า" %}</h2>
@@ -54,5 +59,6 @@
       </form>
     </div>
   </div>
+  {% endif %}
 </div>
 {% endblock %}

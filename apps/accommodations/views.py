@@ -1,13 +1,13 @@
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
 from django.db.models import Min, Q
 from django.utils import timezone
 
 from apps.accounts.models import UserRoles
-from apps.accounts.permissions import role_required, can_edit_object
+from apps.accounts.permissions import role_required, can_edit_object, scope_to_owner
 from apps.accounts.services.audit import record_audit_log
 from apps.accommodations.models import Accommodation, Room, RoomImage, RoomPricingCalendar, AccommodationStatus
 from apps.accommodations.forms import AccommodationForm, RoomForm, RoomImageForm, RoomPricingCalendarForm
@@ -105,6 +105,11 @@ def homestay_studio_view(request):
     else:
         accommodation = owner_accommodations.first()
 
+    if not accommodation and request.user.role != UserRoles.HOMESTAY_OWNER:
+        # Admins oversee homestays; they must not end up owning a placeholder one
+        messages.info(request, _("ยังไม่มีที่พักในระบบ"))
+        return redirect('accounts:portal_dashboard')
+
     if not accommodation:
         # Starts hidden; the owner publishes it once details and rooms are filled in
         accommodation = Accommodation.objects.create(
@@ -165,10 +170,17 @@ def homestay_studio_view(request):
 def room_create_view(request):
     """Adds a new room to the owner's homestay."""
     acc_id = request.POST.get('accommodation_id')
-    if request.user.is_superuser or request.user.role == UserRoles.COMMUNITY_ADMIN:
-        accommodation = get_object_or_404(Accommodation, id=acc_id) if acc_id else Accommodation.objects.first()
+    owned = scope_to_owner(Accommodation.objects.all(), request.user)
+    if acc_id:
+        accommodation = get_object_or_404(owned, id=acc_id)
+    elif request.user.role == UserRoles.HOMESTAY_OWNER:
+        accommodation = owned.order_by('created_at').first()
+        if accommodation is None:
+            raise Http404
     else:
-        accommodation = get_object_or_404(Accommodation, id=acc_id, owner=request.user) if acc_id else Accommodation.objects.filter(owner=request.user).first()
+        # Admins oversee every homestay: never guess which one the room belongs to
+        messages.error(request, _("กรุณาเลือกที่พักก่อนเพิ่มห้อง"))
+        return redirect('accommodations:homestay_studio')
 
     form = RoomForm(request.POST)
     if form.is_valid():
@@ -385,4 +397,26 @@ def calendar_view(request):
         'next_month': next_month,
         'month_name': month_name,
         'form': form,
+    })
+
+
+@role_required(UserRoles.HOMESTAY_OWNER, UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN)
+@require_http_methods(["GET", "POST"])
+def room_edit_view(request, room_id):
+    """Edits a room's name, type, capacity, base price and room count."""
+    room = get_object_or_404(
+        scope_to_owner(Room.objects.select_related('accommodation'), request.user, 'accommodation__owner'), id=room_id
+    )
+    form = RoomForm(request.POST or None, instance=room)
+    back_url = f"/accommodations/studio/?acc_id={room.accommodation_id}"
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        record_audit_log(
+            request=request, action="UPDATE", model_name="Room", object_id=str(room.id),
+            changes={k: str(v) for k, v in form.cleaned_data.items()},
+        )
+        messages.success(request, _("บันทึกห้อง '{name}' เรียบร้อยแล้ว").format(name=room.name))
+        return redirect(back_url)
+    return render(request, 'portal/item_edit.html', {
+        'form': form, 'item': room, 'item_label': _("ห้องพัก"), 'back_url': back_url,
     })

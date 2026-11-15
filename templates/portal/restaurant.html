@@ -23,10 +23,16 @@
                   <span class="fw-bold text-green text-nowrap">฿{{ menu.price|floatformat:"0g" }}</span>
                 </div>
                 <span class="badge badge-gold">{{ menu.get_wellness_category_display }}</span>
+                {% if not menu.is_available %}<span class="badge text-bg-secondary">{% translate "ปิดการขาย" %}</span>{% endif %}
+                {% if can_create is False %}<small class="text-secondary ms-1">{{ menu.owner.email }}</small>{% endif %}
                 {% if menu.calorie_estimate %}<small class="text-secondary ms-1">~{{ menu.calorie_estimate }} kcal</small>{% endif %}
                 {% if menu.description %}<div class="small text-secondary line-clamp-2 mt-1">{{ menu.description }}</div>{% endif %}
               </div>
-              <form method="post" action="{% url 'services:food_delete' menu.id %}" onsubmit="return confirm('{{ _("ลบเมนู")|escapejs }} {{ menu.name|escapejs }} {{ _("หรือไม่?")|escapejs }}');">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2 lh-1" aria-label="{% translate 'ลบเมนู' %}"><i data-lucide="trash-2"></i></button></form>
+              <div class="d-flex flex-column gap-1 flex-shrink-0">
+                <a href="{% url 'services:item_edit' 'food' menu.id %}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'แก้ไข' %}" aria-label="{% translate 'แก้ไขเมนู' %}"><i data-lucide="pencil"></i></a>
+                <form method="post" action="{% url 'services:item_toggle' 'food' menu.id %}">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% if menu.is_available %}{% translate 'ปิดการขาย' %}{% else %}{% translate 'เปิดขาย' %}{% endif %}" aria-label="{% if menu.is_available %}{% translate 'ปิดการขาย' %}{% else %}{% translate 'เปิดขาย' %}{% endif %}"><i data-lucide="{% if menu.is_available %}eye-off{% else %}eye{% endif %}"></i></button></form>
+                <form method="post" action="{% url 'services:food_delete' menu.id %}" onsubmit="return confirm('{{ _("ลบเมนู")|escapejs }} {{ menu.name|escapejs }} {{ _("หรือไม่?")|escapejs }}');">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2 lh-1" aria-label="{% translate 'ลบเมนู' %}"><i data-lucide="trash-2"></i></button></form>
+              </div>
             </div>
           {% endfor %}
         </div>
@@ -35,6 +41,7 @@
       {% endif %}
     </div>
   </div>
+  {% if can_create %}
   <div class="col-xl-5">
     <div class="wt-card p-4">
       <h2 class="h6 fw-bold mb-3"><i data-lucide="plus-circle" class="text-green me-1"></i>{% translate "เพิ่มเมนู" %}</h2>
@@ -52,5 +59,6 @@
       </form>
     </div>
   </div>
+  {% endif %}
 </div>
 {% endblock %}

@@ -29,7 +29,7 @@
   <div class="row g-4">
     <div class="col-xl-7">
       <div class="wt-card h-100">
-        <div class="p-3 border-bottom fw-bold"><i data-lucide="receipt" class="text-green me-1"></i>{% translate "คำสั่งซื้อล่าสุด" %}</div>
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center"><span class="fw-bold"><i data-lucide="receipt" class="text-green me-1"></i>{% translate "คำสั่งซื้อล่าสุด" %}</span><a href="{% url 'accounts:portal_orders' %}" class="small fw-semibold text-green">{% translate "ดูทั้งหมด" %} <i data-lucide="chevron-right"></i></a></div>
         {% if recent_items %}
           <div class="table-responsive">
             <table class="table wt-table mb-0">

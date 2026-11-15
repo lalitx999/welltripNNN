@@ -138,6 +138,18 @@ def can_view_object(user, obj):
     return False
 
 
+def is_platform_admin(user):
+    """Super admins and community admins: may oversee every partner studio."""
+    return user.is_authenticated and (
+        user.is_superuser or user.role in {UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN}
+    )
+
+
+def scope_to_owner(queryset, user, owner_lookup="owner"):
+    """Partners see their own rows; platform admins see everyone's."""
+    return queryset if is_platform_admin(user) else queryset.filter(**{owner_lookup: user})
+
+
 def can_access_payment(user, booking):
     """
     Payment pages and slip images: only the booking's customer and admins.

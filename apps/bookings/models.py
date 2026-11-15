@@ -102,6 +102,13 @@ class Booking(models.Model):
         return max(0, int(diff))
 
 
+class FulfillmentStatus(models.TextChoices):
+    """Shipping progress of physical (OTOP) items; stays PENDING for stays and services."""
+    PENDING = "PENDING", gettext_lazy("รอจัดส่ง")
+    SHIPPED = "SHIPPED", gettext_lazy("จัดส่งแล้ว")
+    DELIVERED = "DELIVERED", gettext_lazy("ได้รับสินค้าแล้ว")
+
+
 class BookingItem(models.Model):
     """
     Polymorphic order item belonging to a specific community vendor.
@@ -123,6 +130,11 @@ class BookingItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     booking_metadata = models.JSONField(default=dict, blank=True)
+    fulfillment_status = models.CharField(
+        max_length=20, choices=FulfillmentStatus.choices, default=FulfillmentStatus.PENDING, db_index=True
+    )
+    tracking_number = models.CharField(max_length=60, blank=True, default="")
+    shipped_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "booking_items"
