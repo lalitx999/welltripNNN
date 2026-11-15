@@ -28,7 +28,7 @@ cp .env.example .env && chmod 600 .env
 | `CSRF_TRUSTED_ORIGINS` | `https://welltripthailand.com,https://www.welltripthailand.com` |
 | `POSTGRES_PASSWORD` | ใช้ค่าจาก `openssl rand -hex 24` (ใช้แค่ตัวอักษรและตัวเลข) |
 | `CLOUDFLARE_TUNNEL_TOKEN` | ได้จากขั้นที่ 2 |
-| `SLIP_PROVIDER_API_KEY` | key **ใหม่** ของ EasySlip |
+| `SLIP_PROVIDER_API_KEY` | API key ของ EasySlip **V2** (รูปแบบ UUID จาก developer.easyslip.com → Credentials) ระบบเรียก `https://api.easyslip.com/v2/verify/bank` เสมอ ค่า `SLIP_PROVIDER_URL` แบบเก่าไม่ถูกใช้แล้ว ถ้าตั้ง IP whitelist ไว้ใน EasySlip ต้องใส่ IP ของ VPS ด้วย |
 | `EMAIL_HOST_PASSWORD` | รหัสอีเมล **ใหม่** |
 | `PAYEE_*`, `GOOGLE_OAUTH_CLIENT_IDS`, `GOOGLE_OAUTH_CLIENT_SECRET`, `ADMIN_EMAIL` | ค่าจริงของคุณ |
 

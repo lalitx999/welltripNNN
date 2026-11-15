@@ -299,7 +299,9 @@ CELERY_TIMEZONE = TIME_ZONE
 # EasySlip Verification & Payee Bank Account
 # ==============================================================================
 EASYSLIP_API_KEY = config('EASYSLIP_API_KEY', default=config('SLIP_PROVIDER_API_KEY', default=''))
-EASYSLIP_URL = config('EASYSLIP_URL', default=config('SLIP_PROVIDER_URL', default='https://developer.easyslip.com/api/v1/verify'))
+# EasySlip API V2 only (https://document.easyslip.com/th/v2/verify/bank/image).
+# The old SLIP_PROVIDER_URL (v1) setting is ignored on purpose.
+EASYSLIP_V2_URL = config('EASYSLIP_V2_URL', default='https://api.easyslip.com/v2/verify/bank')
 EASYSLIP_MOCK_VERIFY = config('EASYSLIP_MOCK_VERIFY', default=False, cast=bool)
 
 # Real values live only in .env (prod refuses to start without the account number)

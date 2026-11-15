@@ -4,7 +4,6 @@ Performs zero-trust OCR extraction, financial money-safety rule validation,
 anti-fraud duplicate checks, atomic status transition, and transactional email dispatches.
 """
 import io
-import json
 import logging
 from decimal import Decimal
 from datetime import timedelta
@@ -24,104 +23,138 @@ from apps.payments.models import (
 logger = logging.getLogger(__name__)
 
 
-def _call_easyslip_provider(image_file) -> dict:
-    """
-    Dispatch slip image to EasySlip API v1 endpoint and parse bank transaction payload.
-    Docs: https://document.easyslip.com/
-    """
-    api_key = getattr(settings, "EASYSLIP_API_KEY", "") or ""
-    provider_url = getattr(
-        settings,
-        "EASYSLIP_URL",
-        "https://developer.easyslip.com/api/v1/verify",
-    )
+EASYSLIP_MAX_BYTES = 4 * 1024 * 1024  # V2 rejects images above 4 MB
 
+
+class SlipPendingError(Exception):
+    """EasySlip cannot read the slip yet (e.g. Bangkok Bank, first 5 minutes): try again later."""
+
+
+def _image_bytes_for_easyslip(image_file) -> tuple[bytes, str, str]:
+    """Returns (bytes, filename, content type), shrunk to JPEG when above the 4 MB limit."""
+    import mimetypes
+    from PIL import Image
+
+    if hasattr(image_file, "open"):
+        image_file.open("rb")
+    if hasattr(image_file, "seek"):
+        image_file.seek(0)
+    data = image_file.read() if hasattr(image_file, "read") else image_file
+    filename = (getattr(image_file, "name", "") or "slip.jpg").rsplit("/", 1)[-1]
+    content_type = mimetypes.guess_type(filename)[0] or "image/jpeg"
+
+    if len(data) > EASYSLIP_MAX_BYTES:
+        img = Image.open(io.BytesIO(data)).convert("RGB")
+        img.thumbnail((2000, 2000))
+        out = io.BytesIO()
+        img.save(out, format="JPEG", quality=85)
+        data, filename, content_type = out.getvalue(), "slip.jpg", "image/jpeg"
+    return data, filename, content_type
+
+
+def _easyslip_error(res_json: dict, status_code: int) -> tuple[str, str]:
+    """(CODE, message) from the V2 envelope {"success": false, "error": {...}} or the older {"status", "message"} one."""
+    err = res_json.get("error") if isinstance(res_json, dict) else None
+    if isinstance(err, dict):
+        return str(err.get("code") or status_code).upper(), str(err.get("message") or "")
+    message = str((res_json or {}).get("message") or f"HTTP {status_code}")
+    return message.upper(), message
+
+
+def _call_easyslip_provider(image_file, *, expected_amount=None, remark: str = "") -> dict:
+    """
+    EasySlip V2: POST {EASYSLIP_V2_URL} (multipart field `image`).
+    Docs: https://document.easyslip.com/th/v2/verify/bank/image
+    Asks EasySlip to flag duplicates, match the receiver against accounts registered in our
+    EasySlip branch, and compare the amount; our own checks still run on the result.
+    """
+    api_key = (getattr(settings, "EASYSLIP_API_KEY", "") or "").strip()
     if not api_key:
         raise ValueError("ไม่ได้กำหนด EASYSLIP_API_KEY ในการตั้งค่าระบบ")
 
-    if hasattr(image_file, "seek"):
-        image_file.seek(0)
-    image_bytes = image_file.read() if hasattr(image_file, "read") else image_file
-
-    filename = getattr(image_file, "name", "slip.jpg") or "slip.jpg"
-    headers = {
-        "Authorization": f"Bearer {api_key.strip()}",
-    }
-    is_v2 = "/v2/" in provider_url
-    file_field = "image" if is_v2 else "file"
-    files = {
-        file_field: (filename, image_bytes, "image/jpeg"),
-    }
+    image_bytes, filename, content_type = _image_bytes_for_easyslip(image_file)
+    form = {"checkDuplicate": "true", "matchAccount": "true"}
+    if expected_amount is not None:
+        form["matchAmount"] = str(expected_amount)
+    if remark:
+        form["remark"] = remark[:255]
 
     try:
-        resp = requests.post(provider_url, headers=headers, files=files, timeout=20)
+        resp = requests.post(
+            settings.EASYSLIP_V2_URL,
+            headers={"Authorization": f"Bearer {api_key}"},
+            files={"image": (filename, image_bytes, content_type)},
+            data=form,
+            timeout=20,
+        )
     except requests.RequestException as exc:
         logger.error("EasySlip API connection failed: %s", exc)
-        raise ValueError(f"ไม่สามารถเชื่อมต่อไปยังเซิร์ฟเวอร์ EasySlip ได้: {str(exc)}") from exc
+        raise ValueError(f"ไม่สามารถเชื่อมต่อไปยังเซิร์ฟเวอร์ EasySlip ได้: {exc}") from exc
 
     try:
         res_json = resp.json()
-    except Exception:
+    except ValueError:
         raise ValueError(f"EasySlip ตอบกลับด้วยข้อมูลที่ไม่ใช่ JSON (HTTP {resp.status_code})")
 
-    if resp.status_code != 200:
-        err_msg = res_json.get("message") or res_json.get("error") or f"HTTP {resp.status_code}"
-        raise ValueError(f"EasySlip ตรวจสอบสลิปไม่ผ่าน: {err_msg}")
+    if resp.status_code != 200 or not res_json.get("success"):
+        code, message = _easyslip_error(res_json, resp.status_code)
+        if code == "SLIP_PENDING":
+            raise SlipPendingError(message or "slip pending")
+        readable = {
+            "SLIP_NOT_FOUND": "ไม่พบ QR หรือข้อมูลสลิปในรูป",
+            "IMAGE_SIZE_TOO_LARGE": "รูปสลิปใหญ่เกิน 4MB",
+            "INVALID_IMAGE_FORMAT": "ไฟล์ไม่ใช่รูปภาพที่รองรับ",
+            "QUOTA_EXCEEDED": "โควตา EasySlip เดือนนี้หมดแล้ว",
+            "INVALID_API_KEY": "API key ของ EasySlip ไม่ถูกต้อง",
+            "MISSING_API_KEY": "ไม่ได้ส่ง API key ของ EasySlip",
+            "IP_NOT_ALLOWED": "IP ของเซิร์ฟเวอร์ไม่อยู่ใน whitelist ของ EasySlip",
+            "RATE_LIMIT_EXCEEDED": "เรียก EasySlip ถี่เกินไป",
+        }.get(code, message or code)
+        raise ValueError(f"EasySlip ตรวจสอบสลิปไม่ผ่าน: {readable} ({code})")
 
-    data = res_json.get("data", {})
-    if not data:
+    data = res_json.get("data") or {}
+    raw_slip = data.get("rawSlip") or {}
+    if not raw_slip:
         raise ValueError("EasySlip ไม่พบข้อมูลการโอนเงินในรูปภาพที่อัปโหลด")
 
-    raw_slip = data.get("rawSlip") or data
-
-    # Extract transfer amount
     amount_raw = data.get("amountInSlip")
     if amount_raw is None:
-        amount_obj = raw_slip.get("amount", {})
-        if isinstance(amount_obj, dict):
-            amount_raw = amount_obj.get("amount") or 0
-        else:
-            amount_raw = amount_obj or 0
-
+        amount_obj = raw_slip.get("amount") or {}
+        amount_raw = amount_obj.get("amount") if isinstance(amount_obj, dict) else amount_obj
     try:
         amount = Decimal(str(amount_raw))
     except Exception as exc:
-        raise ValueError(f"ไม่สามารถอ่านยอดเงินจากสลิปได้: {str(exc)}")
+        raise ValueError(f"ไม่สามารถอ่านยอดเงินจากสลิปได้: {exc}")
 
-    # Extract transaction reference (transRef)
-    trans_ref = str(raw_slip.get("transRef") or raw_slip.get("trans_ref") or "").strip()
+    trans_ref = str(raw_slip.get("transRef") or "").strip()
     if not trans_ref:
         raise ValueError("ไม่พบรหัสอ้างอิงธุรกรรม (Transaction Reference) ในสลิป")
 
-    # Extract transfer date/time
-    date_str = raw_slip.get("date")
-    trans_dt = timezone.now()
-    if date_str:
+    trans_dt = None
+    if raw_slip.get("date"):
         try:
             from datetime import datetime
-            clean_date = date_str.replace("Z", "+00:00")
-            trans_dt = datetime.fromisoformat(clean_date)
+            trans_dt = datetime.fromisoformat(str(raw_slip["date"]).replace("Z", "+00:00"))
             if timezone.is_naive(trans_dt):
-                trans_dt = timezone.make_aware(trans_dt, timezone.utc)
-        except Exception:
-            pass
+                trans_dt = timezone.make_aware(trans_dt)
+        except ValueError:
+            trans_dt = None
 
-    sender_info = raw_slip.get("sender", {})
-    sender_name_obj = sender_info.get("account", {}).get("name", {}) or sender_info.get("name", {})
-    if isinstance(sender_name_obj, dict):
-        sender_name = sender_name_obj.get("th") or sender_name_obj.get("en") or ""
-    else:
-        sender_name = str(sender_name_obj or "")
+    sender_name = ((raw_slip.get("sender") or {}).get("account") or {}).get("name") or {}
+    if isinstance(sender_name, dict):
+        sender_name = sender_name.get("th") or sender_name.get("en") or ""
 
     return {
         "amount": amount,
         "trans_ref": trans_ref,
-        "trans_datetime": trans_dt,
-        "sender_name": sender_name,
-        "receiver": raw_slip.get("receiver", {}),
-        "is_duplicate": data.get("isDuplicate", False),
+        "trans_datetime": trans_dt or timezone.now(),
+        "sender_name": str(sender_name or ""),
+        "receiver": raw_slip.get("receiver") or {},
+        "matched_account": data.get("matchedAccount"),
+        "is_amount_matched": data.get("isAmountMatched"),
+        "is_duplicate": bool(data.get("isDuplicate", False)),
         "raw_data": data,
-        "provider": "EasySlip v2" if is_v2 else "EasySlip v1",
+        "provider": "EasySlip v2",
     }
 
 
@@ -177,6 +210,15 @@ def account_matches_payee(masked_account: str, payee_account: str) -> bool:
     return all(payee[i] == ch for i, ch in visible)
 
 
+def matched_account_is_payee(matched_account) -> bool:
+    """V2 matchAccount result: an account registered in our EasySlip branch whose number is ours."""
+    if not isinstance(matched_account, dict):
+        return False
+    ours = "".join(ch for ch in str(settings.PAYEE_ACCOUNT_NUMBER or "") if ch.isdigit())
+    theirs = "".join(ch for ch in str(matched_account.get("bankNumber") or "") if ch.isdigit())
+    return bool(ours) and theirs == ours
+
+
 def receiver_is_payee(receiver: dict) -> bool:
     """True when the slip's receiving account is the WellTrip payee account (or an accepted PromptPay proxy)."""
     if not isinstance(receiver, dict):
@@ -211,15 +253,22 @@ def verify_slip_automatically(slip_id, *, provider_func=None) -> tuple[bool, Pay
     3. Update Payment and Booking status
     4. Queue transactional email alerts
     """
-    provider = provider_func or _call_easyslip_provider
-
     slip = PaymentSlip.objects.select_related("payment__booking__customer").filter(pk=slip_id).first()
     if not slip:
         raise ValueError(f"ไม่พบข้อมูลสลิป ID: {slip_id}")
 
-    # 1. OCR Round-trip
+    # 1. Provider round-trip (outside any lock)
     try:
-        payload = provider(slip.image)
+        if provider_func:
+            payload = provider_func(slip.image)
+        else:
+            payload = _call_easyslip_provider(
+                slip.image,
+                expected_amount=slip.payment.amount,
+                remark=slip.payment.booking.booking_code,
+            )
+    except SlipPendingError:
+        raise  # the Celery task retries a few minutes later
     except Exception as exc:
         logger.warning("Automated slip extraction failed for slip %s: %s", slip_id, exc)
         slip.verification_notes = f"ตรวจสอบอัตโนมัติไม่สำเร็จ: {str(exc)} (ส่งต่อให้แอดมินตรวจมือ)"
@@ -256,7 +305,10 @@ def verify_slip_automatically(slip_id, *, provider_func=None) -> tuple[bool, Pay
         review_reason = None
         if booking.status != BookingStatus.AWAITING_PAYMENT:
             review_reason = f"การจองอยู่ในสถานะ {booking.get_status_display()} ไม่ใช่รอชำระเงิน"
-        elif not receiver_is_payee(payload.get("receiver")):
+        elif not (
+            matched_account_is_payee(payload.get("matched_account"))
+            or receiver_is_payee(payload.get("receiver"))
+        ):
             review_reason = "บัญชีผู้รับในสลิปไม่ตรงกับบัญชีรับเงินของ WellTrip"
         if review_reason:
             _send_to_manual_review(slip, review_reason, payload)

@@ -185,3 +185,87 @@ class CouponLimitTestCase(TestCase):
         other = User.objects.create_user(email="o@example.com", password="x", role=UserRoles.TOURIST)
         self._use(other)
         self.assertFalse(self.coupon.check_usage(self.user)[0])
+
+
+class EasySlipV2ClientTestCase(TestCase):
+    """The HTTP call and response parsing for EasySlip API V2."""
+
+    V2_OK = {
+        "success": True,
+        "message": "Bank slip verified successfully",
+        "data": {
+            "remark": "WT-1",
+            "isDuplicate": False,
+            "matchedAccount": {"bankNumber": "001-1-50448-5", "nameTh": "บัญชีทดสอบ", "type": "PERSONAL",
+                               "bank": {"code": "004", "shortCode": "KBANK"}},
+            "amountInOrder": 1500,
+            "amountInSlip": 1500.0,
+            "isAmountMatched": True,
+            "rawSlip": {
+                "transRef": "68370160657749I376388B35",
+                "date": "2026-11-15T14:30:00+07:00",
+                "amount": {"amount": 1500.0, "local": {"amount": 1500.0, "currency": "THB"}},
+                "sender": {"bank": {"id": "014", "short": "SCB"}, "account": {"name": {"th": "ลูกค้า"}}},
+                "receiver": {"bank": {"id": "004", "short": "KBANK"},
+                             "account": {"name": {"th": "บัญชีทดสอบ"}, "bank": {"type": "BANKAC", "account": "xxx-x-x0448-x"}}},
+            },
+        },
+    }
+
+    def _post(self, status, body):
+        from unittest import mock
+        response = mock.Mock(status_code=status)
+        response.json.return_value = body
+        return mock.patch("apps.payments.services.requests.post", return_value=response)
+
+    def test_sends_v2_request_and_parses_result(self):
+        from apps.payments.services import _call_easyslip_provider
+        with self.settings(EASYSLIP_API_KEY="key-1"), self._post(200, self.V2_OK) as post:
+            result = _call_easyslip_provider(_image(), expected_amount=Decimal("1500.00"), remark="WT-1")
+        url = post.call_args.args[0]
+        kwargs = post.call_args.kwargs
+        self.assertEqual(url, "https://api.easyslip.com/v2/verify/bank")
+        self.assertEqual(kwargs["headers"]["Authorization"], "Bearer key-1")
+        self.assertIn("image", kwargs["files"])
+        self.assertEqual(kwargs["data"]["checkDuplicate"], "true")
+        self.assertEqual(kwargs["data"]["matchAmount"], "1500.00")
+        self.assertEqual(result["amount"], Decimal("1500.0"))
+        self.assertEqual(result["trans_ref"], "68370160657749I376388B35")
+        self.assertEqual(result["matched_account"]["bankNumber"], "001-1-50448-5")
+        self.assertFalse(result["is_duplicate"])
+
+    def test_v2_error_envelope_becomes_readable_error(self):
+        from apps.payments.services import _call_easyslip_provider
+        body = {"success": False, "error": {"code": "QUOTA_EXCEEDED", "message": "Your API quota has been exceeded"}}
+        with self.settings(EASYSLIP_API_KEY="k"), self._post(403, body):
+            with self.assertRaisesMessage(ValueError, "QUOTA_EXCEEDED"):
+                _call_easyslip_provider(_image())
+
+    def test_slip_pending_is_retryable(self):
+        from apps.payments.services import SlipPendingError, _call_easyslip_provider
+        body = {"success": False, "error": {"code": "SLIP_PENDING", "message": "try later"}}
+        with self.settings(EASYSLIP_API_KEY="k"), self._post(404, body):
+            with self.assertRaises(SlipPendingError):
+                _call_easyslip_provider(_image())
+
+    def test_full_flow_confirms_with_matched_account(self):
+        tourist = User.objects.create_user(email="v2@example.com", password="x", role=UserRoles.TOURIST)
+        booking = Booking.objects.create(customer=tourist, total_amount=Decimal("1500.00"), status=BookingStatus.AWAITING_PAYMENT)
+        payment = Payment.objects.create(booking=booking, amount=Decimal("1500.00"))
+        slip = PaymentSlip.objects.create(payment=payment, image=_image())
+        with self.settings(EASYSLIP_API_KEY="k"), self._post(200, self.V2_OK) as post:
+            ok, slip, _ = verify_slip_automatically(slip.id)
+        self.assertTrue(ok)
+        self.assertEqual(post.call_args.kwargs["data"]["remark"], booking.booking_code)
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, BookingStatus.CONFIRMED)
+
+    def test_big_image_is_shrunk_under_4mb(self):
+        from apps.payments.services import EASYSLIP_MAX_BYTES, _image_bytes_for_easyslip
+        import os
+        buf = io.BytesIO()
+        Image.frombytes("RGB", (1800, 1800), os.urandom(1800 * 1800 * 3)).save(buf, format="PNG")
+        self.assertGreater(len(buf.getvalue()), EASYSLIP_MAX_BYTES)
+        data, name, ctype = _image_bytes_for_easyslip(SimpleUploadedFile("big.png", buf.getvalue()))
+        self.assertLessEqual(len(data), EASYSLIP_MAX_BYTES)
+        self.assertEqual(ctype, "image/jpeg")
