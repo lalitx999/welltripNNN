@@ -1,3 +1,4 @@
+from django.urls import reverse
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -23,35 +24,60 @@ from apps.core.templatetags.welltrip_i18n import loc
 from django.utils.translation import gettext as _
 
 
+SISAKET_BOUNDS = {"lat": (14.0, 15.7), "lng": (103.8, 105.2)}  # generous box around the province
+ATTRACTION_FILTER = "ATTRACTION"  # map filter for published attraction articles (not a MapLocation category)
+
+
+def _map_filter(request):
+    category = request.GET.get('category')
+    if category == ATTRACTION_FILTER or category in MapLocationCategory.values:
+        return category
+    return None
+
+
+def _map_points(category):
+    """Check-in locations and published attractions that have real coordinates."""
+    from apps.core.selectors.catalog_selector import published_attractions
+
+    locations = MapLocation.objects.none()
+    if category != ATTRACTION_FILTER:
+        locations = MapLocation.objects.filter(is_active=True)
+        if category:
+            locations = locations.filter(category=category)
+    attractions = EditorialEntry.objects.none()
+    if category in (None, ATTRACTION_FILTER):
+        # Some source coordinates point outside the province: leave those off the map
+        attractions = published_attractions().filter(
+            latitude__range=SISAKET_BOUNDS["lat"], longitude__range=SISAKET_BOUNDS["lng"],
+        )
+    return locations, attractions
+
+
 @require_GET
 def map_view(request):
-    """Interactive Sisaket Cultural & Wellness Map view."""
-    category = request.GET.get('category')
-    locations = MapLocation.objects.filter(is_active=True)
-
-    if category and category in MapLocationCategory.values:
-        locations = locations.filter(category=category)
-
+    """Interactive Sisaket map: check-in points plus every published attraction."""
+    category = _map_filter(request)
+    locations, attractions = _map_points(category)
+    categories = [(ATTRACTION_FILTER, _("แหล่งท่องเที่ยว"))] + list(MapLocationCategory.choices)
     return render(request, 'community/map.html', {
         'locations': locations,
-        'categories': MapLocationCategory.choices,
+        'attractions': attractions.only('id', 'title', 'location', 'image', 'image_url', 'latitude', 'longitude'),
+        'categories': categories,
         'selected_category': category or 'ALL',
-        'total_locations': locations.count(),
+        'total_locations': locations.count() + attractions.count(),
     })
 
 
 @require_GET
 def locations_api_view(request):
     """Returns JSON coordinates and details for Leaflet.js map markers."""
-    category = request.GET.get('category')
-    locations = MapLocation.objects.filter(is_active=True)
-
-    if category and category in MapLocationCategory.values:
-        locations = locations.filter(category=category)
+    category = _map_filter(request)
+    locations, attractions = _map_points(category)
 
     data = [
         {
             "id": str(loc.id),
+            "type": "checkin",
             "title": loc.title,
             "category": loc.category,
             "category_label": loc.get_category_display(),
@@ -61,6 +87,21 @@ def locations_api_view(request):
             # qr_secret is deliberately omitted: it is the proof of a physical visit
         }
         for loc in locations
+    ]
+    data += [
+        {
+            "id": str(entry.id),
+            "type": "attraction",
+            "title": entry.title,
+            "category": ATTRACTION_FILTER,
+            "category_label": _("แหล่งท่องเที่ยว"),
+            "lat": float(entry.latitude),
+            "lng": float(entry.longitude),
+            "address": entry.location,
+            "image": entry.display_image_url if (entry.image or entry.image_url) else "",
+            "url": reverse('community:story_detail', args=[entry.id]),
+        }
+        for entry in attractions
     ]
     return JsonResponse({"locations": data})
 

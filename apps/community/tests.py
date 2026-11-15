@@ -278,3 +278,25 @@ class ImportTtdAttractionsTestCase(TestCase):
         self._run([self.ROW], "--update")
         entry = EditorialEntry.objects.get()
         self.assertEqual(entry.title, "แก้ไขแล้ว")
+
+
+class AttractionMapTestCase(TestCase):
+    def test_published_attractions_become_pins_inside_sisaket_only(self):
+        from decimal import Decimal
+        from apps.community.models import EditorialEntry
+        ok = EditorialEntry.objects.create(kind="ATTRACTION", title="ผามออีแดง", is_published=True,
+                                           latitude=Decimal("14.4"), longitude=Decimal("104.6"))
+        EditorialEntry.objects.create(kind="ATTRACTION", title="พิกัดผิด", is_published=True,
+                                      latitude=Decimal("17.2"), longitude=Decimal("102.6"))
+        EditorialEntry.objects.create(kind="ATTRACTION", title="ร่าง", is_published=False,
+                                      latitude=Decimal("14.5"), longitude=Decimal("104.5"))
+        data = self.client.get("/community/api/locations/?category=ATTRACTION").json()["locations"]
+        self.assertEqual([d["title"] for d in data], ["ผามออีแดง"])
+        self.assertEqual(data[0]["url"], f"/community/stories/{ok.id}/")
+        self.assertContains(self.client.get("/community/map/"), "ผามออีแดง")
+
+    def test_import_drops_coordinates_outside_the_province(self):
+        from apps.community.management.commands.import_ttd_attractions import build_entry_fields
+        fields = build_entry_fields({"name_th": "x", "lat": 17.2, "lng": 102.6, "source_url": "https://e/1"})
+        self.assertIsNone(fields["latitude"])
+        self.assertEqual(fields["google_maps_url"], "")

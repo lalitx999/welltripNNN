@@ -86,3 +86,32 @@ def otop_cards(limit):
         }
         for p in OTOPProduct.objects.filter(is_active=True).order_by('-created_at')[:limit]
     ]
+
+
+def published_attractions():
+    """Published 'แหล่งท่องเที่ยว' articles (e.g. imported from the Tourism Directory)."""
+    from apps.community.models import EditorialEntry
+    return EditorialEntry.objects.filter(kind=EditorialEntry.Kind.ATTRACTION, is_published=True)
+
+
+def destination_strip(limit, fallback):
+    """
+    Photo strip "เที่ยวไหนดีในศรีสะเกษ": real published attractions with a photo, newest first;
+    the bundled sample destinations only while none are published yet.
+    """
+    from django.templatetags.static import static
+    from django.urls import reverse
+
+    items = []
+    for entry in published_attractions().exclude(image_url="", image="").order_by("-updated_at")[:limit]:
+        items.append({
+            "name": entry.title,
+            "district": entry.location.replace(" จ.ศรีสะเกษ", "") or _("ศรีสะเกษ"),
+            "tag": _("แหล่งท่องเที่ยว"),
+            "image_url": entry.display_image_url,
+            "href": reverse("community:story_detail", args=[entry.id]),
+        })
+    if items:
+        return items
+    map_url = reverse("community:map")
+    return [{**d, "image_url": static(d["image"]), "href": map_url} for d in fallback]

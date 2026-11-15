@@ -11,7 +11,7 @@ from apps.otop.models import OTOPProduct
 from apps.bookings.models import Booking, BookingStatus
 from apps.community.models import PassportStamp, LocationEvent, MapLocation
 from apps.community.selectors.event_selector import upcoming_events
-from apps.core.selectors.catalog_selector import food_cards, otop_cards, spa_cards, stay_cards
+from apps.core.selectors.catalog_selector import destination_strip, food_cards, otop_cards, spa_cards, stay_cards
 from apps.ai_recommendations.models import HealthProfile
 from django.db.models import Count
 from django.utils.translation import gettext as _, gettext_lazy
@@ -113,7 +113,7 @@ def landing_view(request):
         'wellness_goals': wellness_goals,
         'stats': stats,
         'faq': LANDING_FAQ,
-        'destinations': LANDING_DESTINATIONS,
+        'destinations': destination_strip(10, LANDING_DESTINATIONS),
         'upcoming_events': upcoming_events(limit=8),
     }
     return render(request, 'core/home.html', context)
@@ -144,7 +144,7 @@ def tourist_home_view(request):
         'featured_spas': spa_cards(8),
         'featured_otop': otop_cards(8),
         'upcoming_events': upcoming_events(limit=8),
-        'destinations': LANDING_DESTINATIONS,
+        'destinations': destination_strip(10, LANDING_DESTINATIONS),
     }
 
     if user.is_authenticated:

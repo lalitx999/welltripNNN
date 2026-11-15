@@ -498,7 +498,7 @@ h1, h2, h3, .h1, .h2, .h3 { letter-spacing: -.01em; }
 /* Small laptops (992–1199px): the full menu is shown but must fit without a sideways scroll */
 @media (min-width: 992px) and (max-width: 1199.98px) {
   .navbar .navbar-nav { gap: 0 !important; }
-  .navbar .navbar-nav .nav-link { font-size: .85rem; padding-left: .45rem !important; padding-right: .45rem !important; }
+  .navbar .navbar-nav .nav-link { font-size: .8rem; padding-left: .3rem !important; padding-right: .3rem !important; }
   .navbar .navbar-brand small, .navbar .wt-brand-tagline { display: none; }
 }
 
@@ -528,3 +528,7 @@ h1, h2, h3, .h1, .h2, .h3 { letter-spacing: -.01em; }
 }
 /* Tablet and desktop keep the grid; extra cards exist only for the phone strip */
 @media (min-width: 768px) { .wt-swipe > .wt-swipe-extra { display: none; } }
+
+/* Rows with the wide g-lg-5 gutter reach 0.75rem past .container-xl on 992–1320px screens;
+   clip that empty gutter so pages never scroll sideways (clip keeps sticky elements working) */
+main { overflow-x: clip; }

@@ -20,6 +20,7 @@ from django.db import transaction
 from apps.community.models import EditorialEntry
 
 DEFAULT_FILE = Path(__file__).resolve().parents[2] / "data" / "ttd_sisaket_attractions.json"
+SISAKET_BOX = ((Decimal("14.0"), Decimal("15.7")), (Decimal("103.8"), Decimal("105.2")))
 SOURCE_NAME = "Thailand Tourism Directory กระทรวงการท่องเที่ยวและกีฬา"
 
 
@@ -43,6 +44,9 @@ def _coord(value):
 def build_entry_fields(row):
     """Maps one exported attraction to EditorialEntry fields."""
     lat, lng = _coord(row.get("lat")), _coord(row.get("lng"))
+    if not (lat and lng and SISAKET_BOX[0][0] <= lat <= SISAKET_BOX[0][1] and SISAKET_BOX[1][0] <= lng <= SISAKET_BOX[1][1]):
+        # A few source entries carry coordinates outside the province: better none than a wrong pin
+        lat = lng = None
     lines = [row.get("detail_th", "").strip()]
     extra = [
         ("การเดินทาง", row.get("travel_remark")),

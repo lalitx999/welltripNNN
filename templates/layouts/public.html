@@ -48,6 +48,14 @@
                   <span class="wt-icon-pill"><i data-lucide="activity"></i></span>
                   <span><span class="d-block fw-semibold">{% translate "ประเมินสุขภาพ AI" %}</span><small class="text-secondary">{% translate "แนะนำทริปตามสุขภาพ" %}</small></span>
                 </a>
+                <a class="dropdown-item d-flex gap-2" href="{% url 'community:stories_list' %}?kind=ATTRACTION">
+                  <span class="wt-icon-pill"><i data-lucide="mountain"></i></span>
+                  <span><span class="d-block fw-semibold">{% translate "แหล่งท่องเที่ยว" %}</span><small class="text-secondary">{% translate "ที่เที่ยวทั่วศรีสะเกษ" %}</small></span>
+                </a>
+                <a class="dropdown-item d-flex gap-2" href="{% url 'community:events_list' %}">
+                  <span class="wt-icon-pill"><i data-lucide="calendar-days"></i></span>
+                  <span><span class="d-block fw-semibold">{% translate "ปฏิทินกิจกรรม" %}</span><small class="text-secondary">{% translate "งานเทศกาลในจังหวัด" %}</small></span>
+                </a>
                 <a class="dropdown-item d-flex gap-2" href="{% url 'community:map' %}">
                   <span class="wt-icon-pill"><i data-lucide="map-pin"></i></span>
                   <span><span class="d-block fw-semibold">{% translate "แผนที่ชุมชน" %}</span><small class="text-secondary">{% translate "จุดท่องเที่ยวในศรีสะเกษ" %}</small></span>
@@ -64,7 +72,8 @@
         <li class="nav-item"><a class="nav-link" href="/services/?category=FOOD">{% translate "อาหารสุขภาพ" %}</a></li>
         <li class="nav-item"><a class="nav-link" href="/services/?category=SPA">{% translate "นวดและสปา" %}</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'otop:list' %}">{% translate "ของดี OTOP" %}</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'community:events_list' %}">{% translate "กิจกรรม" %}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'community:stories_list' %}?kind=ATTRACTION">{% translate "แหล่งท่องเที่ยว" %}</a></li>
+        <li class="nav-item d-none d-xl-block"><a class="nav-link" href="{% url 'community:events_list' %}">{% translate "กิจกรรม" %}</a></li>
         <li class="nav-item d-none d-xxl-block"><a class="nav-link" href="{% url 'core:about' %}">{% translate "เกี่ยวกับเรา" %}</a></li>
         <li class="nav-item d-none d-xxl-block"><a class="nav-link" href="{% url 'core:contact' %}">{% translate "ติดต่อเรา" %}</a></li>
       </ul>
@@ -137,6 +146,7 @@
       <a class="list-group-item list-group-item-action" href="/services/?category=SPA"><i data-lucide="sparkles" class="me-2 text-gold"></i>{% translate "นวดและสปา" %}</a>
       <a class="list-group-item list-group-item-action" href="{% url 'otop:list' %}"><i data-lucide="package" class="me-2 text-gold"></i>{% translate "ของดี OTOP" %}</a>
       <a class="list-group-item list-group-item-action text-amber" href="{% url 'ai_recommendations:assessment' %}"><i data-lucide="activity" class="me-2"></i>{% translate "ประเมินสุขภาพ AI" %}</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'community:stories_list' %}?kind=ATTRACTION"><i data-lucide="mountain" class="me-2 text-gold"></i>{% translate "แหล่งท่องเที่ยว" %}</a>
       <a class="list-group-item list-group-item-action" href="{% url 'community:map' %}"><i data-lucide="map-pin" class="me-2 text-gold"></i>{% translate "แผนที่ชุมชน" %}</a>
       <a class="list-group-item list-group-item-action" href="{% url 'community:events_list' %}"><i data-lucide="calendar-days" class="me-2 text-gold"></i>{% translate "ปฏิทินกิจกรรม" %}</a>
       <a class="list-group-item list-group-item-action" href="{% url 'community:stories_list' %}"><i data-lucide="book-open" class="me-2 text-gold"></i>{% translate "เรื่องเล่าภูมิปัญญา" %}</a>
@@ -186,6 +196,7 @@
         <ul class="list-unstyled small d-grid gap-2">
           <li><a href="{% url 'core:about' %}">{% translate "เกี่ยวกับเรา" %}</a></li>
           <li><a href="{% url 'core:contact' %}">{% translate "ติดต่อเรา" %}</a></li>
+          <li><a href="{% url 'community:stories_list' %}?kind=ATTRACTION">{% translate "แหล่งท่องเที่ยวศรีสะเกษ" %}</a></li>
           <li><a href="{% url 'community:map' %}">{% translate "แผนที่ท่องเที่ยวชุมชน" %}</a></li>
           <li><a href="{% url 'community:events_list' %}">{% translate "ปฏิทินกิจกรรม" %}</a></li>
           <li><a href="{% url 'community:stories_list' %}">{% translate "เรื่องเล่าภูมิปัญญา 4 ชนเผ่า" %}</a></li>

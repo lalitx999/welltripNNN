@@ -12,6 +12,11 @@
     width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
     background: var(--wt-green); border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,.25);
   }
+  .wt-pin-attraction { background: var(--wt-gold); }
+  .wt-pin-attraction::after { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: #fff; }
+  .wt-map-legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: .8rem; color: var(--bs-secondary-color); }
+  .wt-map-legend .dot { display: inline-block; width: .75rem; height: .75rem; border-radius: 50%; margin-right: .35rem; vertical-align: -1px; }
+  .wt-popup-img { width: 100%; height: 110px; object-fit: cover; border-radius: .75rem; margin-bottom: .5rem; }
   .leaflet-popup-content-wrapper { border-radius: 1rem; }
   .leaflet-popup-content { margin: .85rem 1rem; font-family: var(--bs-body-font-family); }
 </style>
@@ -39,9 +44,34 @@
 
   <div class="wt-card p-2 mb-4">
     <div id="map" class="rounded-4 w-100"></div>
+    <div class="wt-map-legend px-2 pt-2">
+      <span><span class="dot" style="background: var(--wt-gold)"></span>{% translate "แหล่งท่องเที่ยว" %}</span>
+      <span><span class="dot" style="background: var(--wt-green)"></span>{% translate "จุดเช็คอิน / ร้านค้าชุมชน" %}</span>
+    </div>
   </div>
 
-  <h2 class="h5 fw-bold mb-3">{% translate "สถานที่ในหมวดนี้" %} <span class="text-secondary fw-normal">{% blocktranslate trimmed with locations=locations|length %}({{ locations }} แห่ง){% endblocktranslate %}</span></h2>
+  {% if attractions %}
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <h2 class="h5 fw-bold mb-0">{% translate "แหล่งท่องเที่ยว" %} <span class="text-secondary fw-normal">{% blocktranslate trimmed with n=attractions|length %}({{ n }} แห่ง){% endblocktranslate %}</span></h2>
+      {% if selected_category == 'ALL' and attractions|length > 8 %}<a href="?category=ATTRACTION" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ดูทั้งหมด" %}</a>{% endif %}
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-5 wt-swipe">
+      {% for a in attractions %}{% if selected_category == 'ATTRACTION' or forloop.counter <= 8 %}
+        <div class="col">
+          <article class="wt-card wt-card-hover h-100 overflow-hidden">
+            <div class="wt-card-img"><img src="{{ a.display_image_url }}" alt="{{ a.title }}" loading="lazy"></div>
+            <div class="p-3">
+              <div class="small text-secondary mb-1"><i data-lucide="map-pin" class="text-gold me-1"></i>{{ a.location|default:_("ศรีสะเกษ") }}</div>
+              <h3 class="h6 fw-bold mb-2"><a href="{% url 'community:story_detail' a.id %}" class="stretched-link">{{ a.title }}</a></h3>
+            </div>
+          </article>
+        </div>
+      {% endif %}{% endfor %}
+    </div>
+  {% endif %}
+
+  {% if selected_category != 'ATTRACTION' %}
+  <h2 class="h5 fw-bold mb-3">{% translate "จุดเช็คอินและร้านค้าชุมชน" %} <span class="text-secondary fw-normal">{% blocktranslate trimmed with locations=locations|length %}({{ locations }} แห่ง){% endblocktranslate %}</span></h2>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
     {% for loc in locations %}
       <div class="col">
@@ -59,6 +89,7 @@
       <div class="col-12"><div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="map-pin-off"></i></span><div class="fw-bold">{% translate "ยังไม่มีสถานที่ในหมวดนี้" %}</div></div></div>
     {% endfor %}
   </div>
+  {% endif %}
 </div>
 {% endblock %}
 
@@ -73,12 +104,21 @@
     }).addTo(map);
 
     const pin = L.divIcon({ className: '', html: '<div class="wt-pin"></div>', iconSize: [30, 30], iconAnchor: [15, 30], popupAnchor: [0, -28] });
+    const attractionPin = L.divIcon({ className: '', html: '<div class="wt-pin wt-pin-attraction position-relative"></div>', iconSize: [30, 30], iconAnchor: [15, 30], popupAnchor: [0, -28] });
 
     // Build popups with DOM nodes (textContent) so location data can never inject HTML
     function popupFor(loc) {
       const box = document.createElement('div');
+      box.style.maxWidth = '220px';
+      if (loc.image) {
+        const img = box.appendChild(document.createElement('img'));
+        img.className = 'wt-popup-img';
+        img.loading = 'lazy';
+        img.alt = loc.title;
+        img.src = loc.image;
+      }
       const badge = box.appendChild(document.createElement('span'));
-      badge.className = 'badge badge-green';
+      badge.className = loc.type === 'attraction' ? 'badge badge-gold' : 'badge badge-green';
       badge.textContent = loc.category_label;
       const title = box.appendChild(document.createElement('div'));
       title.className = 'fw-bold mt-1';
@@ -92,6 +132,12 @@
       nav.rel = 'noopener noreferrer';
       nav.href = 'https://www.google.com/maps/search/?api=1&query=' + loc.lat + ',' + loc.lng;
       nav.textContent = '{{ _("นำทาง →")|escapejs }}';
+      if (loc.url && loc.url.charAt(0) === '/') {
+        const more = box.appendChild(document.createElement('a'));
+        more.className = 'small fw-semibold text-gold d-inline-block mt-2 ms-3';
+        more.href = loc.url;
+        more.textContent = '{{ _("อ่านรายละเอียด")|escapejs }}';
+      }
       return box;
     }
 
@@ -99,7 +145,8 @@
       .then((res) => res.json())
       .then((data) => {
         const locs = data.locations || [];
-        locs.forEach((loc) => L.marker([loc.lat, loc.lng], { icon: pin }).addTo(map).bindPopup(popupFor(loc)));
+        locs.forEach((loc) => L.marker([loc.lat, loc.lng], { icon: loc.type === 'attraction' ? attractionPin : pin, title: loc.title })
+          .addTo(map).bindPopup(popupFor(loc)));
         if (locs.length) map.fitBounds(locs.map((l) => [l.lat, l.lng]), { padding: [40, 40], maxZoom: 13 });
       })
       .catch(() => {});

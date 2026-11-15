@@ -213,12 +213,12 @@
           <span class="wt-eyebrow"><i data-lucide="compass"></i>{% translate "แรงบันดาลใจ" %}</span>
           <h2 class="wt-section-title mb-0">{% translate "เที่ยวไหนดีในศรีสะเกษ" %}</h2>
         </div>
-        <a href="{{ url_map }}" class="btn btn-outline-ink rounded-pill btn-sm d-flex align-items-center gap-1"><i data-lucide="map"></i>{% translate "เปิดแผนที่" %}</a>
+        <div class="d-flex gap-2 flex-shrink-0"><a href="{% url 'community:stories_list' %}?kind=ATTRACTION" class="btn btn-outline-ink rounded-pill btn-sm">{% translate "ดูทั้งหมด" %}</a><a href="{{ url_map }}?category=ATTRACTION" class="btn btn-outline-ink rounded-pill btn-sm d-flex align-items-center gap-1"><i data-lucide="map"></i>{% translate "แผนที่" %}</a></div>
       </div>
       <div class="wt-scroller">
         {% for d in destinations %}
-          <a class="wt-dest" href="{{ url_map }}">
-            <img src="{% static d.image %}" alt="{{ d.name }}" loading="lazy">
+          <a class="wt-dest" href="{{ d.href }}">
+            <img src="{{ d.image_url }}" alt="{{ d.name }}" loading="lazy">
             <span class="wt-dest-body">
               <span class="wt-dest-tag">{{ d.tag }}</span>
               <span class="d-block fw-bold fs-6 mt-2 lh-sm">{{ d.name }}</span>
