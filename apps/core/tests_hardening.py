@@ -390,3 +390,35 @@ class EmailTaskTestCase(TestCase):
         voucher = next(m for m in mail.outbox if m.to == ["t@example.com"])
         self.assertIn("ห้องริมธาร", voucher.body)
         self.assertIn(f"https://welltripthailand.com/bookings/detail/{booking.id}/", voucher.body)
+
+
+class TouristHomeTestCase(TestCase):
+    """Signed-in /home shows the catalog, not just the greeting, without N+1 queries."""
+
+    def test_home_shows_every_domain_with_bounded_queries(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+        from apps.accommodations.models import Accommodation, AccommodationStatus, Room
+        from apps.otop.models import OTOPProduct
+        from apps.services.models import FoodMenu, WellnessService
+
+        owner = User.objects.create_user(email="owner.home@example.com", password=PASSWORD, role=UserRoles.HOMESTAY_OWNER)
+        for i in range(3):
+            acc = Accommodation.objects.create(owner=owner, name=f"บ้านสวน {i}", status=AccommodationStatus.ACTIVE)
+            Room.objects.create(accommodation=acc, name="ห้อง", base_price_per_night=Decimal("700"))
+        FoodMenu.objects.create(owner=owner, name="ส้มตำสมุนไพร", price=Decimal("80"))
+        WellnessService.objects.create(owner=owner, name="นวดประคบ", price=Decimal("300"))
+        OTOPProduct.objects.create(owner=owner, name="กาแฟภูเขาไฟ", price=Decimal("250"))
+
+        tourist = User.objects.create_user(email="home@example.com", password=PASSWORD, role=UserRoles.TOURIST, first_name="ลลิตา")
+        self.client.force_login(tourist)
+        self.client.get("/home/")  # warm caches
+        with CaptureQueriesContext(connection) as ctx:
+            page = self.client.get("/home/")
+        self.assertContains(page, "สวัสดีคุณ ลลิตา")
+        for name in ("บ้านสวน 0", "ส้มตำสมุนไพร", "นวดประคบ", "กาแฟภูเขาไฟ", "฿700"):
+            self.assertContains(page, name)
+        self.assertLess(len(ctx.captured_queries), 30)
+
+    def test_landing_still_renders(self):
+        self.assertEqual(self.client.get("/").status_code, 200)

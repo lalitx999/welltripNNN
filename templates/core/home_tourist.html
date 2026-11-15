@@ -5,27 +5,37 @@
 {% block title %}{% translate "หน้าหลักนักท่องเที่ยว — WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
-<section class="wt-section-sm">
+{% url 'community:map' as url_map %}
+
+<!-- 1. Welcome banner: photo behind a translucent green-to-teal wash -->
+<section class="wt-section-sm pb-4">
   <div class="container-xl">
-    <div class="wt-panel-green p-4 p-md-5">
+    <div class="wt-welcome p-4 p-md-5">
+      <div class="wt-welcome-bg" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 767px)" srcset="{% static 'images/c/rice-mobile.webp' %}">
+          <img src="{% static 'images/c/rice.webp' %}" alt="" fetchpriority="high">
+        </picture>
+      </div>
       <div class="row align-items-center g-4">
         <div class="col-lg-8">
-          <span class="badge rounded-pill bg-white bg-opacity-25 px-3 py-2 mb-3"><i data-lucide="compass" class="me-1"></i>Tourist dashboard</span>
+          <span class="badge rounded-pill wt-glass px-3 py-2 mb-3"><i data-lucide="sun" class="text-warning me-1"></i>{% translate "ศรีสะเกษ · ทริปสุขภาวะของคุณ" %}</span>
           <h1 class="fw-bold mb-2">{% if user.is_authenticated %}{% blocktranslate trimmed with first_name=user.first_name|default:user.email %}สวัสดีคุณ {{ first_name }}{% endblocktranslate %}{% else %}{% translate "ยินดีต้อนรับสู่ศรีสะเกษ" %}{% endif %}</h1>
-          <p class="opacity-75 mb-3">{% translate "วางแผนที่พัก อาหารสุขภาพ สปา และสะสมตราประทับพาสปอร์ตชุมชน" %}</p>
+          <p class="wt-welcome-lead mb-3">{% translate "วางแผนที่พัก อาหารสุขภาพ สปา และสะสมตราประทับพาสปอร์ตชุมชน" %}</p>
           {% if user.is_authenticated %}
             <div class="d-flex flex-wrap gap-2">
-              <span class="wt-chip"><i data-lucide="calendar"></i>{% blocktranslate trimmed with total_bookings_count=total_bookings_count %}การจอง {{ total_bookings_count }} รายการ{% endblocktranslate %}</span>
-              <span class="wt-chip"><i data-lucide="stamp"></i>{% blocktranslate trimmed with stamps_count=stamps_count %}ตราประทับ {{ stamps_count }} ดวง{% endblocktranslate %}</span>
+              <a href="{% url 'bookings:my_bookings' %}" class="wt-chip"><i data-lucide="calendar"></i>{% blocktranslate trimmed with total_bookings_count=total_bookings_count %}การจอง {{ total_bookings_count }} รายการ{% endblocktranslate %}</a>
+              <a href="{% url 'community:passport' %}" class="wt-chip"><i data-lucide="stamp"></i>{% blocktranslate trimmed with stamps_count=stamps_count %}ตราประทับ {{ stamps_count }} ดวง{% endblocktranslate %}</a>
+              {% if health_goal_label %}<a href="{% url 'ai_recommendations:assessment' %}" class="wt-chip"><i data-lucide="heart-pulse"></i>{{ health_goal_label }}</a>{% endif %}
             </div>
           {% endif %}
         </div>
         <div class="col-lg-4 d-grid gap-2">
           {% if user.is_authenticated %}
-            <a href="{% url 'bookings:my_bookings' %}" class="btn btn-gold rounded-pill"><i data-lucide="ticket" class="me-1"></i>{% translate "การจองของฉัน" %}</a>
+            <a href="{% url 'bookings:my_bookings' %}" class="btn btn-gold btn-lg rounded-pill shadow"><i data-lucide="ticket" class="me-1"></i>{% translate "การจองของฉัน" %}</a>
             <a href="{% url 'community:passport' %}" class="btn btn-light rounded-pill"><i data-lucide="stamp" class="me-1"></i>{% translate "พาสปอร์ตของฉัน" %}</a>
           {% else %}
-            <a href="{% url 'accounts:login' %}" class="btn btn-gold rounded-pill">{% translate "เข้าสู่ระบบ" %}</a>
+            <a href="{% url 'accounts:login' %}" class="btn btn-gold btn-lg rounded-pill shadow">{% translate "เข้าสู่ระบบ" %}</a>
             <a href="{% url 'accounts:register' %}" class="btn btn-light rounded-pill">{% translate "สมัครสมาชิก" %}</a>
           {% endif %}
         </div>
@@ -34,6 +44,7 @@
   </div>
 </section>
 
+<!-- 2. Trips in progress -->
 {% if active_bookings %}
   <section class="container-xl pb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -51,8 +62,12 @@
               </div>
               <span class="badge {% if b.status == 'CONFIRMED' %}badge-green{% elif b.status == 'AWAITING_PAYMENT' %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ b.get_status_display }}</span>
             </div>
-            <div class="small text-secondary flex-grow-1">{% blocktranslate trimmed with count=b.items.count total_amount=b.total_amount|floatformat:"0g" created_at=b.created_at|date:"d M Y" %}{{ count }} รายการ · ฿{{ total_amount }} · {{ created_at }}{% endblocktranslate %}</div>
-            <a href="{% url 'bookings:detail' b.id %}" class="btn btn-outline-ink btn-sm rounded-pill mt-3">{% translate "ดูรายละเอียด" %}</a>
+            <div class="small text-secondary flex-grow-1">{% blocktranslate trimmed with count=b.item_count total_amount=b.total_amount|floatformat:"0g" created_at=b.created_at|date:"d M Y" %}{{ count }} รายการ · ฿{{ total_amount }} · {{ created_at }}{% endblocktranslate %}</div>
+            {% if b.status == 'AWAITING_PAYMENT' %}
+              <a href="{% url 'payments:payment_instruction' b.id %}" class="btn btn-gold btn-sm rounded-pill mt-3">{% translate "ชำระเงิน / แนบสลิป" %}</a>
+            {% else %}
+              <a href="{% url 'bookings:detail' b.id %}" class="btn btn-outline-ink btn-sm rounded-pill mt-3">{% translate "ดูรายละเอียด" %}</a>
+            {% endif %}
           </div>
         </div>
       {% endfor %}
@@ -60,6 +75,7 @@
   </section>
 {% endif %}
 
+<!-- 3. Quick links -->
 <section class="container-xl pb-4">
   <h2 class="h5 fw-bold mb-3">{% translate "บริการและกิจกรรม" %}</h2>
   <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
@@ -68,40 +84,122 @@
     <div class="col"><a href="/services/?category=SPA" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#c2255c;--bg:#fdebf1"><i data-lucide="flower-2" class="icon-lg"></i></span><div class="fw-bold small">{% translate "นวดและสปา" %}</div></a></div>
     <div class="col"><a href="{% url 'otop:list' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shopping-basket" class="icon-lg"></i></span><div class="fw-bold small">{% translate "ของฝาก OTOP" %}</div></a></div>
     <div class="col"><a href="{% url 'ai_recommendations:assessment' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#6741d9;--bg:#f0ebff"><i data-lucide="heart-pulse" class="icon-lg"></i></span><div class="fw-bold small">{% translate "ประเมินสุขภาพ AI" %}</div></a></div>
-    <div class="col"><a href="{% url 'community:map' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map" class="icon-lg"></i></span><div class="fw-bold small">{% translate "แผนที่ชุมชน" %}</div></a></div>
+    <div class="col"><a href="{{ url_map }}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map" class="icon-lg"></i></span><div class="fw-bold small">{% translate "แผนที่ชุมชน" %}</div></a></div>
   </div>
 </section>
 
-<section class="wt-section bg-mint">
-  <div class="container-xl">
-    <div class="d-flex justify-content-between align-items-end mb-3">
-      <h2 class="wt-section-title mb-0">{% translate "ที่พักแนะนำ" %}</h2>
-      <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ดูทั้งหมด" %}</a>
+<!-- 4. AI wellness: start, or come back to your plan -->
+{% if user.is_authenticated %}
+<section class="container-xl pb-4">
+  <div class="wt-card p-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+    <div class="d-flex gap-3 align-items-center">
+      <span class="wt-stat-icon flex-shrink-0" style="--c:#6741d9;--bg:#f0ebff"><i data-lucide="sparkles" class="icon-lg"></i></span>
+      {% if health_profile %}
+        <div>
+          <div class="fw-bold">{% blocktranslate trimmed with goal=health_goal_label %}เป้าหมายสุขภาพของคุณ: {{ goal }}{% endblocktranslate %}</div>
+          <small class="text-secondary">{% blocktranslate trimmed with bmi=health_profile.bmi updated=health_profile.updated_at|date:"d M Y" %}BMI {{ bmi }} · ประเมินล่าสุด {{ updated }}{% endblocktranslate %}</small>
+        </div>
+      {% else %}
+        <div>
+          <div class="fw-bold">{% translate "ให้ AI ช่วยวางแผนทริปที่เหมาะกับสุขภาพของคุณ" %}</div>
+          <small class="text-secondary">{% translate "ตอบไม่กี่ข้อ ใช้เวลาไม่ถึง 2 นาที แล้วรับคำแนะนำที่พัก อาหาร และสปา" %}</small>
+        </div>
+      {% endif %}
     </div>
-    {% if featured_stays %}
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
-        {% for stay in featured_stays %}
-          <div class="col">
-            <article class="card wt-card wt-card-hover h-100 overflow-hidden">
-              <div class="wt-card-img">
-                <img src="{% if stay.hero_image %}{{ stay.hero_image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ stay.name }}" loading="lazy">
-                {% if stay.min_price_per_night %}<span class="wt-price-tag">฿{{ stay.min_price_per_night|floatformat:"0g" }} <small>{% translate "/ คืน" %}</small></span>{% endif %}
-              </div>
-              <div class="card-body">
-                <div class="small text-secondary mb-1"><i data-lucide="map-pin" class="text-green me-1"></i>{{ stay.district|default:stay.province }}</div>
-                <h3 class="h6 fw-bold mb-1"><a href="{% url 'accommodations:detail' stay.slug|default:stay.id %}" class="stretched-link">{{ stay.name }}</a></h3>
-                {% if stay.description %}<p class="small text-secondary mb-0 line-clamp-2">{{ stay.description }}</p>{% endif %}
-              </div>
-            </article>
-          </div>
-        {% endfor %}
+    <a href="{% url 'ai_recommendations:assessment' %}" class="btn {% if health_profile %}btn-outline-ink{% else %}btn-gold{% endif %} rounded-pill flex-shrink-0">
+      {% if health_profile %}{% translate "ประเมินใหม่ / ดูคำแนะนำ" %}{% else %}{% translate "เริ่มประเมินฟรี" %}{% endif %}
+    </a>
+  </div>
+</section>
+{% endif %}
+
+<!-- 5. Upcoming events -->
+{% if upcoming_events %}
+<section class="wt-section-sm bg-white">
+  <div class="container-xl">
+    <div class="d-flex align-items-end justify-content-between mb-3">
+      <div>
+        <span class="wt-eyebrow"><i data-lucide="calendar-days"></i>Sisaket events</span>
+        <h2 class="wt-section-title mb-0">{% translate "กิจกรรมที่กำลังจะมาถึง" %}</h2>
       </div>
-    {% else %}
-      <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="house"></i></span><div class="fw-bold">{% translate "ยังไม่มีที่พักในระบบ" %}</div></div>
+      <a href="{% url 'community:events_list' %}" class="btn btn-outline-ink rounded-pill btn-sm flex-shrink-0">{% translate "ดูปฏิทินทั้งหมด" %}</a>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+      {% for event in upcoming_events %}<div class="col">{% include "community/partials/event_card.html" %}</div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- 6. Picks from every domain -->
+<section class="wt-section bg-mint">
+  <div class="container-xl d-grid gap-5">
+    <div>
+      <div class="d-flex justify-content-between align-items-end mb-3">
+        <h2 class="wt-section-title mb-0">{% translate "ที่พักแนะนำ" %}</h2>
+        <a href="{% url 'accommodations:list' %}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ดูทั้งหมด" %}</a>
+      </div>
+      {% if featured_stays %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+          {% for item in featured_stays %}<div class="col">{% include "core/partials/catalog_card.html" %}</div>{% endfor %}
+        </div>
+      {% else %}
+        <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="house"></i></span><div class="fw-bold">{% translate "ยังไม่มีที่พักในระบบ" %}</div></div>
+      {% endif %}
+    </div>
+
+    {% if featured_wellness %}
+    <div>
+      <div class="d-flex justify-content-between align-items-end mb-3">
+        <h2 class="wt-section-title mb-0">{% translate "อาหารสุขภาพและสปา" %}</h2>
+        <a href="{% url 'services:list' %}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ดูทั้งหมด" %}</a>
+      </div>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+        {% for item in featured_wellness %}<div class="col">{% include "core/partials/catalog_card.html" %}</div>{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if featured_otop %}
+    <div>
+      <div class="d-flex justify-content-between align-items-end mb-3">
+        <h2 class="wt-section-title mb-0">{% translate "ของฝาก OTOP" %}</h2>
+        <a href="{% url 'otop:list' %}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ดูทั้งหมด" %}</a>
+      </div>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+        {% for item in featured_otop %}<div class="col">{% include "core/partials/catalog_card.html" %}</div>{% endfor %}
+      </div>
+    </div>
     {% endif %}
   </div>
 </section>
 
+<!-- 7. Where to go -->
+<section class="wt-section bg-white">
+  <div class="container-xl">
+    <div class="d-flex align-items-end justify-content-between mb-3">
+      <div>
+        <span class="wt-eyebrow"><i data-lucide="compass"></i>{% translate "แรงบันดาลใจ" %}</span>
+        <h2 class="wt-section-title mb-0">{% translate "เที่ยวไหนดีในศรีสะเกษ" %}</h2>
+      </div>
+      <a href="{{ url_map }}" class="btn btn-outline-ink rounded-pill btn-sm d-flex align-items-center gap-1"><i data-lucide="map"></i>{% translate "เปิดแผนที่" %}</a>
+    </div>
+    <div class="wt-scroller">
+      {% for d in destinations %}
+        <a class="wt-dest" href="{{ url_map }}">
+          <img src="{% static d.image %}" alt="{{ d.name }}" loading="lazy">
+          <span class="wt-dest-body">
+            <span class="wt-dest-tag">{{ d.tag }}</span>
+            <span class="d-block fw-bold fs-6 mt-2 lh-sm">{{ d.name }}</span>
+            <span class="d-block small opacity-75"><i data-lucide="map-pin" class="me-1"></i>{{ d.district }}</span>
+          </span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 8. Privacy -->
 <section class="container-xl py-4">
   <div class="wt-consent p-4 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
     <div class="d-flex gap-3">

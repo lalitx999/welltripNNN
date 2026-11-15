@@ -189,26 +189,7 @@
       {% if featured_experiences %}
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
           {% for item in featured_experiences %}
-            <div class="col">
-              <div class="card wt-card wt-card-hover h-100 overflow-hidden">
-                <div class="wt-card-img">
-                  <img src="{{ item.image }}" alt="{{ item.title }}" loading="lazy">
-                  <span class="badge rounded-pill bg-white text-dark shadow-sm position-absolute top-0 start-0 m-3">{{ item.category }}</span>
-                </div>
-                <div class="card-body">
-                  <div class="small text-secondary d-flex align-items-center gap-1 mb-1"><i data-lucide="map-pin" class="text-green"></i>{{ item.location }}</div>
-                  <h3 class="h6 fw-bold mb-0 line-clamp-2"><a href="{{ item.href }}" class="stretched-link">{{ item.title }}</a></h3>
-                </div>
-                <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex align-items-center justify-content-between">
-                  {% if item.price %}
-                    <span><span class="fs-5 fw-bold text-green">{{ item.price }}</span> <small class="text-secondary">{{ item.period }}</small></span>
-                  {% else %}
-                    <small class="text-secondary">{% translate "ยังไม่ระบุราคา" %}</small>
-                  {% endif %}
-                  <span class="wt-icon-pill rounded-circle"><i data-lucide="arrow-up-right"></i></span>
-                </div>
-              </div>
-            </div>
+            <div class="col">{% include "core/partials/catalog_card.html" %}</div>
           {% endfor %}
         </div>
       {% else %}

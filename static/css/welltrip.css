@@ -467,3 +467,30 @@ h1, h2, h3, .h1, .h2, .h3 { letter-spacing: -.01em; }
 }
 .wt-lang-switch button:hover { color: var(--wt-green-dark); }
 .wt-lang-switch button.active { background: var(--wt-green); color: #fff; }
+
+/* ---------- /home welcome banner: photo under a translucent green→teal wash ---------- */
+.wt-welcome {
+  position: relative; overflow: hidden; isolation: isolate;
+  border-radius: 2rem; color: #fff;
+  background: #0f7a4a; /* while the photo loads */
+  box-shadow: 0 1.5rem 3rem rgba(15, 122, 74, .25);
+}
+.wt-welcome-bg { position: absolute; inset: 0; z-index: -1; }
+.wt-welcome-bg img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 55%;
+  animation: wt-kenburns 22s ease-out both;
+}
+.wt-welcome-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(248, 189, 87, .55), transparent 38%),
+    linear-gradient(115deg, rgba(10, 92, 56, .92) 0%, rgba(22, 154, 95, .78) 45%, rgba(18, 168, 160, .55) 100%);
+}
+.wt-welcome h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); text-shadow: 0 2px 12px rgba(0, 0, 0, .25); }
+.wt-welcome-lead { color: rgba(255, 255, 255, .9); max-width: 36rem; }
+.wt-glass {
+  background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .3);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+@media (min-width: 992px) { .wt-welcome { min-height: 300px; display: flex; align-items: center; } .wt-welcome > .row { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .wt-welcome-bg img { animation: none; } }

@@ -11,6 +11,9 @@ from apps.otop.models import OTOPProduct
 from apps.bookings.models import Booking, BookingStatus
 from apps.community.models import PassportStamp, LocationEvent, MapLocation
 from apps.community.selectors.event_selector import upcoming_events
+from apps.core.selectors.catalog_selector import food_cards, otop_cards, spa_cards, stay_cards
+from apps.ai_recommendations.models import HealthProfile
+from django.db.models import Count
 from django.utils.translation import gettext as _, gettext_lazy
 
 
@@ -21,6 +24,13 @@ LANDING_DESTINATIONS = [
     {'name': gettext_lazy("วัดป่ามหาเจดีย์แก้ว (วัดล้านขวด)"), 'district': gettext_lazy("อ.ขุนหาญ"), 'tag': gettext_lazy("วัด"), 'image': 'images/attractions/wat-pa-maha-chedi-kaew.jpg'},
     {'name': gettext_lazy("น้ำตกห้วยจันทร์"), 'district': gettext_lazy("อ.ขุนหาญ"), 'tag': gettext_lazy("น้ำตก"), 'image': 'images/attractions/namtok-huai-chan.jpg'},
     {'name': gettext_lazy("ปราสาทปรางค์กู่"), 'district': gettext_lazy("อ.ปรางค์กู่"), 'tag': gettext_lazy("โบราณสถาน"), 'image': 'images/attractions/prasat-prang-ku.jpeg'},
+]
+
+WELLNESS_GOALS = [
+    {'id': 'STRESS_RELIEF', 'label': gettext_lazy("พักผ่อนและคลายความเครียด"), 'target': '/services/?category=SPA'},
+    {'id': 'DETOX', 'label': gettext_lazy("สรรหาความสงบและสปาบำบัด"), 'target': '/services/?category=SPA'},
+    {'id': 'BLOOD_SUGAR_CONTROL', 'label': gettext_lazy("อาหารสุขภาพโซเดียมต่ำ"), 'target': '/services/?category=FOOD'},
+    {'id': 'FATIGUE_RECOVERY', 'label': gettext_lazy("ชาร์จพลังโฮมสเตย์ธรรมชาติ"), 'target': '/accommodations/'},
 ]
 
 # Homepage FAQ: rendered as the accordion and as FAQPage JSON-LD
@@ -76,65 +86,10 @@ def landing_view(request):
     total_foods = FoodMenu.objects.filter(is_available=True).count()
     total_products = OTOPProduct.objects.filter(is_active=True).count()
 
-    # Query featured items from all 4 domain models
-    stays = list(Accommodation.objects.filter(status=AccommodationStatus.ACTIVE).select_related('owner')[:2])
-    spas = list(WellnessService.objects.filter(is_active=True).select_related('owner')[:1])
-    foods = list(FoodMenu.objects.filter(is_available=True).select_related('owner')[:1])
-    otop_items = list(OTOPProduct.objects.filter(is_active=True).select_related('owner')[:1])
+    # Featured items from all 4 domain models
+    featured_items = stay_cards(2) + spa_cards(1) + food_cards(1) + otop_cards(1)
 
-    placeholder = '/static/images/catalog-placeholder.svg'
-    featured_items = []
-    for s in stays:
-        featured_items.append({
-            'id': str(s.id),
-            'title': s.name,
-            'category': _("ที่พักชุมชน"),
-            'location': f"{s.district}, {s.province}" if s.district else s.province,
-            'price': f"฿{s.min_price_per_night:,.0f}" if s.min_price_per_night else None,
-            'period': _("/ คืน"),
-            'image': s.hero_image.url if s.hero_image else placeholder,
-            'href': f"/accommodations/{s.slug or s.id}/",
-        })
-    for w in spas:
-        featured_items.append({
-            'id': str(w.id),
-            'title': w.name,
-            'category': _("สปาและกิจกรรม"),
-            'location': _("ศรีสะเกษ"),
-            'price': f"฿{w.price:,.0f}",
-            'period': _("/ {duration_minutes} นาที").format(duration_minutes=w.duration_minutes) if w.duration_minutes else _("/ รอบ"),
-            'image': w.image.url if w.image else placeholder,
-            'href': '/services/?category=SPA',
-        })
-    for f in foods:
-        featured_items.append({
-            'id': str(f.id),
-            'title': f.name,
-            'category': _("อาหารเพื่อสุขภาพ"),
-            'location': _("ศรีสะเกษ"),
-            'price': f"฿{f.price:,.0f}",
-            'period': _("/ ชุด"),
-            'image': f.image.url if f.image else placeholder,
-            'href': '/services/?category=FOOD',
-        })
-    for p in otop_items:
-        featured_items.append({
-            'id': str(p.id),
-            'title': p.name,
-            'category': _("หัตถกรรม OTOP"),
-            'location': _("ศรีสะเกษ"),
-            'price': f"฿{p.price:,.0f}",
-            'period': _("/ ชิ้น"),
-            'image': p.image.url if p.image else placeholder,
-            'href': f"/otop/{p.id}/",
-        })
-
-    wellness_goals = [
-        {'id': 'STRESS_RELIEF', 'label': _("พักผ่อนและคลายความเครียด"), 'target': '/services/?category=SPA'},
-        {'id': 'DETOX', 'label': _("สรรหาความสงบและสปาบำบัด"), 'target': '/services/?category=SPA'},
-        {'id': 'BLOOD_SUGAR_CONTROL', 'label': _("อาหารสุขภาพโซเดียมต่ำ"), 'target': '/services/?category=FOOD'},
-        {'id': 'FATIGUE_RECOVERY', 'label': _("ชาร์จพลังโฮมสเตย์ธรรมชาติ"), 'target': '/accommodations/'},
-    ]
+    wellness_goals = WELLNESS_GOALS
 
     # Live counts only; no invented figures
     stats = [
@@ -166,47 +121,39 @@ home_view = landing_view
 @require_GET
 def tourist_home_view(request):
     """
-    Dedicated Tourist Home Dashboard (/home/):
-    Personalized portal for travelers showing active trips, quick booking actions,
-    cultural stamps, and tailored wellness recommendations.
+    Tourist home (/home/), where sign-in lands:
+    trips in progress, AI wellness status, upcoming events and fresh picks from every domain.
     """
     user = request.user
-    active_bookings = []
-    active_bookings_count = 0
-    stamps_count = 0
-    total_bookings_count = 0
-
-    if user.is_authenticated:
-        active_bookings = Booking.objects.filter(
-            customer=user,
-            status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED]
-        ).order_by('-created_at')[:3]
-        active_bookings_count = Booking.objects.filter(
-            customer=user,
-            status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED]
-        ).count()
-        total_bookings_count = Booking.objects.filter(customer=user).count()
-        stamps_count = PassportStamp.objects.filter(user=user).count()
-
-    # Domain catalog samples for quick access
-    featured_stays = Accommodation.objects.filter(status=AccommodationStatus.ACTIVE)[:3]
-    featured_foods = FoodMenu.objects.filter(is_available=True)[:3]
-    featured_spas = WellnessService.objects.filter(is_active=True)[:3]
-    featured_otop = OTOPProduct.objects.filter(is_active=True)[:3]
-    map_locations = MapLocation.objects.filter(is_active=True)[:6]
-
     context = {
         'page_title': _("หน้าหลักนักท่องเที่ยว — WellTrip สุขภาวะชุมชนศรีสะเกษ"),
-        'active_bookings': active_bookings,
-        'active_bookings_count': active_bookings_count,
-        'total_bookings_count': total_bookings_count,
-        'stamps_count': stamps_count,
-        'featured_stays': featured_stays,
-        'featured_foods': featured_foods,
-        'featured_spas': featured_spas,
-        'featured_otop': featured_otop,
-        'map_locations': map_locations,
+        'active_bookings': [],
+        'active_bookings_count': 0,
+        'total_bookings_count': 0,
+        'stamps_count': 0,
+        'health_profile': None,
+        'health_goal_label': "",
+        'featured_stays': stay_cards(3),
+        'featured_wellness': (food_cards(2) + spa_cards(2))[:4],
+        'featured_otop': otop_cards(4),
+        'upcoming_events': upcoming_events(limit=4),
+        'destinations': LANDING_DESTINATIONS,
     }
+
+    if user.is_authenticated:
+        mine = Booking.objects.filter(customer=user)
+        active = mine.filter(status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED])
+        profile = HealthProfile.objects.filter(user=user).only('health_goal', 'bmi', 'updated_at').first()
+        goal_labels = {g['id']: g['label'] for g in WELLNESS_GOALS}
+        context.update({
+            'active_bookings': active.annotate(item_count=Count('items')).order_by('-created_at')[:3],
+            'active_bookings_count': active.count(),
+            'total_bookings_count': mine.count(),
+            'stamps_count': PassportStamp.objects.filter(user=user).count(),
+            'health_profile': profile,
+            'health_goal_label': goal_labels.get(profile.health_goal, profile.health_goal) if profile else "",
+        })
+
     return render(request, 'core/home_tourist.html', context)
 
 
