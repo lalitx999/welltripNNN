@@ -38,7 +38,7 @@
         <span class="wt-stat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="store" class="icon-lg"></i></span>
         <div>
           <div class="small text-secondary">{% translate "ผู้ผลิต" %}</div>
-          <div class="fw-bold">{{ product.owner.full_name|default:product.owner.email }}</div>
+          <div class="fw-bold">{{ product.owner.display_name }}</div>
         </div>
       </div>
 

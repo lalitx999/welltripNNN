@@ -17,6 +17,8 @@ from apps.accounts.services.audit import record_audit_log
 from apps.accommodations.models import Accommodation, AccommodationStatus
 from apps.services.models import FoodMenu, WellnessService
 from apps.otop.models import OTOPProduct
+from apps.otop.models import OTOPCategory
+from apps.services.models import FoodWellnessCategory
 from apps.payments.models import Payment, PaymentStatus, PaymentSlip, SlipVerificationStatus
 from apps.bookings.models import Booking, BookingStatus
 from apps.community.models import MapLocation, MapLocationCategory, PassportStamp, LocationEvent, EditorialEntry
@@ -90,7 +92,19 @@ def admin_command_center_view(request):
     # -------------------------------------------------------------------------
     # 2. Module-Specific Data Loading
     # -------------------------------------------------------------------------
+    from apps.otop.models import OTOPCategory
+    from apps.services.models import FoodWellnessCategory
     context = {
+        # choices for the catalog add/edit modals
+        'otop_categories': OTOPCategory.choices,
+        # approved partners an admin can file a new catalog item under
+        'catalog_owner_choices': list(
+            User.objects.filter(
+                merchant_profile__status=MerchantApprovalStatus.APPROVED,
+                role__in=[UserRoles.HOMESTAY_OWNER, UserRoles.RESTAURANT_OWNER, UserRoles.WELLNESS_OWNER, UserRoles.OTOP_OWNER],
+            ).select_related('merchant_profile').order_by('role', 'merchant_profile__business_name')
+        ),
+        'food_categories': FoodWellnessCategory.choices,
         'page_title': _("ศูนย์ควบคุมระบบแอดมิน (Admin Command Center) — WellTrip"),
         'active_tab': active_tab,
         'total_users_count': total_users_count,
@@ -396,8 +410,19 @@ def admin_audit_log_view(request):
 def admin_catalog_add_view(request):
     """Admin creates a new catalog item across 4 categories."""
     item_type = request.POST.get('item_type', '').strip().upper()
-    owner_id = request.POST.get('owner_id')
-    owner = User.objects.filter(id=owner_id).first() if owner_id else request.user
+    owner_id = request.POST.get('owner_id', '').strip()
+    owner = request.user  # empty choice: WellTrip sells it itself
+    if owner_id:
+        role_for_type = {
+            "ACCOMMODATION": UserRoles.HOMESTAY_OWNER, "FOOD": UserRoles.RESTAURANT_OWNER,
+            "WELLNESS": UserRoles.WELLNESS_OWNER, "OTOP": UserRoles.OTOP_OWNER,
+        }.get(item_type)
+        owner = User.objects.filter(
+            id=owner_id, role=role_for_type, merchant_profile__status=MerchantApprovalStatus.APPROVED,
+        ).first() if role_for_type else None
+        if owner is None:
+            messages.error(request, _("ร้านที่เลือกไม่ตรงกับประเภทรายการ หรือยังไม่ได้รับอนุมัติ"))
+            return redirect('/accounts/admin-center/?tab=catalog')
 
     title = request.POST.get('title', '').strip()
     price_val = request.POST.get('price', '0').strip()
@@ -444,8 +469,12 @@ def admin_catalog_add_view(request):
                 created_id = str(acc.id)
 
             elif item_type == "FOOD":
-                wellness_cat = request.POST.get('wellness_category', 'ORGANIC')
-                calorie = request.POST.get('calorie_estimate') or None
+                wellness_cat = request.POST.get('wellness_category', '')
+                if wellness_cat not in FoodWellnessCategory.values:
+                    messages.error(request, _("กรุณาเลือกหมวดอาหารสุขภาพ"))
+                    return redirect('/accounts/admin-center/?tab=catalog')
+                calorie = request.POST.get('calorie_estimate', '').strip()
+                calorie = calorie if calorie.isdigit() else None
                 food = FoodMenu.objects.create(
                     owner=owner,
                     name=title,
@@ -472,7 +501,10 @@ def admin_catalog_add_view(request):
                 created_id = str(spa.id)
 
             elif item_type == "OTOP":
-                category = request.POST.get('category', 'HERBAL_PRODUCT')
+                category = request.POST.get('category', '')
+                if category not in OTOPCategory.values:
+                    messages.error(request, _("กรุณาเลือกหมวดสินค้า OTOP"))
+                    return redirect('/accounts/admin-center/?tab=catalog')
                 stock = request.POST.get('stock_quantity', '10')
                 otop = OTOPProduct.objects.create(
                     owner=owner,
@@ -543,6 +575,8 @@ def admin_catalog_edit_view(request, item_type, item_id):
                     item.price = Decimal(price_val)
                 item.description = description
                 item.is_available = is_active_val
+                if request.POST.get('wellness_category') in FoodWellnessCategory.values:
+                    item.wellness_category = request.POST['wellness_category']
                 if image_file:
                     item.image = image_file
                 item.save()
@@ -555,6 +589,9 @@ def admin_catalog_edit_view(request, item_type, item_id):
                     item.price = Decimal(price_val)
                 item.description = description
                 item.is_active = is_active_val
+                duration = request.POST.get('duration_minutes', '')
+                if duration.isdigit() and int(duration) > 0:
+                    item.duration_minutes = int(duration)
                 if image_file:
                     item.image = image_file
                 item.save()
@@ -570,6 +607,8 @@ def admin_catalog_edit_view(request, item_type, item_id):
                 stock = request.POST.get('stock_quantity')
                 if stock and stock.isdigit():
                     item.stock_quantity = int(stock)
+                if request.POST.get('category') in OTOPCategory.values:
+                    item.category = request.POST['category']
                 if image_file:
                     item.image = image_file
                 item.save()

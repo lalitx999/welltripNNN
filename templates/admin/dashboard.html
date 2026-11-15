@@ -26,7 +26,7 @@
   function adminCenter() {
     const show = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id)).show();
     return {
-      catalog: { id: '', type: 'ACCOMMODATION', title: '', price: '', description: '', is_active: true, stock: 0 },
+      catalog: { id: '', type: 'ACCOMMODATION', title: '', price: '', description: '', is_active: true, stock: 0, category: '', duration: 60 },
       partner: { id: '', name: '', category: 'HOMESTAY', phone: '', description: '', maps_url: '', hours: '' },
       account: { id: '', email: '', first_name: '', last_name: '', phone: '', role: 'TOURIST' },
       reset: { id: '', email: '' },

@@ -45,7 +45,7 @@
           <div class="list-group-item px-0 d-flex justify-content-between gap-3">
             <div class="min-w-0">
               <div class="fw-semibold">{{ item.item_title_snapshot }}</div>
-              <small class="text-secondary">{{ item.vendor.full_name|default:item.vendor.email }}{% if item.booking_metadata.date %} · {{ item.booking_metadata.date }}{% endif %}</small>
+              <small class="text-secondary">{{ item.vendor.display_name }}{% if item.booking_metadata.date %} · {{ item.booking_metadata.date }}{% endif %}</small>
               {% if item.item_type == 'OTOP' and booking.status == 'CONFIRMED' or item.item_type == 'OTOP' and booking.status == 'COMPLETED' %}
                 <div class="small mt-1"><span class="badge {% if item.fulfillment_status == 'PENDING' %}badge-gold{% else %}badge-green{% endif %}">{{ item.get_fulfillment_status_display }}</span>{% if item.tracking_number %} <span class="text-secondary">{% translate "เลขพัสดุ" %}</span> <span class="font-monospace">{{ item.tracking_number }}</span>{% endif %}</div>
               {% endif %}

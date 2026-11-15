@@ -24,8 +24,8 @@ def list_view(request):
     category = request.GET.get('category', 'all').strip()
     query = request.GET.get('q', '').strip()
 
-    menus_qs = FoodMenu.objects.filter(is_available=True).select_related('owner')
-    services_qs = WellnessService.objects.filter(is_active=True).select_related('owner')
+    menus_qs = FoodMenu.objects.filter(is_available=True).select_related('owner__merchant_profile')
+    services_qs = WellnessService.objects.filter(is_active=True).select_related('owner__merchant_profile')
 
     if query:
         menus_qs = menus_qs.filter(
@@ -54,13 +54,13 @@ def list_view(request):
 def service_detail_view(request, service_type, item_id):
     """Detail view for a single food menu or wellness service."""
     if service_type == 'food':
-        item = get_object_or_404(FoodMenu.objects.select_related('owner'), id=item_id, is_available=True)
+        item = get_object_or_404(FoodMenu.objects.select_related('owner__merchant_profile'), id=item_id, is_available=True)
         return render(request, 'services/detail.html', {
             'item': item,
             'service_type': 'food',
         })
     elif service_type in ('wellness', 'spa'):
-        item = get_object_or_404(WellnessService.objects.select_related('owner'), id=item_id, is_active=True)
+        item = get_object_or_404(WellnessService.objects.select_related('owner__merchant_profile'), id=item_id, is_active=True)
         slots = item.time_slots.filter(capacity_available__gt=0).order_by('date', 'start_time')
         return render(request, 'services/detail.html', {
             'item': item,
@@ -105,7 +105,7 @@ def restaurant_studio_view(request):
     else:
         form = FoodMenuForm()
 
-    menus = scope_to_owner(FoodMenu.objects.select_related('owner'), request.user).order_by('-created_at')
+    menus = scope_to_owner(FoodMenu.objects.select_related('owner__merchant_profile'), request.user).order_by('-created_at')
     return render(request, 'portal/restaurant.html', {
         'menus': menus,
         'form': form,
@@ -163,7 +163,7 @@ def wellness_studio_view(request):
     else:
         form = WellnessServiceForm()
 
-    services = scope_to_owner(WellnessService.objects.select_related('owner'), request.user).order_by('-created_at')
+    services = scope_to_owner(WellnessService.objects.select_related('owner__merchant_profile'), request.user).order_by('-created_at')
 
     # Upcoming slots for the services shown
     slots = (

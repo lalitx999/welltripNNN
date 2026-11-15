@@ -64,6 +64,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.first_name} {self.last_name}".strip() or self.email
 
     @property
+    def display_name(self):
+        """
+        Public-facing name (shop name for partners). Never the email address:
+        that would publish a personal contact on every product and room page.
+        """
+        if self.is_superuser or self.role in (UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN):
+            return "WellTrip Sisaket"  # items the platform sells itself
+        profile = getattr(self, "merchant_profile", None)
+        if profile and profile.business_name and "@" not in profile.business_name:
+            return profile.business_name
+        name = f"{self.first_name} {self.last_name}".strip()
+        if name and "@" not in name:
+            return name
+        return gettext_lazy("ผู้ประกอบการชุมชน") if self.is_merchant else gettext_lazy("สมาชิก WellTrip")
+
+    @property
     def needs_email_verification(self):
         return self.email_verification_required and not self.email_verified
 

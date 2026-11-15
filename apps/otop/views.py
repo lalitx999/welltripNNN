@@ -25,7 +25,7 @@ def list_view(request):
     category = request.GET.get('category', '').strip()
     query = request.GET.get('q', '').strip()
 
-    qs = OTOPProduct.objects.filter(is_active=True).select_related('owner')
+    qs = OTOPProduct.objects.filter(is_active=True).select_related('owner__merchant_profile')
 
     if query:
         qs = qs.filter(
@@ -47,7 +47,7 @@ def list_view(request):
 
 def detail_view(request, product_id):
     """Public detail view for a single OTOP retail product."""
-    product = get_object_or_404(OTOPProduct.objects.select_related('owner'), id=product_id, is_active=True)
+    product = get_object_or_404(OTOPProduct.objects.select_related('owner__merchant_profile'), id=product_id, is_active=True)
     return render(request, 'otop/detail.html', {
         'product': product,
     })
@@ -86,7 +86,7 @@ def otop_studio_view(request):
     else:
         form = OTOPProductForm()
 
-    products = scope_to_owner(OTOPProduct.objects.select_related('owner'), request.user).order_by('-created_at')
+    products = scope_to_owner(OTOPProduct.objects.select_related('owner__merchant_profile'), request.user).order_by('-created_at')
     return render(request, 'portal/otop.html', {
         'products': products,
         'form': form,

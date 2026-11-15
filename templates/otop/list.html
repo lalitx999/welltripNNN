@@ -46,7 +46,7 @@
             {% if product.description %}<p class="small text-secondary mb-0 line-clamp-2">{{ product.description }}</p>{% endif %}
           </div>
           <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex justify-content-between align-items-center small">
-            <span class="text-secondary text-truncate me-2"><i data-lucide="store" class="text-green me-1"></i>{{ product.owner.full_name|default:product.owner.email }}</span>
+            <span class="text-secondary text-truncate me-2"><i data-lucide="store" class="text-green me-1"></i>{{ product.owner.display_name }}</span>
             {% if product.stock_quantity > 0 %}
               <span class="badge badge-green flex-shrink-0">{% translate "มีสินค้า" %}</span>
             {% else %}

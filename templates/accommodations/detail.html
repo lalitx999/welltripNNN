@@ -264,7 +264,7 @@
             <span class="wt-stat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="store" class="icon-lg"></i></span>
             <div class="min-w-0 flex-grow-1">
               <div class="small text-secondary">{% translate "เจ้าของที่พัก" %}</div>
-              <div class="fw-bold text-truncate">{{ accommodation.owner.full_name|default:accommodation.owner.email }}</div>
+              <div class="fw-bold text-truncate">{{ accommodation.owner.display_name }}</div>
             </div>
             {% if accommodation.owner.phone_number %}
               <a href="tel:{{ accommodation.owner.phone_number }}" class="btn btn-green rounded-circle p-2 lh-1" aria-label="{% blocktranslate trimmed with phone_number=accommodation.owner.phone_number %}โทร {{ phone_number }}{% endblocktranslate %}"><i data-lucide="phone"></i></a>

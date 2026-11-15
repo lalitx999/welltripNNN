@@ -566,7 +566,7 @@ def booking_detail_view(request, booking_id):
         messages.error(request, _("คุณไม่มีสิทธิ์เข้าถึงข้อมูลการจองนี้"))
         return redirect('bookings:my_bookings')
 
-    items = booking.items.all().select_related('vendor')
+    items = booking.items.all().select_related('vendor__merchant_profile')
     return render(request, 'bookings/booking_detail.html', {
         'booking': booking,
         'items': items,

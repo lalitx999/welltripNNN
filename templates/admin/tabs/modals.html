@@ -25,12 +25,29 @@
       <div class="modal-header"><h2 class="modal-title h6 fw-bold" id="addCatalogLabel">{% translate "เพิ่มรายการในแคตตาล็อก" %}</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'ปิด' %}"></button></div>
       <div class="modal-body d-grid gap-3">
         <div><label class="form-label small fw-semibold" for="cat_type">{% translate "หมวด *" %}</label>
-          <select id="cat_type" name="item_type" x-model="type" class="form-select"><option value="ACCOMMODATION">{% translate "ที่พัก" %}</option><option value="FOOD">{% translate "อาหารสุขภาพ" %}</option><option value="WELLNESS">{% translate "สปา / นวด" %}</option><option value="OTOP">{% translate "สินค้า OTOP" %}</option></select>
+          <select id="cat_type" name="item_type" x-model="type" @change="$refs.owner.value = ''" class="form-select"><option value="ACCOMMODATION">{% translate "ที่พัก" %}</option><option value="FOOD">{% translate "อาหารสุขภาพ" %}</option><option value="WELLNESS">{% translate "สปา / นวด" %}</option><option value="OTOP">{% translate "สินค้า OTOP" %}</option></select>
         </div>
         <div><label class="form-label small fw-semibold" for="cat_title">{% translate "ชื่อ *" %}</label><input id="cat_title" type="text" name="title" required class="form-control"></div>
         <div class="row g-2">
           <div class="col-6"><label class="form-label small fw-semibold" for="cat_price">{% translate "ราคา (บาท) *" %}</label><input id="cat_price" type="number" step="0.01" min="0" name="price" required class="form-control"></div>
           <div class="col-6" x-show="type === 'OTOP'"><label class="form-label small fw-semibold" for="cat_stock">{% translate "สต็อก" %}</label><input id="cat_stock" type="number" min="0" name="stock_quantity" value="0" class="form-control"></div>
+          <div class="col-6" x-show="type === 'FOOD'"><label class="form-label small fw-semibold" for="cat_kcal">{% translate "แคลอรี่โดยประมาณ" %}</label><input id="cat_kcal" type="number" min="0" name="calorie_estimate" class="form-control"></div>
+          <div class="col-6" x-show="type === 'WELLNESS'"><label class="form-label small fw-semibold" for="cat_dur">{% translate "ระยะเวลา (นาที)" %}</label><input id="cat_dur" type="number" min="15" step="15" name="duration_minutes" value="60" class="form-control"></div>
+        </div>
+        <div x-show="type === 'OTOP'"><label class="form-label small fw-semibold" for="cat_otop_cat">{% translate "หมวดสินค้า OTOP *" %}</label>
+          <select id="cat_otop_cat" name="category" class="form-select" :required="type === 'OTOP'" :disabled="type !== 'OTOP'"><option value="">{% translate "— เลือกหมวด —" %}</option>{% for value, label in otop_categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+        </div>
+        <div><label class="form-label small fw-semibold" for="cat_owner">{% translate "ร้านเจ้าของรายการ" %}</label>
+          <select id="cat_owner" name="owner_id" x-ref="owner" class="form-select">
+            <option value="">{% translate "WellTrip ขายเอง (บัญชีแอดมิน)" %}</option>
+            {% for partner in catalog_owner_choices %}
+              <option value="{{ partner.id }}" x-show="type === '{% if partner.role == 'HOMESTAY_OWNER' %}ACCOMMODATION{% elif partner.role == 'RESTAURANT_OWNER' %}FOOD{% elif partner.role == 'WELLNESS_OWNER' %}WELLNESS{% else %}OTOP{% endif %}'">{{ partner.display_name }} ({{ partner.email }})</option>
+            {% endfor %}
+          </select>
+          <div class="form-text">{% translate "คำสั่งซื้อของรายการนี้จะเข้าร้านที่เลือก" %}</div>
+        </div>
+        <div x-show="type === 'FOOD'"><label class="form-label small fw-semibold" for="cat_food_cat">{% translate "หมวดอาหารสุขภาพ *" %}</label>
+          <select id="cat_food_cat" name="wellness_category" class="form-select" :required="type === 'FOOD'" :disabled="type !== 'FOOD'"><option value="">{% translate "— เลือกหมวด —" %}</option>{% for value, label in food_categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
         </div>
         <div><label class="form-label small fw-semibold" for="cat_desc">{% translate "รายละเอียด" %}</label><textarea id="cat_desc" name="description" rows="3" class="form-control"></textarea></div>
         <div><label class="form-label small fw-semibold" for="cat_img">{% translate "รูปภาพ" %}</label><input id="cat_img" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="form-control"></div>
@@ -50,6 +67,13 @@
         <div class="row g-2">
           <div class="col-6"><label class="form-label small fw-semibold" for="ecat_price">{% translate "ราคา (บาท) *" %}</label><input id="ecat_price" type="number" step="0.01" min="0" name="price" x-model="catalog.price" required class="form-control"></div>
           <div class="col-6" x-show="catalog.type === 'OTOP'"><label class="form-label small fw-semibold" for="ecat_stock">{% translate "สต็อก" %}</label><input id="ecat_stock" type="number" min="0" name="stock_quantity" x-model="catalog.stock" class="form-control"></div>
+          <div class="col-6" x-show="catalog.type === 'WELLNESS'"><label class="form-label small fw-semibold" for="ecat_dur">{% translate "ระยะเวลา (นาที)" %}</label><input id="ecat_dur" type="number" min="15" step="15" name="duration_minutes" x-model="catalog.duration" class="form-control"></div>
+        </div>
+        <div x-show="catalog.type === 'OTOP'"><label class="form-label small fw-semibold" for="ecat_otop_cat">{% translate "หมวดสินค้า OTOP" %}</label>
+          <select id="ecat_otop_cat" name="category" x-model="catalog.category" class="form-select" :disabled="catalog.type !== 'OTOP'">{% for value, label in otop_categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+        </div>
+        <div x-show="catalog.type === 'FOOD'"><label class="form-label small fw-semibold" for="ecat_food_cat">{% translate "หมวดอาหารสุขภาพ" %}</label>
+          <select id="ecat_food_cat" name="wellness_category" x-model="catalog.category" class="form-select" :disabled="catalog.type !== 'FOOD'">{% for value, label in food_categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
         </div>
         <div><label class="form-label small fw-semibold" for="ecat_desc">{% translate "รายละเอียด" %}</label><textarea id="ecat_desc" name="description" rows="3" x-model="catalog.description" class="form-control"></textarea></div>
         <div><label class="form-label small fw-semibold" for="ecat_active">{% translate "สถานะ" %}</label>

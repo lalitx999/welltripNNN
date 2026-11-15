@@ -177,3 +177,51 @@ class OtopShippingTestCase(TestCase):
                          {"status": "SHIPPED", "tracking_number": "X"})
         self.item.refresh_from_db()
         self.assertEqual(self.item.fulfillment_status, FulfillmentStatus.PENDING)
+
+
+class AdminCatalogTestCase(TestCase):
+    """Admin Center catalog: category and owning shop are chosen, never silently defaulted."""
+
+    def setUp(self):
+        self.admin = make_user(UserRoles.COMMUNITY_ADMIN, "cat-admin@example.com")
+        self.seller = make_user(UserRoles.OTOP_OWNER, "shop@example.com")
+        self.seller.merchant_profile.business_name = "ร้านผ้าทอบ้านโพธิ์"
+        self.seller.merchant_profile.save()
+        self.client.force_login(self.admin)
+
+    def _add(self, **extra):
+        data = {"item_type": "OTOP", "title": "เสื้อลาย SISAKET", "price": "290", "stock_quantity": "5"}
+        data.update(extra)
+        return self.client.post(reverse("accounts:admin_catalog_add"), data)
+
+    def test_otop_needs_a_category(self):
+        self._add()
+        self.assertFalse(OTOPProduct.objects.exists())
+        self._add(category="TEXTILE")
+        self.assertEqual(OTOPProduct.objects.get().category, "TEXTILE")
+
+    def test_item_can_be_filed_under_a_shop_of_the_right_type(self):
+        self._add(category="TEXTILE", owner_id=str(self.seller.id))
+        self.assertEqual(OTOPProduct.objects.get().owner, self.seller)
+        cook = make_user(UserRoles.RESTAURANT_OWNER, "cook2@example.com")
+        self._add(title="ผิดประเภท", category="TEXTILE", owner_id=str(cook.id))
+        self.assertFalse(OTOPProduct.objects.filter(name="ผิดประเภท").exists())
+
+    def test_edit_changes_category(self):
+        product = OTOPProduct.objects.create(owner=self.admin, name="เสื้อ", price=Decimal("290"))
+        self.client.post(reverse("accounts:admin_catalog_edit", args=["OTOP", product.id]),
+                         {"title": "เสื้อ", "price": "290", "is_active": "1", "category": "TEXTILE"})
+        product.refresh_from_db()
+        self.assertEqual(product.category, "TEXTILE")
+
+    def test_public_pages_show_shop_name_never_email(self):
+        product = OTOPProduct.objects.create(owner=self.seller, name="ผ้าไหม", price=Decimal("500"), stock_quantity=1)
+        admin_product = OTOPProduct.objects.create(owner=self.admin, name="กาแฟ", price=Decimal("250"), stock_quantity=1)
+        self.client.logout()
+        listing = self.client.get("/otop/")
+        self.assertContains(listing, "ร้านผ้าทอบ้านโพธิ์")
+        self.assertContains(listing, "WellTrip Sisaket")
+        self.assertNotContains(listing, "shop@example.com")
+        self.assertNotContains(listing, "cat-admin@example.com")
+        self.assertNotContains(self.client.get(f"/otop/{product.id}/"), "shop@example.com")
+        self.assertNotContains(self.client.get(f"/otop/{admin_product.id}/"), "cat-admin@example.com")

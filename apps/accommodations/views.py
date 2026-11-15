@@ -23,7 +23,7 @@ def list_view(request):
     district = request.GET.get('district', '').strip()
     price_range = (request.GET.get('price') or request.GET.get('priceRange') or '').strip()
 
-    qs = Accommodation.objects.filter(status=AccommodationStatus.ACTIVE).select_related('owner').prefetch_related('rooms')
+    qs = Accommodation.objects.filter(status=AccommodationStatus.ACTIVE).select_related('owner__merchant_profile').prefetch_related('rooms')
 
     if query:
         qs = qs.filter(
@@ -74,9 +74,9 @@ def detail_view(request, identifier):
     and direct room booking form.
     """
     try:
-        accommodation = Accommodation.objects.select_related('owner').prefetch_related('rooms__images').get(slug=identifier, status=AccommodationStatus.ACTIVE)
+        accommodation = Accommodation.objects.select_related('owner__merchant_profile').prefetch_related('rooms__images').get(slug=identifier, status=AccommodationStatus.ACTIVE)
     except (Accommodation.DoesNotExist, ValueError):
-        accommodation = get_object_or_404(Accommodation.objects.select_related('owner').prefetch_related('rooms__images'), id=identifier, status=AccommodationStatus.ACTIVE)
+        accommodation = get_object_or_404(Accommodation.objects.select_related('owner__merchant_profile').prefetch_related('rooms__images'), id=identifier, status=AccommodationStatus.ACTIVE)
 
     rooms = accommodation.rooms.filter(is_active=True).prefetch_related('images')
 
