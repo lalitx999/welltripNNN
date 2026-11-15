@@ -168,8 +168,9 @@
         </div>
         <a href="{% url 'community:events_list' %}" class="btn btn-outline-ink rounded-pill btn-sm flex-shrink-0">{% translate "ดูปฏิทินทั้งหมด" %}</a>
       </div>
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
-        {% for event in upcoming_events %}<div class="col">{% include "community/partials/event_card.html" %}</div>{% endfor %}
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 wt-swipe">
+        {% for event in upcoming_events %}<div class="col{% if forloop.counter > 4 %} wt-swipe-extra{% endif %}">{% include "community/partials/event_card.html" %}</div>{% endfor %}
+        <div class="col wt-swipe-more"><a href="{% url 'community:events_list' %}"><i data-lucide="arrow-right-circle" class="icon-lg"></i>{% translate "ดูปฏิทินทั้งหมด" %}</a></div>
       </div>
     </div>
   </section>
@@ -187,10 +188,11 @@
       </div>
 
       {% if featured_experiences %}
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 g-md-4 wt-swipe">
           {% for item in featured_experiences %}
-            <div class="col">{% include "core/partials/catalog_card.html" %}</div>
+            <div class="col{% if forloop.counter > 4 %} wt-swipe-extra{% endif %}">{% include "core/partials/catalog_card.html" %}</div>
           {% endfor %}
+          <div class="col wt-swipe-more"><a href="{% url 'accommodations:list' %}"><i data-lucide="arrow-right-circle" class="icon-lg"></i>{% translate "ดูทั้งหมด" %}</a></div>
         </div>
       {% else %}
         <div class="wt-card text-center p-5">

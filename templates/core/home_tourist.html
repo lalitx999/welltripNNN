@@ -51,11 +51,11 @@
       <h2 class="h5 fw-bold mb-0 d-flex align-items-center gap-2"><span class="pulse-dot bg-warning"></span>{% translate "ทริปที่กำลังดำเนินการ" %}</h2>
       <a href="{% url 'bookings:my_bookings' %}" class="small fw-semibold text-green">{% translate "ดูทั้งหมด" %} <i data-lucide="chevron-right"></i></a>
     </div>
-    <div class="row row-cols-1 row-cols-md-3 g-3">
+    <div class="row row-cols-1 row-cols-md-3 g-3 wt-swipe">
       {% for b in active_bookings %}
         <div class="col">
           <div class="wt-card p-3 h-100 d-flex flex-column">
-            <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-1 mb-2">
               <div>
                 <small class="text-secondary">{% translate "รหัสการจอง" %}</small>
                 <div class="fw-bold font-monospace">{{ b.booking_code }}</div>
@@ -75,16 +75,20 @@
   </section>
 {% endif %}
 
-<!-- 3. Quick links -->
+<!-- 3. Quick links (same icon grid as the landing page: 4 per row on phones) -->
 <section class="container-xl pb-4">
-  <h2 class="h5 fw-bold mb-3">{% translate "บริการและกิจกรรม" %}</h2>
-  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
-    <div class="col"><a href="{% url 'accommodations:list' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="house" class="icon-lg"></i></span><div class="fw-bold small">{% translate "ที่พักชุมชน" %}</div></a></div>
-    <div class="col"><a href="/services/?category=FOOD" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="utensils" class="icon-lg"></i></span><div class="fw-bold small">{% translate "อาหารสุขภาพ" %}</div></a></div>
-    <div class="col"><a href="/services/?category=SPA" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#c2255c;--bg:#fdebf1"><i data-lucide="flower-2" class="icon-lg"></i></span><div class="fw-bold small">{% translate "นวดและสปา" %}</div></a></div>
-    <div class="col"><a href="{% url 'otop:list' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shopping-basket" class="icon-lg"></i></span><div class="fw-bold small">{% translate "ของฝาก OTOP" %}</div></a></div>
-    <div class="col"><a href="{% url 'ai_recommendations:assessment' %}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#6741d9;--bg:#f0ebff"><i data-lucide="heart-pulse" class="icon-lg"></i></span><div class="fw-bold small">{% translate "ประเมินสุขภาพ AI" %}</div></a></div>
-    <div class="col"><a href="{{ url_map }}" class="wt-card wt-card-hover p-3 h-100 d-block text-center"><span class="wt-stat-icon mb-2" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map" class="icon-lg"></i></span><div class="fw-bold small">{% translate "แผนที่ชุมชน" %}</div></a></div>
+  {% url 'accommodations:list' as url_stays %}{% url 'otop:list' as url_otop %}{% url 'ai_recommendations:assessment' as url_ai %}{% url 'community:passport' as url_passport %}{% url 'community:events_list' as url_events %}
+  <div class="wt-card p-2 p-md-3">
+    <div class="wt-cat-grid">
+      <a class="wt-category" href="{{ url_stays }}"><span class="wt-cat-icon" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="house"></i></span><span class="label">{% translate "ที่พักชุมชน" %}</span></a>
+      <a class="wt-category" href="/services/?category=FOOD"><span class="wt-cat-icon" style="--c:#e8590c;--bg:#fff0e6"><i data-lucide="utensils"></i></span><span class="label">{% translate "อาหารสุขภาพ" %}</span></a>
+      <a class="wt-category" href="/services/?category=SPA"><span class="wt-cat-icon" style="--c:#c2255c;--bg:#fdebf1"><i data-lucide="flower-2"></i></span><span class="label">{% translate "นวดและสปา" %}</span></a>
+      <a class="wt-category" href="{{ url_otop }}"><span class="wt-cat-icon" style="--c:#b86e00;--bg:#fff4dc"><i data-lucide="shopping-basket"></i></span><span class="label">{% translate "ของดี OTOP" %}</span></a>
+      <a class="wt-category" href="{{ url_ai }}"><span class="wt-cat-icon" style="--c:#6741d9;--bg:#f0ebff"><i data-lucide="heart-pulse"></i></span><span class="label">{% translate "สุขภาพ AI" %}</span></a>
+      <a class="wt-category" href="{{ url_map }}"><span class="wt-cat-icon" style="--c:#1971c2;--bg:#e7f2fd"><i data-lucide="map"></i></span><span class="label">{% translate "แผนที่ชุมชน" %}</span></a>
+      <a class="wt-category" href="{{ url_passport }}"><span class="wt-cat-icon" style="--c:#0c8599;--bg:#e3f7f9"><i data-lucide="stamp"></i></span><span class="label">{% translate "พาสปอร์ต" %}</span></a>
+      <a class="wt-category" href="{{ url_events }}"><span class="wt-cat-icon" style="--c:#5c7cfa;--bg:#edf0ff"><i data-lucide="calendar-days"></i></span><span class="label">{% translate "กิจกรรม" %}</span></a>
+    </div>
   </div>
 </section>
 
@@ -124,8 +128,9 @@
       </div>
       <a href="{% url 'community:events_list' %}" class="btn btn-outline-ink rounded-pill btn-sm flex-shrink-0">{% translate "ดูปฏิทินทั้งหมด" %}</a>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
-      {% for event in upcoming_events %}<div class="col">{% include "community/partials/event_card.html" %}</div>{% endfor %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 wt-swipe">
+      {% for event in upcoming_events %}<div class="col{% if forloop.counter > 4 %} wt-swipe-extra{% endif %}">{% include "community/partials/event_card.html" %}</div>{% endfor %}
+      <div class="col wt-swipe-more"><a href="{% url 'community:events_list' %}"><i data-lucide="arrow-right-circle" class="icon-lg"></i>{% translate "ดูปฏิทินทั้งหมด" %}</a></div>
     </div>
   </div>
 </section>

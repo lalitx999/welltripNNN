@@ -501,3 +501,30 @@ h1, h2, h3, .h1, .h2, .h3 { letter-spacing: -.01em; }
   .navbar .navbar-nav .nav-link { font-size: .85rem; padding-left: .45rem !important; padding-right: .45rem !important; }
   .navbar .navbar-brand small, .navbar .wt-brand-tagline { display: none; }
 }
+
+/* ---------- Swipe rows: on phones a card row becomes one horizontal, snapping strip ---------- */
+.wt-swipe-more { display: none; }
+@media (max-width: 767.98px) {
+  .wt-swipe {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: .5rem;
+  }
+  .wt-swipe::-webkit-scrollbar { display: none; }
+  .wt-swipe > .col, .wt-swipe > [class*="col-"] {
+    flex: 0 0 78% !important; max-width: 78% !important;
+    scroll-snap-align: start;
+  }
+  .wt-swipe-narrow > .col { flex-basis: 62% !important; max-width: 62% !important; }
+  .wt-swipe-more { display: block; }
+  .wt-swipe-more a {
+    height: 100%; min-height: 10rem; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: .5rem; border-radius: 1.5rem; border: 2px dashed #cdebdc; color: var(--wt-green); font-weight: 700;
+    background: rgba(255, 255, 255, .6);
+  }
+}
+/* Tablet and desktop keep the grid; extra cards exist only for the phone strip */
+@media (min-width: 768px) { .wt-swipe > .wt-swipe-extra { display: none; } }

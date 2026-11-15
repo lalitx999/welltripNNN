@@ -1,13 +1,15 @@
 {% load i18n %}
-{# One domain row on /home: heading, "see all" link, up to 4 cards or an empty note #}
-<div>
+{# One domain row on /home: heading, "see all" link, cards (swipe row on phones) or an empty note #}
+<div class="min-w-0">{# grid child: without this the swipe row stretches the page sideways #}
   <div class="d-flex justify-content-between align-items-end mb-3">
     <h2 class="wt-section-title mb-0 d-flex align-items-center gap-2"><i data-lucide="{{ icon }}" class="text-green"></i>{{ title }}</h2>
     <a href="{{ more_url }}" class="btn btn-outline-ink btn-sm rounded-pill flex-shrink-0">{% translate "ดูทั้งหมด" %}</a>
   </div>
   {% if items %}
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-      {% for item in items %}<div class="col">{% include "core/partials/catalog_card.html" %}</div>{% endfor %}
+    {# Phones: one swipe row of up to 8 cards plus a "see all" card. Tablet/desktop: the first 4 as a grid. #}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 g-md-4 wt-swipe">
+      {% for item in items %}<div class="col{% if forloop.counter > 4 %} wt-swipe-extra{% endif %}">{% include "core/partials/catalog_card.html" %}</div>{% endfor %}
+      <div class="col wt-swipe-more"><a href="{{ more_url }}"><i data-lucide="arrow-right-circle" class="icon-lg"></i>{% translate "ดูทั้งหมด" %}</a></div>
     </div>
   {% else %}
     <div class="wt-card wt-empty"><span class="wt-icon-pill"><i data-lucide="{{ icon }}"></i></span><div class="fw-bold">{{ empty_text }}</div><small class="text-secondary">{% translate "ผู้ประกอบการชุมชนกำลังทยอยเพิ่มรายการ" %}</small></div>

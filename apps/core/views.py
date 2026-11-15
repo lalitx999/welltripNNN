@@ -87,7 +87,12 @@ def landing_view(request):
     total_products = OTOPProduct.objects.filter(is_active=True).count()
 
     # Featured items from all 4 domain models
-    featured_items = stay_cards(2) + spa_cards(1) + food_cards(1) + otop_cards(1)
+    # One of each first (what larger screens show), then a second round for the phone swipe row
+    stays, spas, foods, otops = stay_cards(2), spa_cards(2), food_cards(2), otop_cards(2)
+    featured_items = [
+        card for pair in zip(*(lst + [None] * (2 - len(lst)) for lst in (stays, spas, foods, otops)))
+        for card in pair if card
+    ]
 
     wellness_goals = WELLNESS_GOALS
 
@@ -104,12 +109,12 @@ def landing_view(request):
         'total_wellness': total_wellness,
         'total_foods': total_foods,
         'total_products': total_products,
-        'featured_experiences': featured_items[:4],
+        'featured_experiences': featured_items[:8],
         'wellness_goals': wellness_goals,
         'stats': stats,
         'faq': LANDING_FAQ,
         'destinations': LANDING_DESTINATIONS,
-        'upcoming_events': upcoming_events(limit=4),
+        'upcoming_events': upcoming_events(limit=8),
     }
     return render(request, 'core/home.html', context)
 
@@ -133,11 +138,12 @@ def tourist_home_view(request):
         'stamps_count': 0,
         'health_profile': None,
         'health_goal_label': "",
-        'featured_stays': stay_cards(4),
-        'featured_foods': food_cards(4),
-        'featured_spas': spa_cards(4),
-        'featured_otop': otop_cards(4),
-        'upcoming_events': upcoming_events(limit=4),
+        # 8 each: phones swipe through all of them, larger screens show the first 4
+        'featured_stays': stay_cards(8),
+        'featured_foods': food_cards(8),
+        'featured_spas': spa_cards(8),
+        'featured_otop': otop_cards(8),
+        'upcoming_events': upcoming_events(limit=8),
         'destinations': LANDING_DESTINATIONS,
     }
 
