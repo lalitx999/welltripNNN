@@ -237,3 +237,44 @@ class LanguageSwitchTestCase(TestCase):
     def test_switch_ignores_offsite_next(self):
         response = self.client.post("/i18n/setlang/", {"language": "en", "next": "https://evil.example/"})
         self.assertEqual(response["Location"], "/")
+
+
+class ImportTtdAttractionsTestCase(TestCase):
+    """Tourism Directory export -> draft ATTRACTION entries, re-runnable."""
+
+    ROW = {
+        "id": 4416, "name_th": "สวนสมเด็จพระศรีนครินทร์", "name_en": "Somdet Phra Srinagarindra Park",
+        "district": "เมืองศรีสะเกษ", "subdistrict": "หนองครก", "lat": 15.1, "lng": 104.3,
+        "address": "ถนนกสิกรรม", "postcode": "33000", "tel": "045612934", "website": "",
+        "open_hours": "08.30 - 18.00 น.", "detail_th": "สวนลำดวนขนาดใหญ่ " * 30, "travel_remark": "",
+        "image": "https://files.example/intro.jpg", "images": [],
+        "source_url": "https://www.thailandtourismdirectory.go.th/th/attraction/4416",
+    }
+
+    def _run(self, rows, *args):
+        import json
+        import tempfile
+        from django.core.management import call_command
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as f:
+            json.dump(rows, f, ensure_ascii=False)
+        from io import StringIO
+        call_command("import_ttd_attractions", f.name, *args, stdout=StringIO())
+
+    def test_imports_as_unpublished_attraction_with_source(self):
+        from apps.community.models import EditorialEntry
+        self._run([self.ROW])
+        entry = EditorialEntry.objects.get()
+        self.assertEqual(entry.kind, EditorialEntry.Kind.ATTRACTION)
+        self.assertFalse(entry.is_published)
+        self.assertIn("ที่มาข้อมูล", entry.body)
+        self.assertIn("045612934", entry.body)
+        self.assertEqual(entry.location, "ต.หนองครก อ.เมืองศรีสะเกษ จ.ศรีสะเกษ")
+        self.assertLessEqual(len(entry.summary), 221)
+
+    def test_rerun_never_duplicates_or_touches_published(self):
+        from apps.community.models import EditorialEntry
+        self._run([self.ROW])
+        EditorialEntry.objects.update(is_published=True, title="แก้ไขแล้ว")
+        self._run([self.ROW], "--update")
+        entry = EditorialEntry.objects.get()
+        self.assertEqual(entry.title, "แก้ไขแล้ว")

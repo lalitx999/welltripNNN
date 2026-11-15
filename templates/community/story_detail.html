@@ -30,7 +30,7 @@
   {% if story.summary %}
     <p class="lead border-start border-4 border-success ps-3 mb-4">{{ story.summary }}</p>
   {% endif %}
-  <div class="fs-6 lh-lg">{{ story.body|linebreaks }}</div>
+  <div class="fs-6 lh-lg text-break">{{ story.body|urlize|linebreaks }}</div>
 
   <a href="{% url 'community:stories_list' %}" class="btn btn-outline-ink rounded-pill mt-4"><i data-lucide="arrow-left" class="me-1"></i>{% translate "เรื่องเล่าทั้งหมด" %}</a>
 </article>

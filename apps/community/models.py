@@ -184,6 +184,8 @@ class EditorialEntry(models.Model):
     latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
     is_published = models.BooleanField(default=False, db_index=True)
+    # Where an imported entry came from (e.g. Thailand Tourism Directory); also prevents duplicate imports
+    source_url = models.URLField(max_length=300, blank=True, default="", db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

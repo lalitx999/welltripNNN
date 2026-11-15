@@ -3,6 +3,8 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils.http import urlencode
 from django.utils.translation import gettext as _
 
 
@@ -28,7 +30,11 @@ class SessionIdleTimeoutMiddleware:
                 logout(request)
                 request.session.flush()
                 messages.warning(request, _("เซสชันของคุณหมดอายุเนื่องจากไม่มีการใช้งานเกิน 30 นาที กรุณาเข้าสู่ระบบใหม่"))
-                return redirect('accounts:login')
+                # Bring them back to the page they were on once they sign in again
+                login_url = reverse('accounts:login')
+                if request.method == 'GET':
+                    return redirect(f"{login_url}?{urlencode({'next': request.get_full_path()})}")
+                return redirect(login_url)
 
             # Update last activity timestamp on active requests
             request.session['last_activity'] = current_time
