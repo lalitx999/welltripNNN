@@ -156,6 +156,48 @@ def _check_money_rules(payment: Payment, slip: PaymentSlip, amount: Decimal, tra
     return None
 
 
+def _digits_and_mask(value) -> str:
+    """'xxx-x-x0448-x' -> 'xxxxx0448x'; keeps digits and mask letters, drops separators."""
+    return "".join(ch for ch in str(value or "").lower() if ch.isdigit() or ch == "x")
+
+
+def account_matches_payee(masked_account: str, payee_account: str) -> bool:
+    """
+    Banks mask most of the receiving account on a slip (e.g. 'xxx-x-x0448-x').
+    It matches when every visible digit sits in the same place as in our account
+    and enough digits are visible to mean something.
+    """
+    masked = _digits_and_mask(masked_account)
+    payee = "".join(ch for ch in str(payee_account or "") if ch.isdigit())
+    if not masked or len(masked) != len(payee):
+        return False
+    visible = [(i, ch) for i, ch in enumerate(masked) if ch.isdigit()]
+    if len(visible) < 4:
+        return False
+    return all(payee[i] == ch for i, ch in visible)
+
+
+def receiver_is_payee(receiver: dict) -> bool:
+    """True when the slip's receiving account is the WellTrip payee account (or an accepted PromptPay proxy)."""
+    if not isinstance(receiver, dict):
+        return False
+    account = receiver.get("account") or {}
+    bank_account = (account.get("bank") or {}).get("account") or ""
+    if bank_account and account_matches_payee(bank_account, settings.PAYEE_ACCOUNT_NUMBER):
+        return True
+    proxy_account = (account.get("proxy") or {}).get("account") or ""
+    accepted = [p for p in (settings.PAYEE_PROXY_ACCOUNTS or []) if p]
+    return bool(proxy_account) and any(account_matches_payee(proxy_account, p) for p in accepted)
+
+
+def _send_to_manual_review(slip: PaymentSlip, reason: str, payload: dict) -> PaymentSlip:
+    """Auto-check cannot decide: keep the slip PENDING_CHECK for an admin, with the reason."""
+    slip.verification_notes = f"{reason} (ส่งต่อให้แอดมินตรวจ)"
+    slip.provider_response_log = {"provider": _json_safe(payload), "manual_review_reason": reason}
+    slip.save(update_fields=["amount_seen", "provider_reference", "verification_notes", "provider_response_log"])
+    return slip
+
+
 def _json_safe(payload: dict) -> dict:
     """Sanitize Decimal and datetime objects for JSONField serialization."""
     return {str(k): str(v) for k, v in payload.items()}
@@ -205,10 +247,27 @@ def verify_slip_automatically(slip_id, *, provider_func=None) -> tuple[bool, Pay
         if not payment or not booking:
             raise ValueError("ไม่พบข้อมูลการจองหรือข้อมูลการชำระเงิน")
 
-        rejection_reason = _check_money_rules(payment, slip, amount, trans_ref, trans_at)
+        if slip.verification_status != SlipVerificationStatus.PENDING_CHECK:
+            # An admin already decided while the provider call was running
+            return slip.verification_status == SlipVerificationStatus.VERIFIED, slip, "already decided"
+
         slip.amount_seen = amount
         slip.provider_reference = trans_ref
-        slip.checked_at = timezone.now()
+        review_reason = None
+        if booking.status != BookingStatus.AWAITING_PAYMENT:
+            review_reason = f"การจองอยู่ในสถานะ {booking.get_status_display()} ไม่ใช่รอชำระเงิน"
+        elif not receiver_is_payee(payload.get("receiver")):
+            review_reason = "บัญชีผู้รับในสลิปไม่ตรงกับบัญชีรับเงินของ WellTrip"
+        if review_reason:
+            _send_to_manual_review(slip, review_reason, payload)
+            return False, slip, review_reason
+
+        rejection_reason = _check_money_rules(payment, slip, amount, trans_ref, trans_at)
+        if rejection_reason is None and payload.get("is_duplicate"):
+            # Not reused here, but EasySlip has seen it before: let a person look
+            reason = "EasySlip แจ้งว่าสลิปนี้เคยถูกตรวจมาก่อน"
+            _send_to_manual_review(slip, reason, payload)
+            return False, slip, reason
 
         if rejection_reason is None:
             slip.verification_status = SlipVerificationStatus.VERIFIED
@@ -262,3 +321,74 @@ def verify_slip_automatically(slip_id, *, provider_func=None) -> tuple[bool, Pay
         send_slip_rejected_task.delay_on_commit(payment.id, rejection_reason)
 
     return is_verified, slip, msg
+
+
+def review_slip(request, payment_id, action: str, notes: str = "") -> tuple[bool, str]:
+    """
+    Admin approves or rejects the pending slip of a payment.
+    Locks booking, payment and slip so it cannot race the auto-check worker,
+    and refuses to confirm a booking whose stock was already released.
+    """
+    from django.db import IntegrityError
+    from django.utils.translation import gettext as _
+    from apps.accounts.services.audit import record_audit_log
+    from apps.core.tasks import send_booking_voucher_task, send_slip_rejected_task
+
+    with transaction.atomic():
+        payment = Payment.objects.select_for_update().filter(pk=payment_id).first()
+        if not payment:
+            return False, _("ไม่พบรายการชำระเงิน")
+        booking = Booking.objects.select_for_update().get(pk=payment.booking_id)
+        slip = (
+            PaymentSlip.objects.select_for_update()
+            .filter(payment=payment, verification_status=SlipVerificationStatus.PENDING_CHECK)
+            .order_by("-uploaded_at")
+            .first()
+        )
+        if not slip:
+            return False, _("ไม่มีสลิปที่รอตรวจสอบ (อาจถูกตรวจไปแล้ว)")
+
+        slip.verified_by = request.user
+        slip.verified_at = timezone.now()
+        slip.verification_notes = notes
+
+        if action == "APPROVE":
+            if booking.status != BookingStatus.AWAITING_PAYMENT:
+                return False, _(
+                    "อนุมัติไม่ได้: การจอง {code} อยู่ในสถานะ '{status}' สต็อกอาจถูกคืนไปแล้ว กรุณาติดต่อลูกค้าเพื่อจองใหม่หรือคืนเงิน"
+                ).format(code=booking.booking_code, status=booking.get_status_display())
+            slip.verification_status = SlipVerificationStatus.VERIFIED
+            try:
+                with transaction.atomic():
+                    slip.save()
+            except IntegrityError:
+                return False, _("อนุมัติไม่ได้: เลขอ้างอิงสลิป {ref} ถูกใช้ยืนยันการชำระเงินอื่นไปแล้ว").format(ref=slip.provider_reference)
+            payment.status = PaymentStatus.SUCCESS
+            payment.paid_at = payment.paid_at or timezone.now()
+            payment.save(update_fields=["status", "paid_at", "updated_at"])
+            booking.status = BookingStatus.CONFIRMED
+            booking.save(update_fields=["status", "updated_at"])
+            send_booking_voucher_task.delay_on_commit(payment.id)
+            audit_action, message = "PAYMENT_APPROVED", _("อนุมัติการชำระเงินสำหรับรหัส {booking_code} สำเร็จ")
+        else:
+            slip.verification_status = SlipVerificationStatus.REJECTED
+            slip.save()
+            payment.status = PaymentStatus.FAILED
+            payment.save(update_fields=["status", "updated_at"])
+            send_slip_rejected_task.delay_on_commit(payment.id, notes or _("สลิปไม่ผ่านการตรวจสอบ"))
+            audit_action, message = "PAYMENT_REJECTED", _("ปฏิเสธสลิปการโอนเงิน รหัส {booking_code}")
+
+        record_audit_log(
+            request=request,
+            action="UPDATE",
+            model_name="Payment",
+            object_id=str(payment.id),
+            changes={
+                "action": audit_action,
+                "booking_code": booking.booking_code,
+                "slip_ref": slip.provider_reference,
+                "reason": notes,
+            },
+            user=request.user,
+        )
+    return True, message.format(booking_code=booking.booking_code)

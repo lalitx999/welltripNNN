@@ -33,6 +33,8 @@
           <div class="col-sm-6"><label class="form-label small fw-semibold" for="cp_days">{% translate "อายุคูปอง" %}</label>
             <select id="cp_days" name="days_valid" class="form-select"><option value="7">{% translate "7 วัน" %}</option><option value="15">{% translate "15 วัน" %}</option><option value="30" selected>{% translate "30 วัน" %}</option><option value="60">{% translate "60 วัน" %}</option><option value="90">{% translate "90 วัน" %}</option><option value="180">{% translate "180 วัน" %}</option><option value="365">{% translate "1 ปี" %}</option></select>
           </div>
+          <div class="col-sm-6"><label class="form-label small fw-semibold" for="cp_max">{% translate "ใช้ได้ทั้งหมด (ครั้ง)" %}</label><input id="cp_max" type="number" min="1" name="max_uses" class="form-control" placeholder="{% translate 'ว่าง = ไม่จำกัด' %}"></div>
+          <div class="col-sm-6"><label class="form-label small fw-semibold" for="cp_per_user">{% translate "ต่อผู้ใช้ 1 คน (ครั้ง)" %}</label><input id="cp_per_user" type="number" min="0" name="per_user_limit" value="1" class="form-control"><div class="form-text">{% translate "0 = ไม่จำกัด" %}</div></div>
         </div>
         <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="plus" class="me-1"></i>{% translate "สร้างคูปอง" %}</button>
       </form>
@@ -43,13 +45,14 @@
       <div class="p-3 border-bottom fw-bold">{% blocktranslate trimmed with coupons=coupons|length %}คูปองทั้งหมด ({{ coupons }}){% endblocktranslate %}</div>
       <div class="table-responsive">
         <table class="table wt-table mb-0">
-          <thead><tr><th>{% translate "รหัส" %}</th><th class="text-end">{% translate "ส่วนลด" %}</th><th class="text-end">{% translate "ขั้นต่ำ" %}</th><th>{% translate "หมดอายุ" %}</th><th>{% translate "สถานะ" %}</th><th class="text-end">{% translate "จัดการ" %}</th></tr></thead>
+          <thead><tr><th>{% translate "รหัส" %}</th><th class="text-end">{% translate "ส่วนลด" %}</th><th class="text-end">{% translate "ขั้นต่ำ" %}</th><th class="text-end">{% translate "ใช้แล้ว" %}</th><th>{% translate "หมดอายุ" %}</th><th>{% translate "สถานะ" %}</th><th class="text-end">{% translate "จัดการ" %}</th></tr></thead>
           <tbody>
             {% for cp in coupons %}
               <tr>
                 <td class="font-monospace fw-semibold">{{ cp.code }}</td>
                 <td class="text-end">฿{{ cp.discount_amount|floatformat:"2g" }}</td>
                 <td class="text-end small">{% if cp.min_purchase > 0 %}฿{{ cp.min_purchase|floatformat:"2g" }}{% else %}<span class="text-secondary">{% translate "ไม่มี" %}</span>{% endif %}</td>
+                <td class="text-end small">{{ cp.used_count }}{% if cp.max_uses %} / {{ cp.max_uses }}{% endif %}{% if cp.per_user_limit %}<div class="text-secondary">{% blocktranslate trimmed with n=cp.per_user_limit %}คนละ {{ n }} ครั้ง{% endblocktranslate %}</div>{% endif %}</td>
                 <td class="small">{{ cp.expires_at|date:"d/m/Y H:i" }}</td>
                 <td>{% if cp.is_active %}<span class="badge badge-green">{% translate "เปิด" %}</span>{% else %}<span class="badge text-bg-secondary">{% translate "ปิด" %}</span>{% endif %}</td>
                 <td class="text-end text-nowrap">
@@ -58,7 +61,7 @@
                 </td>
               </tr>
             {% empty %}
-              <tr><td colspan="6" class="text-center text-secondary small py-4">{% translate "ยังไม่มีคูปอง" %}</td></tr>
+              <tr><td colspan="7" class="text-center text-secondary small py-4">{% translate "ยังไม่มีคูปอง" %}</td></tr>
             {% endfor %}
           </tbody>
         </table>

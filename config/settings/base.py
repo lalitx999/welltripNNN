@@ -305,6 +305,8 @@ EASYSLIP_MOCK_VERIFY = config('EASYSLIP_MOCK_VERIFY', default=False, cast=bool)
 PAYEE_ACCOUNT_NUMBER = config('PAYEE_ACCOUNT_NUMBER', default='001-1-50448-5')
 PAYEE_ACCOUNT_NAME = config('PAYEE_ACCOUNT_NAME', default='นาย พรหมลิขิต อุรา')
 PAYEE_BANK_NAME = config('PAYEE_BANK_NAME', default='ธนาคารกสิกรไทย')
+# Optional PromptPay proxies (phone / e-wallet / biller id) that also count as our account on a slip
+PAYEE_PROXY_ACCOUNTS = config('PAYEE_PROXY_ACCOUNTS', default='', cast=Csv())
 
 # ==============================================================================
 # Google OAuth & AI API Keys
@@ -314,3 +316,13 @@ GOOGLE_OAUTH_CLIENT_SECRET = config('GOOGLE_OAUTH_CLIENT_SECRET', default='')
 DEEPSEEK_API_KEY = config('DEEPSEEK_API_KEY', default='')
 GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
 
+
+
+# ==============================================================================
+# Test runs never need the docker Redis: local cache and inline Celery tasks
+# ==============================================================================
+import sys as _sys
+if len(_sys.argv) > 1 and _sys.argv[1] == 'test':
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache', 'LOCATION': 'welltrip-test'}}
+    CELERY_BROKER_URL = 'memory://'
+    CELERY_TASK_ALWAYS_EAGER = True

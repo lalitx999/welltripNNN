@@ -193,6 +193,17 @@ def process_checkout(
                 "booking_metadata": {"wellness_category": menu.wellness_category},
             })
 
+    if coupon_code and discount_amount > 0:
+        # Lock the coupon so two simultaneous checkouts cannot both take its last use
+        from apps.community.models import Coupon
+        coupon = Coupon.objects.select_for_update().filter(code=coupon_code).first()
+        ok, msg = (False, _("ไม่พบคูปองส่วนลดนี้")) if coupon is None else coupon.is_valid_for(total_booking_amount)
+        if ok:
+            ok, msg = coupon.check_usage(user)
+        if not ok:
+            raise StockUnavailableError(msg)
+        discount_amount = min(discount_amount, coupon.discount_amount, total_booking_amount)
+
     final_total = max(Decimal("0.00"), total_booking_amount + shipping_fee - discount_amount)
 
     # Create Booking
@@ -233,10 +244,11 @@ def cancel_and_restore_expired_bookings():
     and restores inventories safely within a transaction.
     """
     now = timezone.now()
+    # A slip uploaded in time is still waiting for a decision: keep its stock held
     expired_bookings = Booking.objects.filter(
         status=BookingStatus.AWAITING_PAYMENT,
         expires_at__lt=now,
-    )
+    ).exclude(payment__slips__verification_status="PENDING_CHECK")
 
     restored_count = 0
 

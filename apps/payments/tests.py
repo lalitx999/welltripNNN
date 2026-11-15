@@ -192,7 +192,7 @@ class EasySlipAutomatedVerificationTestCase(TestCase):
                 "trans_ref": "KBANK-20261027-998877",
                 "trans_datetime": timezone.now(),
                 "sender_name": "นายกานต์ ใจดี",
-                "receiver": {"account": {"name": "วิสาหกิจชุมชน"}},
+                "receiver": {"account": {"name": {"th": "นาย พรหมลิขิต อ"}, "bank": {"type": "BANKAC", "account": "xxx-x-x0448-x"}}},
                 "is_duplicate": False,
             }
 
@@ -224,6 +224,7 @@ class EasySlipAutomatedVerificationTestCase(TestCase):
                 "trans_ref": "KBANK-20261027-112233",
                 "trans_datetime": timezone.now(),
                 "sender_name": "นายกานต์ ใจดี",
+                "receiver": {"account": {"name": {"th": "นาย พรหมลิขิต อ"}, "bank": {"type": "BANKAC", "account": "xxx-x-x0448-x"}}},
                 "is_duplicate": False,
             }
 
@@ -256,6 +257,7 @@ class EasySlipAutomatedVerificationTestCase(TestCase):
                 "trans_ref": "DUPLICATE-REF-999",
                 "trans_datetime": timezone.now(),
                 "sender_name": "ผู้ไม่หวังดี",
+                "receiver": {"account": {"name": {"th": "นาย พรหมลิขิต อ"}, "bank": {"type": "BANKAC", "account": "xxx-x-x0448-x"}}},
                 "is_duplicate": True,
             }
 
@@ -286,7 +288,8 @@ class BackgroundSlipFlowTestCase(TestCase):
             payment=self.payment,
             image=SimpleUploadedFile("s.jpg", buf.getvalue(), content_type="image/jpeg"),
             verification_status=status,
-            verification_notes="ยอดเงินไม่ตรง",
+            # A slip still waiting for auto-check has no notes yet
+            verification_notes="" if status == SlipVerificationStatus.PENDING_CHECK else "ยอดเงินไม่ตรง",
         )
 
     def test_upload_queues_verification_after_commit(self):

@@ -12,3 +12,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
 app = Celery("welltrip", task_cls="celery.contrib.django.task:DjangoTask")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
+
+app.conf.beat_schedule = {
+    # Release rooms, spa slots and OTOP stock held by checkouts unpaid after 15 minutes
+    "expire-unpaid-bookings": {
+        "task": "apps.bookings.tasks.expire_unpaid_bookings_task",
+        "schedule": 60.0,
+    },
+}

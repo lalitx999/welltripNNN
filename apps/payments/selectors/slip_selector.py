@@ -26,6 +26,7 @@ def slip_status_context(booking):
         slip
         and settings.EASYSLIP_API_KEY
         and slip.verification_status == SlipVerificationStatus.PENDING_CHECK
+        and not slip.verification_notes  # set once auto-check hands it to an admin
         and timezone.now() - slip.uploaded_at < SLIP_POLL_WINDOW
     )
     return {"booking": booking, "slip": slip, "polling": polling}

@@ -60,6 +60,22 @@ services:
     depends_on:
       - backend
 
+  beat:
+    image: welltrip-app:latest
+    container_name: welltrip_beat
+    restart: always
+    # Scheduler only (e.g. releasing stock of unpaid bookings); the worker runs the tasks
+    command: celery -A config beat --loglevel=info --schedule /tmp/celerybeat-schedule
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.prod
+      - DATABASE_URL=postgres://${POSTGRES_USER:-welltrip}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-welltrip_db}
+      - REDIS_URL=redis://redis:6379/0
+      - SKIP_BOOTSTRAP=1
+    depends_on:
+      - backend
+
   nginx:
     image: nginx:1.27-alpine
     container_name: welltrip_nginx

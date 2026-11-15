@@ -108,6 +108,8 @@ def calculate_cart_totals(request, cart):
         if coupon_obj:
             is_valid, msg = coupon_obj.is_valid_for(subtotal)
             if is_valid:
+                is_valid, msg = coupon_obj.check_usage(request.user)
+            if is_valid:
                 discount_amount = min(coupon_obj.discount_amount, subtotal)
             else:
                 coupon_error = msg
@@ -366,6 +368,8 @@ def coupon_apply_view(request):
         return redirect('bookings:cart')
 
     is_valid, msg = coupon.is_valid_for(subtotal)
+    if is_valid:
+        is_valid, msg = coupon.check_usage(request.user)
     if not is_valid:
         if is_ajax:
             return JsonResponse({"success": False, "message": msg})

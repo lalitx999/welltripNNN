@@ -7,11 +7,12 @@ from django.views.decorators.http import require_GET, require_http_methods
 from django.utils import timezone
 
 from apps.accounts.models import UserRoles
-from apps.accounts.permissions import role_required, can_view_object
+from apps.accounts.permissions import role_required, can_access_payment
 from apps.accounts.services.audit import record_audit_log
 from apps.bookings.models import Booking, BookingStatus
 from apps.payments.models import Payment, PaymentSlip, PaymentStatus, SlipVerificationStatus
 from apps.payments.forms import SlipUploadForm
+from apps.payments.services import review_slip
 from apps.payments.tasks import verify_slip_task
 from apps.payments.selectors.slip_selector import slip_status_context
 from apps.core.tasks import send_booking_voucher_task, send_slip_rejected_task
@@ -30,7 +31,7 @@ def payment_instruction_view(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
 
     # Anti-IDOR Ownership check
-    if not can_view_object(request.user, booking):
+    if not can_access_payment(request.user, booking):
         messages.error(request, _("คุณไม่มีสิทธิ์เข้าถึงหน้านี้"))
         return redirect('bookings:my_bookings')
 
@@ -49,6 +50,11 @@ def payment_instruction_view(request, booking_id):
             'payee_account_number': settings.PAYEE_ACCOUNT_NUMBER,
         }
     )
+
+    if request.method == "POST" and (booking.status != BookingStatus.AWAITING_PAYMENT or booking.is_expired):
+        # Past the 15-minute hold the stock may already be back on sale
+        messages.warning(request, _("คำสั่งซื้อนี้ไม่อยู่ในสถานะรอชำระเงินแล้ว จึงแนบสลิปไม่ได้ หากโอนเงินไปแล้วกรุณาติดต่อเจ้าหน้าที่"))
+        return redirect('bookings:detail', booking_id=booking.id)
 
     if request.method == "POST":
         form = SlipUploadForm(request.POST, request.FILES)
@@ -121,63 +127,12 @@ def admin_payment_review_view(request, payment_id):
     if request.method == "POST":
         action = request.POST.get('action')
         notes = request.POST.get('verification_notes', '').strip()
-
-        if action == "APPROVE" and latest_slip:
-            latest_slip.verification_status = SlipVerificationStatus.VERIFIED
-            latest_slip.verified_by = request.user
-            latest_slip.verified_at = timezone.now()
-            latest_slip.verification_notes = notes
-            latest_slip.save()
-
-            payment.status = PaymentStatus.SUCCESS
-            payment.save(update_fields=['status', 'updated_at'])
-
-            booking = payment.booking
-            booking.status = BookingStatus.CONFIRMED
-            booking.save(update_fields=['status', 'updated_at'])
-
-            record_audit_log(
-                request=request,
-                action="UPDATE",
-                model_name="Payment",
-                object_id=str(payment.id),
-                changes={
-                    "action": "PAYMENT_APPROVED",
-                    "booking_code": booking.booking_code,
-                    "slip_ref": latest_slip.provider_reference,
-                },
-                user=request.user,
-            )
-
-            send_booking_voucher_task.delay_on_commit(payment.id)
-            messages.success(request, _("อนุมัติการชำระเงินสำหรับรหัส {booking_code} สำเร็จ").format(booking_code=booking.booking_code))
-            return redirect('payments:admin_list')
-
-        elif action == "REJECT" and latest_slip:
-            latest_slip.verification_status = SlipVerificationStatus.REJECTED
-            latest_slip.verified_by = request.user
-            latest_slip.verified_at = timezone.now()
-            latest_slip.verification_notes = notes
-            latest_slip.save()
-
-            payment.status = PaymentStatus.FAILED
-            payment.save(update_fields=['status', 'updated_at'])
-
-            record_audit_log(
-                request=request,
-                action="UPDATE",
-                model_name="Payment",
-                object_id=str(payment.id),
-                changes={
-                    "action": "PAYMENT_REJECTED",
-                    "reason": notes,
-                },
-                user=request.user,
-            )
-
-            send_slip_rejected_task.delay_on_commit(payment.id, notes or _("สลิปไม่ผ่านการตรวจสอบ"))
-            messages.warning(request, _("ปฏิเสธสลิปการโอนเงิน รหัส {booking_code}").format(booking_code=payment.booking.booking_code))
-            return redirect('payments:admin_list')
+        if action in ("APPROVE", "REJECT"):
+            ok, message = review_slip(request, payment.id, action, notes)
+            (messages.success if ok else messages.error)(request, message)
+            if ok:
+                return redirect('payments:admin_list')
+            return redirect('payments:admin_review', payment_id=payment.id)
 
     return render(request, 'payments/admin_review.html', {
         'payment': payment,
@@ -190,7 +145,7 @@ def admin_payment_review_view(request, payment_id):
 def slip_status_view(request, booking_id):
     """HTMX poll from the booking page while the worker checks the slip."""
     booking = get_object_or_404(Booking, id=booking_id)
-    if not can_view_object(request.user, booking):
+    if not can_access_payment(request.user, booking):
         raise Http404
     context = slip_status_context(booking)
     slip = context['slip']
@@ -217,7 +172,7 @@ def slip_image_view(request, path):
         PaymentSlip.objects.select_related('payment__booking'),
         image=f"slips/{path}",
     )
-    if not can_view_object(request.user, slip.payment.booking):
+    if not can_access_payment(request.user, slip.payment.booking):
         raise Http404
     response = FileResponse(slip.image.open('rb'))
     response['Cache-Control'] = 'private, no-store'

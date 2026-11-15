@@ -198,7 +198,18 @@ def admin_command_center_view(request):
     elif active_tab == 'vouchers':
         from apps.community.models import Coupon
         from apps.bookings.models import ShippingSetting
-        context['coupons'] = Coupon.objects.all().order_by('-created_at')
+        from django.db.models import Count, IntegerField, OuterRef, Subquery
+        from django.db.models.functions import Coalesce
+        used = (
+            Booking.objects.filter(
+                coupon_code=OuterRef('code'),
+                status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED, BookingStatus.COMPLETED],
+            )
+            .order_by().values('coupon_code').annotate(n=Count('id')).values('n')
+        )
+        context['coupons'] = Coupon.objects.annotate(
+            used_count=Coalesce(Subquery(used, output_field=IntegerField()), 0)
+        ).order_by('-created_at')
         context['shipping_settings'] = ShippingSetting.get_settings()
 
     return render(request, 'admin/dashboard.html', context)
@@ -1255,8 +1266,13 @@ def admin_content_delete_view(request, entry_id):
 @require_http_methods(["POST"])
 def admin_payment_edit_view(request, payment_id):
     """Admin manually updates payment status or amount note."""
-    payment = get_object_or_404(Payment, id=payment_id)
+    payment = get_object_or_404(Payment.objects.select_related('booking'), id=payment_id)
     new_status = request.POST.get('status', '').strip()
+
+    if new_status == PaymentStatus.SUCCESS and payment.booking.status in (BookingStatus.PAYMENT_EXPIRED, BookingStatus.CANCELLED):
+        # Stock for an expired/cancelled booking is already back on sale
+        messages.error(request, _("ตั้งเป็นชำระสำเร็จไม่ได้: การจอง {booking_code} หมดเวลาหรือถูกยกเลิกแล้ว").format(booking_code=payment.booking.booking_code))
+        return redirect('/accounts/admin-center/?tab=payments')
 
     if new_status in dict(PaymentStatus.choices):
         payment.status = new_status
@@ -1345,6 +1361,8 @@ def admin_coupon_create_view(request):
     discount_amount = request.POST.get('discount_amount', '0').strip()
     min_purchase = request.POST.get('min_purchase', '0').strip()
     days_valid = request.POST.get('days_valid', '30').strip()
+    max_uses_raw = request.POST.get('max_uses', '').strip()
+    per_user_raw = request.POST.get('per_user_limit', '1').strip()
 
     if not code:
         messages.error(request, _("กรุณาระบุรหัสคูปอง (Coupon Code)"))
@@ -1374,6 +1392,8 @@ def admin_coupon_create_view(request):
         days = 30
 
     expires_at = timezone.now() + timedelta(days=days)
+    max_uses = int(max_uses_raw) if max_uses_raw.isdigit() and int(max_uses_raw) > 0 else None
+    per_user_limit = int(per_user_raw) if per_user_raw.isdigit() else 1
 
     Coupon.objects.create(
         code=code,
@@ -1381,6 +1401,8 @@ def admin_coupon_create_view(request):
         min_purchase=min_purch_val,
         expires_at=expires_at,
         is_active=True,
+        max_uses=max_uses,
+        per_user_limit=per_user_limit,
     )
     record_audit_log(
         request=request,

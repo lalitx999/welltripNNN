@@ -1,6 +1,6 @@
 {% extends "layouts/public.html" %}
 
-{% load i18n %}
+{% load i18n static %}
 {% block title %}{% blocktranslate trimmed with booking_code=booking.booking_code %}ชำระเงิน {{ booking_code }} - WellTrip Sisaket{% endblocktranslate %}{% endblock %}
 
 {% block content %}
@@ -40,6 +40,17 @@
           <small class="text-secondary d-block">{% translate "ยอดที่ต้องโอน (โอนให้ตรงยอด)" %}</small>
           <span class="display-6 fw-bold text-green">฿{{ payment.amount|default:booking.total_amount|floatformat:"2g" }}</span>
         </div>
+      </div>
+    </div>
+
+    <div class="border-top mt-4 pt-4 row g-3 align-items-center">
+      <div class="col-sm-5 col-md-4 text-center">
+        <img src="{% static 'images/payment/kbank-promptpay-qr.png' %}" alt="{% translate 'QR พร้อมเพย์สำหรับโอนเงินเข้าบัญชี WellTrip' %}" class="img-fluid rounded-4 border" style="max-height: 20rem;" loading="lazy">
+      </div>
+      <div class="col-sm-7 col-md-8">
+        <h3 class="h6 fw-bold mb-2"><i data-lucide="qr-code" class="text-green me-1"></i>{% translate "หรือสแกน QR พร้อมเพย์" %}</h3>
+        <p class="small text-secondary mb-3">{% translate "สแกนด้วยแอปธนาคารใดก็ได้ แล้วกรอกยอดเงินให้ตรงกับยอดที่ต้องโอนด้านบน" %}</p>
+        <a href="{% static 'images/payment/kbank-promptpay-qr.png' %}" download="welltrip-promptpay-qr.png" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="download" class="me-1"></i>{% translate "บันทึกรูป QR" %}</a>
       </div>
     </div>
   </div>

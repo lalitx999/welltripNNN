@@ -115,6 +115,12 @@ class Coupon(models.Model):
     )
     expires_at = models.DateTimeField(db_index=True)
     is_active = models.BooleanField(default=True, db_index=True)
+    max_uses = models.PositiveIntegerField(
+        null=True, blank=True, help_text=gettext_lazy("จำนวนครั้งที่ใช้ได้ทั้งหมด (ว่าง = ไม่จำกัด)")
+    )
+    per_user_limit = models.PositiveIntegerField(
+        default=1, help_text=gettext_lazy("จำนวนครั้งที่ผู้ใช้ 1 คนใช้ได้ (0 = ไม่จำกัด)")
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -130,6 +136,24 @@ class Coupon(models.Model):
         if order_amount < self.min_purchase:
             return False, _("ยอดสั่งซื้อขั้นต่ำสำหรับคูปองนี้คือ ฿{min_purchase:,.2f}").format(min_purchase=self.min_purchase)
         return True, _("ใช้คูปองส่วนลดสำเร็จ")
+
+    def redemptions(self):
+        """Orders that used this code and still count (unpaid-but-held, paid or done)."""
+        from apps.bookings.models import Booking, BookingStatus
+        return Booking.objects.filter(
+            coupon_code=self.code,
+            status__in=[BookingStatus.AWAITING_PAYMENT, BookingStatus.CONFIRMED, BookingStatus.COMPLETED],
+        )
+
+    def check_usage(self, user) -> tuple[bool, str]:
+        """Total and per-user limits. Call with the coupon row locked when placing an order."""
+        redemptions = self.redemptions()
+        if self.max_uses is not None and redemptions.count() >= self.max_uses:
+            return False, _("คูปองนี้ถูกใช้ครบจำนวนแล้ว")
+        if self.per_user_limit and user is not None and user.is_authenticated:
+            if redemptions.filter(customer=user).count() >= self.per_user_limit:
+                return False, _("คุณใช้คูปองนี้ครบจำนวนครั้งที่กำหนดแล้ว")
+        return True, ""
 
     def __str__(self):
         return f"Coupon {self.code} (-฿{self.discount_amount})"

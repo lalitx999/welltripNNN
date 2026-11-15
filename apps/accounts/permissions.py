@@ -138,6 +138,18 @@ def can_view_object(user, obj):
     return False
 
 
+def can_access_payment(user, booking):
+    """
+    Payment pages and slip images: only the booking's customer and admins.
+    Vendors with items in the booking must not see the customer's bank details.
+    """
+    if not user.is_authenticated:
+        return False
+    if user.is_superuser or user.role in {UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN}:
+        return True
+    return booking.customer_id == user.id
+
+
 def can_edit_object(user, obj):
     """
     Checks if the user has permission to edit an object.

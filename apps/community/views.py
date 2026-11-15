@@ -198,6 +198,8 @@ def validate_coupon_htmx_view(request):
         })
 
     is_valid, msg = coupon.is_valid_for(order_amount)
+    if is_valid:
+        is_valid, msg = coupon.check_usage(request.user)
     discount = coupon.discount_amount if is_valid else Decimal("0.00")
     final_amount = max(Decimal("0.00"), order_amount - discount)
 
