@@ -59,11 +59,10 @@ class Payment(models.Model):
     )
 
     # Snapshot of community receiving bank account
-    payee_bank_name = models.CharField(max_length=100, default="ธนาคารกสิกรไทย (Kasikornbank)")
-    payee_account_name = models.CharField(
-        max_length=150, default="นาย พรหมลิขิต อุรา"
-    )
-    payee_account_number = models.CharField(max_length=50, default="001-1-50448-5")
+    # Filled from settings (.env) when the payment is created
+    payee_bank_name = models.CharField(max_length=100, blank=True, default="")
+    payee_account_name = models.CharField(max_length=150, blank=True, default="")
+    payee_account_number = models.CharField(max_length=50, blank=True, default="")
 
     paid_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)

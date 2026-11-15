@@ -24,6 +24,10 @@ if not ALLOWED_HOSTS:
 if SECRET_KEY.startswith('django-insecure') or len(SECRET_KEY) < 40:
     raise ImproperlyConfigured('Set a strong DJANGO_SECRET_KEY in production.')
 
+# Customers transfer money to this account; never fall back to a guess
+if not PAYEE_ACCOUNT_NUMBER or not PAYEE_ACCOUNT_NAME:
+    raise ImproperlyConfigured('Set PAYEE_ACCOUNT_NUMBER and PAYEE_ACCOUNT_NAME in .env.')
+
 # HTTPS & HSTS Settings (Behind Cloudflare Tunnel)
 SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
 SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=31536000, cast=int)

@@ -1,6 +1,6 @@
 # Deploy WellTrip ขึ้น VPS
 
-ระบบมี 5 container: `db` (PostgreSQL 16), `redis`, `backend` (Django + Gunicorn), `nginx` และ `cloudflared`
+ระบบมี 7 container: `db` (PostgreSQL 16), `redis`, `backend` (Django + Gunicorn), `worker` (Celery), `beat` (ตัวตั้งเวลา เช่นคืนสต็อกการจองที่ไม่จ่ายใน 15 นาที), `nginx` และ `cloudflared`
 คนเข้าเว็บผ่าน **Cloudflare Tunnel** จึงไม่ต้องเปิดพอร์ตหรือทำ SSL เอง และไม่ชนกับโปรเจคอื่นบน VPS
 
 ```
@@ -103,8 +103,24 @@ docker compose exec backend python manage.py createsuperuser
 git pull && docker compose up -d --build
 ```
 
-## สำรองฐานข้อมูล
+## สำรองฐานข้อมูลและไฟล์ media
+
+`scripts/backup.sh` เก็บฐานข้อมูลและรูป (รวมสลิป) ไว้ใน `backups/` และลบไฟล์ที่เก่ากว่า 14 วัน
 
 ```bash
-docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" -Fc "$POSTGRES_DB"' > backup-$(date +%F).dump
+./scripts/backup.sh
+```
+
+ตั้งให้รันทุกวันตอนตี 3:15 (`crontab -e` แล้วเพิ่มบรรทัดนี้ เปลี่ยน path เป็นโฟลเดอร์ welltrip):
+
+```bash
+15 3 * * * cd /path/to/welltrip && ./scripts/backup.sh >> backups/backup.log 2>&1
+```
+
+ไฟล์อยู่บน VPS เครื่องเดียว ถ้าเครื่องเสียก็หายด้วย ควรคัดลอก `backups/` ออกไปเก็บที่อื่นเป็นระยะ
+
+กู้ฐานข้อมูลจากไฟล์:
+
+```bash
+docker compose exec -T db sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner --no-acl' < backups/db-YYYYMMDD-HHMMSS.dump
 ```
