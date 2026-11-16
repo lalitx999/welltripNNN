@@ -1,0 +1,12 @@
+{% load i18n %}
+{% if advice %}
+  <div class="wt-card p-4">
+    <h3 class="h6 fw-bold mb-3"><i data-lucide="heart-pulse" class="text-green me-1"></i>{% blocktranslate trimmed with bmi=advice.bmi label=advice.label %}คำแนะนำสุขภาพสำหรับ BMI {{ bmi }} ({{ label }}){% endblocktranslate %}</h3>
+    <div class="row g-3 small">
+      <div class="col-md-4"><div class="fw-semibold text-green mb-1"><i data-lucide="salad" class="me-1"></i>{% translate "การเลือกรับประทานอาหาร" %}</div><ul class="ps-3 mb-0">{% for t in advice.eat %}<li>{{ t }}</li>{% endfor %}</ul></div>
+      <div class="col-md-4"><div class="fw-semibold text-green mb-1"><i data-lucide="activity" class="me-1"></i>{% translate "การดูแลสุขภาพ" %}</div><ul class="ps-3 mb-0">{% for t in advice.care %}<li>{{ t }}</li>{% endfor %}</ul></div>
+      <div class="col-md-4"><div class="fw-semibold text-danger mb-1"><i data-lucide="alert-triangle" class="me-1"></i>{% translate "ข้อควรระวัง" %}</div><ul class="ps-3 mb-0">{% for t in advice.caution %}<li>{{ t }}</li>{% endfor %}</ul></div>
+    </div>
+    <div class="small text-secondary border-top mt-3 pt-2">{{ advice.disclaimer }}</div>
+  </div>
+{% endif %}

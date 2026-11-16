@@ -16,6 +16,7 @@ from django.utils import timezone
 from apps.accommodations.models import Accommodation, AccommodationStatus
 from apps.services.models import FoodMenu, FoodWellnessCategory, WellnessService
 from apps.otop.models import OTOPProduct
+from .bmi_advice import bmi_advice
 from .models import HealthProfile, AIRecommendationLog
 
 logger = logging.getLogger(__name__)
@@ -107,6 +108,111 @@ def analyze_health_deepseek(profile_data: dict) -> str:
         f"มีอัตราการเผาผลาญพื้นฐาน (BMR) ประมาณ {profile_data.get('bmr')} กิโลแคลอรี/วัน "
         f"สำหรับเป้าหมายด้านสุขภาวะที่ระบุ: {advice}"
     )
+
+
+GOAL_LABELS = {
+    "STRESS_RELIEF": "คลายเครียด",
+    "DETOX": "ดีท็อกซ์",
+    "WEIGHT_MANAGEMENT": "ควบคุมน้ำหนัก",
+    "SENIOR_WELLNESS": "ผู้สูงอายุ",
+}
+MAX_PLACES = 5
+
+
+def _normalize_place(name: str) -> str:
+    import re
+    return re.sub(r"[\s\-–—()\[\]\"'“”.,:]", "", (name or "").lower())
+
+
+def _match_attraction(name, attractions):
+    """The published attraction this AI-suggested name refers to, if any."""
+    key = _normalize_place(name)
+    if len(key) < 3:
+        return None
+    for entry in attractions:
+        title = _normalize_place(entry.title)
+        if title and (key in title or title in key):
+            return entry
+    return None
+
+
+def _ask_deepseek_for_places(profile_data: dict):
+    """DeepSeek's list of places/activities in Sisaket for this visitor, or None when unavailable."""
+    api_key = getattr(settings, "DEEPSEEK_API_KEY", "") or ""
+    if not api_key:
+        return None
+    goal = GOAL_LABELS.get(str(profile_data.get("health_goal")), str(profile_data.get("health_goal", "")))
+    prompt = (
+        "คุณคือไกด์ท้องถิ่นจังหวัดศรีสะเกษ ประเทศไทย ที่รู้จักแหล่งท่องเที่ยวจริงในจังหวัด\n"
+        f"นักท่องเที่ยวอายุ {profile_data.get('age')} ปี BMI {profile_data.get('bmi')} "
+        f"({get_bmi_category(float(profile_data.get('bmi') or 0))}) เป้าหมาย: {goal}\n"
+        f"แนะนำสถานที่ท่องเที่ยวหรือกิจกรรมที่มีอยู่จริงในจังหวัดศรีสะเกษ {MAX_PLACES} แห่ง ที่เหมาะกับสุขภาพและเป้าหมายนี้ "
+        "เช่น วัด ปราสาท อุทยาน น้ำตก ตลาด สวนเกษตร กิจกรรมชุมชน ห้ามแต่งชื่อสถานที่ขึ้นเอง\n"
+        "ตอบเป็น JSON array เท่านั้น ไม่มีข้อความอื่น แต่ละรายการมี key: "
+        '"name" (ชื่อสถานที่ภาษาไทย), "district" (อำเภอ), "reason" (เหตุผลสั้นๆ 1 ประโยคว่าทำไมเหมาะกับสุขภาพของเขา)'
+    )
+    try:
+        resp = requests.post(
+            "https://api.deepseek.com/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key.strip()}", "Content-Type": "application/json"},
+            json={"model": "deepseek-chat", "messages": [{"role": "user", "content": prompt}], "temperature": 0.4},
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            return None
+        text = resp.json()["choices"][0]["message"]["content"].strip()
+        start, end = text.find("["), text.rfind("]")
+        if start < 0 or end <= start:
+            return None
+        rows = json.loads(text[start:end + 1])
+    except Exception as exc:
+        logger.warning("DeepSeek place suggestions failed: %s", exc)
+        return None
+    places = []
+    for row in rows if isinstance(rows, list) else []:
+        if not isinstance(row, dict) or not str(row.get("name", "")).strip():
+            continue
+        places.append({
+            "name": str(row.get("name", "")).strip()[:120],
+            "district": str(row.get("district", "")).strip()[:60],
+            "reason": str(row.get("reason", "")).strip()[:300],
+        })
+    return places[:MAX_PLACES] or None
+
+
+def suggest_sisaket_places(profile_data: dict) -> list:
+    """
+    Places and activities in Sisaket for this visitor. DeepSeek may suggest places
+    the site does not list yet; a suggestion that matches a published attraction
+    links to its page, the others are marked as AI suggestions to check before going.
+    Without the AI, published attractions are offered instead.
+    """
+    from django.urls import reverse
+    from apps.core.selectors.catalog_selector import published_attractions
+
+    attractions = list(published_attractions().order_by("title"))
+    places = []
+    for row in _ask_deepseek_for_places(profile_data) or []:
+        entry = _match_attraction(row["name"], attractions)
+        places.append({
+            **row,
+            "source": "AI",
+            "verified": entry is not None,
+            "url": reverse("community:story_detail", args=[entry.id]) if entry else "",
+            "image_url": entry.display_image_url if entry else "",
+        })
+    if not places:
+        for entry in attractions[:4]:
+            places.append({
+                "name": entry.title,
+                "district": entry.location.replace(" จ.ศรีสะเกษ", ""),
+                "reason": (entry.summary or "")[:200],
+                "source": "WELLTRIP",
+                "verified": True,
+                "url": reverse("community:story_detail", args=[entry.id]),
+                "image_url": entry.display_image_url,
+            })
+    return places
 
 
 def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> dict:
@@ -266,6 +372,7 @@ def complete_recommendation(log_id) -> None:
     try:
         health_analysis = analyze_health_deepseek(profile)
         package_result = match_sisaket_wellness_package(health_analysis, profile)
+        places = suggest_sisaket_places(profile)
     except Exception:
         logger.exception("AI recommendation %s failed", log_id)
         log.status = AIRecommendationLog.Status.FAILED
@@ -283,6 +390,8 @@ def complete_recommendation(log_id) -> None:
         },
         "deepseek_analysis": health_analysis,
         "recommended_package": package_result,
+        "bmi_advice": bmi_advice(profile["bmi"]),
+        "places": places,
     }
     # Decimal prices -> strings so the result fits a JSONField
     log.result = json.loads(json.dumps(result, cls=DjangoJSONEncoder))

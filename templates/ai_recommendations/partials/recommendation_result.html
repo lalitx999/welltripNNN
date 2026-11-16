@@ -1,5 +1,7 @@
 {% load i18n %}
 <div class="d-grid gap-3">
+  {% include "ai_recommendations/partials/bmi_advice_card.html" with advice=result.bmi_advice %}
+
   <div class="wt-card p-4">
     <div class="d-flex align-items-center gap-3 mb-3">
       <span class="wt-stat-icon" style="--c:#fff;--bg:var(--wt-green)"><i data-lucide="sparkles" class="icon-lg"></i></span>
@@ -16,6 +18,33 @@
     <p class="text-secondary mb-3" style="white-space: pre-line;">{{ result.deepseek_analysis }}</p>
     <div class="small text-secondary border-top pt-3 d-flex gap-2"><i data-lucide="alert-triangle" class="text-warning mt-1"></i>{{ result.recommended_package.disclaimer }}</div>
   </div>
+
+  {% if result.places %}
+    <div class="wt-card p-4">
+      <h3 class="h6 fw-bold mb-1"><i data-lucide="map-pinned" class="text-green me-1"></i>{% translate "สถานที่และกิจกรรมแนะนำในศรีสะเกษ" %}</h3>
+      <p class="small text-secondary">{% translate "เลือกให้เหมาะกับสุขภาพและเป้าหมายของคุณ รวมสถานที่ที่ยังไม่มีในเว็บไซต์" %}</p>
+      <div class="row row-cols-1 row-cols-sm-2 g-3">
+        {% for place in result.places %}
+          <div class="col">
+            <div class="border rounded-4 h-100 overflow-hidden d-flex flex-column">
+              {% if place.image_url %}<img src="{{ place.image_url }}" alt="{{ place.name }}" class="w-100 object-fit-cover" style="aspect-ratio: 16 / 9;" loading="lazy">{% endif %}
+              <div class="p-3 d-grid gap-1 flex-grow-1">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                  <span class="fw-bold">{{ place.name }}</span>
+                  {% if place.verified %}<span class="badge badge-green">{% translate "มีในเว็บไซต์" %}</span>{% else %}<span class="badge bg-warning-subtle text-warning-emphasis">{% translate "แนะนำโดย AI · ควรตรวจสอบก่อนเดินทาง" %}</span>{% endif %}
+                </div>
+                {% if place.district %}<small class="text-secondary"><i data-lucide="map-pin" class="me-1"></i>{{ place.district }}</small>{% endif %}
+                {% if place.reason %}<small>{{ place.reason }}</small>{% endif %}
+                <div class="mt-auto pt-2">
+                  {% if place.url %}<a href="{{ place.url }}" class="btn btn-outline-ink btn-sm rounded-pill">{% translate "ดูรายละเอียด" %}</a>{% else %}<a href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}+{{ 'ศรีสะเกษ'|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="navigation" class="me-1"></i>{% translate "ค้นหาใน Google Maps" %}</a>{% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 
   <div class="wt-card p-4">
     <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 border-bottom pb-3 mb-2">

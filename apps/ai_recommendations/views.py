@@ -24,9 +24,12 @@ def assessment_view(request):
     if request.user.is_authenticated:
         existing_profile = HealthProfile.objects.filter(user=request.user).first()
 
+    from .bmi_advice import advice_table
+
     context = {
         "page_title": _("AI Wellness Assistant - วิเคราะห์สุขภาพและวางแผนทริป"),
         "profile": existing_profile,
+        "bmi_advice_table": advice_table(),
     }
     return render(request, "ai_recommendations/assessment.html", context)
 
@@ -87,4 +90,6 @@ def _render_job(request, log):
     timed_out = timezone.now() - log.created_at > JOB_TIMEOUT
     if log.status == AIRecommendationLog.Status.FAILED or timed_out:
         return render(request, "ai_recommendations/partials/recommendation_failed.html")
-    return render(request, "ai_recommendations/partials/recommendation_pending.html", {"log": log})
+    from .bmi_advice import bmi_advice
+    advice = bmi_advice((log.input_snapshot or {}).get("bmi"))
+    return render(request, "ai_recommendations/partials/recommendation_pending.html", {"log": log, "advice": advice})

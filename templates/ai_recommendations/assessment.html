@@ -4,7 +4,14 @@
 {% block title %}{% translate "AI Wellness Assistant - วิเคราะห์สุขภาพและจัดทริปเฉพาะบุคคล | WellTrip Sisaket" %}{% endblock %}
 
 {% block content %}
+{{ bmi_advice_table|json_script:"bmi-advice" }}
 <div x-data="{
+       adviceTable: JSON.parse(document.getElementById('bmi-advice').textContent),
+       get advice() {
+         const b = parseFloat(this.bmi);
+         if (!b) return null;
+         return this.adviceTable.find(a => a.max === null || b < a.max);
+       },
        weight: {{ profile.weight_kg|default:'null' }},
        height: {{ profile.height_cm|default:'null' }},
        age: {{ profile.age|default:'null' }},
@@ -50,6 +57,17 @@
               <div class="col-6"><small class="text-secondary d-block">BMR</small><span class="fs-4 fw-bold" x-text="bmr ? bmr + ' kcal' : '-'">-</span></div>
             </div>
             <div class="badge w-100 mt-2 py-2" :class="bmiBadge.cls" x-text="bmiBadge.label"></div>
+          </div>
+
+          <div class="border rounded-4 p-3 mb-3 small" x-show="advice" x-cloak aria-live="polite">
+            <div class="fw-bold mb-2"><i data-lucide="heart-pulse" class="text-green me-1"></i>{% translate "คำแนะนำเบื้องต้นตามค่า BMI" %} <span class="text-secondary fw-normal" x-text="advice ? '(' + advice.label + ')' : ''"></span></div>
+            <div class="fw-semibold text-green">{% translate "การเลือกรับประทานอาหาร" %}</div>
+            <ul class="ps-3 mb-2"><template x-for="t in (advice ? advice.eat : [])"><li x-text="t"></li></template></ul>
+            <div class="fw-semibold text-green">{% translate "การดูแลสุขภาพ" %}</div>
+            <ul class="ps-3 mb-2"><template x-for="t in (advice ? advice.care : [])"><li x-text="t"></li></template></ul>
+            <div class="fw-semibold text-danger">{% translate "ข้อควรระวัง" %}</div>
+            <ul class="ps-3 mb-2"><template x-for="t in (advice ? advice.caution : [])"><li x-text="t"></li></template></ul>
+            <div class="text-secondary">{% translate "คำแนะนำนี้เป็นข้อมูลสุขภาพทั่วไป ไม่ใช่การวินิจฉัยหรือการรักษาทางการแพทย์" %}</div>
           </div>
 
           <form hx-post="{% url 'ai_recommendations:assess_htmx' %}" hx-target="#ai-results-container" hx-indicator="#ai-spinner" class="d-grid gap-3">
