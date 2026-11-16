@@ -12,7 +12,8 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.accounts.services.audit import record_audit_log
-from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType
+from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType, PaymentPlan
+from apps.bookings.services.deposit import deposit_accommodation_id, split_deposit
 from apps.bookings.services.pricing import parse_date, parse_guests, room_option_title, stay_dates
 from apps.accommodations.models import AccommodationStatus, Room, RoomPricingCalendar
 from apps.core.pricing import customer_price
@@ -41,6 +42,7 @@ def process_checkout(
     discount_amount=Decimal("0.00"),
     coupon_code="",
     shipping_address=None,
+    payment_plan="FULL",
 ):
     """
     Executes multi-vendor checkout with strict row-locking (select_for_update).
@@ -241,6 +243,13 @@ def process_checkout(
 
     final_total = max(Decimal("0.00"), total_booking_amount + shipping_fee - discount_amount)
 
+    deposit_fields = {}
+    if payment_plan == PaymentPlan.DEPOSIT:
+        if deposit_accommodation_id([{"item_type": i["item_type"], "accommodation_id": i["booking_metadata"].get("accommodation_id")} for i in pending_items_to_create]) is None:
+            raise StockUnavailableError(_("จ่ายมัดจำได้เฉพาะการจองบ้านพักจากโฮมสเตย์เดียวกันเท่านั้น"))
+        deposit, balance = split_deposit(final_total)
+        deposit_fields = {"payment_plan": PaymentPlan.DEPOSIT, "deposit_amount": deposit, "balance_due": balance}
+
     # Create Booking
     booking = Booking.objects.create(
         customer=user,
@@ -251,6 +260,7 @@ def process_checkout(
         shipping_address=shipping_address or {},
         customer_notes=customer_notes,
         status=BookingStatus.AWAITING_PAYMENT,
+        **deposit_fields,
     )
 
     # Bulk create items
@@ -293,41 +303,7 @@ def cancel_and_restore_expired_bookings():
             if booking_locked.status != BookingStatus.AWAITING_PAYMENT:
                 continue
 
-            # Restore each locked entity
-            for item in booking_locked.items.all():
-                if item.item_type == BookingItemType.ROOM:
-                    date_str = item.booking_metadata.get("date")
-                    if date_str:
-                        booking_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-                        cal = (
-                            RoomPricingCalendar.objects.select_for_update()
-                            .filter(room_id=item.entity_id, date=booking_date)
-                            .first()
-                        )
-                        if cal:
-                            cal.available_count += item.quantity
-                            cal.save(update_fields=["available_count"])
-
-                elif item.item_type == BookingItemType.WELLNESS:
-                    # Only slot bookings reserve capacity; plain service bookings store a UUID
-                    slot_id = item.booking_metadata.get("slot_id")
-                    slot = (
-                        WellnessTimeSlot.objects.select_for_update().filter(id=slot_id).first()
-                        if slot_id else None
-                    )
-                    if slot:
-                        slot.capacity_available += item.quantity
-                        slot.save(update_fields=["capacity_available"])
-
-                elif item.item_type == BookingItemType.OTOP:
-                    prod = (
-                        OTOPProduct.objects.select_for_update()
-                        .filter(id=item.entity_id)
-                        .first()
-                    )
-                    if prod:
-                        prod.stock_quantity += item.quantity
-                        prod.save(update_fields=["stock_quantity", "updated_at"])
+            restore_booking_stock(booking_locked)
 
             booking_locked.status = BookingStatus.PAYMENT_EXPIRED
             booking_locked.save(update_fields=["status", "updated_at"])
@@ -341,3 +317,44 @@ def cancel_and_restore_expired_bookings():
             restored_count += 1
 
     return restored_count
+
+
+def restore_booking_stock(booking):
+    """
+    Put back every room night, wellness slot and product a booking held.
+    Call inside a transaction with the booking row locked.
+    """
+    for item in booking.items.all():
+        if item.item_type == BookingItemType.ROOM:
+            date_str = item.booking_metadata.get("date")
+            if date_str:
+                booking_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                cal = (
+                    RoomPricingCalendar.objects.select_for_update()
+                    .filter(room_id=item.entity_id, date=booking_date)
+                    .first()
+                )
+                if cal:
+                    cal.available_count += item.quantity
+                    cal.save(update_fields=["available_count"])
+
+        elif item.item_type == BookingItemType.WELLNESS:
+            # Only slot bookings reserve capacity; plain service bookings store a UUID
+            slot_id = item.booking_metadata.get("slot_id")
+            slot = (
+                WellnessTimeSlot.objects.select_for_update().filter(id=slot_id).first()
+                if slot_id else None
+            )
+            if slot:
+                slot.capacity_available += item.quantity
+                slot.save(update_fields=["capacity_available"])
+
+        elif item.item_type == BookingItemType.OTOP:
+            prod = (
+                OTOPProduct.objects.select_for_update()
+                .filter(id=item.entity_id)
+                .first()
+            )
+            if prod:
+                prod.stock_quantity += item.quantity
+                prod.save(update_fields=["stock_quantity", "updated_at"])

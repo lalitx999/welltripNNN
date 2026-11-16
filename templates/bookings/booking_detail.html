@@ -18,7 +18,7 @@
       <h1 class="fw-bold font-monospace mb-0">{{ booking.booking_code }}</h1>
       <small class="text-secondary">{% blocktranslate trimmed with created_at=booking.created_at|date:"d M Y H:i" %}สร้างเมื่อ {{ created_at }} น.{% endblocktranslate %}</small>
     </div>
-    {% include "bookings/partials/status_badge.html" with status=booking.status label=booking.get_status_display %}
+    {% include "bookings/partials/status_badge.html" with status=booking.status label=booking.status_label %}
   </div>
 
   <div class="d-grid gap-4">
@@ -61,6 +61,13 @@
         <span class="fw-bold">{% translate "ยอดรวม" %}</span>
         <span class="fs-4 fw-bold text-green">฿{{ booking.total_amount|floatformat:"2g" }}</span>
       </div>
+      {% if booking.is_deposit %}
+        <div class="bg-mint rounded-4 p-3 mt-3 small d-grid gap-1">
+          <div class="d-flex justify-content-between"><span>{% translate "มัดจำ (โอนผ่านเว็บ)" %}</span><strong>฿{{ booking.deposit_amount|floatformat:"0g" }}</strong></div>
+          <div class="d-flex justify-content-between"><span>{% translate "ส่วนที่เหลือ (จ่ายที่ที่พัก)" %}</span><strong>฿{{ booking.balance_due|floatformat:"0g" }}{% if booking.balance_paid_at %} ✓ {% translate "ชำระแล้ว" %}{% endif %}</strong></div>
+        </div>
+      {% endif %}
+      {% if booking.cancel_reason %}<div class="alert alert-danger rounded-4 small mt-3 mb-0">{% translate "การจองนี้ถูกยกเลิก" %}: {{ booking.cancel_reason }}</div>{% endif %}
     </div>
 
     <a href="{% url 'bookings:my_bookings' %}" class="small fw-semibold text-green"><i data-lucide="arrow-left" class="me-1"></i>{% translate "การจองทั้งหมด" %}</a>

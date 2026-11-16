@@ -29,7 +29,7 @@
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 border-bottom pb-2 mb-2">
             <div class="d-flex align-items-center gap-2">
               <span class="fw-bold font-monospace">{{ b.booking_code }}</span>
-              {% include "bookings/partials/status_badge.html" with status=b.status label=b.get_status_display %}
+              {% include "bookings/partials/status_badge.html" with status=b.status label=b.status_label %}
             </div>
             <small class="text-secondary">{% blocktranslate trimmed with created_at=b.created_at|date:"d M Y H:i" %}{{ created_at }} น.{% endblocktranslate %}</small>
           </div>

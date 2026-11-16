@@ -1,0 +1,89 @@
+{% extends "layouts/merchant.html" %}
+{% load i18n %}
+{% block title %}{% translate "การจองและมัดจำ - Partner Studio" %}{% endblock %}
+{% block page_heading %}{% translate "การจองที่พักและมัดจำ" %}{% endblock %}
+
+{% block content %}
+<div class="d-grid gap-3">
+  <div class="wt-pills">
+    <a href="?tab=action" class="wt-pill {% if tab == 'action' %}active{% endif %}">{% translate "ต้องดำเนินการ" %}</a>
+    <a href="?tab=awaiting_balance" class="wt-pill {% if tab == 'awaiting_balance' %}active{% endif %}">{% translate "รอรับเงินส่วนที่เหลือ" %}</a>
+    <a href="?tab=all" class="wt-pill {% if tab == 'all' %}active{% endif %}">{% translate "ทั้งหมด" %}</a>
+  </div>
+  <p class="small text-secondary mb-0">{% blocktranslate trimmed %}ลูกค้าที่เลือกจ่ายมัดจำ ห้องจะถูกกันไว้ตั้งแต่สั่งจอง ยืนยันสลิปมัดจำแล้วห้องจะล็อกเป็นของผู้จอง เมื่อลูกค้าจ่ายส่วนที่เหลือที่ที่พักแล้วให้กด "รับเงินส่วนที่เหลือครบแล้ว" ถ้าลูกค้าไม่โอนมัดจำภายใน 15 นาที ระบบยกเลิกและคืนห้องให้อัตโนมัติ{% endblocktranslate %}</p>
+
+  <div class="wt-card">
+    {% if page_obj.object_list %}
+      <div class="list-group list-group-flush">
+        {% for b in page_obj %}
+          <div class="list-group-item p-3 d-grid gap-2">
+            <div class="d-flex flex-wrap justify-content-between gap-2">
+              <div class="min-w-0">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                  <span class="font-monospace fw-semibold small">{{ b.booking_code }}</span>
+                  {% include "bookings/partials/status_badge.html" with status=b.status label=b.status_label %}
+                  {% if b.is_deposit %}<span class="badge bg-light text-secondary border">{% translate "มัดจำ" %}</span>{% endif %}
+                </div>
+                <div class="small mt-1">
+                  {% for line in b.room_lines %}{% ifchanged line.entity_id line.booking_metadata.check_in %}<div>{{ line.item_title_snapshot }} · {% translate "เช็คอิน" %} {{ line.booking_metadata.check_in|default:line.booking_metadata.date }} · {{ line.booking_metadata.nights|default:1 }} {% translate "คืน" %}</div>{% endifchanged %}{% endfor %}
+                </div>
+                <small class="text-secondary">
+                  {{ b.created_at|date:"d/m/Y H:i" }} · {{ b.customer.full_name|default:b.customer.email }}{% if b.customer.phone_number and b.status != 'AWAITING_PAYMENT' %} · <a href="tel:{{ b.customer.phone_number }}">{{ b.customer.phone_number }}</a>{% endif %}
+                </small>
+                {% if b.cancel_reason %}<div class="small text-danger">{% translate "เหตุผลที่ยกเลิก" %}: {{ b.cancel_reason }}</div>{% endif %}
+              </div>
+              <div class="text-end small">
+                <div class="fw-bold text-green fs-6">฿{{ b.total_amount|floatformat:"0g" }}</div>
+                {% if b.is_deposit %}
+                  <div class="text-secondary">{% translate "มัดจำ" %} ฿{{ b.deposit_amount|floatformat:"0g" }}</div>
+                  <div class="{% if b.awaiting_balance %}fw-semibold text-danger{% else %}text-secondary{% endif %}">{% translate "ส่วนที่เหลือ" %} ฿{{ b.balance_due|floatformat:"0g" }}{% if b.balance_paid_at %} ✓{% endif %}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            {% if b.can_manage %}
+              <div class="d-flex flex-wrap gap-2 align-items-start">
+                {% if b.pending_slip and b.status == 'AWAITING_PAYMENT' %}
+                  {% if b.is_deposit or is_admin %}
+                    <a href="{{ b.pending_slip.image.url }}" target="_blank" rel="noopener" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="image" class="me-1"></i>{% translate "ดูสลิป" %}</a>
+                    {% if b.pending_slip.amount_seen %}<span class="small align-self-center">{% blocktranslate trimmed with amount=b.pending_slip.amount_seen|floatformat:"0g" %}ยอดในสลิป ฿{{ amount }}{% endblocktranslate %}</span>{% endif %}
+                    <form method="post" action="{% url 'bookings:stay_slip_review' b.id %}">{% csrf_token %}<input type="hidden" name="tab" value="{{ tab }}"><button type="submit" name="action" value="APPROVE" class="btn btn-green btn-sm rounded-pill"><i data-lucide="check" class="me-1"></i>{% if b.is_deposit %}{% translate "ยืนยันสลิปมัดจำ" %}{% else %}{% translate "ยืนยันสลิป" %}{% endif %}</button></form>
+                    <form method="post" action="{% url 'bookings:stay_slip_review' b.id %}" class="d-flex gap-1" onsubmit="return confirm('{{ _("ปฏิเสธสลิปนี้?")|escapejs }}')">{% csrf_token %}<input type="hidden" name="tab" value="{{ tab }}"><input type="text" name="notes" class="form-control form-control-sm" placeholder="{% translate 'เหตุผล (ไม่บังคับ)' %}" style="max-width: 12rem;"><button type="submit" name="action" value="REJECT" class="btn btn-outline-danger btn-sm rounded-pill">{% translate "ปฏิเสธ" %}</button></form>
+                  {% else %}
+                    <span class="small text-secondary align-self-center">{% translate "สลิปชำระเต็มจำนวน ทีมงาน WellTrip เป็นผู้ตรวจ" %}</span>
+                  {% endif %}
+                {% endif %}
+
+                {% if b.awaiting_balance %}
+                  <form method="post" action="{% url 'bookings:stay_balance_paid' b.id %}" onsubmit="return confirm('{{ _("ยืนยันว่าได้รับเงินส่วนที่เหลือครบแล้ว?")|escapejs }}')">{% csrf_token %}<input type="hidden" name="tab" value="{{ tab }}"><button type="submit" class="btn btn-gold btn-sm rounded-pill"><i data-lucide="hand-coins" class="me-1"></i>{% blocktranslate trimmed with amount=b.balance_due|floatformat:"0g" %}รับเงินส่วนที่เหลือ ฿{{ amount }} ครบแล้ว{% endblocktranslate %}</button></form>
+                {% endif %}
+
+                {% if b.status == 'AWAITING_PAYMENT' or b.status == 'CONFIRMED' %}
+                  <details class="small">
+                    <summary class="btn btn-outline-danger btn-sm rounded-pill">{% translate "ยกเลิกการจอง" %}</summary>
+                    <form method="post" action="{% url 'bookings:stay_cancel' b.id %}" class="d-flex flex-wrap gap-1 mt-2" onsubmit="return confirm('{{ _("ยกเลิกการจองนี้และคืนห้องให้คนอื่นจองได้?")|escapejs }}')">
+                      {% csrf_token %}<input type="hidden" name="tab" value="{{ tab }}">
+                      <input type="text" name="reason" required class="form-control form-control-sm" placeholder="{% translate 'เหตุผล เช่น ลูกค้าแจ้งยกเลิก' %}" style="max-width: 16rem;">
+                      <button type="submit" class="btn btn-danger btn-sm rounded-pill">{% translate "ยืนยันยกเลิก" %}</button>
+                    </form>
+                  </details>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="wt-empty py-5"><span class="wt-icon-pill"><i data-lucide="calendar-check"></i></span><div class="fw-bold">{% translate "ไม่มีการจองในรายการนี้" %}</div></div>
+    {% endif %}
+  </div>
+
+  {% if page_obj.has_other_pages %}
+    <nav class="d-flex justify-content-center gap-2">
+      {% if page_obj.has_previous %}<a class="btn btn-outline-ink btn-sm rounded-pill" href="?tab={{ tab }}&page={{ page_obj.previous_page_number }}">{% translate "ก่อนหน้า" %}</a>{% endif %}
+      <span class="small align-self-center">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a class="btn btn-outline-ink btn-sm rounded-pill" href="?tab={{ tab }}&page={{ page_obj.next_page_number }}">{% translate "ถัดไป" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}

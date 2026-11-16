@@ -68,6 +68,19 @@
           <span class="fw-bold">{% translate "ยอดชำระสุทธิ" %}</span>
           <span class="fs-3 fw-bold text-green">฿{{ totals.final_total|floatformat:"0g" }}</span>
         </div>
+        {% if deposit_option %}
+          <fieldset class="mt-3 d-grid gap-2">
+            <legend class="small fw-bold mb-1">{% translate "วิธีชำระ" %}</legend>
+            <label class="border rounded-4 p-3 d-flex gap-2 align-items-start">
+              <input type="radio" name="payment_plan" value="FULL" class="form-check-input mt-1" checked>
+              <span><span class="fw-semibold d-block">{% translate "จ่ายเต็มจำนวน" %}</span><small class="text-secondary">{% blocktranslate trimmed with total=totals.final_total|floatformat:"0g" %}โอน ฿{{ total }} ตอนนี้{% endblocktranslate %}</small></span>
+            </label>
+            <label class="border rounded-4 p-3 d-flex gap-2 align-items-start">
+              <input type="radio" name="payment_plan" value="DEPOSIT" class="form-check-input mt-1">
+              <span><span class="fw-semibold d-block">{% blocktranslate trimmed with percent=deposit_option.percent %}จ่ายมัดจำ {{ percent }}%{% endblocktranslate %}</span><small class="text-secondary">{% blocktranslate trimmed with deposit=deposit_option.deposit|floatformat:"0g" balance=deposit_option.balance|floatformat:"0g" %}โอน ฿{{ deposit }} ตอนนี้ ส่วนที่เหลือ ฿{{ balance }} จ่ายที่ที่พักวันเข้าพัก{% endblocktranslate %}</small></span>
+            </label>
+          </fieldset>
+        {% endif %}
         <button type="submit" class="btn btn-gold btn-lg rounded-pill w-100 mt-3"><i data-lucide="check-circle" class="me-1"></i>{% translate "ยืนยันคำสั่งซื้อ" %}</button>
         <p class="small text-secondary mt-3 mb-0"><i data-lucide="clock" class="me-1"></i>{% translate "เมื่อยืนยัน ระบบจะกันห้องพักและสินค้าไว้ให้ 15 นาทีเพื่อชำระเงินและแนบสลิป" %}</p>
       </div>

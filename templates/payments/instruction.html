@@ -39,6 +39,9 @@
         <div class="bg-mint rounded-4 p-4 text-center">
           <small class="text-secondary d-block">{% translate "ยอดที่ต้องโอน (โอนให้ตรงยอด)" %}</small>
           <span class="display-6 fw-bold text-green">฿{{ payment.amount|default:booking.total_amount|floatformat:"2g" }}</span>
+          {% if booking.is_deposit %}
+            <small class="d-block text-secondary mt-2">{% blocktranslate trimmed with total=booking.total_amount|floatformat:"0g" balance=booking.balance_due|floatformat:"0g" %}ค่ามัดจำของยอดรวม ฿{{ total }} · ส่วนที่เหลือ ฿{{ balance }} จ่ายที่ที่พักวันเข้าพัก{% endblocktranslate %}</small>
+          {% endif %}
         </div>
       </div>
     </div>

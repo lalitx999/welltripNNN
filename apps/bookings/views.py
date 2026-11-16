@@ -451,7 +451,13 @@ def review_view(request):
     totals = calculate_cart_totals(request, cart)
     shipping_address = get_selected_address(request)
 
+    from apps.bookings.services.deposit import cart_deposit_option, split_deposit
+    deposit_option = cart_deposit_option(cart)
+    if deposit_option:
+        deposit_option['deposit'], deposit_option['balance'] = split_deposit(totals['final_total'])
+
     return render(request, 'bookings/review.html', {
+        'deposit_option': deposit_option,
         'cart': with_line_totals(cart),
         'totals': totals,
         'total_amount': totals['final_total'],
@@ -499,6 +505,7 @@ def checkout_view(request):
                 discount_amount=totals['discount_amount'],
                 coupon_code=totals['coupon_code'],
                 shipping_address=shipping_address or {},
+                payment_plan='DEPOSIT' if request.POST.get('payment_plan') == 'DEPOSIT' else 'FULL',
             )
             # Empty cart and clear applied coupon after successful order placement
             save_cart(request, [])

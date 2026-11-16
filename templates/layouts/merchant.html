@@ -13,7 +13,8 @@
 
   {% if user.role == "HOMESTAY_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
     <div class="wt-nav-label">{% translate "ที่พัก" %}</div>
-    <a class="nav-link {% if current == 'homestay_studio' %}active{% endif %}" href="{% url 'accommodations:homestay_studio' %}"><i data-lucide="house"></i>{% translate "ที่พักและห้องพัก" %}</a>
+    <a class="nav-link {% if current == 'homestay_studio' %}active{% endif %}" href="{% url 'accommodations:homestay_studio' %}"><i data-lucide="house"></i>{% translate "ที่พักและบ้านพัก" %}</a>
+    <a class="nav-link {% if current == 'stay_bookings' %}active{% endif %}" href="{% url 'bookings:stay_bookings' %}"><i data-lucide="calendar-check"></i>{% translate "การจองและมัดจำ" %}</a>
     <a class="nav-link {% if current == 'calendar' %}active{% endif %}" href="{% url 'accommodations:calendar' %}"><i data-lucide="calendar-days"></i>{% translate "ปฏิทินราคาและห้องว่าง" %}</a>
   {% endif %}
   {% if user.role == "RESTAURANT_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}

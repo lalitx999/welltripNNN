@@ -21,7 +21,7 @@
               <div class="min-w-0">
                 <div class="d-flex flex-wrap align-items-center gap-2">
                   <span class="font-monospace fw-semibold small">{{ item.booking.booking_code }}</span>
-                  {% include "bookings/partials/status_badge.html" with status=item.booking.status label=item.booking.get_status_display %}
+                  {% include "bookings/partials/status_badge.html" with status=item.booking.status label=item.booking.status_label %}
                   {% if item.item_type == 'OTOP' and item.booking.status == 'CONFIRMED' or item.item_type == 'OTOP' and item.booking.status == 'COMPLETED' %}
                     <span class="badge {% if item.fulfillment_status == 'PENDING' %}badge-gold{% else %}badge-green{% endif %}">{{ item.get_fulfillment_status_display }}</span>
                   {% endif %}

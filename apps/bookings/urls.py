@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import stay_views, views
 
 app_name = 'bookings'
 
@@ -19,4 +19,9 @@ urlpatterns = [
     path('my-orders/', views.my_bookings_view, name='my_orders'),
     path('my-bookings/', views.my_bookings_view, name='my_bookings_alias'),
     path('detail/<uuid:booking_id>/', views.booking_detail_view, name='detail'),
+    # Homestay owners and admins: deposits, balance paid on site, cancellations
+    path('stays/', stay_views.stay_bookings_view, name='stay_bookings'),
+    path('stays/<uuid:booking_id>/slip/', stay_views.stay_slip_review_view, name='stay_slip_review'),
+    path('stays/<uuid:booking_id>/balance-paid/', stay_views.stay_balance_paid_view, name='stay_balance_paid'),
+    path('stays/<uuid:booking_id>/cancel/', stay_views.stay_cancel_view, name='stay_cancel'),
 ]

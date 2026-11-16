@@ -44,7 +44,7 @@ def payment_instruction_view(request, booking_id):
     payment, created = Payment.objects.get_or_create(
         booking=booking,
         defaults={
-            'amount': booking.total_amount,
+            'amount': booking.amount_due_online,  # the deposit for deposit bookings
             'payee_bank_name': settings.PAYEE_BANK_NAME,
             'payee_account_name': settings.PAYEE_ACCOUNT_NAME,
             'payee_account_number': settings.PAYEE_ACCOUNT_NUMBER,
@@ -172,8 +172,12 @@ def slip_image_view(request, path):
         PaymentSlip.objects.select_related('payment__booking'),
         image=f"slips/{path}",
     )
-    if not can_access_payment(request.user, slip.payment.booking):
-        raise Http404
+    booking = slip.payment.booking
+    if not can_access_payment(request.user, booking):
+        # Deposit slips are confirmed by the homestay owner, so they may see them
+        from apps.bookings.services.deposit import can_manage_stay_booking
+        if not (booking.is_deposit and can_manage_stay_booking(request.user, booking)):
+            raise Http404
     response = FileResponse(slip.image.open('rb'))
     response['Cache-Control'] = 'private, no-store'
     return response

@@ -60,7 +60,7 @@
                 <small class="text-secondary">{% translate "รหัสการจอง" %}</small>
                 <div class="fw-bold font-monospace">{{ b.booking_code }}</div>
               </div>
-              <span class="badge {% if b.status == 'CONFIRMED' %}badge-green{% elif b.status == 'AWAITING_PAYMENT' %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ b.get_status_display }}</span>
+              <span class="badge {% if b.status == 'CONFIRMED' %}badge-green{% elif b.status == 'AWAITING_PAYMENT' %}badge-gold{% else %}bg-light text-secondary border{% endif %}">{{ b.status_label }}</span>
             </div>
             <div class="small text-secondary flex-grow-1">{% blocktranslate trimmed with count=b.item_count total_amount=b.total_amount|floatformat:"0g" created_at=b.created_at|date:"d M Y" %}{{ count }} รายการ · ฿{{ total_amount }} · {{ created_at }}{% endblocktranslate %}</div>
             {% if b.status == 'AWAITING_PAYMENT' %}

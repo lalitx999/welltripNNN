@@ -38,6 +38,11 @@ class BookingItemType(models.TextChoices):
     OTOP = "OTOP", gettext_lazy("สินค้าชุมชน OTOP")
 
 
+class PaymentPlan(models.TextChoices):
+    FULL = "FULL", gettext_lazy("ชำระเต็มจำนวน")
+    DEPOSIT = "DEPOSIT", gettext_lazy("ชำระมัดจำ ส่วนที่เหลือจ่ายที่ที่พัก")
+
+
 class Booking(models.Model):
     """
     Main order entity. Holds multiple items across community vendors.
@@ -77,6 +82,16 @@ class Booking(models.Model):
         default=Decimal("0.00"),
     )
     coupon_code = models.CharField(max_length=50, blank=True, default="")
+    # Deposit bookings (homestay only): the slip covers deposit_amount, the guest pays balance_due on site
+    payment_plan = models.CharField(max_length=10, choices=PaymentPlan.choices, default=PaymentPlan.FULL)
+    deposit_amount = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+    balance_due = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+    balance_paid_at = models.DateTimeField(null=True, blank=True)
+    balance_received_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+",
+    )
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancel_reason = models.CharField(max_length=255, blank=True, default="")
     shipping_address = models.JSONField(null=True, blank=True, default=dict)
     customer_notes = models.TextField(blank=True, default="")
     expires_at = models.DateTimeField(default=default_expires_at, db_index=True)
@@ -89,6 +104,29 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.booking_code} - {self.customer.email} (฿{self.total_amount})"
+
+    @property
+    def is_deposit(self):
+        return self.payment_plan == PaymentPlan.DEPOSIT
+
+    @property
+    def amount_due_online(self):
+        """What the transfer slip must show: the deposit, or the whole total."""
+        return self.deposit_amount if self.is_deposit else self.total_amount
+
+    @property
+    def awaiting_balance(self):
+        """Deposit confirmed and room locked, the rest still to be paid at the homestay."""
+        return self.is_deposit and self.status == BookingStatus.CONFIRMED and self.balance_paid_at is None
+
+    @property
+    def status_label(self):
+        """Status for people: a confirmed deposit booking says the balance is still due."""
+        if self.awaiting_balance:
+            return _("มัดจำแล้ว · ค้างชำระ ฿{amount}").format(amount=f"{self.balance_due:,.0f}")
+        if self.is_deposit and self.status == BookingStatus.AWAITING_PAYMENT:
+            return _("รอชำระมัดจำ")
+        return self.get_status_display()
 
     @property
     def is_expired(self):
