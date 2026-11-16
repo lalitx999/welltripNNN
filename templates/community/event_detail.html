@@ -36,6 +36,37 @@
     </div>
   </div>
 
+  {% with photos=event.gallery.all %}{% if photos %}
+    <section class="mt-5" x-data="{ open: false, index: 0, photos: [{% for p in photos %}'{{ p.image.url|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+      show(i) { this.index = i; this.open = true },
+      step(d) { this.index = (this.index + d + this.photos.length) % this.photos.length } }"
+      @keydown.escape.window="open = false" @keydown.arrow-right.window="open && step(1)" @keydown.arrow-left.window="open && step(-1)">
+      <h2 class="h5 fw-bold mb-3"><i data-lucide="images" class="text-green me-2"></i>{% translate "บรรยากาศในงาน" %}</h2>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2">
+        {% for photo in photos %}
+          <div class="col">
+            <button type="button" class="p-0 border-0 bg-transparent w-100" @click="show({{ forloop.counter0 }})" aria-label="{% blocktranslate with n=forloop.counter %}ดูรูปที่ {{ n }}{% endblocktranslate %}">
+              <img src="{{ photo.image.url }}" alt="{% blocktranslate with title=event|loc:'title' n=forloop.counter %}{{ title }} รูปที่ {{ n }}{% endblocktranslate %}" loading="lazy" class="w-100 rounded-3 border object-fit-cover" style="aspect-ratio: 4 / 3;">
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+
+      {# x-show sets display:none inline, so no display utility (d-flex is !important) on this element #}
+      <div x-show="open" x-cloak x-transition.opacity class="position-fixed top-0 start-0 w-100 h-100" style="z-index: 1090; background: rgba(0,0,0,.88);" role="dialog" aria-modal="true" aria-label="{% translate 'บรรยากาศในงาน' %}">
+        <div class="w-100 h-100 d-flex align-items-center justify-content-center p-3" @click.self="open = false">
+          <img :src="photos[index]" alt="" class="rounded-3" style="max-width: 100%; max-height: 85vh; object-fit: contain;">
+        </div>
+        <button type="button" class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 p-2 lh-1" @click="open = false" aria-label="{% translate 'ปิด' %}"><i data-lucide="x"></i></button>
+        <div x-show="photos.length > 1">
+            <button type="button" class="btn btn-light rounded-circle position-absolute top-50 start-0 translate-middle-y ms-2 p-2 lh-1" @click="step(-1)" aria-label="{% translate 'รูปก่อนหน้า' %}"><i data-lucide="chevron-left"></i></button>
+            <button type="button" class="btn btn-light rounded-circle position-absolute top-50 end-0 translate-middle-y me-2 p-2 lh-1" @click="step(1)" aria-label="{% translate 'รูปถัดไป' %}"><i data-lucide="chevron-right"></i></button>
+        </div>
+        <div class="position-absolute bottom-0 start-50 translate-middle-x mb-3 text-white small" x-text="(index + 1) + ' / ' + photos.length"></div>
+      </div>
+    </section>
+  {% endif %}{% endwith %}
+
   {% if more_events %}
     <h2 class="h5 fw-bold mt-5 mb-3">{% translate "กิจกรรมอื่นที่กำลังจะมาถึง" %}</h2>
     <div class="row row-cols-1 row-cols-sm-3 g-3">

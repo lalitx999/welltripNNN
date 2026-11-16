@@ -37,9 +37,11 @@ def delete_event(request, event):
         changes={"title": event.title},
         user=request.user,
     )
+    files = [photo.image for photo in event.gallery.all()]
     if event.image:
-        event.image.delete(save=False)
+        files.append(event.image)
     event.delete()
+    transaction.on_commit(lambda: [f.delete(save=False) for f in files])
 
 
 def google_calendar_url(event, title, venue):
@@ -51,3 +53,40 @@ def google_calendar_url(event, title, venue):
         "location": venue,
     }
     return "https://calendar.google.com/calendar/render?" + urlencode(params)
+
+
+@transaction.atomic
+def add_gallery_images(request, event, images):
+    """Append sanitized photos to the end of an event's gallery."""
+    from apps.community.models import EventImage
+
+    start = event.gallery.count()
+    created = [
+        EventImage.objects.create(event=event, image=image, order=start + offset)
+        for offset, image in enumerate(images)
+    ]
+    record_audit_log(
+        request=request,
+        action="UPDATE",
+        model_name="Event",
+        object_id=str(event.id),
+        changes={"gallery_added": len(created)},
+        user=request.user,
+    )
+    return created
+
+
+@transaction.atomic
+def delete_gallery_image(request, photo):
+    event = photo.event
+    record_audit_log(
+        request=request,
+        action="UPDATE",
+        model_name="Event",
+        object_id=str(event.id),
+        changes={"gallery_removed": photo.id},
+        user=request.user,
+    )
+    file = photo.image
+    photo.delete()
+    transaction.on_commit(lambda: file.delete(save=False))

@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.community.models import Event, MapLocation
+from apps.community.models import Event, EventImage, MapLocation
 from apps.core.services.media import sanitize_and_strip_image
 from django.utils.translation import gettext as _, gettext_lazy
 
@@ -51,3 +51,42 @@ class EventForm(forms.ModelForm):
         if start and end and end < start:
             self.add_error("end_date", _("วันสิ้นสุดต้องไม่ก่อนวันเริ่มงาน"))
         return cleaned
+
+
+class MultipleImageInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    """Django's documented pattern for an <input multiple> file field."""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleImageInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single = super().clean
+        if isinstance(data, (list, tuple)):
+            return [single(d, initial) for d in data]
+        return [single(data, initial)]
+
+
+class EventGalleryForm(forms.Form):
+    """Several photos at once for an event's gallery; each is checked and re-encoded."""
+    images = MultipleFileField(
+        widget=MultipleImageInput(attrs={"class": "form-control", "accept": "image/jpeg,image/png,image/webp", "multiple": True}),
+    )
+
+    def __init__(self, *args, room_left, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.room_left = room_left
+
+    def clean_images(self):
+        files = self.cleaned_data.get("images") or []
+        if not files:
+            raise forms.ValidationError(_("กรุณาเลือกรูปภาพ"))
+        if len(files) > self.room_left:
+            raise forms.ValidationError(
+                _("เพิ่มได้อีก {count} รูป (สูงสุด {max} รูปต่อกิจกรรม)").format(count=self.room_left, max=EventImage.MAX_PER_EVENT)
+            )
+        return [sanitize_and_strip_image(f) for f in files]

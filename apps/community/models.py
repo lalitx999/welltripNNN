@@ -310,3 +310,21 @@ class Event(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.start_date:%Y-%m-%d})"
+
+
+class EventImage(models.Model):
+    """A gallery photo of an event; the poster stays in Event.image."""
+    MAX_PER_EVENT = 10
+
+    id = models.BigAutoField(primary_key=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="gallery")
+    image = models.ImageField(upload_to=event_image_path)
+    order = models.PositiveSmallIntegerField(default=0)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "community_event_images"
+        ordering = ("order", "id")
+
+    def __str__(self):
+        return f"Photo {self.order + 1} of {self.event.title}"

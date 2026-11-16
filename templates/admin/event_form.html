@@ -35,4 +35,43 @@
     <a href="{% url 'accounts:admin_dashboard' %}?tab=events" class="btn btn-outline-ink rounded-pill">{% translate "ยกเลิก" %}</a>
   </div>
 </form>
+
+<section class="wt-card p-4 d-grid gap-3 mt-4" style="max-width: 56rem;" id="gallery">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <h2 class="h6 fw-bold mb-0"><i data-lucide="images" class="text-green me-1"></i>{% translate "แกลเลอรีรูปภาพ" %}</h2>
+    {% if event %}<small class="text-secondary">{% blocktranslate trimmed with count=gallery|length max=gallery_max %}{{ count }} / {{ max }} รูป{% endblocktranslate %}</small>{% endif %}
+  </div>
+  {% if not event %}
+    <p class="small text-secondary mb-0">{% translate "บันทึกกิจกรรมก่อน แล้วจึงเพิ่มรูปบรรยากาศในแกลเลอรีได้" %}</p>
+  {% else %}
+    <p class="small text-secondary mb-0">{% translate "รูปบรรยากาศที่แสดงในหน้ากิจกรรม แยกจากรูปภาพหลักด้านบน" %}</p>
+    {% if gallery %}
+      <div class="row row-cols-3 row-cols-md-5 g-2">
+        {% for photo in gallery %}
+          <div class="col">
+            <div class="position-relative">
+              <img src="{{ photo.image.url }}" alt="" class="w-100 rounded-3 border object-fit-cover" style="aspect-ratio: 1;">
+              <form method="post" action="{% url 'accounts:admin_event_gallery_delete' photo.id %}" class="position-absolute top-0 end-0 m-1">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-light btn-sm rounded-circle p-1 lh-1 shadow-sm" title="{% translate 'ลบรูป' %}" aria-label="{% translate 'ลบรูป' %}" onclick="return confirm('{% translate "ลบรูปนี้ออกจากแกลเลอรี?" %}')"><i data-lucide="x" class="text-danger"></i></button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if gallery_room_left > 0 %}
+      <form method="post" action="{% url 'accounts:admin_event_gallery_add' event.id %}" enctype="multipart/form-data" class="d-flex flex-wrap gap-2 align-items-start">
+        {% csrf_token %}
+        <div class="flex-grow-1">
+          {{ gallery_form.images }}
+          <div class="form-text">{% blocktranslate trimmed with count=gallery_room_left %}เลือกได้หลายรูปพร้อมกัน เพิ่มได้อีก {{ count }} รูป · JPG, PNG หรือ WebP{% endblocktranslate %}</div>
+        </div>
+        <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="upload" class="me-1"></i>{% translate "อัปโหลด" %}</button>
+      </form>
+    {% else %}
+      <p class="small text-secondary mb-0">{% translate "แกลเลอรีเต็มแล้ว ลบรูปเดิมก่อนจึงเพิ่มรูปใหม่ได้" %}</p>
+    {% endif %}
+  {% endif %}
+</section>
 {% endblock %}

@@ -37,7 +37,7 @@ def events_by_month(category=None, today=None):
 
 def get_public_event(event_id):
     return get_object_or_404(
-        Event.objects.select_related("check_in_point"), id=event_id, is_published=True
+        Event.objects.select_related("check_in_point").prefetch_related("gallery"), id=event_id, is_published=True
     )
 
 

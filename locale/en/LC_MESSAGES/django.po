@@ -6988,6 +6988,74 @@ msgstr "Daily visitors, last 14 days"
 msgid "วันนี้"
 msgstr "Today"
 
+#: event gallery
+msgid "กรุณาเลือกรูปภาพ"
+msgstr "Please choose a photo"
+
+#: event gallery
+msgid "เพิ่มได้อีก {count} รูป (สูงสุด {max} รูปต่อกิจกรรม)"
+msgstr "You can add {count} more photos (up to {max} per event)"
+
+#: event gallery
+msgid "เพิ่มรูปในแกลเลอรี {count} รูปแล้ว"
+msgstr "Added {count} photos to the gallery"
+
+#: event gallery
+msgid "ลบรูปออกจากแกลเลอรีแล้ว"
+msgstr "Photo removed from the gallery"
+
+#: event gallery
+msgid "แกลเลอรีรูปภาพ"
+msgstr "Photo gallery"
+
+#: event gallery
+#, python-format
+msgid "%(count)s / %(max)s รูป"
+msgstr "%(count)s / %(max)s photos"
+
+#: event gallery
+msgid "บันทึกกิจกรรมก่อน แล้วจึงเพิ่มรูปบรรยากาศในแกลเลอรีได้"
+msgstr "Save the event first, then add photos to its gallery"
+
+#: event gallery
+msgid "รูปบรรยากาศที่แสดงในหน้ากิจกรรม แยกจากรูปภาพหลักด้านบน"
+msgstr "Photos shown on the event page, separate from the main image above"
+
+#: event gallery
+msgid "ลบรูปนี้ออกจากแกลเลอรี?"
+msgstr "Remove this photo from the gallery?"
+
+#: event gallery
+#, python-format
+msgid "เลือกได้หลายรูปพร้อมกัน เพิ่มได้อีก %(count)s รูป · JPG, PNG หรือ WebP"
+msgstr "You can pick several at once, %(count)s more allowed · JPG, PNG or WebP"
+
+#: event gallery
+msgid "แกลเลอรีเต็มแล้ว ลบรูปเดิมก่อนจึงเพิ่มรูปใหม่ได้"
+msgstr "The gallery is full. Delete a photo to add a new one"
+
+#: event gallery
+msgid "บรรยากาศในงาน"
+msgstr "Event photos"
+
+#: event gallery
+#, python-format
+msgid "ดูรูปที่ %(n)s"
+msgstr "View photo %(n)s"
+
+#: event gallery
+#, python-format
+msgid "%(title)s รูปที่ %(n)s"
+msgstr "%(title)s, photo %(n)s"
+
+#: event gallery
+msgid "รูปก่อนหน้า"
+msgstr "Previous photo"
+
+#: event gallery
+msgid "รูปถัดไป"
+msgstr "Next photo"
+
 #~ msgid "สร้างบัญชีผู้ใช้งานสำเร็จ"
 #~ msgstr "Account created"
 
