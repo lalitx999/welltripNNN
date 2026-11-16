@@ -6952,6 +6952,42 @@ msgstr "%(wellness_services)s services"
 msgid "ยังไม่มีบริการสปา"
 msgstr "No spa services yet"
 
+#: templates/admin/tabs/overview.html
+msgid "ผู้เข้าชมเว็บไซต์"
+msgstr "Website visitors"
+
+#: templates/admin/tabs/overview.html
+msgid "นับผู้เข้าชมไม่ซ้ำวันละครั้ง ไม่รวมบอทและผู้ดูแลระบบ"
+msgstr "Each visitor counted once a day, excluding bots and admins"
+
+#: templates/admin/tabs/overview.html
+#, python-format
+msgid "วันนี้ · %(page_views)s หน้า"
+msgstr "Today · %(page_views)s page views"
+
+#: templates/admin/tabs/overview.html
+#, python-format
+msgid "7 วันล่าสุด · %(page_views)s หน้า"
+msgstr "Last 7 days · %(page_views)s page views"
+
+#: templates/admin/tabs/overview.html
+#, python-format
+msgid "30 วันล่าสุด · %(page_views)s หน้า"
+msgstr "Last 30 days · %(page_views)s page views"
+
+#: templates/admin/tabs/overview.html
+#, python-format
+msgid "ทั้งหมด · %(page_views)s หน้า"
+msgstr "All time · %(page_views)s page views"
+
+#: templates/admin/tabs/overview.html
+msgid "ผู้เข้าชมรายวัน 14 วันล่าสุด"
+msgstr "Daily visitors, last 14 days"
+
+#: templates/admin/tabs/overview.html
+msgid "วันนี้"
+msgstr "Today"
+
 #~ msgid "สร้างบัญชีผู้ใช้งานสำเร็จ"
 #~ msgstr "Account created"
 

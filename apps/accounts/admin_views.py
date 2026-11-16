@@ -127,6 +127,8 @@ def admin_command_center_view(request):
         context['pending_merchants'] = _reviewable_merchant_profiles().filter(status=MerchantApprovalStatus.PENDING).select_related('user')[:5]
         context['pending_payments'] = Payment.objects.filter(status=PaymentStatus.PENDING).select_related('booking__customer')[:5]
         context['recent_audits'] = AuditLog.objects.select_related('user').order_by('-timestamp')[:8]
+        from apps.core.services.visits import visit_summary
+        context['visits'] = visit_summary()
 
     # TAB 2: PAYMENTS (Slips)
     elif active_tab == 'payments':

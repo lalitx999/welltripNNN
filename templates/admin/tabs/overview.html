@@ -7,6 +7,27 @@
     <div class="col-sm-6 col-xl-3"><div class="wt-card p-4 h-100"><span class="wt-stat-icon mb-2" style="--c:#0f8a55;--bg:#e3f6ec"><i data-lucide="coins" class="icon-lg"></i></span><div class="wt-stat-value">฿{{ total_revenue|floatformat:"0g" }}</div><small class="text-secondary">{% blocktranslate trimmed with total_bookings_count=total_bookings_count %}ยอดชำระสำเร็จ · {{ total_bookings_count }} คำสั่งซื้อ{% endblocktranslate %}</small></div></div>
   </div>
 
+  <div class="wt-card p-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <span class="fw-bold"><i data-lucide="eye" class="text-green me-1"></i>{% translate "ผู้เข้าชมเว็บไซต์" %}</span>
+      <small class="text-secondary">{% translate "นับผู้เข้าชมไม่ซ้ำวันละครั้ง ไม่รวมบอทและผู้ดูแลระบบ" %}</small>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-lg-3"><div class="wt-stat-value">{{ visits.today.visitors|floatformat:"0g" }}</div><small class="text-secondary">{% blocktranslate trimmed with page_views=visits.today.page_views|floatformat:"0g" %}วันนี้ · {{ page_views }} หน้า{% endblocktranslate %}</small></div>
+      <div class="col-6 col-lg-3"><div class="wt-stat-value">{{ visits.last_7_days.visitors|floatformat:"0g" }}</div><small class="text-secondary">{% blocktranslate trimmed with page_views=visits.last_7_days.page_views|floatformat:"0g" %}7 วันล่าสุด · {{ page_views }} หน้า{% endblocktranslate %}</small></div>
+      <div class="col-6 col-lg-3"><div class="wt-stat-value">{{ visits.last_30_days.visitors|floatformat:"0g" }}</div><small class="text-secondary">{% blocktranslate trimmed with page_views=visits.last_30_days.page_views|floatformat:"0g" %}30 วันล่าสุด · {{ page_views }} หน้า{% endblocktranslate %}</small></div>
+      <div class="col-6 col-lg-3"><div class="wt-stat-value">{{ visits.all_time.visitors|floatformat:"0g" }}</div><small class="text-secondary">{% blocktranslate trimmed with page_views=visits.all_time.page_views|floatformat:"0g" %}ทั้งหมด · {{ page_views }} หน้า{% endblocktranslate %}</small></div>
+    </div>
+    <div class="d-flex align-items-end gap-1" style="height: 72px;" role="img" aria-label="{% translate 'ผู้เข้าชมรายวัน 14 วันล่าสุด' %}">
+      {% for d in visits.series %}
+        <div class="flex-fill d-flex flex-column justify-content-end h-100" title="{{ d.date|date:'j M' }}: {{ d.visitors }}">
+          <div class="rounded-top" style="height: {{ d.percent }}%; min-height: 2px; background: #0f8a55;"></div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="d-flex justify-content-between small text-secondary mt-1"><span>{{ visits.series.0.date|date:"j M" }}</span><span>{% translate "วันนี้" %}</span></div>
+  </div>
+
   <div class="row g-4">
     <div class="col-xl-7">
       <div class="wt-card h-100">
