@@ -147,6 +147,26 @@ class FulfillmentStatus(models.TextChoices):
     DELIVERED = "DELIVERED", gettext_lazy("ได้รับสินค้าแล้ว")
 
 
+class Carrier(models.TextChoices):
+    THAILAND_POST = "THAILAND_POST", gettext_lazy("ไปรษณีย์ไทย")
+    KEX = "KEX", gettext_lazy("KEX (Kerry)")
+    FLASH = "FLASH", gettext_lazy("Flash Express")
+    JT = "JT", gettext_lazy("J&T Express")
+    BEST = "BEST", gettext_lazy("BEST Express")
+    NINJA = "NINJA", gettext_lazy("Ninja Van")
+    SCG = "SCG", gettext_lazy("SCG Express")
+    OTHER = "OTHER", gettext_lazy("อื่นๆ")
+
+
+# Public tracking pages; the customer email links here so no carrier API is needed
+CARRIER_TRACKING_URLS = {
+    "THAILAND_POST": "https://track.thailandpost.co.th/?trackNumber={code}",
+    "KEX": "https://th.kex-express.com/th/track/?track={code}",
+    "FLASH": "https://www.flashexpress.co.th/fle/tracking?se={code}",
+    "JT": "https://www.jtexpress.co.th/service/track?billcode={code}",
+}
+
+
 class BookingItem(models.Model):
     """
     Polymorphic order item belonging to a specific community vendor.
@@ -175,6 +195,7 @@ class BookingItem(models.Model):
         max_length=20, choices=FulfillmentStatus.choices, default=FulfillmentStatus.PENDING, db_index=True
     )
     tracking_number = models.CharField(max_length=60, blank=True, default="")
+    carrier = models.CharField(max_length=20, choices=Carrier.choices, blank=True, default="")
     shipped_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -182,6 +203,13 @@ class BookingItem(models.Model):
         indexes = [
             models.Index(fields=["vendor", "item_type"]),
         ]
+
+    @property
+    def tracking_url(self):
+        """Carrier's public tracking page for this parcel, when we know the carrier."""
+        from urllib.parse import quote
+        pattern = CARRIER_TRACKING_URLS.get(self.carrier)
+        return pattern.format(code=quote(self.tracking_number)) if pattern and self.tracking_number else ""
 
     def __str__(self):
         return f"[{self.item_type}] {self.item_title_snapshot} x {self.quantity} (฿{self.subtotal})"

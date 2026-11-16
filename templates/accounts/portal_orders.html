@@ -40,20 +40,30 @@
             {% if item.item_type == 'OTOP' and item.booking.status == 'CONFIRMED' %}
               {% with addr=item.booking.shipping_address %}
                 {% if addr %}
-                  <div class="small bg-mint rounded-3 p-2 mt-2"><i data-lucide="map-pin" class="text-green me-1"></i>{{ addr.recipient_name }} ({{ addr.phone_number }}) {{ addr.address_line }} {% translate "อ." %}{{ addr.district }} {% translate "จ." %}{{ addr.province }} {{ addr.postal_code }}</div>
+                  <div class="small bg-mint rounded-3 p-2 mt-2"><i data-lucide="map-pin" class="text-green me-1"></i>{{ addr.recipient_name }} ({{ addr.phone_number }}) {{ addr.address_line }} อ.{{ addr.district }} จ.{{ addr.province }} {{ addr.postal_code }}</div>
                 {% endif %}
               {% endwith %}
               {% if item.fulfillment_status == 'PENDING' %}
-                <form method="post" action="{% url 'accounts:portal_fulfillment' item.id %}" class="d-flex flex-wrap gap-2 mt-2">
+                {% with addr=item.booking.shipping_address %}
+                <form method="post" action="{% url 'accounts:portal_fulfillment' item.id %}" class="d-flex flex-wrap gap-2 mt-2 js-ship-form"
+                      data-code="{{ item.booking.booking_code }}" data-item="{{ item.item_title_snapshot }} × {{ item.quantity }}"
+                      data-customer="{{ item.booking.customer.full_name|default:item.booking.customer.email }}" data-email="{{ item.booking.customer.email }}"
+                      data-recipient="{% if addr %}{{ addr.recipient_name }} ({{ addr.phone_number }}){% endif %}"
+                      data-address="{% if addr %}{{ addr.address_line }} อ.{{ addr.district }} จ.{{ addr.province }} {{ addr.postal_code }}{% endif %}">
                   {% csrf_token %}
                   <input type="hidden" name="status" value="SHIPPED">
                   <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <select name="carrier" class="form-select form-select-sm" style="max-width: 11rem;" aria-label="{% translate 'บริษัทขนส่ง' %}">
+                    <option value="">{% translate "เลือกขนส่ง" %}</option>
+                    {% for value, label in carriers %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+                  </select>
                   <input type="text" name="tracking_number" required maxlength="60" class="form-control form-control-sm" style="max-width: 16rem;" placeholder="{% translate 'เลขพัสดุ เช่น TH123456789' %}" aria-label="{% translate 'เลขพัสดุ' %}">
                   <button type="submit" class="btn btn-green btn-sm rounded-pill"><i data-lucide="truck" class="me-1"></i>{% translate "แจ้งจัดส่งแล้ว" %}</button>
                 </form>
+                {% endwith %}
               {% elif item.fulfillment_status == 'SHIPPED' %}
                 <div class="d-flex flex-wrap align-items-center gap-2 mt-2 small">
-                  <span><i data-lucide="truck" class="text-green me-1"></i>{% translate "เลขพัสดุ" %} <span class="font-monospace">{{ item.tracking_number }}</span> · {{ item.shipped_at|date:"d/m/Y" }}</span>
+                  <span><i data-lucide="truck" class="text-green me-1"></i>{% if item.carrier %}{{ item.get_carrier_display }} · {% endif %}{% translate "เลขพัสดุ" %} {% if item.tracking_url %}<a href="{{ item.tracking_url }}" target="_blank" rel="noopener noreferrer" class="font-monospace">{{ item.tracking_number }}</a>{% else %}<span class="font-monospace">{{ item.tracking_number }}</span>{% endif %} · {{ item.shipped_at|date:"d/m/Y" }}</span>
                   <form method="post" action="{% url 'accounts:portal_fulfillment' item.id %}">
                     {% csrf_token %}
                     <input type="hidden" name="status" value="DELIVERED">
@@ -78,4 +88,62 @@
     {% endif %}
   </div>
 </div>
+
+<div class="modal fade" id="ship-confirm" tabindex="-1" aria-labelledby="ship-confirm-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h2 class="modal-title h5 fw-bold" id="ship-confirm-title"><i data-lucide="truck" class="text-green me-1"></i>{% translate "ตรวจข้อมูลก่อนแจ้งจัดส่ง" %}</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'ปิด' %}"></button>
+      </div>
+      <div class="modal-body">
+        <dl class="row small mb-0">
+          <dt class="col-4 text-secondary fw-normal">{% translate "คำสั่งซื้อ" %}</dt><dd class="col-8 font-monospace" data-field="code"></dd>
+          <dt class="col-4 text-secondary fw-normal">{% translate "สินค้า" %}</dt><dd class="col-8" data-field="item"></dd>
+          <dt class="col-4 text-secondary fw-normal">{% translate "ผู้สั่งซื้อ" %}</dt><dd class="col-8"><span data-field="customer"></span><br><span class="text-secondary" data-field="email"></span></dd>
+          <dt class="col-4 text-secondary fw-normal">{% translate "ผู้รับ" %}</dt><dd class="col-8" data-field="recipient"></dd>
+          <dt class="col-4 text-secondary fw-normal">{% translate "ที่อยู่จัดส่ง" %}</dt><dd class="col-8" data-field="address"></dd>
+          <dt class="col-4 text-secondary fw-normal">{% translate "ขนส่ง" %}</dt><dd class="col-8" data-field="carrier"></dd>
+          <dt class="col-4 text-secondary fw-normal">{% translate "เลขพัสดุ" %}</dt><dd class="col-8 font-monospace fs-5 fw-bold text-green" data-field="tracking"></dd>
+        </dl>
+        <div class="alert alert-success rounded-4 small mt-3 mb-0"><i data-lucide="mail" class="me-1"></i>{% translate "เมื่อกดยืนยัน ระบบจะส่งอีเมลแจ้งเลขพัสดุไปยังอีเมลของผู้สั่งซื้อ" %}</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">{% translate "กลับไปแก้ไข" %}</button>
+        <button type="button" class="btn btn-green rounded-pill" id="ship-confirm-go"><i data-lucide="send" class="me-1"></i>{% translate "ยืนยันแจ้งจัดส่ง" %}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modalEl = document.getElementById('ship-confirm');
+    if (!modalEl || !window.bootstrap) return;
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    let pending = null;
+    document.querySelectorAll('.js-ship-form').forEach((form) => {
+      form.addEventListener('submit', (event) => {
+        if (form.dataset.confirmed === '1') return;
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        const carrier = form.querySelector('[name=carrier]');
+        const values = {
+          code: form.dataset.code, item: form.dataset.item, customer: form.dataset.customer, email: form.dataset.email,
+          recipient: form.dataset.recipient || '-', address: form.dataset.address || '-',
+          carrier: carrier.value ? carrier.options[carrier.selectedIndex].text : '-',
+          tracking: form.querySelector('[name=tracking_number]').value.trim(),
+        };
+        Object.entries(values).forEach(([k, v]) => { modalEl.querySelector('[data-field="' + k + '"]').textContent = v; });
+        pending = form;
+        modal.show();
+      });
+    });
+    document.getElementById('ship-confirm-go').addEventListener('click', () => {
+      if (!pending) return;
+      pending.dataset.confirmed = '1';
+      document.getElementById('ship-confirm-go').disabled = true;
+      pending.requestSubmit();
+    });
+  });
+</script>
 {% endblock %}

@@ -122,7 +122,10 @@ def admin_payment_review_view(request, payment_id):
     and approves or rejects the payment.
     """
     payment = get_object_or_404(Payment.objects.select_related('booking__customer'), id=payment_id)
-    latest_slip = payment.slips.filter(verification_status=SlipVerificationStatus.PENDING_CHECK).first()
+    slips = list(payment.slips.all())  # newest first
+    pending_slip = next((s for s in slips if s.verification_status == SlipVerificationStatus.PENDING_CHECK), None)
+    # Show the slip waiting for a decision, else the newest one (already auto-checked or reviewed)
+    latest_slip = pending_slip or (slips[0] if slips else None)
 
     if request.method == "POST":
         action = request.POST.get('action')
@@ -137,6 +140,8 @@ def admin_payment_review_view(request, payment_id):
     return render(request, 'payments/admin_review.html', {
         'payment': payment,
         'slip': latest_slip,
+        'can_review': pending_slip is not None,
+        'other_slips': [s for s in slips if s is not latest_slip],
     })
 
 

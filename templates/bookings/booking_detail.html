@@ -47,7 +47,7 @@
               <div class="fw-semibold">{{ item.item_title_snapshot }}</div>
               <small class="text-secondary">{{ item.vendor.display_name }}{% if item.booking_metadata.date %} · {{ item.booking_metadata.date }}{% endif %}</small>
               {% if item.item_type == 'OTOP' and booking.status == 'CONFIRMED' or item.item_type == 'OTOP' and booking.status == 'COMPLETED' %}
-                <div class="small mt-1"><span class="badge {% if item.fulfillment_status == 'PENDING' %}badge-gold{% else %}badge-green{% endif %}">{{ item.get_fulfillment_status_display }}</span>{% if item.tracking_number %} <span class="text-secondary">{% translate "เลขพัสดุ" %}</span> <span class="font-monospace">{{ item.tracking_number }}</span>{% endif %}</div>
+                <div class="small mt-1"><span class="badge {% if item.fulfillment_status == 'PENDING' %}badge-gold{% else %}badge-green{% endif %}">{{ item.get_fulfillment_status_display }}</span>{% if item.tracking_number %} <span class="text-secondary">{% if item.carrier %}{{ item.get_carrier_display }} · {% endif %}{% translate "เลขพัสดุ" %}</span> {% if item.tracking_url %}<a href="{{ item.tracking_url }}" target="_blank" rel="noopener noreferrer" class="font-monospace">{{ item.tracking_number }}</a>{% else %}<span class="font-monospace">{{ item.tracking_number }}</span>{% endif %}{% endif %}</div>
               {% endif %}
             </div>
             <div class="text-end text-nowrap">

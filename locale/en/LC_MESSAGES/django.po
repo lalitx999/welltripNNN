@@ -7692,6 +7692,64 @@ msgstr "Deposit"
 msgid "ลบบ้าน"
 msgstr "Delete house"
 
+msgid "ไปรษณีย์ไทย"
+msgstr "Thailand Post"
+
+msgid "เลือกขนส่ง"
+msgstr "Choose carrier"
+
+msgid "ตรวจข้อมูลก่อนแจ้งจัดส่ง"
+msgstr "Check the details before marking as shipped"
+
+msgid "ผู้สั่งซื้อ"
+msgstr "Buyer"
+
+msgid "ผู้รับ"
+msgstr "Recipient"
+
+msgid "เมื่อกดยืนยัน ระบบจะส่งอีเมลแจ้งเลขพัสดุไปยังอีเมลของผู้สั่งซื้อ"
+msgstr "When you confirm, the buyer is emailed the tracking number"
+
+msgid "กลับไปแก้ไข"
+msgstr "Go back and edit"
+
+msgid "ยืนยันแจ้งจัดส่ง"
+msgstr "Confirm shipment"
+
+msgid "หมายเหตุการตรวจ"
+msgstr "Review note"
+
+msgid "สลิปที่แนบก่อนหน้า"
+msgstr "Earlier slips"
+
+#, python-format
+msgid "ไม่มีสลิปที่รอตรวจ สถานะการชำระเงินตอนนี้: %(status)s"
+msgstr "No slip is waiting for review. Payment status: %(status)s"
+
+msgid "KEX (Kerry)"
+msgstr "KEX (Kerry)"
+
+msgid "Flash Express"
+msgstr "Flash Express"
+
+msgid "J&T Express"
+msgstr "J&T Express"
+
+msgid "BEST Express"
+msgstr "BEST Express"
+
+msgid "Ninja Van"
+msgstr "Ninja Van"
+
+msgid "SCG Express"
+msgstr "SCG Express"
+
+msgid "บริษัทขนส่ง"
+msgstr "Carrier"
+
+msgid "ขนส่ง"
+msgstr "Carrier"
+
 #~ msgid "สร้างบัญชีผู้ใช้งานสำเร็จ"
 #~ msgstr "Account created"
 

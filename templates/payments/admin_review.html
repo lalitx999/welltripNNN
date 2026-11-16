@@ -12,7 +12,24 @@
       <div class="fw-bold mb-2"><i data-lucide="image" class="text-green me-1"></i>{% translate "สลิปที่แนบมา" %}</div>
       {% if slip and slip.image %}
         <a href="{{ slip.image.url }}" target="_blank" rel="noopener"><img src="{{ slip.image.url }}" alt="{% translate 'สลิป' %}" class="img-fluid rounded-4 border w-100" style="max-height: 70vh; object-fit: contain;"></a>
-        <div class="small text-secondary mt-2">{% translate "แตะรูปเพื่อเปิดขนาดเต็ม" %}</div>
+        <div class="small text-secondary mt-2 d-flex flex-wrap gap-2 align-items-center">
+          <span class="badge {% if slip.verification_status == 'VERIFIED' %}badge-green{% elif slip.verification_status == 'REJECTED' %}text-bg-danger{% else %}badge-gold{% endif %}">{{ slip.get_verification_status_display }}</span>
+          {% translate "แตะรูปเพื่อเปิดขนาดเต็ม" %}
+        </div>
+        {% if slip.verification_notes %}<div class="small mt-2"><span class="text-secondary">{% translate "หมายเหตุการตรวจ" %}:</span> {{ slip.verification_notes }}</div>{% endif %}
+        {% if other_slips %}
+          <div class="border-top mt-3 pt-3">
+            <div class="small fw-semibold mb-2">{% translate "สลิปที่แนบก่อนหน้า" %}</div>
+            <div class="d-flex flex-wrap gap-2">
+              {% for s in other_slips %}
+                <a href="{{ s.image.url }}" target="_blank" rel="noopener" class="text-center small text-secondary text-decoration-none">
+                  <img src="{{ s.image.url }}" alt="{% translate 'สลิป' %}" width="72" height="72" class="rounded-3 object-fit-cover border d-block mb-1">
+                  {{ s.get_verification_status_display }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
       {% else %}
         <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="image-off"></i></span><div class="small text-secondary">{% translate "ไม่มีไฟล์สลิป" %}</div></div>
       {% endif %}
@@ -35,7 +52,10 @@
 
     <div class="wt-card p-4">
       <div class="fw-bold mb-3"><i data-lucide="clipboard-check" class="text-green me-1"></i>{% translate "ผลการตรวจสอบ" %}</div>
-      <form method="post" action="{% url 'payments:admin_review' payment.id %}" class="d-grid gap-3">
+      {% if not can_review %}
+        <div class="alert alert-secondary rounded-4 small">{% blocktranslate trimmed with status=payment.get_status_display %}ไม่มีสลิปที่รอตรวจ สถานะการชำระเงินตอนนี้: {{ status }}{% endblocktranslate %}</div>
+      {% endif %}
+      <form method="post" action="{% url 'payments:admin_review' payment.id %}" class="d-grid gap-3{% if not can_review %} d-none{% endif %}">
         {% csrf_token %}
         <div>
           <label for="verification_notes" class="form-label small fw-semibold">{% translate "บันทึก / เหตุผล (ระบุเมื่อไม่อนุมัติ)" %}</label>

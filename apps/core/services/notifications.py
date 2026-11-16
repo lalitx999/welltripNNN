@@ -296,3 +296,45 @@ def send_slip_rejected_alert(payment, rejection_reason: str) -> bool:
     )
 
     return _queue_mail(subject, message, tourist_email)
+
+
+def send_shipment_notice(item) -> bool:
+    """Tell the customer their OTOP item has shipped, with the tracking number (no carrier API needed)."""
+    from django.utils import translation
+
+    # The email is written in Thai; don't let the seller's site language mix English labels in
+    with translation.override("th"):
+        return _send_shipment_notice(item)
+
+
+def _send_shipment_notice(item) -> bool:
+    booking = item.booking
+    customer = booking.customer
+    if not customer or not customer.email:
+        return False
+    addr = booking.shipping_address or {}
+    address = " ".join(str(addr.get(k, "")) for k in ("address_line", "district", "province", "postal_code")).strip()
+    carrier = item.get_carrier_display() if item.carrier else "-"
+    lines = [
+        f"เรียน คุณ {customer.full_name or addr.get('recipient_name') or 'ลูกค้า'},",
+        "",
+        f"สินค้าในคำสั่งซื้อ {booking.booking_code} ถูกจัดส่งแล้ว",
+        "",
+        f"สินค้า: {item.item_title_snapshot} x {item.quantity}",
+        f"ร้านค้า: {item.vendor.display_name}",
+        f"ขนส่ง: {carrier}",
+        f"เลขพัสดุ: {item.tracking_number}",
+    ]
+    if item.tracking_url:
+        lines.append(f"ติดตามพัสดุ: {item.tracking_url}")
+    lines += [
+        "",
+        f"ผู้รับ: {addr.get('recipient_name', '')} ({addr.get('phone_number', '')})",
+        f"ที่อยู่จัดส่ง: {address}",
+        "",
+        f"ดูรายละเอียดคำสั่งซื้อ: {_site_url()}/bookings/detail/{booking.id}/",
+        "",
+        "ทีมงาน WellTrip Thailand",
+    ]
+    subject = f"[WellTrip] สินค้าของคุณถูกจัดส่งแล้ว (คำสั่งซื้อ {booking.booking_code})"
+    return _queue_mail(subject, "\n".join(lines), customer.email)

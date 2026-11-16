@@ -380,6 +380,7 @@ PARTNER_ROLES = (
 def portal_orders_view(request):
     """Every order line the partner sold, with tabs, paging and OTOP shipping."""
     from django.core.paginator import Paginator
+    from apps.bookings.models import Carrier
     from apps.bookings.selectors.vendor_orders import ORDER_TABS, to_ship_count, vendor_order_items
 
     tab = request.GET.get('tab', 'all')
@@ -391,6 +392,7 @@ def portal_orders_view(request):
         'tab': tab,
         'page_obj': page,
         'to_ship_count': to_ship_count(request.user),
+        'carriers': Carrier.choices,
     })
 
 
@@ -400,7 +402,8 @@ def portal_fulfillment_view(request, item_id):
     from apps.bookings.services.fulfillment import update_fulfillment
 
     ok, message = update_fulfillment(
-        request, item_id, request.POST.get('status', ''), request.POST.get('tracking_number', '')
+        request, item_id, request.POST.get('status', ''), request.POST.get('tracking_number', ''),
+        request.POST.get('carrier', ''),
     )
     (messages.success if ok else messages.error)(request, message)
     next_url = request.POST.get('next', '')

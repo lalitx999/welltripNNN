@@ -322,6 +322,9 @@ PAYEE_PROXY_ACCOUNTS = config('PAYEE_PROXY_ACCOUNTS', default='', cast=Csv())
 GOOGLE_OAUTH_CLIENT_IDS = config('GOOGLE_OAUTH_CLIENT_IDS', default='')
 GOOGLE_OAUTH_CLIENT_SECRET = config('GOOGLE_OAUTH_CLIENT_SECRET', default='')
 DEEPSEEK_API_KEY = config('DEEPSEEK_API_KEY', default='')
+# deepseek-chat: fast, cheap, good Thai, follows "answer as JSON" well (deepseek-reasoner is slower, not needed here)
+DEEPSEEK_MODEL = config('DEEPSEEK_MODEL', default='deepseek-chat')
+DEEPSEEK_BASE_URL = config('DEEPSEEK_BASE_URL', default='https://api.deepseek.com')
 GEMINI_API_KEY = config('GEMINI_API_KEY', default='')
 
 

@@ -5,10 +5,11 @@ from django.utils.translation import gettext as _
 
 from apps.accounts.permissions import scope_to_owner
 from apps.accounts.services.audit import record_audit_log
-from apps.bookings.models import BookingItem, BookingItemType, BookingStatus, FulfillmentStatus
+from apps.bookings.models import BookingItem, BookingItemType, BookingStatus, Carrier, FulfillmentStatus
+from apps.core.services.notifications import send_shipment_notice
 
 
-def update_fulfillment(request, item_id, new_status, tracking_number=""):
+def update_fulfillment(request, item_id, new_status, tracking_number="", carrier=""):
     """Returns (ok, message). Only paid OTOP lines of this vendor (or any, for admins)."""
     if new_status not in (FulfillmentStatus.SHIPPED, FulfillmentStatus.DELIVERED):
         return False, _("สถานะการจัดส่งไม่ถูกต้อง")
@@ -31,12 +32,16 @@ def update_fulfillment(request, item_id, new_status, tracking_number=""):
         fields = ["fulfillment_status"]
         if new_status == FulfillmentStatus.SHIPPED:
             item.tracking_number = tracking_number.strip()[:60]
+            item.carrier = carrier if carrier in Carrier.values else ""
             item.shipped_at = timezone.now()
-            fields += ["tracking_number", "shipped_at"]
+            fields += ["tracking_number", "carrier", "shipped_at"]
         item.save(update_fields=fields)
+        if new_status == FulfillmentStatus.SHIPPED:
+            # Email the buyer once the change is saved; no paid carrier API involved
+            transaction.on_commit(lambda: send_shipment_notice(item))
         record_audit_log(
             request=request, action="UPDATE", model_name="BookingItem", object_id=str(item.id),
-            changes={"fulfillment_status": new_status, "tracking_number": item.tracking_number,
+            changes={"fulfillment_status": new_status, "tracking_number": item.tracking_number, "carrier": item.carrier,
                      "booking_code": item.booking.booking_code},
         )
     return True, _("อัปเดตการจัดส่ง {code} เป็น '{status}' แล้ว").format(

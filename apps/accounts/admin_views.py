@@ -1034,48 +1034,10 @@ def admin_user_reset_password_view(request, user_id):
 
 
 def _parse_coords_from_google_maps(url_or_coords):
-    """
-    Parses latitude and longitude from Google Maps URL or raw coordinate text.
-    Handles:
-    - @15.1186000,104.3225000
-    - q=15.1186,104.3225 or ll=15.1186,104.3225
-    - Raw coords: 15.1186, 104.3225
-    Returns (Decimal(lat), Decimal(lng)) or (None, None).
-    """
-    if not url_or_coords:
-        return None, None
-    s = str(url_or_coords).strip()
-    
-    # 1. @lat,lng
-    m = re.search(r'@(-?\d+\.\d+),(-?\d+\.\d+)', s)
-    if m:
-        try:
-            return Decimal(m.group(1)), Decimal(m.group(2))
-        except Exception:
-            pass
+    """(lat, lng) from a Google Maps link or "lat, lng"; the place pin wins over the map centre."""
+    from apps.core.geo import coordinates_from_maps_input
+    return coordinates_from_maps_input(url_or_coords)
 
-    # 2. q=lat,lng or ll=lat,lng
-    m = re.search(r'[?&](?:q|ll)=(-?\d+\.\d+),(-?\d+\.\d+)', s)
-    if m:
-        try:
-            return Decimal(m.group(1)), Decimal(m.group(2))
-        except Exception:
-            pass
-
-    # 3. Raw lat, lng
-    m = re.search(r'^(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)$', s)
-    if m:
-        try:
-            return Decimal(m.group(1)), Decimal(m.group(2))
-        except Exception:
-            pass
-
-    return None, None
-
-
-# ==============================================================================
-# FULL ADMIN CRUD: 4. LOCATIONS & CHECK-INS
-# ==============================================================================
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 @require_http_methods(["POST"])

@@ -73,12 +73,12 @@ def analyze_health_deepseek(profile_data: dict) -> str:
                 f"ห้ามวินิจฉัยโรคหรืออ้างผลการรักษาเด็ดขาด"
             )
             req_data = {
-                "model": "deepseek-chat",
+                "model": settings.DEEPSEEK_MODEL,
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.7,
             }
             resp = requests.post(
-                "https://api.deepseek.com/v1/chat/completions",
+                f"{settings.DEEPSEEK_BASE_URL.rstrip('/')}/chat/completions",
                 headers={
                     "Authorization": f"Bearer {api_key.strip()}",
                     "Content-Type": "application/json",
@@ -153,9 +153,9 @@ def _ask_deepseek_for_places(profile_data: dict):
     )
     try:
         resp = requests.post(
-            "https://api.deepseek.com/v1/chat/completions",
+            f"{settings.DEEPSEEK_BASE_URL.rstrip('/')}/chat/completions",
             headers={"Authorization": f"Bearer {api_key.strip()}", "Content-Type": "application/json"},
-            json={"model": "deepseek-chat", "messages": [{"role": "user", "content": prompt}], "temperature": 0.4},
+            json={"model": settings.DEEPSEEK_MODEL, "messages": [{"role": "user", "content": prompt}], "temperature": 0.4},
             timeout=15,
         )
         if resp.status_code != 200:

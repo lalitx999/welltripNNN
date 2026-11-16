@@ -86,18 +86,13 @@ class Accommodation(models.Model):
         if not self.slug:
             self.slug = f"{slugify(self.name, allow_unicode=True)}-{uuid.uuid4().hex[:6]}"
         if self.google_maps_url:
-            import re
-            m = re.search(r'@(-?\d+\.\d+),(-?\d+\.\d+)', self.google_maps_url)
-            if not m:
-                m = re.search(r'[?&](?:q|ll)=(-?\d+\.\d+),(-?\d+\.\d+)', self.google_maps_url)
-            if not m:
-                m = re.search(r'^(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)$', self.google_maps_url)
-            if m:
-                try:
-                    self.latitude = Decimal(m.group(1))
-                    self.longitude = Decimal(m.group(2))
-                except Exception:
-                    pass
+            from apps.core.geo import coordinates_from_maps_input, parse_coordinates
+            lat, lng = parse_coordinates(self.google_maps_url)
+            if lat is None and self.latitude is None:
+                # Short share link without numbers: expand it once, while we have no position yet
+                lat, lng = coordinates_from_maps_input(self.google_maps_url)
+            if lat is not None:
+                self.latitude, self.longitude = lat, lng
         super().save(*args, **kwargs)
 
 
