@@ -1,4 +1,6 @@
 from decimal import Decimal
+
+from apps.core.pricing import owner_price_for
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseForbidden
@@ -42,12 +44,14 @@ def list_view(request):
         qs = qs.annotate(
             lowest_price=Min('rooms__base_price_per_night', filter=Q(rooms__is_active=True))
         )
+    # The bands are customer prices (fee included); rooms store the owner's price
+    low, high = owner_price_for(800), owner_price_for(1500)
     if price_range in ('budget', 'economy'):
-        qs = qs.filter(lowest_price__lt=800)
+        qs = qs.filter(lowest_price__lt=low)
     elif price_range in ('mid', 'moderate'):
-        qs = qs.filter(lowest_price__gte=800, lowest_price__lte=1500)
+        qs = qs.filter(lowest_price__gte=low, lowest_price__lte=high)
     elif price_range == 'luxury':
-        qs = qs.filter(lowest_price__gt=1500)
+        qs = qs.filter(lowest_price__gt=high)
 
     # Districts for filter dropdown
     districts = [
@@ -78,12 +82,34 @@ def detail_view(request, identifier):
     except (Accommodation.DoesNotExist, ValueError):
         accommodation = get_object_or_404(Accommodation.objects.select_related('owner__merchant_profile').prefetch_related('rooms__images'), id=identifier, status=AccommodationStatus.ACTIVE)
 
-    rooms = accommodation.rooms.filter(is_active=True).prefetch_related('images')
+    rooms = list(accommodation.rooms.filter(is_active=True).prefetch_related('images'))
 
     return render(request, 'accommodations/detail.html', {
         'accommodation': accommodation,
         'rooms': rooms,
+        'houses_data': [house_booking_data(room) for room in rooms],
     })
+
+
+def house_booking_data(room):
+    """What the booking card needs about a house: options with customer prices (fee included)."""
+    from apps.core.pricing import customer_price
+    from apps.accommodations.models import RoomCooling
+    return {
+        'id': str(room.id),
+        'name': room.name,
+        'perPerson': room.is_per_person,
+        'capacity': room.capacity_people,
+        'units': max(1, room.total_rooms_count),
+        'options': [
+            {
+                'code': option,
+                'label': str(RoomCooling(option).label),
+                'price': int(customer_price(room.owner_nightly_price(option))),
+            }
+            for option in room.cooling_options()
+        ],
+    }
 
 
 
@@ -124,7 +150,7 @@ def homestay_studio_view(request):
         if accommodation.status == AccommodationStatus.SUSPENDED:
             messages.error(request, _("ที่พักนี้ถูกระงับโดยผู้ดูแลระบบ กรุณาติดต่อทีมงาน"))
         elif status_action == 'publish' and not accommodation.rooms.filter(is_active=True).exists():
-            messages.error(request, _("เพิ่มห้องพักอย่างน้อย 1 ห้องก่อนเปิดให้จอง"))
+            messages.error(request, _("เพิ่มบ้านพักอย่างน้อย 1 หลังก่อนเปิดให้จอง"))
         else:
             accommodation.status = (
                 AccommodationStatus.ACTIVE if status_action == 'publish' else AccommodationStatus.PENDING_VERIFICATION
@@ -138,7 +164,7 @@ def homestay_studio_view(request):
         return redirect(f"{request.path}?acc_id={accommodation.id}")
 
     if request.method == "POST":
-        form = AccommodationForm(request.POST, instance=accommodation)
+        form = AccommodationForm(request.POST, request.FILES, instance=accommodation)
         if form.is_valid():
             acc = form.save()
             record_audit_log(
@@ -146,7 +172,7 @@ def homestay_studio_view(request):
                 action="UPDATE",
                 model_name="Accommodation",
                 object_id=str(acc.id),
-                changes=form.cleaned_data,
+                changes={k: v for k, v in form.cleaned_data.items() if k != 'profile_image'},
             )
             messages.success(request, _("บันทึกข้อมูล '{name}' เรียบร้อยแล้ว").format(name=acc.name))
             return redirect(f"{request.path}?acc_id={acc.id}")
@@ -195,17 +221,21 @@ def room_create_view(request):
             action="CREATE",
             model_name="Room",
             object_id=str(room.id),
-            changes=form.cleaned_data,
+            changes={k: str(v) for k, v in form.cleaned_data.items()},
         )
-        messages.success(request, _("เพิ่มห้องพัก '{name}' เรียบร้อยแล้ว").format(name=room.name))
+        messages.success(request, _("เพิ่มบ้านพัก '{name}' เรียบร้อยแล้ว").format(name=room.name))
     else:
-        messages.error(request, _("ข้อมูลห้องพักไม่ถูกต้อง กรุณาตรวจสอบ"))
+        problems = " ".join(f"{form.fields[f].label}: {' '.join(e)}" if f in form.fields else " ".join(e) for f, e in form.errors.items())
+        messages.error(request, _("ข้อมูลบ้านพักไม่ถูกต้อง: {problems}").format(problems=problems))
 
     return redirect(f"/accommodations/studio/?acc_id={accommodation.id}")
 
 
 def _attach_room_image(request, room):
     """Validates and stores an uploaded photo for a room; the first photo becomes the cover."""
+    if room.images.count() >= Room.MAX_IMAGES:
+        messages.error(request, _("บ้านแต่ละหลังมีรูปได้สูงสุด {max} รูป ลบรูปเดิมก่อนจึงเพิ่มรูปใหม่ได้").format(max=Room.MAX_IMAGES))
+        return None
     image_form = RoomImageForm(files=request.FILES)
     if not image_form.is_valid():
         messages.error(request, " ".join(image_form.errors.get('image', [_("รูปภาพไม่ถูกต้อง")])))
@@ -418,5 +448,5 @@ def room_edit_view(request, room_id):
         messages.success(request, _("บันทึกห้อง '{name}' เรียบร้อยแล้ว").format(name=room.name))
         return redirect(back_url)
     return render(request, 'portal/item_edit.html', {
-        'form': form, 'item': room, 'item_label': _("ห้องพัก"), 'back_url': back_url,
+        'form': form, 'item': room, 'item_label': _("บ้านพัก"), 'back_url': back_url,
     })

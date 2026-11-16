@@ -13,8 +13,9 @@ from django.utils import timezone
 
 from apps.accounts.services.audit import record_audit_log
 from apps.bookings.models import Booking, BookingItem, BookingStatus, BookingItemType
-from apps.bookings.services.pricing import parse_date, stay_dates
+from apps.bookings.services.pricing import parse_date, parse_guests, room_option_title, stay_dates
 from apps.accommodations.models import AccommodationStatus, Room, RoomPricingCalendar
+from apps.core.pricing import customer_price
 from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot
 from apps.otop.models import OTOPProduct
 from django.utils.translation import gettext as _
@@ -23,6 +24,11 @@ from django.utils.translation import gettext as _
 class StockUnavailableError(Exception):
     """Raised when a room, wellness slot, or product is out of stock during checkout."""
     pass
+
+
+def _fee_split(owner_unit_price, quantity, subtotal):
+    owner_amount = owner_unit_price * quantity
+    return {"owner_amount": owner_amount, "platform_fee": subtotal - owner_amount}
 
 
 @transaction.atomic
@@ -66,6 +72,12 @@ def process_checkout(
                 # The cart can sit in the session overnight: never sell a night that has passed
                 raise StockUnavailableError(_("วันเช็คอินของ '{name}' ผ่านมาแล้ว กรุณาลบออกแล้วเลือกวันใหม่").format(name=room.name))
             nights = max(1, int(item.get("nights", 1) or 1))
+            options = room.cooling_options()
+            cooling = item.get("cooling") if item.get("cooling") in options else options[0]
+            guests = parse_guests(item.get("guests"), room)
+            if isinstance(guests, str):
+                raise StockUnavailableError(guests)
+            units = guests if room.is_per_person else 1
 
             # Lock and decrement availability for every night of the stay
             for booking_date in stay_dates(check_in, nights):
@@ -91,18 +103,26 @@ def process_checkout(
                 calendar.available_count -= quantity
                 calendar.save(update_fields=["available_count"])
 
-                subtotal = calendar.price * quantity
+                owner_nightly = room.owner_nightly_price(cooling, calendar.price)
+                unit_price = customer_price(owner_nightly) * units
+                subtotal = unit_price * quantity
                 total_booking_amount += subtotal
 
                 pending_items_to_create.append({
                     "vendor": room.accommodation.owner,
                     "item_type": BookingItemType.ROOM,
                     "entity_id": str(room.id),
-                    "item_title_snapshot": f"{room.name} ({room.accommodation.name})",
-                    "unit_price_snapshot": calendar.price,
+                    "item_title_snapshot": room_option_title(room, cooling, guests),
+                    "unit_price_snapshot": unit_price,
                     "quantity": quantity,
                     "subtotal": subtotal,
-                    "booking_metadata": {"date": str(booking_date), "check_in": str(check_in), "nights": nights},
+                    "owner_amount": owner_nightly * units * quantity,
+                    "platform_fee": subtotal - owner_nightly * units * quantity,
+                    "booking_metadata": {
+                        "date": str(booking_date), "check_in": str(check_in), "nights": nights,
+                        "cooling": cooling, "guests": guests, "pricing_mode": room.pricing_mode,
+                        "accommodation_id": str(room.accommodation_id),
+                    },
                 })
 
         elif item_type == BookingItemType.WELLNESS:
@@ -125,7 +145,7 @@ def process_checkout(
                 slot.capacity_available -= quantity
                 slot.save(update_fields=["capacity_available"])
 
-                subtotal = slot.service.price * quantity
+                subtotal = slot.service.customer_price * quantity
                 total_booking_amount += subtotal
 
                 pending_items_to_create.append({
@@ -133,16 +153,17 @@ def process_checkout(
                     "item_type": BookingItemType.WELLNESS,
                     "entity_id": str(slot.id),
                     "item_title_snapshot": f"{slot.service.name} [{slot.start_time.strftime('%H:%M')}-{slot.end_time.strftime('%H:%M')}]",
-                    "unit_price_snapshot": slot.service.price,
+                    "unit_price_snapshot": slot.service.customer_price,
                     "quantity": quantity,
                     "subtotal": subtotal,
+                    **_fee_split(slot.service.price, quantity, subtotal),
                     "booking_metadata": {"date": str(slot.date), "slot_id": slot.id},
                 })
             else:
                 service = WellnessService.objects.select_related("owner").filter(id=entity_id, is_active=True).first()
                 if service is None:
                     raise StockUnavailableError(_("บริการนี้ปิดรับจองแล้ว กรุณาลบออกจากตะกร้า"))
-                subtotal = service.price * quantity
+                subtotal = service.customer_price * quantity
                 total_booking_amount += subtotal
 
                 pending_items_to_create.append({
@@ -150,9 +171,10 @@ def process_checkout(
                     "item_type": BookingItemType.WELLNESS,
                     "entity_id": str(service.id),
                     "item_title_snapshot": _("{name} ({duration_minutes} นาที)").format(name=service.name, duration_minutes=service.duration_minutes),
-                    "unit_price_snapshot": service.price,
+                    "unit_price_snapshot": service.customer_price,
                     "quantity": quantity,
                     "subtotal": subtotal,
+                    **_fee_split(service.price, quantity, subtotal),
                     "booking_metadata": {"duration_minutes": service.duration_minutes},
                 })
 
@@ -172,7 +194,7 @@ def process_checkout(
             product.stock_quantity -= quantity
             product.save(update_fields=["stock_quantity", "updated_at"])
 
-            subtotal = product.price * quantity
+            subtotal = product.customer_price * quantity
             total_booking_amount += subtotal
 
             pending_items_to_create.append({
@@ -180,9 +202,10 @@ def process_checkout(
                 "item_type": BookingItemType.OTOP,
                 "entity_id": str(product.id),
                 "item_title_snapshot": product.name,
-                "unit_price_snapshot": product.price,
+                "unit_price_snapshot": product.customer_price,
                 "quantity": quantity,
                 "subtotal": subtotal,
+                **_fee_split(product.price, quantity, subtotal),
                 "booking_metadata": {"category": product.category},
             })
 
@@ -190,7 +213,7 @@ def process_checkout(
             menu = FoodMenu.objects.select_related("owner").filter(id=entity_id, is_available=True).first()
             if menu is None:
                 raise StockUnavailableError(_("เมนูนี้ปิดการขายแล้ว กรุณาลบออกจากตะกร้า"))
-            subtotal = menu.price * quantity
+            subtotal = menu.customer_price * quantity
             total_booking_amount += subtotal
 
             pending_items_to_create.append({
@@ -198,9 +221,10 @@ def process_checkout(
                 "item_type": BookingItemType.FOOD,
                 "entity_id": str(menu.id),
                 "item_title_snapshot": menu.name,
-                "unit_price_snapshot": menu.price,
+                "unit_price_snapshot": menu.customer_price,
                 "quantity": quantity,
                 "subtotal": subtotal,
+                **_fee_split(menu.price, quantity, subtotal),
                 "booking_metadata": {"wellness_category": menu.wellness_category},
             })
 

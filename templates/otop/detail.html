@@ -25,7 +25,7 @@
       <span class="badge badge-gold mb-2">{{ product.get_category_display }}</span>
       <h1 class="fw-bold mb-3">{{ product.name }}</h1>
       <div class="d-flex align-items-baseline gap-2 mb-4">
-        <span class="display-6 fw-bold text-green">฿{{ product.price|floatformat:"0g" }}</span>
+        <span class="display-6 fw-bold text-green">฿{{ product.customer_price|floatformat:"0g" }}</span>
         <span class="text-secondary">{% translate "/ ชิ้น" %}</span>
       </div>
 
@@ -57,7 +57,7 @@
           <input type="hidden" name="item_type" value="OTOP">
           <input type="hidden" name="entity_id" value="{{ product.id }}">
           <input type="hidden" name="title" value="{{ product.name }}">
-          <input type="hidden" name="price" value="{{ product.price }}">
+          <input type="hidden" name="price" value="{{ product.customer_price }}">
           <input type="hidden" name="quantity" :value="qty" value="1">
           <button type="submit" class="btn btn-gold btn-lg rounded-pill flex-grow-1"><i data-lucide="shopping-bag" class="me-1"></i>{% translate "เพิ่มลงตะกร้า" %}</button>
           <a href="{% url 'otop:list' %}" class="btn btn-outline-ink btn-lg rounded-pill">{% translate "ดูสินค้าอื่น" %}</a>
@@ -82,7 +82,7 @@
     "@type": "Offer",
     "url": "{{ request.build_absolute_uri }}",
     "priceCurrency": "THB",
-    "price": "{{ product.price|floatformat:2 }}",
+    "price": "{{ product.customer_price|floatformat:2 }}",
     "availability": "{% if product.stock_quantity > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
   }
 }

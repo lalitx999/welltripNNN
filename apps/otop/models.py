@@ -57,6 +57,13 @@ class OTOPProduct(models.Model):
         return _("{name} - ฿{price} (คงเหลือ {stock_quantity})").format(name=self.name, price=self.price, stock_quantity=self.stock_quantity)
 
     @property
+    def customer_price(self):
+        """Price shown to and paid by customers (platform fee added, whole baht)."""
+        from apps.core.pricing import customer_price
+        return customer_price(self.price)
+
+
+    @property
     def stock(self):
         """Backward-compatible alias for stock_quantity."""
         return self.stock_quantity

@@ -15,7 +15,7 @@
         {% csrf_token %}
         {% if form.non_field_errors %}<div class="alert alert-danger rounded-4 small mb-0">{{ form.non_field_errors }}</div>{% endif %}
         {% for field in form %}
-          {% include "portal/partials/form_field.html" with field=field label=field.label %}
+          {% include "portal/partials/form_field.html" with field=field label=field.label help=field.help_text %}
         {% endfor %}
         <div class="d-flex gap-2">
           <button type="submit" class="btn btn-green rounded-pill px-4"><i data-lucide="save" class="me-1"></i>{% translate "บันทึก" %}</button>

@@ -20,7 +20,7 @@
               <div class="flex-grow-1 min-w-0">
                 <div class="d-flex justify-content-between gap-2">
                   <div class="fw-bold">{{ menu.name }}</div>
-                  <span class="fw-bold text-green text-nowrap">฿{{ menu.price|floatformat:"0g" }}</span>
+                  <span class="fw-bold text-green text-nowrap text-end">฿{{ menu.price|floatformat:"0g" }}<small class="d-block fw-normal text-secondary">{% blocktranslate trimmed with price=menu.customer_price|floatformat:"0g" %}ลูกค้าจ่าย ฿{{ price }}{% endblocktranslate %}</small></span>
                 </div>
                 <span class="badge badge-gold">{{ menu.get_wellness_category_display }}</span>
                 {% if not menu.is_available %}<span class="badge text-bg-secondary">{% translate "ปิดการขาย" %}</span>{% endif %}

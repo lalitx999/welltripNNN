@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django import forms
-from apps.accommodations.models import Accommodation, Room, RoomPricingCalendar
+from apps.accommodations.models import Accommodation, Room, RoomCooling, RoomPricingCalendar
 from apps.core.services.media import sanitize_and_strip_image
 from django.utils.translation import gettext_lazy
 
@@ -8,8 +8,9 @@ from django.utils.translation import gettext_lazy
 class AccommodationForm(forms.ModelForm):
     class Meta:
         model = Accommodation
-        fields = ['name', 'description', 'address', 'subdistrict', 'district', 'province', 'postal_code', 'google_maps_url']
+        fields = ['name', 'profile_image', 'description', 'address', 'subdistrict', 'district', 'province', 'postal_code', 'google_maps_url']
         widgets = {
+            'profile_image': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/jpeg,image/png,image/webp'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'address': forms.TextInput(attrs={'class': 'form-control'}),
@@ -20,18 +21,51 @@ class AccommodationForm(forms.ModelForm):
             'google_maps_url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("เช่น https://maps.app.goo.gl/... หรือ 15.1186, 104.3225")}),
         }
 
+    def clean_profile_image(self):
+        image = self.cleaned_data.get('profile_image')
+        # Only re-encode a fresh upload; an unchanged existing file passes through
+        if image and hasattr(image, 'content_type'):
+            return sanitize_and_strip_image(image)
+        return image
+
 
 class RoomForm(forms.ModelForm):
+    """A house in the homestay network: its type, guests and how it is priced."""
+
     class Meta:
         model = Room
-        fields = ['name', 'room_type', 'capacity_people', 'base_price_per_night', 'total_rooms_count']
+        fields = ['name', 'cooling', 'capacity_people', 'pricing_mode', 'base_price_per_night', 'air_price_per_night', 'total_rooms_count']
+        labels = {
+            'name': gettext_lazy("ชื่อบ้าน"),
+            'cooling': gettext_lazy("ประเภทห้อง"),
+            'capacity_people': gettext_lazy("ผู้เข้าพักสูงสุด (คน)"),
+            'pricing_mode': gettext_lazy("วิธีคิดราคา"),
+            'base_price_per_night': gettext_lazy("ราคา (บาท/คืน)"),
+            'air_price_per_night': gettext_lazy("ราคาห้องแอร์ (บาท/คืน)"),
+            'total_rooms_count': gettext_lazy("จำนวนหลัง/ห้องแบบนี้"),
+        }
+        help_texts = {
+            'base_price_per_night': gettext_lazy("ราคาที่คุณได้รับ ถ้ามีทั้งพัดลมและแอร์ ใส่ราคาห้องพัดลม ลูกค้าจะเห็นราคานี้บวกค่าบริการแพลตฟอร์ม"),
+            'air_price_per_night': gettext_lazy("ใส่เฉพาะบ้านที่มีทั้งพัดลมและแอร์"),
+        }
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("เช่น ห้องระเบียงชมดาว")}),
-            'room_type': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': gettext_lazy("เช่น บ้านแม่บุญมา")}),
+            'cooling': forms.Select(attrs={'class': 'form-select'}),
             'capacity_people': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
-            'base_price_per_night': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'step': '0.01'}),
+            'pricing_mode': forms.Select(attrs={'class': 'form-select'}),
+            'base_price_per_night': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'step': '1'}),
+            'air_price_per_night': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'step': '1'}),
             'total_rooms_count': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
         }
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get('cooling') == RoomCooling.BOTH:
+            if not cleaned.get('air_price_per_night'):
+                self.add_error('air_price_per_night', gettext_lazy("บ้านที่มีทั้งพัดลมและแอร์ต้องใส่ราคาห้องแอร์ด้วย"))
+        else:
+            cleaned['air_price_per_night'] = None
+        return cleaned
 
 
 class RoomImageForm(forms.Form):

@@ -18,7 +18,7 @@
             <div class="list-group-item p-3 d-flex gap-3">
               {% if s.image %}<img src="{{ s.image.url }}" alt="{{ s.name }}" width="64" height="64" class="rounded-3 object-fit-cover flex-shrink-0">{% else %}<span class="wt-icon-pill flex-shrink-0" style="width:4rem;height:4rem"><i data-lucide="image-off"></i></span>{% endif %}
               <div class="min-w-0 flex-grow-1">
-                <div class="d-flex justify-content-between gap-2"><span class="fw-bold">{{ s.name }}</span><span class="fw-bold text-green text-nowrap">฿{{ s.price|floatformat:"0g" }}</span></div>
+                <div class="d-flex justify-content-between gap-2"><span class="fw-bold">{{ s.name }}</span><span class="fw-bold text-green text-nowrap text-end">฿{{ s.price|floatformat:"0g" }}<small class="d-block fw-normal text-secondary">{% blocktranslate trimmed with price=s.customer_price|floatformat:"0g" %}ลูกค้าจ่าย ฿{{ price }}{% endblocktranslate %}</small></span></div>
                 <small class="text-secondary"><i data-lucide="clock" class="me-1"></i>{% blocktranslate trimmed with duration_minutes=s.duration_minutes %}{{ duration_minutes }} นาที{% endblocktranslate %}</small>
                 {% if not s.is_active %}<span class="badge text-bg-secondary ms-1">{% translate "ปิดการขาย" %}</span>{% endif %}
                 {% if can_create is False %}<small class="text-secondary ms-1">{{ s.owner.email }}</small>{% endif %}

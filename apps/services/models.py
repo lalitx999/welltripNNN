@@ -50,6 +50,13 @@ class FoodMenu(models.Model):
     def __str__(self):
         return f"{self.name} - ฿{self.price} ({self.get_wellness_category_display()})"
 
+    @property
+    def customer_price(self):
+        """Price shown to and paid by customers (platform fee added, whole baht)."""
+        from apps.core.pricing import customer_price
+        return customer_price(self.price)
+
+
 
 class WellnessService(models.Model):
     """A wellness/spa treatment offered by a WELLNESS_OWNER."""
@@ -78,6 +85,13 @@ class WellnessService(models.Model):
 
     def __str__(self):
         return _("{name} ({duration_minutes} นาที) - ฿{price}").format(name=self.name, duration_minutes=self.duration_minutes, price=self.price)
+
+    @property
+    def customer_price(self):
+        """Price shown to and paid by customers (platform fee added, whole baht)."""
+        from apps.core.pricing import customer_price
+        return customer_price(self.price)
+
 
 
 class WellnessTimeSlot(models.Model):

@@ -12,9 +12,9 @@ PLACEHOLDER = '/static/images/catalog-placeholder.svg'
 def _stay_price_and_image(stay):
     """Same answers as Accommodation.min_price_per_night / hero_image, from prefetched rooms."""
     rooms = stay.active_rooms  # active, cheapest first
-    price = rooms[0].base_price_per_night if rooms else None
-    image = None
-    if rooms:
+    price = rooms[0].customer_price if rooms else None  # what customers pay, fee included
+    image = stay.profile_image or None
+    if rooms and not image:
         first_room = min(rooms, key=lambda r: r.pk)
         images = list(first_room.images.all())
         img = next((i for i in images if i.is_cover), None) or (images[0] if images else None)
@@ -49,7 +49,7 @@ def spa_cards(limit, owner=None):
             'title': w.name,
             'category': _("สปาและกิจกรรม"),
             'location': _("ศรีสะเกษ"),
-            'price': f"฿{w.price:,.0f}",
+            'price': f"฿{w.customer_price:,.0f}",
             'period': _("/ {duration_minutes} นาที").format(duration_minutes=w.duration_minutes) if w.duration_minutes else _("/ รอบ"),
             'image': w.image.url if w.image else PLACEHOLDER,
             'href': f"/services/detail/wellness/{w.id}/",
@@ -64,7 +64,7 @@ def food_cards(limit, owner=None):
             'title': f.name,
             'category': _("อาหารเพื่อสุขภาพ"),
             'location': _("ศรีสะเกษ"),
-            'price': f"฿{f.price:,.0f}",
+            'price': f"฿{f.customer_price:,.0f}",
             'period': _("/ ชุด"),
             'image': f.image.url if f.image else PLACEHOLDER,
             'href': f"/services/detail/food/{f.id}/",
@@ -79,7 +79,7 @@ def otop_cards(limit, owner=None):
             'title': p.name,
             'category': _("หัตถกรรม OTOP"),
             'location': _("ศรีสะเกษ"),
-            'price': f"฿{p.price:,.0f}",
+            'price': f"฿{p.customer_price:,.0f}",
             'period': _("/ ชิ้น"),
             'image': p.image.url if p.image else PLACEHOLDER,
             'href': f"/otop/{p.id}/",

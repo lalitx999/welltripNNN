@@ -5,21 +5,29 @@
 {% block title %}{% blocktranslate trimmed with name=accommodation.name %}{{ name }} — ที่พักชุมชนศรีสะเกษ WellTrip{% endblocktranslate %}{% endblock %}
 
 {% block content %}
+{{ houses_data|json_script:"houses-data" }}
 <div x-data="{
     activePhoto: '{% if accommodation.hero_image %}{{ accommodation.hero_image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}',
-    selectedRoomId: '{% if rooms.first %}{{ rooms.first.id }}{% endif %}',
-    selectedRoomTitle: '{% if rooms.first %}{{ rooms.first.name|escapejs }}{% endif %}',
-    pricePerNight: {% if rooms.first %}{{ rooms.first.base_price_per_night }}{% else %}0{% endif %},
+    houses: JSON.parse(document.getElementById('houses-data').textContent),
+    houseIndex: 0,
+    cooling: '',
     rooms: 1,
-    guests: 2,
+    guests: 1,
     checkIn: '',
     checkOut: '',
     copied: false,
-    selectRoom(id, title, price) {
-      this.selectedRoomId = id;
-      this.selectedRoomTitle = title;
-      this.pricePerNight = price;
-      if (window.innerWidth < 992) document.getElementById('booking-card')?.scrollIntoView({ behavior: 'smooth' });
+    init() { this.pick(0, false) },
+    get house() { return this.houses[this.houseIndex] || null },
+    get option() { return this.house ? (this.house.options.find(o => o.code === this.cooling) || this.house.options[0]) : null },
+    get pricePerNight() { return this.option ? this.option.price : 0 },
+    pick(index, scroll = true) {
+      this.houseIndex = index;
+      const h = this.house;
+      if (!h) return;
+      this.cooling = h.options[0].code;
+      this.rooms = 1;
+      this.guests = h.perPerson ? 1 : h.capacity;
+      if (scroll && window.innerWidth < 992) document.getElementById('booking-card')?.scrollIntoView({ behavior: 'smooth' });
     },
     copyLink() {
       navigator.clipboard.writeText(window.location.href);
@@ -31,7 +39,7 @@
       const diff = Math.round((new Date(this.checkOut) - new Date(this.checkIn)) / 86400000);
       return diff > 0 ? diff : 1;
     },
-    get total() { return this.pricePerNight * this.nights * this.rooms; }
+    get total() { return this.pricePerNight * this.nights * this.rooms * (this.house && this.house.perPerson ? this.guests : 1); }
   }">
 
   <!-- Header -->
@@ -85,6 +93,14 @@
             <img :src="activePhoto" alt="{{ accommodation.name }}" class="object-fit-cover">
           </div>
           <div class="d-flex gap-2 overflow-auto mt-2 pb-1">
+            {% if accommodation.profile_image %}
+              <button type="button" class="btn p-0 border-2 rounded-3 overflow-hidden flex-shrink-0"
+                      :class="activePhoto === '{{ accommodation.profile_image.url }}' ? 'border-success' : 'border-0 opacity-75'"
+                      style="width: 6.5rem; height: 4.25rem;"
+                      @click="activePhoto = '{{ accommodation.profile_image.url }}'">
+                <img src="{{ accommodation.profile_image.url }}" alt="{{ accommodation.name }}" class="w-100 h-100 object-fit-cover" loading="lazy">
+              </button>
+            {% endif %}
             {% for room in rooms %}{% for img in room.images.all %}
               <button type="button" class="btn p-0 border-2 rounded-3 overflow-hidden flex-shrink-0"
                       :class="activePhoto === '{{ img.image.url }}' ? 'border-success' : 'border-0 opacity-75'"
@@ -101,13 +117,13 @@
           <div class="col-6 col-md-4">
             <div class="wt-card p-3 h-100">
               <div class="small text-secondary">{% translate "ราคาเริ่มต้น" %}</div>
-              <div class="fs-4 fw-bold text-green">{% if accommodation.min_price_per_night %}฿{{ accommodation.min_price_per_night|floatformat:"0g" }}<small class="fs-6 fw-normal text-secondary"> {% translate "/ คืน" %}</small>{% else %}<span class="fs-6 text-secondary">{% translate "ยังไม่ระบุ" %}</span>{% endif %}</div>
+              <div class="fs-4 fw-bold text-green">{% if accommodation.min_price_per_night %}฿{{ accommodation.min_customer_price|floatformat:"0g" }}<small class="fs-6 fw-normal text-secondary"> {% translate "/ คืน" %}</small>{% else %}<span class="fs-6 text-secondary">{% translate "ยังไม่ระบุ" %}</span>{% endif %}</div>
             </div>
           </div>
           <div class="col-6 col-md-4">
             <div class="wt-card p-3 h-100">
-              <div class="small text-secondary">{% translate "ประเภทห้องพัก" %}</div>
-              <div class="fs-4 fw-bold">{{ rooms|length }} <small class="fs-6 fw-normal text-secondary">{% translate "แบบ" %}</small></div>
+              <div class="small text-secondary">{% translate "บ้านพักในเครือข่าย" %}</div>
+              <div class="fs-4 fw-bold">{{ rooms|length }} <small class="fs-6 fw-normal text-secondary">{% translate "หลัง" %}</small></div>
             </div>
           </div>
           <div class="col-12 col-md-4">
@@ -126,33 +142,46 @@
           </div>
         {% endif %}
 
-        <!-- Rooms -->
+        <!-- Houses -->
         <div class="wt-card p-4">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <h2 class="h5 fw-bold d-flex align-items-center gap-2 mb-0"><i data-lucide="door-open" class="text-green"></i>{% translate "เลือกห้องพัก" %}</h2>
-            {% if rooms %}<small class="text-secondary">{% translate 'กด "เลือกห้องนี้" เพื่อคำนวณราคา' %}</small>{% endif %}
+            <h2 class="h5 fw-bold d-flex align-items-center gap-2 mb-0"><i data-lucide="home" class="text-green"></i>{% translate "บ้านพักในเครือข่าย" %}</h2>
+            {% if rooms %}<small class="text-secondary">{% translate 'กด "เลือกหลังนี้" เพื่อคำนวณราคา' %}</small>{% endif %}
           </div>
           <div class="d-grid gap-3">
             {% for room in rooms %}
-              <div class="border rounded-4 p-3 p-sm-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3"
-                   :class="selectedRoomId === '{{ room.id }}' ? 'border-success bg-mint' : ''">
-                <div>
-                  <div class="d-flex flex-wrap gap-2 mb-1">
-                    <span class="badge badge-green">{{ room.room_type }}</span>
-                    <span class="small text-secondary"><i data-lucide="users" class="me-1"></i>{% blocktranslate trimmed with capacity_people=room.capacity_people %}สูงสุด {{ capacity_people }} ท่าน{% endblocktranslate %}</span>
+              <div class="border rounded-4 p-3 p-sm-4 d-grid gap-3" :class="houseIndex === {{ forloop.counter0 }} ? 'border-success bg-mint' : ''">
+                {% with photos=room.images.all %}{% if photos %}
+                  <div class="d-flex gap-2 overflow-auto">
+                    {% for img in photos|slice:":3" %}
+                      <button type="button" class="btn p-0 border-0 rounded-3 overflow-hidden flex-shrink-0" style="width: 8rem; height: 5.5rem;" @click="activePhoto = '{{ img.image.url }}'; window.scrollTo({ top: 0, behavior: 'smooth' })" aria-label="{% blocktranslate with name=room.name n=forloop.counter %}ดูรูป {{ name }} รูปที่ {{ n }}{% endblocktranslate %}">
+                        <img src="{{ img.image.url }}" alt="{{ room.name }}" class="w-100 h-100 object-fit-cover" loading="lazy">
+                      </button>
+                    {% endfor %}
                   </div>
-                  <h3 class="h6 fw-bold mb-0">{{ room.name }}</h3>
-                </div>
-                <div class="d-flex align-items-center justify-content-between gap-3">
-                  <div class="text-md-end">
-                    <span class="fs-4 fw-bold text-green">฿{{ room.base_price_per_night|floatformat:"0g" }}</span>
-                    <small class="text-secondary d-block">{% translate "/ คืน" %}</small>
+                {% endif %}{% endwith %}
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                  <div>
+                    <div class="d-flex flex-wrap gap-2 mb-1">
+                      <span class="badge badge-green"><i data-lucide="{% if room.cooling == 'FAN' %}fan{% elif room.cooling == 'AIR' %}snowflake{% else %}thermometer{% endif %}" class="me-1"></i>{{ room.get_cooling_display }}</span>
+                      <span class="small text-secondary"><i data-lucide="users" class="me-1"></i>{% blocktranslate trimmed with capacity_people=room.capacity_people %}สูงสุด {{ capacity_people }} ท่าน{% endblocktranslate %}</span>
+                    </div>
+                    <h3 class="h6 fw-bold mb-0">{{ room.name }}</h3>
                   </div>
-                  <button type="button" class="btn rounded-pill px-3"
-                          :class="selectedRoomId === '{{ room.id }}' ? 'btn-gold' : 'btn-green'"
-                          @click="selectRoom('{{ room.id }}', '{{ room.name|escapejs }}', {{ room.base_price_per_night }})">
-                    <span x-text="selectedRoomId === '{{ room.id }}' ? '{{ _("✓ เลือกแล้ว")|escapejs }}' : '{{ _("เลือกห้องนี้")|escapejs }}'"></span>
-                  </button>
+                  <div class="d-flex align-items-center justify-content-between gap-3">
+                    <div class="text-md-end">
+                      {% if room.customer_air_price %}
+                        <div class="small"><span class="text-secondary">{% translate "พัดลม" %}</span> <span class="fw-bold text-green fs-5">฿{{ room.customer_price|floatformat:"0g" }}</span></div>
+                        <div class="small"><span class="text-secondary">{% translate "แอร์" %}</span> <span class="fw-bold text-green fs-5">฿{{ room.customer_air_price|floatformat:"0g" }}</span></div>
+                      {% else %}
+                        <span class="fs-4 fw-bold text-green">฿{{ room.customer_price|floatformat:"0g" }}</span>
+                      {% endif %}
+                      <small class="text-secondary d-block">{% if room.is_per_person %}{% translate "/ คน / คืน" %}{% else %}{% translate "/ หลัง / คืน" %}{% endif %}</small>
+                    </div>
+                    <button type="button" class="btn rounded-pill px-3" :class="houseIndex === {{ forloop.counter0 }} ? 'btn-gold' : 'btn-green'" @click="pick({{ forloop.counter0 }})">
+                      <span x-text="houseIndex === {{ forloop.counter0 }} ? '{{ _("✓ เลือกแล้ว")|escapejs }}' : '{{ _("เลือกหลังนี้")|escapejs }}'"></span>
+                    </button>
+                  </div>
                 </div>
               </div>
             {% empty %}
@@ -193,22 +222,20 @@
         <div class="position-sticky d-grid gap-3" style="top: 6rem;">
           <div id="booking-card" class="wt-card p-4 shadow-sm">
             {% if rooms %}
-              <div class="small text-secondary">{% translate "ราคาต่อคืน" %}</div>
+              <div class="small text-secondary" x-text="house && house.perPerson ? '{{ _("ราคาต่อคน ต่อคืน")|escapejs }}' : '{{ _("ราคาต่อหลัง ต่อคืน")|escapejs }}'"></div>
               <div class="d-flex align-items-baseline gap-1">
                 <span class="display-6 fw-bold text-green">฿<span x-text="Number(pricePerNight).toLocaleString()"></span></span>
                 <span class="text-secondary">{% translate "/ คืน" %}</span>
               </div>
-              <div class="small text-secondary mb-3"><i data-lucide="check" class="text-success me-1"></i><span x-text="selectedRoomTitle"></span></div>
+              <div class="small text-secondary mb-3"><i data-lucide="check" class="text-success me-1"></i><span x-text="house ? house.name : ''"></span></div>
 
               <form method="post" action="{% url 'bookings:cart_add' %}" class="d-grid gap-3">
                 {% csrf_token %}
                 <input type="hidden" name="item_type" value="ROOM">
-                <input type="hidden" name="entity_id" :value="selectedRoomId">
-                <input type="hidden" name="title" :value="selectedRoomTitle + ' ({{ accommodation.name|escapejs }})'">
-                <input type="hidden" name="price" :value="total">
+                <input type="hidden" name="entity_id" :value="house ? house.id : ''">
                 <input type="hidden" name="quantity" :value="rooms">
                 <input type="hidden" name="guests" :value="guests">
-                <input type="hidden" name="nights" :value="nights">
+                <input type="hidden" name="cooling" :value="cooling">
 
                 <div class="row g-2">
                   <div class="col-6">
@@ -221,31 +248,41 @@
                   </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center">
-                  <span class="small fw-semibold">{% translate "จำนวนห้อง" %}</span>
+                <div x-show="house && house.options.length > 1">
+                  <div class="small fw-semibold mb-1">{% translate "ประเภทห้อง" %}</div>
+                  <div class="btn-group w-100" role="group" aria-label="{% translate 'ประเภทห้อง' %}">
+                    <template x-for="o in (house ? house.options : [])" :key="o.code">
+                      <button type="button" class="btn btn-sm" :class="cooling === o.code ? 'btn-green' : 'btn-outline-ink'" @click="cooling = o.code" x-text="o.label + ' ฿' + o.price.toLocaleString()"></button>
+                    </template>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center" x-show="house && house.units > 1">
+                  <span class="small fw-semibold">{% translate "จำนวนห้อง/หลัง" %}</span>
                   <div class="btn-group btn-group-sm" role="group" aria-label="{% translate 'จำนวนห้อง' %}">
                     <button type="button" class="btn btn-outline-ink" @click="if (rooms > 1) rooms--" :disabled="rooms <= 1" aria-label="{% translate 'ลด' %}">−</button>
                     <span class="btn btn-outline-ink disabled fw-bold" style="min-width: 2.5rem;" x-text="rooms"></span>
-                    <button type="button" class="btn btn-outline-ink" @click="if (rooms < 10) rooms++" aria-label="{% translate 'เพิ่ม' %}">+</button>
+                    <button type="button" class="btn btn-outline-ink" @click="if (house && rooms < house.units) rooms++" :disabled="!house || rooms >= house.units" aria-label="{% translate 'เพิ่ม' %}">+</button>
                   </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                  <span class="small fw-semibold">{% translate "ผู้เข้าพัก" %}</span>
+                  <span class="small fw-semibold">{% translate "ผู้เข้าพัก" %} <span class="text-secondary fw-normal" x-text="house ? '({{ _("สูงสุด")|escapejs }} ' + house.capacity + ')' : ''"></span></span>
                   <div class="btn-group btn-group-sm" role="group" aria-label="{% translate 'จำนวนผู้เข้าพัก' %}">
                     <button type="button" class="btn btn-outline-ink" @click="if (guests > 1) guests--" :disabled="guests <= 1" aria-label="{% translate 'ลด' %}">−</button>
                     <span class="btn btn-outline-ink disabled fw-bold" style="min-width: 2.5rem;" x-text="guests"></span>
-                    <button type="button" class="btn btn-outline-ink" @click="if (guests < 30) guests++" aria-label="{% translate 'เพิ่ม' %}">+</button>
+                    <button type="button" class="btn btn-outline-ink" @click="if (house && guests < house.capacity) guests++" :disabled="!house || guests >= house.capacity" aria-label="{% translate 'เพิ่ม' %}">+</button>
                   </div>
                 </div>
 
                 <div class="bg-mint rounded-4 p-3 small">
                   <div class="d-flex justify-content-between text-secondary">
-                    <span x-text="'฿' + Number(pricePerNight).toLocaleString() + ' × ' + nights + ' {{ _("คืน ×")|escapejs }} ' + rooms + ' {{ _("ห้อง")|escapejs }}'"></span>
+                    <span x-text="'฿' + Number(pricePerNight).toLocaleString() + (house && house.perPerson ? ' × ' + guests + ' {{ _("คน")|escapejs }}' : '') + ' × ' + nights + ' {{ _("คืน")|escapejs }}' + (rooms > 1 ? ' × ' + rooms : '')"></span>
                   </div>
                   <div class="d-flex justify-content-between align-items-baseline border-top mt-2 pt-2">
                     <span class="fw-bold">{% translate "ยอดรวม" %}</span>
                     <span class="fs-5 fw-bold text-green" x-text="'฿' + total.toLocaleString()"></span>
                   </div>
+                  <div class="text-secondary mt-1">{% translate "ราคารวมค่าบริการแล้ว · วันที่มีราคาพิเศษจะคำนวณใหม่ในตะกร้า" %}</div>
                 </div>
 
                 <button type="submit" class="btn btn-gold btn-lg rounded-pill"><i data-lucide="shopping-bag" class="me-1"></i>{% translate "เพิ่มลงตะกร้า" %}</button>
@@ -290,7 +327,7 @@
       "addressCountry": "TH"
     }{% if accommodation.latitude and accommodation.longitude %},
     "geo": { "@type": "GeoCoordinates", "latitude": {{ accommodation.latitude }}, "longitude": {{ accommodation.longitude }} }{% endif %}{% if accommodation.min_price_per_night %},
-    "priceRange": "฿{{ accommodation.min_price_per_night|floatformat:"0g" }}"{% endif %}
+    "priceRange": "฿{{ accommodation.min_customer_price|floatformat:"0g" }}"{% endif %}
   }
   </script>
 </div>

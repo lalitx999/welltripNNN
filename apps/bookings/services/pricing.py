@@ -13,7 +13,8 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from apps.accommodations.models import AccommodationStatus, Room, RoomPricingCalendar
+from apps.accommodations.models import AccommodationStatus, Room, RoomCooling, RoomPricingCalendar
+from apps.core.pricing import customer_price
 from apps.bookings.models import BookingItemType
 from apps.otop.models import OTOPProduct
 from apps.services.models import FoodMenu, WellnessService, WellnessTimeSlot
@@ -28,7 +29,9 @@ class ResolvedItem:
     unit_price: Decimal = Decimal("0.00")
     date: str = ""
     nights: int = 1
-    stay_total: Decimal | None = None  # rooms: sum of each night's calendar price, per room
+    stay_total: Decimal | None = None  # rooms: whole stay for one house/room, guests included
+    cooling: str = ""  # rooms: FAN or AIR, as chosen by the guest
+    guests: int = 0  # rooms: guest count (prices per person multiply by it)
     error: str = ""
 
 
@@ -39,8 +42,18 @@ def parse_date(value):
         return None
 
 
-def resolve_cart_item(item_type, entity_id, check_in="", check_out=""):
-    """Look up the real title and unit price for a cart entry, or explain why it can't be added."""
+def room_option_title(room, cooling, guests):
+    parts = [str(RoomCooling(cooling).label)]
+    if room.is_per_person:
+        parts.append(_("{count} คน").format(count=guests))
+    return f"{room.name} ({room.accommodation.name}) · " + " · ".join(parts)
+
+
+def resolve_cart_item(item_type, entity_id, check_in="", check_out="", cooling="", guests=None):
+    """
+    Look up the real title and customer price (platform fee included) for a cart
+    entry, or explain why it can't be added.
+    """
     try:
         if item_type == BookingItemType.ROOM:
             room = Room.objects.select_related("accommodation").get(
@@ -61,20 +74,29 @@ def resolve_cart_item(item_type, entity_id, check_in="", check_out=""):
             full = [d for d, c in calendar.items() if c.available_count <= 0]
             if full:
                 return ResolvedItem(error=_("ห้องนี้เต็มแล้วในวันที่ {date}").format(date=min(full).strftime("%d/%m/%Y")))
-            stay_total = sum(
-                (calendar[d].price if d in calendar else room.base_price_per_night) for d in stay_dates(start, nights)
-            )
+            options = room.cooling_options()
+            cooling = cooling if cooling in options else options[0]
+            guest_count = parse_guests(guests, room)
+            if isinstance(guest_count, str):
+                return ResolvedItem(error=guest_count)
+            units = guest_count if room.is_per_person else 1
+            nightly = [
+                customer_price(room.owner_nightly_price(cooling, calendar[d].price if d in calendar else None))
+                for d in stay_dates(start, nights)
+            ]
             return ResolvedItem(
-                title=f"{room.name} ({room.accommodation.name})",
-                unit_price=room.base_price_per_night,
+                title=room_option_title(room, cooling, guest_count),
+                unit_price=nightly[0] * units,
                 date=start.isoformat(),
                 nights=nights,
-                stay_total=stay_total,
+                stay_total=sum(nightly) * units,
+                cooling=cooling,
+                guests=guest_count,
             )
 
         if item_type == BookingItemType.FOOD:
             menu = FoodMenu.objects.get(id=entity_id, is_available=True)
-            return ResolvedItem(title=menu.name, unit_price=menu.price)
+            return ResolvedItem(title=menu.name, unit_price=menu.customer_price)
 
         if item_type == BookingItemType.WELLNESS:
             if str(entity_id).isdigit():
@@ -85,22 +107,35 @@ def resolve_cart_item(item_type, entity_id, check_in="", check_out=""):
                     return ResolvedItem(error=_("รอบเวลานี้เต็มแล้ว"))
                 return ResolvedItem(
                     title=f"{slot.service.name} [{slot.start_time:%H:%M}-{slot.end_time:%H:%M}]",
-                    unit_price=slot.service.price,
+                    unit_price=slot.service.customer_price,
                     date=slot.date.isoformat(),
                 )
             service = WellnessService.objects.get(id=entity_id, is_active=True)
-            return ResolvedItem(title=service.name, unit_price=service.price)
+            return ResolvedItem(title=service.name, unit_price=service.customer_price)
 
         if item_type == BookingItemType.OTOP:
             product = OTOPProduct.objects.get(id=entity_id, is_active=True)
             if product.stock_quantity <= 0:
                 return ResolvedItem(error=_("สินค้า '{name}' หมดชั่วคราว").format(name=product.name))
-            return ResolvedItem(title=product.name, unit_price=product.price)
+            return ResolvedItem(title=product.name, unit_price=product.customer_price)
     except (Room.DoesNotExist, FoodMenu.DoesNotExist, WellnessService.DoesNotExist,
             WellnessTimeSlot.DoesNotExist, OTOPProduct.DoesNotExist, ValidationError, ValueError):
         pass
 
     return ResolvedItem(error=_("ไม่พบรายการนี้ หรือรายการปิดให้บริการแล้ว"))
+
+
+def parse_guests(value, room):
+    """Guest count for a house: 1..capacity. Returns an error message instead when out of range."""
+    try:
+        count = int(value) if value not in (None, "") else (1 if room.is_per_person else room.capacity_people)
+    except (TypeError, ValueError):
+        count = 1
+    if count < 1:
+        count = 1
+    if count > room.capacity_people:
+        return _("{name} พักได้สูงสุด {count} คน").format(name=room.name, count=room.capacity_people)
+    return count
 
 
 def cart_line_total(item):

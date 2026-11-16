@@ -222,7 +222,7 @@ class ServerSidePricingTestCase(TestCase):
     def test_posted_price_and_title_are_ignored(self):
         self._add_room()
         item = self.client.session["cart"][0]
-        self.assertEqual(Decimal(item["price"]), Decimal("800"))
+        self.assertEqual(Decimal(item["price"]), Decimal("840"))  # 800 + 5% platform fee
         self.assertEqual(item["nights"], 3)
         self.assertIn("ห้องวิวนา", item["title"])
 
@@ -235,7 +235,7 @@ class ServerSidePricingTestCase(TestCase):
         self._add_room()
         cart = self.client.session["cart"]
         booking = process_checkout(self.tourist, cart)
-        self.assertEqual(booking.total_amount, Decimal("2400.00"))
+        self.assertEqual(booking.total_amount, Decimal("2520.00"))  # 3 nights x 840
         self.assertEqual(RoomPricingCalendar.objects.filter(room=self.room).count(), 3)
 
     def test_expiry_job_survives_service_only_wellness_items(self):
@@ -416,7 +416,7 @@ class TouristHomeTestCase(TestCase):
         with CaptureQueriesContext(connection) as ctx:
             page = self.client.get("/home/")
         self.assertContains(page, "สวัสดีคุณ ลลิตา")
-        for name in ("บ้านสวน 0", "ส้มตำสมุนไพร", "นวดประคบ", "กาแฟภูเขาไฟ", "฿700"):
+        for name in ("บ้านสวน 0", "ส้มตำสมุนไพร", "นวดประคบ", "กาแฟภูเขาไฟ", "฿735"):  # 700 + 5% fee
             self.assertContains(page, name)
         self.assertLess(len(ctx.captured_queries), 30)
         for heading in ("อาหารสุขภาพ", "นวดและสปา", "ของดี OTOP"):

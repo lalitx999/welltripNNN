@@ -308,5 +308,5 @@ class StaleCartTestCase(TestCase):
         start = timezone.localdate() + timedelta(days=3)
         RoomPricingCalendar.objects.create(room=room, date=start, price=Decimal("900"), available_count=1)
         resolved = resolve_cart_item("ROOM", str(room.id), start.isoformat(), (start + timedelta(days=2)).isoformat())
-        self.assertEqual(resolved.stay_total, Decimal("1400"))  # 900 special night + 500 base night
-        self.assertEqual(cart_line_total({"stay_total": str(resolved.stay_total), "quantity": 1}), Decimal("1400"))
+        self.assertEqual(resolved.stay_total, Decimal("1470"))  # 945 special night + 525 base night (5% fee each)
+        self.assertEqual(cart_line_total({"stay_total": str(resolved.stay_total), "quantity": 1}), Decimal("1470"))

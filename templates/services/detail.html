@@ -30,7 +30,7 @@
       <h1 class="fw-bold mb-3">{{ item.name }}</h1>
 
       <div class="d-flex align-items-baseline gap-2 mb-4">
-        <span class="display-6 fw-bold text-green">฿{{ item.price|floatformat:"0g" }}</span>
+        <span class="display-6 fw-bold text-green">฿{{ item.customer_price|floatformat:"0g" }}</span>
         <span class="text-secondary">
           {% if service_type == 'food' %}{% translate "/ จาน" %}{% if item.calorie_estimate %} {% blocktranslate trimmed with calorie_estimate=item.calorie_estimate %}· ประมาณ {{ calorie_estimate }} kcal{% endblocktranslate %}{% endif %}
           {% else %}{% blocktranslate trimmed with duration_minutes=item.duration_minutes %}/ ครั้ง · {{ duration_minutes }} นาที{% endblocktranslate %}{% endif %}
@@ -55,7 +55,7 @@
         <input type="hidden" name="item_type" value="{% if service_type == 'food' %}FOOD{% else %}WELLNESS{% endif %}">
         <input type="hidden" name="entity_id" value="{{ item.id }}">
         <input type="hidden" name="title" value="{{ item.name }}">
-        <input type="hidden" name="price" value="{{ item.price }}">
+        <input type="hidden" name="price" value="{{ item.customer_price }}">
         <input type="hidden" name="quantity" value="1">
         <button type="submit" class="btn btn-gold btn-lg rounded-pill flex-grow-1"><i data-lucide="shopping-bag" class="me-1"></i>{% if service_type == 'food' %}{% translate "สั่งเมนูนี้" %}{% else %}{% translate "จองบริการนี้" %}{% endif %}</button>
         <a href="{% url 'services:list' %}" class="btn btn-outline-ink btn-lg rounded-pill">{% translate "ดูบริการอื่น" %}</a>
@@ -72,7 +72,7 @@
   "description": "{{ item.description|default:item.name|truncatewords:30|escapejs }}",
   {% if item.image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ item.image.url }}",{% endif %}
   "address": { "@type": "PostalAddress", "addressRegion": "{{ _("ศรีสะเกษ")|escapejs }}", "addressCountry": "TH" },
-  "offers": { "@type": "Offer", "price": "{{ item.price|floatformat:2 }}", "priceCurrency": "THB" }
+  "offers": { "@type": "Offer", "price": "{{ item.customer_price|floatformat:2 }}", "priceCurrency": "THB" }
 }
 </script>
 {% endblock %}

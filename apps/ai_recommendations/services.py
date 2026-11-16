@@ -126,12 +126,12 @@ def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> 
         active_rooms = acc.rooms.filter(is_active=True).order_by("base_price_per_night")
         if active_rooms.exists():
             room = active_rooms.first()
-            total_price += room.base_price_per_night
+            total_price += room.customer_price
             package_items.append({
                 "item_type": "ACCOMMODATION",
                 "entity_id": str(room.id),
                 "title": f"{acc.name} - {room.name}",
-                "unit_price": room.base_price_per_night,
+                "unit_price": room.customer_price,
                 "quantity": 1,
                 "category_label": f"โฮมสเตย์ธรรมชาติ ({room.capacity_people} ท่าน)",
                 "detail_url": f"/accommodations/{acc.slug}/",
@@ -149,12 +149,12 @@ def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> 
         food_qs = FoodMenu.objects.filter(is_available=True)
 
     for food in food_qs[:2]:
-        total_price += food.price
+        total_price += food.customer_price
         package_items.append({
             "item_type": "FOOD",
             "entity_id": str(food.id),
             "title": food.name,
-            "unit_price": food.price,
+            "unit_price": food.customer_price,
             "quantity": 1,
             "category_label": f"อาหารสุขภาพ ({food.get_wellness_category_display()}) ~{food.calorie_estimate or 250} kcal",
             "detail_url": f"/services/detail/food/{food.id}/",
@@ -163,12 +163,12 @@ def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> 
     # 3. Wellness Treatment
     wellness_qs = WellnessService.objects.filter(is_active=True)
     for service in wellness_qs[:1]:
-        total_price += service.price
+        total_price += service.customer_price
         package_items.append({
             "item_type": "WELLNESS",
             "entity_id": str(service.id),
             "title": service.name,
-            "unit_price": service.price,
+            "unit_price": service.customer_price,
             "quantity": 1,
             "category_label": f"สปา & นวดแผนไทย ({service.duration_minutes} นาที)",
             "detail_url": f"/services/detail/wellness/{service.id}/",
@@ -177,12 +177,12 @@ def match_sisaket_wellness_package(health_analysis: str, profile_data: dict) -> 
     # 4. OTOP Product
     otop_qs = OTOPProduct.objects.filter(is_active=True, stock_quantity__gt=0)
     for prod in otop_qs[:1]:
-        total_price += prod.price
+        total_price += prod.customer_price
         package_items.append({
             "item_type": "OTOP",
             "entity_id": str(prod.id),
             "title": prod.name,
-            "unit_price": prod.price,
+            "unit_price": prod.customer_price,
             "quantity": 1,
             "category_label": f"สินค้าชุมชน ({prod.get_category_display()})",
             "detail_url": f"/otop/{prod.id}/",

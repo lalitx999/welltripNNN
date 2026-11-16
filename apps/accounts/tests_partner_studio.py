@@ -122,7 +122,7 @@ class OwnItemsOnlyTestCase(TestCase):
         room = Room.objects.create(accommodation=acc, name="ห้องริมนา", base_price_per_night=Decimal("700"))
         self.client.force_login(host)
         self.client.post(reverse("accommodations:room_edit", args=[room.id]), {
-            "name": "ห้องริมนา", "room_type": "Double", "capacity_people": 2,
+            "name": "ห้องริมนา", "cooling": "FAN", "pricing_mode": "PER_HOUSE", "capacity_people": 2,
             "base_price_per_night": "850", "total_rooms_count": 1,
         })
         room.refresh_from_db()

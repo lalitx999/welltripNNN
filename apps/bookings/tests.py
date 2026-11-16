@@ -88,7 +88,7 @@ class ConcurrencyBookingSecurityTestCase(TestCase):
 
         # Tourist 1 orders 2 units (out of 3)
         booking1 = process_checkout(self.tourist1, cart)
-        self.assertEqual(booking1.total_amount, Decimal("1000.00"))
+        self.assertEqual(booking1.total_amount, Decimal("1050.00"))  # 2 x 500 + 5% platform fee
 
         self.product.refresh_from_db()
         self.assertEqual(self.product.stock_quantity, 1)

@@ -305,6 +305,10 @@ EASYSLIP_API_KEY = config('EASYSLIP_API_KEY', default=config('SLIP_PROVIDER_API_
 EASYSLIP_V2_URL = config('EASYSLIP_V2_URL', default='https://api.easyslip.com/v2/verify/bank')
 EASYSLIP_MOCK_VERIFY = config('EASYSLIP_MOCK_VERIFY', default=False, cast=bool)
 
+# Platform fee added to every partner price, and the deposit share for homestay bookings
+PLATFORM_FEE_PERCENT = config('PLATFORM_FEE_PERCENT', default=5, cast=int)
+DEPOSIT_PERCENT = config('DEPOSIT_PERCENT', default=30, cast=int)
+
 # Real values live only in .env (prod refuses to start without the account number)
 PAYEE_ACCOUNT_NUMBER = config('PAYEE_ACCOUNT_NUMBER', default='')
 PAYEE_ACCOUNT_NAME = config('PAYEE_ACCOUNT_NAME', default='')

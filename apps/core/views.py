@@ -554,9 +554,9 @@ def live_search_api(request):
             'type_badge': 'bg-emerald-50 text-emerald-800 border-emerald-200',
             'icon': 'hotel',
             'title': a.name,
-            'subtitle': _("อ.{district} จ.{province}").format(district=a.district, province=a.province) + (_(" · เริ่มต้น ฿{min_price_per_night:,.0f}/คืน").format(min_price_per_night=a.min_price_per_night) if a.min_price_per_night else ""),
+            'subtitle': _("อ.{district} จ.{province}").format(district=a.district, province=a.province) + (_(" · เริ่มต้น ฿{min_price_per_night:,.0f}/คืน").format(min_price_per_night=a.min_customer_price) if a.min_price_per_night else ""),
             'url': f"/accommodations/{a.slug or a.id}/",
-            'price': f"฿{a.min_price_per_night:,.0f}" if a.min_price_per_night else "",
+            'price': f"฿{a.min_customer_price:,.0f}" if a.min_price_per_night else "",
         })
 
     # 2. Food Menus
@@ -570,9 +570,9 @@ def live_search_api(request):
             'type_badge': 'bg-amber-50 text-amber-800 border-amber-200',
             'icon': 'utensils',
             'title': f.name,
-            'subtitle': f"{f.get_wellness_category_display()} · ฿{f.price:,.0f}",
+            'subtitle': f"{f.get_wellness_category_display()} · ฿{f.customer_price:,.0f}",
             'url': f"/services/?category=FOOD&q={f.name}",
-            'price': f"฿{f.price:,.0f}",
+            'price': f"฿{f.customer_price:,.0f}",
         })
 
     # 3. Wellness / Spas
@@ -586,9 +586,9 @@ def live_search_api(request):
             'type_badge': 'bg-teal-50 text-teal-800 border-teal-200',
             'icon': 'sparkles',
             'title': sp.name,
-            'subtitle': _("{duration_minutes} นาที · ฿{price:,.0f}").format(duration_minutes=sp.duration_minutes, price=sp.price),
+            'subtitle': _("{duration_minutes} นาที · ฿{price:,.0f}").format(duration_minutes=sp.duration_minutes, price=sp.customer_price),
             'url': f"/services/?category=SPA&q={sp.name}",
-            'price': f"฿{sp.price:,.0f}",
+            'price': f"฿{sp.customer_price:,.0f}",
         })
 
     # 4. OTOP Products
@@ -602,9 +602,9 @@ def live_search_api(request):
             'type_badge': 'bg-indigo-50 text-indigo-800 border-indigo-200',
             'icon': 'package',
             'title': o.name,
-            'subtitle': f"{o.get_category_display()} · ฿{o.price:,.0f}",
+            'subtitle': f"{o.get_category_display()} · ฿{o.customer_price:,.0f}",
             'url': f"/otop/?q={o.name}",
-            'price': f"฿{o.price:,.0f}",
+            'price': f"฿{o.customer_price:,.0f}",
         })
 
     # 5. Matching Sisaket Districts

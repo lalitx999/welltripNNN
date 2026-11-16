@@ -25,7 +25,7 @@
                       <div class="min-w-0"><div class="fw-semibold small">{{ p.name }}{% if not p.is_active %} <span class="badge text-bg-secondary">{% translate "ปิดการขาย" %}</span>{% endif %}</div><small class="text-secondary">{{ p.get_category_display }}{% if can_create is False %} · {{ p.owner.email }}{% endif %}</small></div>
                     </div>
                   </td>
-                  <td class="text-end small fw-semibold">฿{{ p.price|floatformat:"0g" }}</td>
+                  <td class="text-end small fw-semibold">฿{{ p.price|floatformat:"0g" }}<span class="d-block fw-normal text-secondary">{% blocktranslate trimmed with price=p.customer_price|floatformat:"0g" %}ลูกค้าจ่าย ฿{{ price }}{% endblocktranslate %}</span></td>
                   <td class="text-center">{% include "portal/partials/otop_stock_counter.html" with product=p %}</td>
                   <td class="text-end text-nowrap">
                     <a href="{% url 'otop:product_edit' p.id %}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'แก้ไข' %}" aria-label="{% translate 'แก้ไขสินค้า' %}"><i data-lucide="pencil"></i></a>

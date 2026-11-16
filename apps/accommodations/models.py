@@ -42,6 +42,8 @@ class Accommodation(models.Model):
     longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
     google_maps_url = models.URLField(max_length=500, blank=True, default="")
 
+    # One photo for listings and the top of the detail page (a house's own photos stay on the house)
+    profile_image = models.ImageField(upload_to=accommodation_image_path, null=True, blank=True)
     status = models.CharField(
         max_length=30,
         choices=AccommodationStatus.choices,
@@ -64,7 +66,15 @@ class Accommodation(models.Model):
         return first_room.base_price_per_night if first_room else None
 
     @property
+    def min_customer_price(self):
+        """Lowest nightly price a customer pays here (fee included), for listings."""
+        from apps.core.pricing import customer_price
+        return customer_price(self.min_price_per_night)
+
+    @property
     def hero_image(self):
+        if self.profile_image:
+            return self.profile_image
         first_room = self.rooms.filter(is_active=True).first()
         if first_room:
             img = first_room.images.filter(is_cover=True).first() or first_room.images.first()
@@ -91,8 +101,28 @@ class Accommodation(models.Model):
         super().save(*args, **kwargs)
 
 
+class RoomCooling(models.TextChoices):
+    FAN = "FAN", gettext_lazy("ห้องพัดลม")
+    AIR = "AIR", gettext_lazy("ห้องแอร์")
+    BOTH = "BOTH", gettext_lazy("มีทั้งพัดลมและแอร์")
+
+
+class RoomPricingMode(models.TextChoices):
+    PER_HOUSE = "PER_HOUSE", gettext_lazy("เหมาจ่ายต่อห้อง/หลัง")
+    PER_PERSON = "PER_PERSON", gettext_lazy("คิดต่อคน")
+
+
 class Room(models.Model):
-    """A room type within an Accommodation."""
+    """
+    A house (or room type) inside an Accommodation. A community enterprise lists
+    each member's house here under one account.
+
+    Prices are what the owner receives per night: per house, or per guest when
+    pricing_mode is PER_PERSON. base_price_per_night is the fan price (or the
+    only price); a BOTH house also has air_price_per_night. Customers pay these
+    plus the platform fee (apps.core.pricing).
+    """
+    MAX_IMAGES = 3
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     accommodation = models.ForeignKey(
         Accommodation, on_delete=models.CASCADE, related_name="rooms"
@@ -105,12 +135,60 @@ class Room(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(Decimal("0.01"))],
     )
+    cooling = models.CharField(max_length=8, choices=RoomCooling.choices, default=RoomCooling.FAN)
+    air_price_per_night = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+    pricing_mode = models.CharField(max_length=12, choices=RoomPricingMode.choices, default=RoomPricingMode.PER_HOUSE)
     total_rooms_count = models.PositiveIntegerField(default=1)
     is_active = models.BooleanField(default=True)
 
     @property
     def price_per_night(self):
         return self.base_price_per_night
+
+    @property
+    def is_per_person(self):
+        return self.pricing_mode == RoomPricingMode.PER_PERSON
+
+    def cooling_options(self):
+        """The choices a guest picks from when booking: FAN, AIR or both."""
+        if self.cooling == RoomCooling.BOTH:
+            return [RoomCooling.FAN, RoomCooling.AIR]
+        return [self.cooling]
+
+    def owner_nightly_price(self, option, calendar_price=None):
+        """
+        Owner price for one night (per house or per guest) for the chosen cooling.
+        A special calendar price replaces the base price; the air option keeps its
+        surcharge over the fan price on top of it.
+        """
+        nightly = calendar_price if calendar_price is not None else self.base_price_per_night
+        if option == RoomCooling.AIR and self.cooling == RoomCooling.BOTH and self.air_price_per_night:
+            nightly = nightly + (self.air_price_per_night - self.base_price_per_night)
+        return max(nightly, Decimal("0.01"))
+
+    @property
+    def customer_price(self):
+        """Customer price of the first option (fan, or the only one)."""
+        from apps.core.pricing import customer_price
+        return customer_price(self.base_price_per_night)
+
+    @property
+    def customer_air_price(self):
+        from apps.core.pricing import customer_price
+        if self.cooling == RoomCooling.BOTH and self.air_price_per_night:
+            return customer_price(self.air_price_per_night)
+        return None
+
+    @property
+    def cover_image(self):
+        images = list(self.images.all())
+        return next((i for i in images if i.is_cover), images[0] if images else None)
 
     @property
     def capacity(self):

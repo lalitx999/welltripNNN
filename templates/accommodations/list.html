@@ -71,7 +71,7 @@
           <div class="wt-card-img">
             <img src="{% if acc.hero_image %}{{ acc.hero_image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ acc.name }}" loading="lazy">
             {% if acc.min_price_per_night %}
-              <span class="wt-price-tag">฿{{ acc.min_price_per_night|floatformat:"0g" }} <small>{% translate "/ คืน" %}</small></span>
+              <span class="wt-price-tag">฿{{ acc.min_customer_price|floatformat:"0g" }} <small>{% translate "/ คืน" %}</small></span>
             {% endif %}
           </div>
           <div class="card-body">

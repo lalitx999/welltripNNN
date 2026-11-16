@@ -129,6 +129,9 @@ class BookingItem(models.Model):
     unit_price_snapshot = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    # What the partner receives for this line, and the platform fee inside subtotal
+    owner_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
+    platform_fee = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
     booking_metadata = models.JSONField(default=dict, blank=True)
     fulfillment_status = models.CharField(
         max_length=20, choices=FulfillmentStatus.choices, default=FulfillmentStatus.PENDING, db_index=True

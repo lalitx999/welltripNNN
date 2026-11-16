@@ -2,7 +2,7 @@
 
 {% load i18n %}
 {% block title %}{% translate "จัดการที่พัก - Partner Studio" %}{% endblock %}
-{% block page_heading %}{% translate "ที่พักและห้องพัก" %}{% endblock %}
+{% block page_heading %}{% translate "ที่พักและบ้านพัก" %}{% endblock %}
 
 {% block content %}
 <div class="d-grid gap-4">
@@ -21,7 +21,7 @@
         <small class="text-secondary">{% blocktranslate trimmed with updated_at=accommodation.updated_at|date:"d/m/Y H:i" %}อัปเดต {{ updated_at }}{% endblocktranslate %}</small>
       </div>
       <h2 class="h4 fw-bold mb-0">{{ accommodation.name }}</h2>
-      <small class="text-secondary">{% blocktranslate trimmed with district=accommodation.district|default:_("ยังไม่ระบุอำเภอ") rooms=rooms|length %}{{ district }} · ห้องพัก {{ rooms }} แบบ{% endblocktranslate %}</small>
+      <small class="text-secondary">{% blocktranslate trimmed with district=accommodation.district|default:_("ยังไม่ระบุอำเภอ") rooms=rooms|length %}{{ district }} · บ้านพัก {{ rooms }} หลัง{% endblocktranslate %}</small>
     </div>
     <div class="d-flex flex-wrap gap-2 align-items-start">
       <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="calendar" class="me-1"></i>{% translate "ปฏิทินราคา" %}</a>
@@ -38,12 +38,19 @@
     <div class="col-xl-5">
       <div class="wt-card p-4 h-100">
         <h2 class="h6 fw-bold mb-3"><i data-lucide="pencil" class="text-green me-1"></i>{% translate "ข้อมูลที่พัก" %}</h2>
-        <form method="post" action="{% url 'accommodations:homestay_studio' %}" class="d-grid gap-3">
+        <form method="post" action="{% url 'accommodations:homestay_studio' %}" enctype="multipart/form-data" class="d-grid gap-3">
           {% csrf_token %}
           <input type="hidden" name="accommodation_id" value="{{ accommodation.id }}">
           {% if form.non_field_errors %}<div class="alert alert-danger rounded-4 small mb-0">{{ form.non_field_errors }}</div>{% endif %}
           <div><label class="form-label small fw-semibold" for="{{ form.name.id_for_label }}">{% translate "ชื่อที่พัก *" %}</label>{{ form.name }}{% for e in form.name.errors %}<div class="small text-danger">{{ e }}</div>{% endfor %}</div>
-          <div><label class="form-label small fw-semibold" for="{{ form.description.id_for_label }}">{% translate "คำอธิบายและจุดเด่น" %}</label>{{ form.description }}</div>
+          <div>
+            <label class="form-label small fw-semibold" for="{{ form.profile_image.id_for_label }}">{% translate "รูปโปรไฟล์ที่พัก" %}</label>
+            {% if accommodation.profile_image %}<img src="{{ accommodation.profile_image.url }}" alt="" class="d-block rounded-3 border object-fit-cover mb-2" style="width: 10rem; aspect-ratio: 4 / 3;">{% endif %}
+            {{ form.profile_image }}
+            <div class="form-text">{% translate "รูปเดียวที่แสดงในหน้ารวมที่พัก รูปของบ้านแต่ละหลังเพิ่มได้ด้านขวา" %}</div>
+            {% for e in form.profile_image.errors %}<div class="small text-danger">{{ e }}</div>{% endfor %}
+          </div>
+          <div><label class="form-label small fw-semibold" for="{{ form.description.id_for_label }}">{% translate "รายละเอียด" %}</label>{{ form.description }}</div>
           <div><label class="form-label small fw-semibold" for="{{ form.address.id_for_label }}">{% translate "ที่อยู่" %}</label>{{ form.address }}</div>
           <div class="row g-2">
             <div class="col-6"><label class="form-label small fw-semibold" for="{{ form.subdistrict.id_for_label }}">{% translate "ตำบล" %}</label>{{ form.subdistrict }}</div>
@@ -62,20 +69,25 @@
 
     <div class="col-xl-7 d-grid gap-4">
       <div class="wt-card">
-        <div class="p-3 border-bottom fw-bold"><i data-lucide="bed-double" class="text-green me-1"></i>{% blocktranslate trimmed with rooms=rooms|length %}ห้องพัก ({{ rooms }} แบบ){% endblocktranslate %}</div>
+        <div class="p-3 border-bottom fw-bold"><i data-lucide="home" class="text-green me-1"></i>{% blocktranslate trimmed with rooms=rooms|length %}บ้านพักในเครือข่าย ({{ rooms }} หลัง){% endblocktranslate %}</div>
         {% if rooms %}
           <div class="list-group list-group-flush">
             {% for r in rooms %}
               <div class="list-group-item p-3">
                 <div class="d-flex justify-content-between gap-3">
                   <div>
-                    <div class="fw-bold">{{ r.name }}</div>
-                    <small class="text-secondary">{% blocktranslate trimmed with room_type=r.room_type capacity_people=r.capacity_people total_rooms_count=r.total_rooms_count %}{{ room_type }} · {{ capacity_people }} คน · {{ total_rooms_count }} ห้อง ·{% endblocktranslate %} <strong class="text-green">฿{{ r.base_price_per_night|floatformat:"0g" }}</strong>{% translate "/คืน" %}</small>
+                    <div class="fw-bold">{{ r.name }}{% if not r.is_active %} <span class="badge text-bg-secondary">{% translate "ปิด" %}</span>{% endif %}</div>
+                    <small class="text-secondary d-block">{{ r.get_cooling_display }} · {% blocktranslate trimmed with capacity_people=r.capacity_people %}สูงสุด {{ capacity_people }} คน{% endblocktranslate %} · {{ r.get_pricing_mode_display }}{% if r.total_rooms_count > 1 %} · {% blocktranslate trimmed with count=r.total_rooms_count %}{{ count }} หลัง/ห้อง{% endblocktranslate %}{% endif %}</small>
+                    <small class="d-block">
+                      {% if r.customer_air_price %}{% translate "พัดลม" %} {% endif %}<strong>฿{{ r.base_price_per_night|floatformat:"0g" }}</strong> <span class="text-secondary">({% blocktranslate trimmed with price=r.customer_price|floatformat:"0g" %}ลูกค้าจ่าย ฿{{ price }}{% endblocktranslate %})</span>
+                      {% if r.customer_air_price %} · {% translate "แอร์" %} <strong>฿{{ r.air_price_per_night|floatformat:"0g" }}</strong> <span class="text-secondary">({% blocktranslate trimmed with price=r.customer_air_price|floatformat:"0g" %}ลูกค้าจ่าย ฿{{ price }}{% endblocktranslate %})</span>{% endif %}
+                      <span class="text-secondary">{% if r.is_per_person %}{% translate "/คน/คืน" %}{% else %}{% translate "/คืน" %}{% endif %}</span>
+                    </small>
                   </div>
                   <div class="d-flex gap-1 flex-shrink-0">
-                    <a href="{% url 'accommodations:room_edit' r.id %}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'แก้ไขห้อง' %}" aria-label="{% translate 'แก้ไขห้อง' %}"><i data-lucide="pencil"></i></a>
+                    <a href="{% url 'accommodations:room_edit' r.id %}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'แก้ไขบ้าน' %}" aria-label="{% translate 'แก้ไขบ้าน' %}"><i data-lucide="pencil"></i></a>
                     <a href="{% url 'accommodations:calendar' %}?acc_id={{ accommodation.id }}&room_id={{ r.id }}" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" title="{% translate 'ปฏิทินราคา' %}" aria-label="{% translate 'ปฏิทินราคา' %}"><i data-lucide="calendar"></i></a>
-                    <form method="post" action="{% url 'accommodations:room_delete' r.id %}" onsubmit="return confirm('{{ _("ลบห้อง")|escapejs }} {{ r.name|escapejs }} {{ _("หรือไม่?")|escapejs }}');">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2 lh-1" title="{% translate 'ลบห้อง' %}" aria-label="{% translate 'ลบห้อง' %}"><i data-lucide="trash-2"></i></button></form>
+                    <form method="post" action="{% url 'accommodations:room_delete' r.id %}" onsubmit="return confirm('{{ _("ลบบ้าน")|escapejs }} {{ r.name|escapejs }} {{ _("หรือไม่?")|escapejs }}');">{% csrf_token %}<button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-2 lh-1" title="{% translate 'ลบบ้าน' %}" aria-label="{% translate 'ลบบ้าน' %}"><i data-lucide="trash-2"></i></button></form>
                   </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 mt-2 align-items-center">
@@ -85,33 +97,40 @@
                       <form method="post" action="{% url 'accommodations:room_image_delete' img.id %}" class="position-absolute top-0 end-0" onsubmit="return confirm('{{ _("ลบรูปนี้หรือไม่?")|escapejs }}');">{% csrf_token %}<button type="submit" class="btn btn-danger btn-sm rounded-circle p-0 lh-1" style="width:1.3rem;height:1.3rem" aria-label="{% translate 'ลบรูป' %}">×</button></form>
                     </div>
                   {% endfor %}
-                  <form method="post" action="{% url 'accommodations:room_image_add' r.id %}" enctype="multipart/form-data" class="d-flex gap-1">
-                    {% csrf_token %}
-                    <label class="btn btn-outline-ink btn-sm rounded-pill mb-0"><i data-lucide="image-plus" class="me-1"></i>{% translate "เพิ่มรูป" %}<input type="file" name="image" accept="image/jpeg,image/png,image/webp" class="visually-hidden" onchange="this.form.submit()"></label>
-                  </form>
+                  {% if r.images.all|length < 3 %}
+                    <form method="post" action="{% url 'accommodations:room_image_add' r.id %}" enctype="multipart/form-data" class="d-flex gap-1">
+                      {% csrf_token %}
+                      <label class="btn btn-outline-ink btn-sm rounded-pill mb-0"><i data-lucide="image-plus" class="me-1"></i>{% blocktranslate trimmed with count=r.images.all|length %}เพิ่มรูป ({{ count }}/3){% endblocktranslate %}<input type="file" name="image" accept="image/jpeg,image/png,image/webp" class="visually-hidden" onchange="this.form.submit()"></label>
+                    </form>
+                  {% else %}
+                    <small class="text-secondary">{% translate "ครบ 3 รูปแล้ว" %}</small>
+                  {% endif %}
                 </div>
               </div>
             {% endfor %}
           </div>
         {% else %}
-          <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="bed"></i></span><div class="fw-bold">{% translate "ยังไม่มีห้องพัก" %}</div><small class="text-secondary">{% translate 'เพิ่มห้องพักด้านล่าง แล้วกด "เปิดให้จอง"' %}</small></div>
+          <div class="wt-empty"><span class="wt-icon-pill"><i data-lucide="home"></i></span><div class="fw-bold">{% translate "ยังไม่มีบ้านพัก" %}</div><small class="text-secondary">{% translate 'เพิ่มบ้านด้านล่าง แล้วกด "เปิดให้จอง"' %}</small></div>
         {% endif %}
       </div>
 
       <div class="wt-card p-4">
-        <h2 class="h6 fw-bold mb-3"><i data-lucide="plus-circle" class="text-green me-1"></i>{% translate "เพิ่มห้องพัก" %}</h2>
-        <form method="post" action="{% url 'accommodations:room_create' %}" enctype="multipart/form-data" class="d-grid gap-3">
+        <h2 class="h6 fw-bold mb-1"><i data-lucide="plus-circle" class="text-green me-1"></i>{% translate "เพิ่มบ้านพัก" %}</h2>
+        <p class="small text-secondary">{% translate "เพิ่มบ้านของสมาชิกแต่ละหลังได้ไม่จำกัดภายใต้บัญชีนี้ ใส่ราคาที่เจ้าของบ้านได้รับ ระบบบวกค่าบริการแพลตฟอร์มให้ลูกค้าเห็นเอง" %}</p>
+        <form method="post" action="{% url 'accommodations:room_create' %}" enctype="multipart/form-data" class="d-grid gap-3" x-data="{ cooling: '{{ room_form.cooling.value|default:'FAN' }}' }">
           {% csrf_token %}
           <input type="hidden" name="accommodation_id" value="{{ accommodation.id }}">
           <div class="row g-2">
-            <div class="col-sm-6"><label class="form-label small fw-semibold" for="{{ room_form.name.id_for_label }}">{% translate "ชื่อห้อง *" %}</label>{{ room_form.name }}</div>
-            <div class="col-sm-6"><label class="form-label small fw-semibold" for="{{ room_form.room_type.id_for_label }}">{% translate "ประเภท (แอร์, พัดลม, บ้านเดี่ยว)" %}</label>{{ room_form.room_type }}</div>
-            <div class="col-4"><label class="form-label small fw-semibold" for="{{ room_form.capacity_people.id_for_label }}">{% translate "พักได้ (คน) *" %}</label>{{ room_form.capacity_people }}</div>
-            <div class="col-4"><label class="form-label small fw-semibold" for="{{ room_form.base_price_per_night.id_for_label }}">{% translate "ราคา/คืน *" %}</label>{{ room_form.base_price_per_night }}</div>
-            <div class="col-4"><label class="form-label small fw-semibold" for="{{ room_form.total_rooms_count.id_for_label }}">{% translate "จำนวนห้อง *" %}</label>{{ room_form.total_rooms_count }}</div>
-            <div class="col-12"><label class="form-label small fw-semibold" for="room_image">{% translate "รูปห้อง (ไม่บังคับ)" %}</label><input type="file" id="room_image" name="image" accept="image/jpeg,image/png,image/webp" class="form-control"></div>
+            <div class="col-sm-6">{% include "portal/partials/form_field.html" with field=room_form.name label=room_form.name.label %}</div>
+            <div class="col-sm-6"><label class="form-label small fw-semibold" for="{{ room_form.cooling.id_for_label }}">{{ room_form.cooling.label }} *</label><select name="cooling" id="{{ room_form.cooling.id_for_label }}" class="form-select" x-model="cooling">{% for value, label in room_form.fields.cooling.choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+            <div class="col-sm-6">{% include "portal/partials/form_field.html" with field=room_form.capacity_people label=room_form.capacity_people.label %}</div>
+            <div class="col-sm-6">{% include "portal/partials/form_field.html" with field=room_form.pricing_mode label=room_form.pricing_mode.label %}</div>
+            <div class="col-sm-6">{% include "portal/partials/form_field.html" with field=room_form.base_price_per_night label=room_form.base_price_per_night.label help=_("ถ้ามีทั้งพัดลมและแอร์ ใส่ราคาห้องพัดลม") %}</div>
+            <div class="col-sm-6" x-show="cooling === 'BOTH'">{% include "portal/partials/form_field.html" with field=room_form.air_price_per_night label=room_form.air_price_per_night.label %}</div>
+            <div class="col-sm-6">{% include "portal/partials/form_field.html" with field=room_form.total_rooms_count label=room_form.total_rooms_count.label help=_("ปกติ 1 ถ้ามีหลายห้องหน้าตาเหมือนกันใส่จำนวนได้") %}</div>
+            <div class="col-12"><label class="form-label small fw-semibold" for="room_image">{% translate "รูปบ้าน (ไม่บังคับ เพิ่มได้ภายหลังรวม 3 รูป)" %}</label><input type="file" id="room_image" name="image" accept="image/jpeg,image/png,image/webp" class="form-control"></div>
           </div>
-          <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="plus" class="me-1"></i>{% translate "เพิ่มห้องพัก" %}</button>
+          <button type="submit" class="btn btn-green rounded-pill"><i data-lucide="plus" class="me-1"></i>{% translate "เพิ่มบ้านพัก" %}</button>
         </form>
       </div>
     </div>

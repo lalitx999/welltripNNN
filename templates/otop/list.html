@@ -38,7 +38,7 @@
         <article class="card wt-card wt-card-hover h-100 overflow-hidden">
           <div class="wt-card-img">
             <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/catalog-placeholder.svg' %}{% endif %}" alt="{{ product.name }}" loading="lazy">
-            <span class="wt-price-tag">฿{{ product.price|floatformat:"0g" }}</span>
+            <span class="wt-price-tag">฿{{ product.customer_price|floatformat:"0g" }}</span>
           </div>
           <div class="card-body">
             <div class="small fw-semibold text-gold mb-1">{{ product.get_category_display }}</div>

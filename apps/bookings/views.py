@@ -286,6 +286,8 @@ def cart_add_view(request):
         item_type, entity_id,
         check_in=request.POST.get('check_in') or request.POST.get('date', ''),
         check_out=request.POST.get('check_out', ''),
+        cooling=(request.POST.get('cooling') or '').upper(),
+        guests=request.POST.get('guests'),
     )
     if resolved.error:
         messages.error(request, resolved.error)
@@ -297,7 +299,8 @@ def cart_add_view(request):
     found = False
     for item in cart:
         if (item.get('entity_id') == entity_id and item.get('item_type') == item_type
-                and item.get('date') == resolved.date and item.get('nights', 1) == resolved.nights):
+                and item.get('date') == resolved.date and item.get('nights', 1) == resolved.nights
+                and item.get('cooling', '') == resolved.cooling and item.get('guests', 0) == resolved.guests):
             item['quantity'] = int(item.get('quantity', 1)) + quantity
             found = True
             break
@@ -312,6 +315,8 @@ def cart_add_view(request):
             'date': resolved.date,
             'nights': resolved.nights,
             'stay_total': str(resolved.stay_total) if resolved.stay_total is not None else '',
+            'cooling': resolved.cooling,
+            'guests': resolved.guests,
         })
 
     save_cart(request, cart)
