@@ -7056,6 +7056,642 @@ msgstr "Previous photo"
 msgid "รูปถัดไป"
 msgstr "Next photo"
 
+msgid "ชื่อบ้าน"
+msgstr "House name"
+
+msgid "ประเภทห้อง"
+msgstr "Room type"
+
+msgid "ผู้เข้าพักสูงสุด (คน)"
+msgstr "Max guests"
+
+msgid "วิธีคิดราคา"
+msgstr "Pricing"
+
+msgid "ราคา (บาท/คืน)"
+msgstr "Price (baht/night)"
+
+msgid "ราคาห้องแอร์ (บาท/คืน)"
+msgstr "Air-con room price (baht/night)"
+
+msgid "จำนวนหลัง/ห้องแบบนี้"
+msgstr "Number of houses/rooms like this"
+
+msgid "ราคาที่คุณได้รับ ถ้ามีทั้งพัดลมและแอร์ ใส่ราคาห้องพัดลม ลูกค้าจะเห็นราคานี้บวกค่าบริการแพลตฟอร์ม"
+msgstr "What you receive. If the house has both fan and air-con, enter the fan room price. Customers see this price plus the platform fee"
+
+msgid "ใส่เฉพาะบ้านที่มีทั้งพัดลมและแอร์"
+msgstr "Only for houses with both fan and air-con"
+
+msgid "เช่น บ้านแม่บุญมา"
+msgstr "e.g. Mae Boonma's house"
+
+msgid "บ้านที่มีทั้งพัดลมและแอร์ต้องใส่ราคาห้องแอร์ด้วย"
+msgstr "A house with both fan and air-con needs an air-con price too"
+
+msgid "ห้องพัดลม"
+msgstr "Fan room"
+
+msgid "ห้องแอร์"
+msgstr "Air-con room"
+
+msgid "มีทั้งพัดลมและแอร์"
+msgstr "Both fan and air-con"
+
+msgid "เหมาจ่ายต่อห้อง/หลัง"
+msgstr "Per room/house"
+
+msgid "คิดต่อคน"
+msgstr "Per person"
+
+msgid "เพิ่มบ้านพักอย่างน้อย 1 หลังก่อนเปิดให้จอง"
+msgstr "Add at least one house before opening for bookings"
+
+msgid "เพิ่มบ้านพัก '{name}' เรียบร้อยแล้ว"
+msgstr "House '{name}' added"
+
+msgid "ข้อมูลบ้านพักไม่ถูกต้อง: {problems}"
+msgstr "House details are not valid: {problems}"
+
+msgid "บ้านแต่ละหลังมีรูปได้สูงสุด {max} รูป ลบรูปเดิมก่อนจึงเพิ่มรูปใหม่ได้"
+msgstr "Each house can have up to {max} photos. Delete one to add a new one"
+
+msgid "บ้านพัก"
+msgstr "House"
+
+msgid "กินให้ครบ 3 มื้อ เพิ่มมื้อว่างที่มีประโยชน์ เช่น นม ถั่ว กล้วย"
+msgstr "Eat 3 full meals and add healthy snacks such as milk, nuts and bananas"
+
+msgid "เพิ่มโปรตีนจากไข่ ปลา เต้าหู้ และข้าวกล้องหรือข้าวเหนียวพอเหมาะ"
+msgstr "Add protein from eggs, fish and tofu, with a fair portion of brown or sticky rice"
+
+msgid "ใช้ไขมันดีจากถั่วและงาในการปรุงอาหาร"
+msgstr "Cook with good fats from nuts and sesame"
+
+msgid "ออกกำลังกายแบบเสริมกล้ามเนื้อเบาๆ เช่น ยืดเหยียด ยกน้ำหนักเบา"
+msgstr "Do light strength exercise such as stretching or light weights"
+
+msgid "นอนหลับให้ได้ 7–8 ชั่วโมง"
+msgstr "Sleep 7–8 hours"
+
+msgid "ถ้าน้ำหนักลดลงเองโดยไม่ทราบสาเหตุ ควรปรึกษาแพทย์"
+msgstr "See a doctor if you lose weight without knowing why"
+
+msgid "ระวังอ่อนเพลียเมื่อเดินเที่ยวกลางแดดนาน พักและดื่มน้ำบ่อยๆ"
+msgstr "Watch out for fatigue on long walks in the sun; rest and drink water often"
+
+msgid "สมส่วน"
+msgstr "Healthy weight"
+
+msgid "รักษาสมดุลอาหาร 5 หมู่ เน้นผักครึ่งจาน"
+msgstr "Keep a balanced diet from the 5 food groups, with vegetables on half the plate"
+
+msgid "เลือกผัก ผลไม้ และสมุนไพรพื้นถิ่นตามฤดูกาล"
+msgstr "Choose seasonal local vegetables, fruit and herbs"
+
+msgid "ขยับร่างกายอย่างน้อย 150 นาทีต่อสัปดาห์ เช่น เดิน ปั่นจักรยาน"
+msgstr "Move at least 150 minutes a week, e.g. walking or cycling"
+
+msgid "ผ่อนคลายด้วยการนวดแผนไทยหรืออบสมุนไพรเป็นครั้งคราว"
+msgstr "Relax with a Thai massage or herbal steam now and then"
+
+msgid "ระวังของทอด ของหวาน และเครื่องดื่มรสหวานระหว่างเที่ยว"
+msgstr "Go easy on fried food, sweets and sugary drinks while travelling"
+
+msgid "ลดข้าว แป้ง และน้ำตาลลงเล็กน้อย เพิ่มผักให้มากขึ้น"
+msgstr "Cut rice, flour and sugar a little and eat more vegetables"
+
+msgid "เลือกเมนูต้ม นึ่ง ย่าง แทนเมนูทอดและกะทิ"
+msgstr "Choose boiled, steamed or grilled dishes instead of fried food and coconut milk"
+
+msgid "ลดเครื่องปรุงรสเค็ม เช่น น้ำปลา ปลาร้า ผงชูรส"
+msgstr "Use less salty seasoning such as fish sauce, pla ra and MSG"
+
+msgid "เดินเร็วหรือปั่นจักรยานวันละ 30 นาที"
+msgstr "Walk briskly or cycle 30 minutes a day"
+
+msgid "ชั่งน้ำหนักสัปดาห์ละครั้งเพื่อติดตามผล"
+msgstr "Weigh yourself once a week to track progress"
+
+msgid "ระวังความดันและน้ำตาลในเลือด ควรตรวจสุขภาพประจำปี"
+msgstr "Watch your blood pressure and blood sugar; have a yearly check-up"
+
+msgid "โรคอ้วนระดับ 1"
+msgstr "Obese class 1"
+
+msgid "คุมปริมาณข้าวและแป้งต่อมื้อ งดเครื่องดื่มรสหวานและแอลกอฮอล์"
+msgstr "Control rice and starch per meal; skip sugary drinks and alcohol"
+
+msgid "เน้นผักใบเขียว โปรตีนไขมันต่ำ เช่น ปลา ไก่ไม่ติดหนัง"
+msgstr "Focus on green vegetables and lean protein such as fish and skinless chicken"
+
+msgid "ลดเค็มและมัน หลีกเลี่ยงอาหารแปรรูป"
+msgstr "Cut salt and fat; avoid processed food"
+
+msgid "ออกกำลังกายแรงกระแทกต่ำ เช่น เดิน ว่ายน้ำ ครั้งละ 30–45 นาที"
+msgstr "Do low-impact exercise such as walking or swimming, 30–45 minutes at a time"
+
+msgid "นอนหลับให้เพียงพอ และจัดการความเครียด"
+msgstr "Get enough sleep and manage stress"
+
+msgid "ควรปรึกษาแพทย์ก่อนเริ่มออกกำลังกายหนัก"
+msgstr "Talk to a doctor before starting hard exercise"
+
+msgid "ระวังปวดเข่าเมื่อเดินขึ้นเขาหรือบันไดยาว ควรพักเป็นช่วงๆ"
+msgstr "Mind your knees on hill climbs or long stairs; rest along the way"
+
+msgid "โรคอ้วนระดับ 2"
+msgstr "Obese class 2"
+
+msgid "ปรับอาหารร่วมกับนักโภชนาการ ลดแป้ง น้ำตาล และไขมันอย่างจริงจัง"
+msgstr "Plan meals with a dietitian and seriously cut starch, sugar and fat"
+
+msgid "กินผักและโปรตีนไขมันต่ำเป็นหลัก แบ่งมื้อให้สม่ำเสมอ"
+msgstr "Eat mostly vegetables and lean protein, with regular meals"
+
+msgid "เริ่มจากการเดินเบาๆ แล้วค่อยๆ เพิ่มเวลา"
+msgstr "Start with gentle walks and slowly add time"
+
+msgid "ติดตามความดัน น้ำตาล และไขมันในเลือดสม่ำเสมอ"
+msgstr "Check blood pressure, sugar and cholesterol regularly"
+
+msgid "ควรพบแพทย์เพื่อวางแผนลดน้ำหนักอย่างปลอดภัย"
+msgstr "See a doctor to plan safe weight loss"
+
+msgid "เลือกกิจกรรมท่องเที่ยวที่ไม่หักโหม เลี่ยงแดดจัดและอากาศร้อน"
+msgstr "Choose easy-paced activities and avoid strong sun and heat"
+
+msgid "คำแนะนำนี้เป็นข้อมูลสุขภาพทั่วไป ไม่ใช่การวินิจฉัยหรือการรักษาทางการแพทย์"
+msgstr "This is general health information, not a medical diagnosis or treatment"
+
+msgid "ชำระเต็มจำนวน"
+msgstr "Full payment"
+
+msgid "ชำระมัดจำ ส่วนที่เหลือจ่ายที่ที่พัก"
+msgstr "Deposit now, the rest paid at the homestay"
+
+msgid "มัดจำแล้ว · ค้างชำระ ฿{amount}"
+msgstr "Deposit paid · ฿{amount} still due"
+
+msgid "รอชำระมัดจำ"
+msgstr "Awaiting deposit"
+
+msgid "จ่ายมัดจำได้เฉพาะการจองบ้านพักจากโฮมสเตย์เดียวกันเท่านั้น"
+msgstr "A deposit is only possible when every item is a house from the same homestay"
+
+msgid "ไม่พบการจองนี้"
+msgstr "Booking not found"
+
+msgid "การจอง {code} ไม่มียอดค้างชำระที่ต้องรับ"
+msgstr "Booking {code} has no balance to collect"
+
+msgid "บันทึกว่าได้รับเงินส่วนที่เหลือ ฿{amount} ของ {code} แล้ว"
+msgstr "Recorded that the remaining ฿{amount} for {code} was received"
+
+msgid "กรุณาระบุเหตุผลที่ยกเลิก"
+msgstr "Please give a reason for cancelling"
+
+msgid "การจอง {code} อยู่ในสถานะ '{status}' ยกเลิกไม่ได้"
+msgstr "Booking {code} is '{status}' and cannot be cancelled"
+
+msgid "ยกเลิกการจอง {code} และคืนห้องให้จองได้แล้ว"
+msgstr "Booking {code} cancelled; the rooms can be booked again"
+
+msgid "{name} พักได้สูงสุด {count} คน"
+msgstr "{name} sleeps up to {count} people"
+
+msgid "การจองที่พัก"
+msgstr "Stay bookings"
+
+msgid "สลิปชำระเต็มจำนวนตรวจโดยทีมงาน WellTrip"
+msgstr "Full-payment slips are checked by the WellTrip team"
+
+msgid "ผู้เข้าชมเว็บไซต์ (คนไม่ซ้ำต่อวัน)"
+msgstr "Website visitors (unique per day)"
+
+msgid "การเข้าชม"
+msgstr "Visits"
+
+msgid "จำนวนหน้าที่เปิดชม"
+msgstr "Page views"
+
+msgid "ผู้เข้าใช้บริการ (ลูกค้าที่ชำระเงิน)"
+msgstr "Customers served (paying customers)"
+
+msgid "การใช้บริการ"
+msgstr "Service use"
+
+msgid "จำนวนคำสั่งซื้อ/การจองที่ชำระแล้ว"
+msgstr "Paid orders/bookings"
+
+msgid "จำนวนผู้เข้าพัก (คน-คืน)"
+msgstr "Guests (person-nights)"
+
+msgid "มูลค่าการซื้อขายรวม"
+msgstr "Total transaction value"
+
+msgid "มูลค่าการซื้อขาย"
+msgstr "Transaction value"
+
+msgid "ยอดใช้จ่ายเฉลี่ยต่อผู้ใช้บริการ"
+msgstr "Average spend per customer"
+
+msgid "ยอดค่าใช้จ่าย"
+msgstr "Spending"
+
+msgid "รายได้เข้าชุมชน (ผู้ประกอบการได้รับ)"
+msgstr "Community income (received by partners)"
+
+msgid "ค่าบริการแพลตฟอร์ม 5%"
+msgstr "Platform fee 5%"
+
+msgid "ยอดค้างชำระหน้างาน (มัดจำ)"
+msgstr "Balance still due on site (deposits)"
+
+msgid "ไม่พบตัวชี้วัดนี้"
+msgstr "Unknown figure"
+
+msgid "กรุณาระบุเหตุผลที่แก้ตัวเลข"
+msgstr "Please give a reason for changing the figure"
+
+msgid "ตัวเลขไม่ถูกต้อง"
+msgstr "Invalid number"
+
+msgid "แก้ตัวเลขแล้ว ระบบบันทึกค่าเดิมและผู้แก้ไว้ในประวัติ"
+msgstr "Figure updated. The original value and who changed it are kept in the history"
+
+msgid "ตัวเลขนี้ยังไม่ถูกแก้"
+msgstr "This figure has not been changed"
+
+msgid "กลับไปใช้ค่าที่ระบบคำนวณ"
+msgstr "Back to the computed value"
+
+msgid "กลับไปใช้ตัวเลขที่ระบบคำนวณแล้ว"
+msgstr "Back to the computed figure"
+
+msgid "รายงานสรุป WellTrip Sisaket {start} ถึง {end}"
+msgstr "WellTrip Sisaket summary report {start} to {end}"
+
+msgid "รหัสคำสั่งซื้อ"
+msgstr "Order code"
+
+msgid "วันที่สั่ง"
+msgstr "Order date"
+
+msgid "วิธีชำระ"
+msgstr "Payment"
+
+msgid "ยอดลูกค้าจ่าย"
+msgstr "Customer paid"
+
+msgid "ผู้ประกอบการได้รับ"
+msgstr "Partner received"
+
+msgid "ค่าบริการแพลตฟอร์ม"
+msgstr "Platform fee"
+
+msgid "ผู้เข้าชม"
+msgstr "Visitors"
+
+msgid "จำนวนหน้าที่เปิด"
+msgstr "Page views"
+
+msgid "สรุป"
+msgstr "Summary"
+
+msgid "จัดทำเมื่อ {when}"
+msgstr "Prepared {when}"
+
+msgid "ผู้เข้าชมรายวัน"
+msgstr "Daily visitors"
+
+msgid "รายการขาย"
+msgstr "Sales lines"
+
+msgid "ผู้เข้าชมนับคนไม่ซ้ำวันละครั้ง ไม่รวมบอทและผู้ดูแลระบบ · มูลค่าการซื้อขายนับคำสั่งซื้อที่ชำระเงินแล้ว (รวมการจองที่ชำระมัดจำแล้ว) ตามวันที่สั่ง"
+msgstr "Visitors are counted once per day, excluding bots and admins · Transaction value counts paid orders (including bookings with a confirmed deposit) by order date"
+
+msgid "บ้านพักในเครือข่าย"
+msgstr "Houses in this homestay"
+
+msgid "กด \"เลือกหลังนี้\" เพื่อคำนวณราคา"
+msgstr "Press \"Choose this house\" to see the price"
+
+#, python-format
+msgid "ดูรูป %(name)s รูปที่ %(n)s"
+msgstr "View %(name)s photo %(n)s"
+
+msgid "/ คน / คืน"
+msgstr "/ person / night"
+
+msgid "/ หลัง / คืน"
+msgstr "/ house / night"
+
+msgid "เลือกหลังนี้"
+msgstr "Choose this house"
+
+msgid "ราคาต่อคน ต่อคืน"
+msgstr "Price per person per night"
+
+msgid "ราคาต่อหลัง ต่อคืน"
+msgstr "Price per house per night"
+
+msgid "จำนวนห้อง/หลัง"
+msgstr "Houses/rooms"
+
+msgid "คน"
+msgstr "people"
+
+msgid "คืน"
+msgstr "nights"
+
+msgid "ราคารวมค่าบริการแล้ว · วันที่มีราคาพิเศษจะคำนวณใหม่ในตะกร้า"
+msgstr "Price includes the service fee · nights with special prices are recalculated in the cart"
+
+msgid "รายงานและส่งออก"
+msgstr "Reports and exports"
+
+msgid "ตั้งแต่วันที่"
+msgstr "From"
+
+msgid "ถึงวันที่"
+msgstr "To"
+
+msgid "ดูรายงาน"
+msgstr "Show report"
+
+msgid "ข้อมูลดิบ: รายการขาย (CSV)"
+msgstr "Raw data: sales lines (CSV)"
+
+msgid "ข้อมูลดิบ: ผู้เข้าชมรายวัน (CSV)"
+msgstr "Raw data: daily visitors (CSV)"
+
+#, python-format
+msgid "สรุปช่วง %(start)s ถึง %(end)s"
+msgstr "Summary for %(start)s to %(end)s"
+
+msgid "กดดินสอเพื่อแก้ตัวเลขก่อนส่งออก ทุกการแก้ไขถูกบันทึกในประวัติ"
+msgstr "Press the pencil to change a figure before exporting. Every change is kept in the history"
+
+msgid "ค่าที่ระบบคำนวณ"
+msgstr "Computed value"
+
+msgid "แก้ไขแล้ว"
+msgstr "Edited"
+
+msgid "ระบบคำนวณ"
+msgstr "Computed"
+
+msgid "ตัวเลขใหม่"
+msgstr "New value"
+
+msgid "เหตุผลที่แก้ (บังคับ)"
+msgstr "Reason for the change (required)"
+
+msgid "เหตุผลที่แก้"
+msgstr "Reason for the change"
+
+msgid "ประวัติการแก้ตัวเลขของช่วงนี้"
+msgstr "Changes to figures for this period"
+
+msgid "ค่าใหม่"
+msgstr "New value"
+
+msgid "เหตุผล"
+msgstr "Reason"
+
+msgid "ยังไม่มีการแก้ตัวเลขในช่วงนี้"
+msgstr "No figures changed for this period yet"
+
+msgid "คำแนะนำเบื้องต้นตามค่า BMI"
+msgstr "Basic advice for your BMI"
+
+msgid "การเลือกรับประทานอาหาร"
+msgstr "Eating"
+
+msgid "การดูแลสุขภาพ"
+msgstr "Health care"
+
+msgid "ข้อควรระวัง"
+msgstr "Cautions"
+
+#, python-format
+msgid "คำแนะนำสุขภาพสำหรับ BMI %(bmi)s (%(label)s)"
+msgstr "Health advice for BMI %(bmi)s (%(label)s)"
+
+msgid "กำลังค้นหาสถานที่ ที่พัก เมนูอาหาร และสปาที่ตรงกับเป้าหมายของคุณ"
+msgstr "Finding places, stays, healthy food and spas that fit your goals"
+
+msgid "สถานที่และกิจกรรมแนะนำในศรีสะเกษ"
+msgstr "Suggested places and activities in Sisaket"
+
+msgid "เลือกให้เหมาะกับสุขภาพและเป้าหมายของคุณ รวมสถานที่ที่ยังไม่มีในเว็บไซต์"
+msgstr "Picked for your health and goals, including places not yet on this website"
+
+msgid "มีในเว็บไซต์"
+msgstr "On WellTrip"
+
+msgid "แนะนำโดย AI · ควรตรวจสอบก่อนเดินทาง"
+msgstr "Suggested by AI · check before you go"
+
+msgid "ค้นหาใน Google Maps"
+msgstr "Search on Google Maps"
+
+msgid "มัดจำ (โอนผ่านเว็บ)"
+msgstr "Deposit (paid online)"
+
+msgid "ส่วนที่เหลือ (จ่ายที่ที่พัก)"
+msgstr "Balance (paid at the homestay)"
+
+msgid "การจองนี้ถูกยกเลิก"
+msgstr "This booking was cancelled"
+
+msgid "จ่ายเต็มจำนวน"
+msgstr "Pay in full"
+
+#, python-format
+msgid "โอน ฿%(total)s ตอนนี้"
+msgstr "Transfer ฿%(total)s now"
+
+#, python-format
+msgid "จ่ายมัดจำ %(percent)s%%"
+msgstr "Pay a %(percent)s%% deposit"
+
+#, python-format
+msgid "โอน ฿%(deposit)s ตอนนี้ ส่วนที่เหลือ ฿%(balance)s จ่ายที่ที่พักวันเข้าพัก"
+msgstr "Transfer ฿%(deposit)s now and pay the remaining ฿%(balance)s at the homestay on arrival"
+
+msgid "การจองและมัดจำ - Partner Studio"
+msgstr "Bookings and deposits - Partner Studio"
+
+msgid "การจองที่พักและมัดจำ"
+msgstr "Stay bookings and deposits"
+
+msgid "ต้องดำเนินการ"
+msgstr "Needs action"
+
+msgid "รอรับเงินส่วนที่เหลือ"
+msgstr "Balance to collect"
+
+msgid "ลูกค้าที่เลือกจ่ายมัดจำ ห้องจะถูกกันไว้ตั้งแต่สั่งจอง ยืนยันสลิปมัดจำแล้วห้องจะล็อกเป็นของผู้จอง เมื่อลูกค้าจ่ายส่วนที่เหลือที่ที่พักแล้วให้กด \"รับเงินส่วนที่เหลือครบแล้ว\" ถ้าลูกค้าไม่โอนมัดจำภายใน 15 นาที ระบบยกเลิกและคืนห้องให้อัตโนมัติ"
+msgstr "When a guest chooses a deposit, the room is held from the moment they book and locked to them once you confirm the deposit slip. When they pay the rest at the homestay, press \"Balance received in full\". If the deposit is not transferred within 15 minutes, the booking is cancelled and the room released automatically"
+
+msgid "เหตุผลที่ยกเลิก"
+msgstr "Reason for cancelling"
+
+msgid "ส่วนที่เหลือ"
+msgstr "Balance"
+
+msgid "ดูสลิป"
+msgstr "View slip"
+
+#, python-format
+msgid "ยอดในสลิป ฿%(amount)s"
+msgstr "Slip amount ฿%(amount)s"
+
+msgid "ยืนยันสลิปมัดจำ"
+msgstr "Confirm deposit slip"
+
+msgid "ยืนยันสลิป"
+msgstr "Confirm slip"
+
+msgid "ปฏิเสธสลิปนี้?"
+msgstr "Reject this slip?"
+
+msgid "เหตุผล (ไม่บังคับ)"
+msgstr "Reason (optional)"
+
+msgid "ปฏิเสธ"
+msgstr "Reject"
+
+msgid "สลิปชำระเต็มจำนวน ทีมงาน WellTrip เป็นผู้ตรวจ"
+msgstr "Full-payment slip · checked by the WellTrip team"
+
+msgid "ยืนยันว่าได้รับเงินส่วนที่เหลือครบแล้ว?"
+msgstr "Confirm the remaining balance was received in full?"
+
+#, python-format
+msgid "รับเงินส่วนที่เหลือ ฿%(amount)s ครบแล้ว"
+msgstr "Balance ฿%(amount)s received in full"
+
+msgid "ยกเลิกการจอง"
+msgstr "Cancel booking"
+
+msgid "ยกเลิกการจองนี้และคืนห้องให้คนอื่นจองได้?"
+msgstr "Cancel this booking and release the room for others?"
+
+msgid "เหตุผล เช่น ลูกค้าแจ้งยกเลิก"
+msgstr "Reason, e.g. guest cancelled"
+
+msgid "ยืนยันยกเลิก"
+msgstr "Confirm cancellation"
+
+msgid "ไม่มีการจองในรายการนี้"
+msgstr "No bookings in this list"
+
+msgid "ที่พักและบ้านพัก"
+msgstr "Homestay and houses"
+
+msgid "การจองและมัดจำ"
+msgstr "Bookings and deposits"
+
+#, python-format
+msgid "ค่ามัดจำของยอดรวม ฿%(total)s · ส่วนที่เหลือ ฿%(balance)s จ่ายที่ที่พักวันเข้าพัก"
+msgstr "Deposit on a total of ฿%(total)s · the remaining ฿%(balance)s is paid at the homestay on arrival"
+
+#, python-format
+msgid "%(district)s · บ้านพัก %(rooms)s หลัง"
+msgstr "%(district)s · %(rooms)s houses"
+
+msgid "รูปโปรไฟล์ที่พัก"
+msgstr "Homestay profile photo"
+
+msgid "รูปเดียวที่แสดงในหน้ารวมที่พัก รูปของบ้านแต่ละหลังเพิ่มได้ด้านขวา"
+msgstr "The one photo shown in homestay listings. Each house's own photos are added on the right"
+
+#, python-format
+msgid "บ้านพักในเครือข่าย (%(rooms)s หลัง)"
+msgstr "Houses in this homestay (%(rooms)s)"
+
+#, python-format
+msgid "สูงสุด %(capacity_people)s คน"
+msgstr "Up to %(capacity_people)s people"
+
+#, python-format
+msgid "%(count)s หลัง/ห้อง"
+msgstr "%(count)s houses/rooms"
+
+#, python-format
+msgid "ลูกค้าจ่าย ฿%(price)s"
+msgstr "Customer pays ฿%(price)s"
+
+msgid "/คน/คืน"
+msgstr "/person/night"
+
+msgid "แก้ไขบ้าน"
+msgstr "Edit house"
+
+#, python-format
+msgid "เพิ่มรูป (%(count)s/3)"
+msgstr "Add photo (%(count)s/3)"
+
+msgid "ครบ 3 รูปแล้ว"
+msgstr "3 photos added"
+
+msgid "ยังไม่มีบ้านพัก"
+msgstr "No houses yet"
+
+msgid "เพิ่มบ้านด้านล่าง แล้วกด \"เปิดให้จอง\""
+msgstr "Add a house below, then press \"Open for bookings\""
+
+msgid "เพิ่มบ้านพัก"
+msgstr "Add house"
+
+msgid "เพิ่มบ้านของสมาชิกแต่ละหลังได้ไม่จำกัดภายใต้บัญชีนี้ ใส่ราคาที่เจ้าของบ้านได้รับ ระบบบวกค่าบริการแพลตฟอร์มให้ลูกค้าเห็นเอง"
+msgstr "Add each member's house under this one account. Enter the price the owner receives; customers see it with the platform fee added"
+
+msgid "ถ้ามีทั้งพัดลมและแอร์ ใส่ราคาห้องพัดลม"
+msgstr "If it has both fan and air-con, enter the fan room price"
+
+msgid "ปกติ 1 ถ้ามีหลายห้องหน้าตาเหมือนกันใส่จำนวนได้"
+msgstr "Usually 1. Enter more if there are several identical rooms"
+
+msgid "รูปบ้าน (ไม่บังคับ เพิ่มได้ภายหลังรวม 3 รูป)"
+msgstr "House photo (optional, up to 3 in total, can be added later)"
+
+msgid "ดื่มน้ำเปล่าวันละ 6–8 แก้ว"
+msgstr "Drink 6–8 glasses of water a day"
+
+msgid "{count} คน"
+msgstr "{count} people"
+
+msgid "หลัง"
+msgstr "houses"
+
+msgid "พัดลม"
+msgstr "Fan"
+
+msgid "แอร์"
+msgstr "Air-con"
+
+msgid "สูงสุด"
+msgstr "max"
+
+msgid "แก้ตัวเลข"
+msgstr "Change figure"
+
+msgid "ผู้แก้"
+msgstr "Changed by"
+
+msgid "ตัวชี้วัด"
+msgstr "Figure"
+
+msgid "มัดจำ"
+msgstr "Deposit"
+
+msgid "ลบบ้าน"
+msgstr "Delete house"
+
 #~ msgid "สร้างบัญชีผู้ใช้งานสำเร็จ"
 #~ msgstr "Account created"
 
