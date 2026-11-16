@@ -18,6 +18,8 @@
   <a class="nav-link {% if tab == 'content' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=content"><i data-lucide="book-open"></i>{% translate "เรื่องเล่า" %}</a>
   <a class="nav-link {% if tab == 'events' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=events"><i data-lucide="calendar-days"></i>{% translate "ปฏิทินกิจกรรม" %}</a>
   <a class="nav-link {% if tab == 'vouchers' %}active{% endif %}" href="{% url 'accounts:admin_dashboard' %}?tab=vouchers"><i data-lucide="ticket"></i>{% translate "คูปองและค่าส่ง" %}</a>
+  <a class="nav-link" href="{% url 'bookings:stay_bookings' %}"><i data-lucide="calendar-check"></i>{% translate "การจองที่พักและมัดจำ" %}</a>
+  <a class="nav-link {% if tab == 'reports' %}active{% endif %}" href="{% url 'accounts:admin_reports' %}"><i data-lucide="file-bar-chart"></i>{% translate "รายงานและส่งออก" %}</a>
   <div class="wt-nav-label">{% translate "ความปลอดภัย" %}</div>
   <a class="nav-link {% if current == 'admin_audit' %}active{% endif %}" href="{% url 'accounts:admin_audit' %}"><i data-lucide="scroll-text"></i>{% translate "บันทึกการใช้งาน" %}</a>
 {% endwith %}

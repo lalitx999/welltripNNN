@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from . import admin_views
 from apps.community import admin_views as community_admin_views
+from apps.core import report_views
 
 app_name = 'accounts'
 
@@ -48,6 +49,7 @@ urlpatterns = [
     path('admin/catalog/<str:item_type>/<uuid:item_id>/toggle/', admin_views.admin_catalog_toggle_view, name='admin_catalog_toggle'),
 
     # Locations CRUD
+    path('admin/reports/', report_views.report_view, name='admin_reports'),
     path('admin/events/add/', community_admin_views.event_form_view, name='admin_event_add'),
     path('admin/events/<uuid:event_id>/edit/', community_admin_views.event_form_view, name='admin_event_edit'),
     path('admin/events/<uuid:event_id>/delete/', community_admin_views.event_delete_view, name='admin_event_delete'),

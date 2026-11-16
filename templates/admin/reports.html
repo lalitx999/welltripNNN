@@ -1,0 +1,84 @@
+{% extends "layouts/admin.html" %}
+{% load i18n %}
+{% block title %}{% translate "รายงานและส่งออก" %} - Admin Center{% endblock %}
+{% block page_heading %}{% translate "รายงานและส่งออก" %}{% endblock %}
+
+{% block content %}
+<div class="d-grid gap-4" style="max-width: 64rem;">
+  <form method="get" class="wt-card p-3 d-flex flex-wrap align-items-end gap-2">
+    <div><label class="form-label small fw-semibold mb-1" for="start">{% translate "ตั้งแต่วันที่" %}</label><input type="date" id="start" name="start" value="{{ start|date:'Y-m-d' }}" class="form-control form-control-sm"></div>
+    <div><label class="form-label small fw-semibold mb-1" for="end">{% translate "ถึงวันที่" %}</label><input type="date" id="end" name="end" value="{{ end|date:'Y-m-d' }}" class="form-control form-control-sm"></div>
+    <button type="submit" class="btn btn-green btn-sm rounded-pill"><i data-lucide="refresh-cw" class="me-1"></i>{% translate "ดูรายงาน" %}</button>
+    <div class="ms-auto d-flex flex-wrap gap-2">
+      <a href="?{{ period_query }}&export=xlsx" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="file-spreadsheet" class="me-1"></i>Excel</a>
+      <a href="?{{ period_query }}&export=pdf" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="file-text" class="me-1"></i>PDF</a>
+      <a href="?{{ period_query }}&export=csv_sales" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="file-down" class="me-1"></i>{% translate "ข้อมูลดิบ: รายการขาย (CSV)" %}</a>
+      <a href="?{{ period_query }}&export=csv_visits" class="btn btn-outline-ink btn-sm rounded-pill"><i data-lucide="file-down" class="me-1"></i>{% translate "ข้อมูลดิบ: ผู้เข้าชมรายวัน (CSV)" %}</a>
+    </div>
+  </form>
+
+  <div class="wt-card">
+    <div class="p-3 border-bottom d-flex flex-wrap justify-content-between gap-2">
+      <span class="fw-bold">{% blocktranslate trimmed with start=start|date:"d/m/Y" end=end|date:"d/m/Y" %}สรุปช่วง {{ start }} ถึง {{ end }}{% endblocktranslate %}</span>
+      <small class="text-secondary">{% translate "กดดินสอเพื่อแก้ตัวเลขก่อนส่งออก ทุกการแก้ไขถูกบันทึกในประวัติ" %}</small>
+    </div>
+    <div class="table-responsive">
+      <table class="table wt-table mb-0 align-middle">
+          {% regroup metrics by group as groups %}
+          {% for g in groups %}
+            <tbody><tr class="table-light"><th colspan="3" class="small">{{ g.grouper }}</th></tr></tbody>
+            {% for m in g.list %}
+              <tbody x-data="{ edit: false }">
+              <tr>
+                <td class="small">{{ m.label }}{% if m.adjusted %} <span class="badge badge-gold" title="{% translate 'ค่าที่ระบบคำนวณ' %}: {{ m.computed }}">{% translate "แก้ไขแล้ว" %}</span>{% endif %}</td>
+                <td class="text-end fw-semibold text-nowrap">{{ m.display }}{% if m.adjusted %}<div class="small fw-normal text-secondary">{% translate "ระบบคำนวณ" %} {% if m.unit == 'baht' %}฿{{ m.computed|floatformat:"2g" }}{% else %}{{ m.computed|floatformat:"0g" }}{% endif %}</div>{% endif %}</td>
+                <td class="text-end" style="width: 1%;">
+                  <button type="button" class="btn btn-sm btn-outline-ink rounded-circle p-2 lh-1" @click="edit = !edit" aria-label="{% translate 'แก้ตัวเลข' %}"><i data-lucide="pencil"></i></button>
+                </td>
+              </tr>
+              <tr x-show="edit" x-cloak>
+                <td colspan="3" class="bg-mint">
+                  <form method="post" class="d-flex flex-wrap gap-2 align-items-center">
+                    {% csrf_token %}
+                    <input type="hidden" name="start" value="{{ start|date:'Y-m-d' }}"><input type="hidden" name="end" value="{{ end|date:'Y-m-d' }}">
+                    <input type="hidden" name="metric" value="{{ m.key }}">
+                    <input type="number" name="value" step="0.01" min="0" value="{{ m.value|stringformat:'s' }}" required class="form-control form-control-sm" style="max-width: 10rem;" aria-label="{% translate 'ตัวเลขใหม่' %}">
+                    <input type="text" name="reason" required maxlength="255" class="form-control form-control-sm" style="max-width: 22rem;" placeholder="{% translate 'เหตุผลที่แก้ (บังคับ)' %}" aria-label="{% translate 'เหตุผลที่แก้' %}">
+                    <button type="submit" class="btn btn-green btn-sm rounded-pill">{% translate "บันทึก" %}</button>
+                    {% if m.adjusted %}<button type="submit" name="action" value="reset" formnovalidate class="btn btn-outline-ink btn-sm rounded-pill">{% translate "กลับไปใช้ค่าที่ระบบคำนวณ" %}</button>{% endif %}
+                  </form>
+                </td>
+              </tr>
+              </tbody>
+            {% endfor %}
+          {% endfor %}
+      </table>
+    </div>
+  </div>
+
+  <div class="wt-card">
+    <div class="p-3 border-bottom fw-bold"><i data-lucide="history" class="text-green me-1"></i>{% translate "ประวัติการแก้ตัวเลขของช่วงนี้" %}</div>
+    {% if history %}
+      <div class="table-responsive">
+        <table class="table wt-table mb-0 small">
+          <thead><tr><th>{% translate "เวลา" %}</th><th>{% translate "ผู้แก้" %}</th><th>{% translate "ตัวชี้วัด" %}</th><th class="text-end">{% translate "ค่าที่ระบบคำนวณ" %}</th><th class="text-end">{% translate "ค่าใหม่" %}</th><th>{% translate "เหตุผล" %}</th></tr></thead>
+          <tbody>
+            {% for h in history %}
+              <tr>
+                <td class="text-nowrap">{{ h.created_at|date:"d/m/Y H:i" }}</td>
+                <td>{{ h.changed_by.email|default:"-" }}</td>
+                <td>{% for key, label in labels.items %}{% if key == h.metric %}{{ label }}{% endif %}{% endfor %}</td>
+                <td class="text-end">{{ h.original_value|floatformat:"2g" }}</td>
+                <td class="text-end fw-semibold">{{ h.adjusted_value|floatformat:"2g" }}</td>
+                <td>{{ h.reason }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="wt-empty py-4"><div class="small text-secondary">{% translate "ยังไม่มีการแก้ตัวเลขในช่วงนี้" %}</div></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

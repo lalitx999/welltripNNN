@@ -27,3 +27,8 @@ redis>=5.0.0
 
 # Background Tasks (worker uses the Redis above as broker)
 celery[redis]>=5.4,<6
+
+# Admin report exports (Excel, PDF with Thai text shaping)
+openpyxl>=3.1,<4
+fpdf2>=2.8,<3
+uharfbuzz>=0.39
