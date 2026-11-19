@@ -11,7 +11,7 @@
 
       <a class="navbar-brand d-flex align-items-center gap-2"
          href="{% if user.is_authenticated and not user.is_merchant and not user.is_community_admin %}{% url 'core:home' %}{% else %}{% url 'core:landing' %}{% endif %}">
-        <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip" width="34" height="34" class="rounded-circle object-fit-cover border border-gold">
+        <img src="{% static 'images/brand/logo-mark.png' %}" alt="WellTrip" width="44" height="44" class="object-fit-contain">
         <span class="d-flex flex-column">
           <span class="wt-brand-name text-ink">WellTrip</span>
           <span class="wt-brand-sub">SLOW DAYS · SISAKET</span>
@@ -175,7 +175,7 @@
     <div class="row g-4">
       <div class="col-md-3">
         <div class="d-flex align-items-center gap-2 mb-3">
-          <img src="{% static 'images/logoWelltrip.jpg' %}" alt="WellTrip" width="36" height="36" class="rounded-circle object-fit-cover">
+          <img src="{% static 'images/brand/logo-mark.png' %}" alt="WellTrip" width="44" height="44" class="object-fit-contain">
           <span class="wt-brand-name text-white">WellTrip</span>
         </div>
         <p class="small text-white-50">{% translate "แพลตฟอร์มการท่องเที่ยวเชิงสุขภาวะและภูมิปัญญาชุมชน จ.ศรีสะเกษ สนับสนุนผู้ประกอบการท้องถิ่นโดยตรง" %}</p>

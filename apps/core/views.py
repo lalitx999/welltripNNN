@@ -188,22 +188,16 @@ def manifest_view(request):
         "categories": ["travel", "health", "lifestyle", "shopping"],
         "icons": [
             {
-                "src": "/static/icons/icon-192.png",
+                "src": "/static/icons/wt-icon-192.png",
                 "sizes": "192x192",
                 "type": "image/png",
                 "purpose": "any maskable"
             },
             {
-                "src": "/static/icons/icon-512.png",
+                "src": "/static/icons/wt-icon-512.png",
                 "sizes": "512x512",
                 "type": "image/png",
                 "purpose": "any maskable"
-            },
-            {
-                "src": "/static/icons/icon.svg",
-                "sizes": "any",
-                "type": "image/svg+xml",
-                "purpose": "any"
             }
         ],
         "shortcuts": [
@@ -212,28 +206,28 @@ def manifest_view(request):
                 "short_name": _("ที่พัก"),
                 "description": _("จองโฮมสเตย์ชุมชนนิเวศและบ้านพักธรรมชาติในศรีสะเกษ"),
                 "url": "/accommodations/",
-                "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
+                "icons": [{"src": "/static/icons/wt-icon-192.png", "sizes": "192x192"}]
             },
             {
                 "name": _("อาหารเพื่อสุขภาพ"),
                 "short_name": _("อาหาร"),
                 "description": _("สั่งเมนูอาหารสุขภาพดินภูเขาไฟและวัตถุดิบอินทรีย์"),
                 "url": "/services/?category=FOOD",
-                "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
+                "icons": [{"src": "/static/icons/wt-icon-192.png", "sizes": "192x192"}]
             },
             {
                 "name": _("นวดสปาสมุนไพร"),
                 "short_name": _("สปา"),
                 "description": _("บริการนวดแผนไทยและอบสมุนไพรพื้นบ้าน 4 ชนเผ่า"),
                 "url": "/services/?category=SPA",
-                "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
+                "icons": [{"src": "/static/icons/wt-icon-192.png", "sizes": "192x192"}]
             },
             {
                 "name": _("ของดี OTOP ศรีสะเกษ"),
                 "short_name": "OTOP",
                 "description": _("ช้อปสินค้าภูมิปัญญา ผ้าไหมมะเกลือ และผลผลิต GI"),
                 "url": "/otop/",
-                "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
+                "icons": [{"src": "/static/icons/wt-icon-192.png", "sizes": "192x192"}]
             }
         ]
     }
@@ -249,17 +243,16 @@ def service_worker_view(request):
     Strictly forbids caching of /admin/*, /accounts/*, /payments/*, /bookings/cart/, and mutation endpoints.
     """
     sw_code = """
-    const CACHE_NAME = 'welltrip-pwa-v5';
+    const CACHE_NAME = 'welltrip-pwa-v6';
     const PRECACHE_ASSETS = [
         '/',
         '/offline/',
         '/static/js/htmx.min.js',
         '/static/js/alpine.min.js',
-        '/static/icons/icon-192.png',
-        '/static/icons/icon-512.png',
-        '/static/icons/icon.svg',
-        '/static/images/logoWelltrip.jpg',
-        '/static/images/logoWelltrip.ico',
+        '/static/icons/wt-icon-192.png',
+        '/static/icons/wt-icon-512.png',
+        '/static/images/brand/logo-mark.png',
+        '/static/images/brand/favicon.ico',
         '/static/images/partners/logo-nia.png',
         '/static/images/partners/logo-sip-ubu.png'
     ];
