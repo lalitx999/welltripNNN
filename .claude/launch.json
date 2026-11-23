@@ -6,6 +6,12 @@
       "runtimeExecutable": "/usr/bin/env",
       "runtimeArgs": ["DATABASE_URL=", "REDIS_URL=", "./venv/bin/python", "manage.py", "runserver", "127.0.0.1:8000"],
       "port": 8000
+    },
+    {
+      "name": "welltrip-dev-windows",
+      "runtimeExecutable": "venv\\Scripts\\python.exe",
+      "runtimeArgs": ["manage.py", "runserver", "127.0.0.1:8000"],
+      "port": 8000
     }
   ]
 }

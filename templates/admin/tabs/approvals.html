@@ -14,8 +14,11 @@
         {% for prof in profiles_page %}
           <tr>
             <td><div class="fw-semibold small">{{ prof.business_name }}</div><small class="text-secondary line-clamp-1">{{ prof.description }}</small></td>
-            <td><span class="badge bg-light text-secondary border">{{ prof.get_business_category_display }}</span></td>
-            <td class="small"><div class="text-truncate" style="max-width: 12rem;">{{ prof.user.email }}</div><span class="text-secondary">{{ prof.phone_number|default:"-" }}</span></td>
+            <td><span class="badge bg-light text-secondary border">{{ prof.get_business_category_display }}</span>
+              {% for label in prof.extra_service_labels %}<span class="badge badge-green ms-1" title="{% translate 'บริการเพิ่มเติม' %}">+ {{ label }}</span>{% endfor %}</td>
+            <td class="small"><div class="text-truncate" style="max-width: 12rem;">{{ prof.user.email }}</div><span class="text-secondary">{{ prof.phone_number|default:"-" }}</span>
+              {% if prof.has_payout_account %}<div class="text-secondary mt-1" title="{% translate 'บัญชีรับเงิน' %}"><i data-lucide="landmark" style="width:.9rem;height:.9rem"></i> {{ prof.get_payout_bank_display }} <span class="font-monospace">{{ prof.payout_account_number }}</span><br>{{ prof.payout_account_name }}{% if prof.promptpay_id %} · {% translate "พร้อมเพย์" %} <span class="font-monospace">{{ prof.promptpay_id }}</span>{% endif %}</div>
+              {% else %}<div class="text-warning mt-1"><i data-lucide="triangle-alert" style="width:.9rem;height:.9rem"></i> {% translate "ยังไม่ตั้งบัญชีรับเงิน" %}</div>{% endif %}</td>
             <td>{% if prof.status == 'APPROVED' %}<span class="badge badge-green">{% translate "อนุมัติแล้ว" %}</span>{% elif prof.status == 'REJECTED' %}<span class="badge text-bg-danger">{% translate "ไม่ผ่าน" %}</span>{% else %}<span class="badge badge-gold">{% translate "รอตรวจ" %}</span>{% endif %}</td>
             <td class="text-end text-nowrap">
               {% if prof.status != 'APPROVED' %}
@@ -25,7 +28,7 @@
                 <form method="post" action="{% url 'accounts:admin_reject_merchant' prof.user.id %}" class="d-inline" onsubmit="const r = prompt('{{ _("เหตุผลที่ไม่อนุมัติ")|escapejs }}'); if (r === null) return false; this.reason.value = r;">{% csrf_token %}<input type="hidden" name="reason"><button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">{% translate "ไม่อนุมัติ" %}</button></form>
               {% endif %}
               <button type="button" class="btn btn-outline-ink btn-sm rounded-circle p-2 lh-1" title="{% translate 'แก้ไข' %}" aria-label="{% translate 'แก้ไขร้านค้า' %}"
-                      @click="open('partner', { id: '{{ prof.user.id }}', name: '{{ prof.business_name|escapejs }}', category: '{{ prof.business_category }}', phone: '{{ prof.phone_number|escapejs }}', description: '{{ prof.description|escapejs }}', maps_url: '{{ prof.google_maps_url|escapejs }}', hours: '{{ prof.opening_hours|escapejs }}' }, 'editPartnerModal')"><i data-lucide="pencil"></i></button>
+                      @click="open('partner', { id: '{{ prof.user.id }}', name: '{{ prof.business_name|escapejs }}', category: '{{ prof.business_category }}', phone: '{{ prof.phone_number|escapejs }}', description: '{{ prof.description|escapejs }}', maps_url: '{{ prof.google_maps_url|escapejs }}', hours: '{{ prof.opening_hours|escapejs }}', extras: [{% for c in prof.service_categories|slice:'1:' %}'{{ c }}'{% if not forloop.last %}, {% endif %}{% endfor %}] }, 'editPartnerModal')"><i data-lucide="pencil"></i></button>
               <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2 lh-1" title="{% translate 'ลบ' %}" aria-label="{% translate 'ลบร้านค้า' %}"
                       @click="confirmDelete('{% url 'accounts:admin_partner_delete' prof.user.id %}', '{{ _("ร้าน")|escapejs }} {{ prof.business_name|escapejs }}')"><i data-lucide="trash-2"></i></button>
             </td>

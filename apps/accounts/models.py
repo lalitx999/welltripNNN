@@ -4,6 +4,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 from .managers import UserManager
+from .banks import ThaiBank
 from django.utils.translation import gettext_lazy
 
 
@@ -93,6 +94,39 @@ class User(AbstractBaseUser, PermissionsMixin):
         }
 
     @property
+    def service_roles(self):
+        """
+        The user's role plus the partner roles of every extra service their shop opened.
+        A homestay owner who opened OTOP counts as an OTOP owner in Partner Studio.
+        """
+        roles = {self.role}
+        if self.is_merchant:
+            profile = getattr(self, "merchant_profile", None)
+            if profile is not None:
+                roles.update(CATEGORY_ROLES[c] for c in profile.service_categories if c in CATEGORY_ROLES)
+        return roles
+
+    def has_service_role(self, role):
+        return role in self.service_roles
+
+    # Template-friendly checks for the Partner Studio menu (admins are checked separately)
+    @property
+    def manages_homestay(self):
+        return self.has_service_role(UserRoles.HOMESTAY_OWNER)
+
+    @property
+    def manages_restaurant(self):
+        return self.has_service_role(UserRoles.RESTAURANT_OWNER)
+
+    @property
+    def manages_wellness(self):
+        return self.has_service_role(UserRoles.WELLNESS_OWNER)
+
+    @property
+    def manages_otop(self):
+        return self.has_service_role(UserRoles.OTOP_OWNER)
+
+    @property
     def is_community_admin(self):
         return self.role in {UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN}
 
@@ -149,6 +183,22 @@ class EmailVerificationOTP(models.Model):
         return f"OTP for {self.email} ({self.otp_code}) - Used: {self.is_used}"
 
 
+SERVICE_CATEGORY_CHOICES = [
+    ("HOMESTAY", gettext_lazy("โฮมสเตย์ / ที่พักชุมชน")),
+    ("RESTAURANT", gettext_lazy("ร้านอาหารเพื่อสุขภาพ")),
+    ("WELLNESS", gettext_lazy("บริการสุขภาพ & สปา")),
+    ("OTOP", gettext_lazy("สินค้า OTOP ชุมชน")),
+]
+
+# Which partner role a shop category grants in Partner Studio
+CATEGORY_ROLES = {
+    "HOMESTAY": UserRoles.HOMESTAY_OWNER,
+    "RESTAURANT": UserRoles.RESTAURANT_OWNER,
+    "WELLNESS": UserRoles.WELLNESS_OWNER,
+    "OTOP": UserRoles.OTOP_OWNER,
+}
+
+
 class MerchantApprovalStatus(models.TextChoices):
     PENDING = "PENDING", gettext_lazy("อยู่ระหว่างการตรวจสอบ (Pending Review)")
     APPROVED = "APPROVED", gettext_lazy("อนุมัติแล้ว (Approved)")
@@ -166,12 +216,7 @@ class MerchantProfile(models.Model):
     business_name = models.CharField(max_length=200)
     business_category = models.CharField(
         max_length=50,
-        choices=[
-            ("HOMESTAY", gettext_lazy("โฮมสเตย์ / ที่พักชุมชน")),
-            ("RESTAURANT", gettext_lazy("ร้านอาหารเพื่อสุขภาพ")),
-            ("WELLNESS", gettext_lazy("บริการสุขภาพ & สปา")),
-            ("OTOP", gettext_lazy("สินค้า OTOP ชุมชน")),
-        ],
+        choices=SERVICE_CATEGORY_CHOICES,
         default="HOMESTAY",
     )
     description = models.TextField(blank=True, default="")
@@ -181,6 +226,16 @@ class MerchantProfile(models.Model):
         max_length=150, blank=True, default="08:00 - 18:00 น."
     )
     cover_image_url = models.TextField(blank=True, default="")
+    # Other kinds of business the partner runs on top of business_category, e.g. a
+    # homestay that also sells OTOP goods. Category codes; open without admin approval.
+    extra_services = models.JSONField(default=list, blank=True)
+
+    # Where the admin transfers the partner's share after settling the books.
+    # Only the partner and platform admins ever see these.
+    payout_bank = models.CharField(max_length=20, choices=ThaiBank.choices, blank=True, default="")
+    payout_account_number = models.CharField(max_length=20, blank=True, default="")
+    payout_account_name = models.CharField(max_length=200, blank=True, default="")
+    promptpay_id = models.CharField(max_length=13, blank=True, default="")
     status = models.CharField(
         max_length=20,
         choices=MerchantApprovalStatus.choices,
@@ -202,6 +257,24 @@ class MerchantProfile(models.Model):
     def is_public(self):
         """The storefront page is visible only once an admin approved the shop."""
         return self.status == MerchantApprovalStatus.APPROVED
+
+    @property
+    def service_categories(self):
+        """The main category first, then every valid extra one (no duplicates)."""
+        cats = [self.business_category]
+        for code in self.extra_services or []:
+            if code in CATEGORY_ROLES and code not in cats:
+                cats.append(code)
+        return cats
+
+    @property
+    def extra_service_labels(self):
+        labels = dict(SERVICE_CATEGORY_CHOICES)
+        return [labels[c] for c in self.service_categories[1:]]
+
+    @property
+    def has_payout_account(self):
+        return bool(self.payout_bank and self.payout_account_number and self.payout_account_name)
 
 
 def shop_image_path(instance, filename):

@@ -7750,6 +7750,156 @@ msgstr "Carrier"
 msgid "ขนส่ง"
 msgstr "Carrier"
 
+msgid "กรอกเป็นตัวเลขเท่านั้น"
+msgstr "Numbers only"
+
+msgid "ข้อมูลนี้เห็นเฉพาะคุณและผู้ดูแลระบบ ไม่แสดงบนหน้าร้าน ทุกครั้งที่แก้ไขทีมงานจะได้รับอีเมลแจ้ง"
+msgstr "Only you and the admins can see this. It never appears on your storefront, and the team gets an email every time it changes."
+
+msgid "ชื่อบัญชี (ชื่อผู้รับในธนาคาร)"
+msgstr "Account name (as registered at the bank)"
+
+msgid "ตั้งบัญชีรับเงินแล้ว"
+msgstr "Payout account set"
+
+msgid "ที่พัก ห้องพัก ปฏิทินราคา และรับมัดจำ"
+msgstr "Stays, rooms, price calendar and deposits"
+
+msgid "ธนาคารกรุงศรีอยุธยา"
+msgstr "Bank of Ayudhya (Krungsri)"
+
+msgid "ธนาคารกรุงเทพ"
+msgstr "Bangkok Bank"
+
+msgid "ธนาคารกรุงไทย"
+msgstr "Krungthai Bank"
+
+msgid "ธนาคารกสิกรไทย"
+msgstr "Kasikornbank (KBank)"
+
+msgid "ธนาคารซีไอเอ็มบี ไทย"
+msgstr "CIMB Thai"
+
+msgid "ธนาคารทหารไทยธนชาต (ttb)"
+msgstr "TMBThanachart Bank (ttb)"
+
+msgid "ธนาคารทิสโก้"
+msgstr "TISCO Bank"
+
+msgid "ธนาคารยูโอบี"
+msgstr "UOB"
+
+msgid "ธนาคารออมสิน"
+msgstr "Government Savings Bank (GSB)"
+
+msgid "ธนาคารอาคารสงเคราะห์"
+msgstr "Government Housing Bank (GH Bank)"
+
+msgid "ธนาคารอิสลามแห่งประเทศไทย"
+msgstr "Islamic Bank of Thailand"
+
+msgid "ธนาคารเกียรตินาคินภัทร"
+msgstr "Kiatnakin Phatra Bank"
+
+msgid "ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (ธ.ก.ส.)"
+msgstr "Bank for Agriculture and Agricultural Cooperatives (BAAC)"
+
+msgid "ธนาคารแลนด์ แอนด์ เฮ้าส์"
+msgstr "Land and Houses Bank"
+
+msgid "ธนาคารไทยพาณิชย์"
+msgstr "Siam Commercial Bank (SCB)"
+
+msgid "นวดแผนไทย สปา และเปิดรอบเวลาให้จอง"
+msgstr "Thai massage, spa and bookable time slots"
+
+msgid "บริการที่เปิดเพิ่ม"
+msgstr "Extra services"
+
+msgid "บริการเพิ่มเติม"
+msgstr "Extra services"
+
+msgid "บัญชีรับเงิน"
+msgstr "Payout account"
+
+msgid "บัญชีรับเงิน - Partner Studio"
+msgstr "Payout account - Partner Studio"
+
+msgid "บัญชีสำหรับรับเงินจาก WellTrip"
+msgstr "Account for payouts from WellTrip"
+
+msgid "บันทึกบริการแล้ว เมนูของบริการที่เปิดจะอยู่ในแถบด้านข้าง"
+msgstr "Services saved. Menus for the services you opened are in the sidebar."
+
+msgid "บันทึกบัญชีรับเงิน"
+msgstr "Save payout account"
+
+msgid "บันทึกบัญชีรับเงินแล้ว"
+msgstr "Payout account saved"
+
+msgid "พร้อมเพย์"
+msgstr "PromptPay"
+
+msgid "พร้อมเพย์ (ไม่บังคับ)"
+msgstr "PromptPay (optional)"
+
+msgid "พร้อมเพย์ต้องเป็นเบอร์มือถือ 10 หลัก หรือเลขบัตรประชาชน 13 หลัก"
+msgstr "PromptPay must be a 10-digit mobile number or a 13-digit national ID"
+
+msgid "พิมพ์ให้ตรงกับชื่อในสมุดบัญชี"
+msgstr "Type it exactly as in your bank book"
+
+msgid "ยังมีรายการ \"{service}\" เปิดขายอยู่ ปิดการขายรายการเหล่านั้นก่อน แล้วค่อยปิดบริการนี้"
+msgstr "You still have \"{service}\" items on sale. Close them first, then turn this service off."
+
+msgid "ยังไม่ตั้งบัญชีรับเงิน"
+msgstr "No payout account yet"
+
+msgid "ยังไม่ได้ตั้งบัญชีรับเงิน กรอกให้ครบเพื่อให้ทีมงานโอนรายได้ให้ร้านได้"
+msgstr "No payout account yet. Fill it in so the team can transfer your earnings."
+
+msgid "ร้านของคุณขายอะไรได้บ้าง"
+msgstr "What does your shop offer?"
+
+msgid "ลูกค้าชำระเงินเข้าบัญชีกลางของ WellTrip เมื่อเคลียร์ยอดแล้ว ทีมงานจะโอนส่วนของร้านเข้าบัญชีนี้"
+msgstr "Customers pay into WellTrip's central account. Once the books are settled, the team transfers your share to this account."
+
+msgid "สินค้าชุมชน สต็อก และจัดส่ง"
+msgstr "Community products, stock and shipping"
+
+msgid "เช่น 0812345678"
+msgstr "e.g. 0812345678"
+
+msgid "เบอร์มือถือ 10 หลัก หรือเลขบัตรประชาชน 13 หลัก"
+msgstr "10-digit mobile number or 13-digit national ID"
+
+msgid "เบอร์มือถือต้องขึ้นต้นด้วย 0"
+msgstr "Mobile numbers start with 0"
+
+msgid "เปิดบริการเพิ่มเติม"
+msgstr "Add services"
+
+msgid "เปิดบริการเพิ่มเติม - Partner Studio"
+msgstr "Add services - Partner Studio"
+
+msgid "เปิดใช้ได้ทันทีโดยไม่ต้องรออนุมัติ ทีมงานจะได้รับอีเมลแจ้งทุกครั้งที่มีการเปลี่ยนแปลง ถ้าจะปิดบริการ ให้ปิดการขายรายการของบริการนั้นก่อน คำสั่งซื้อเก่ายังอยู่ครบ"
+msgstr "Services open right away, no approval needed. The team gets an email for every change. To turn a service off, close its items first. Past orders stay intact."
+
+msgid "เมนูอาหารและเครื่องดื่มเพื่อสุขภาพ"
+msgstr "Healthy food and drink menu"
+
+msgid "เลขที่บัญชีต้องมี 10-15 หลัก"
+msgstr "Account numbers have 10-15 digits"
+
+msgid "ไม่มีการเปลี่ยนแปลง"
+msgstr "Nothing changed"
+
+msgid "— เลือกธนาคาร —"
+msgstr "— Choose a bank —"
+
+msgid "ประเภทหลักของร้านคือ <strong>%(main)s</strong> ถ้าร้านมีสินค้าหรือบริการอื่นด้วย ติ๊กเลือกแล้วกดบันทึก เมนูจัดการของบริการนั้นจะขึ้นในแถบด้านข้างทันที"
+msgstr "Your shop's main type is <strong>%(main)s</strong>. If you also sell other products or services, tick them and save. Their menus appear in the sidebar right away."
+
 #~ msgid "สร้างบัญชีผู้ใช้งานสำเร็จ"
 #~ msgstr "Account created"
 

@@ -34,7 +34,8 @@ def role_required(*allowed_roles):
             if request.user.is_superuser or user_role == UserRoles.SUPER_ADMIN:
                 return view_func(request, *args, **kwargs)
 
-            if user_role not in allowed_roles:
+            # Extra services a partner opened count as roles too (homestay + OTOP, ...)
+            if not (request.user.service_roles & set(allowed_roles)):
                 # ⚠️ Record security alert in AuditLog
                 record_audit_log(
                     request=request,
@@ -77,7 +78,7 @@ class RoleRequiredMixin:
             return redirect(f"/accounts/login/?next={request.path}")
 
         user_role = request.user.role
-        if not request.user.is_superuser and user_role not in self.allowed_roles:
+        if not request.user.is_superuser and not (request.user.service_roles & set(self.allowed_roles)):
             record_audit_log(
                 request=request,
                 action="PERMISSION_DENIED",

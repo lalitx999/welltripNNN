@@ -78,7 +78,7 @@ def can_manage_stay_booking(user, booking) -> bool:
         return False
     if user.is_superuser or user.role in (UserRoles.SUPER_ADMIN, UserRoles.COMMUNITY_ADMIN):
         return True
-    if user.role != UserRoles.HOMESTAY_OWNER:
+    if not user.has_service_role(UserRoles.HOMESTAY_OWNER):
         return False
     vendors = set(booking.items.values_list("vendor_id", flat=True))
     return vendors == {user.id}

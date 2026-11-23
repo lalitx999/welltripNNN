@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
-from apps.accounts.models import User, UserRoles, AuditLog, MerchantProfile, MerchantApprovalStatus
+from apps.accounts.models import User, UserRoles, AuditLog, MerchantProfile, MerchantApprovalStatus, SERVICE_CATEGORY_CHOICES
 from apps.accounts.permissions import role_required
 from apps.accounts.services.audit import record_audit_log
 from apps.accommodations.models import Accommodation, AccommodationStatus
@@ -98,12 +98,8 @@ def admin_command_center_view(request):
         # choices for the catalog add/edit modals
         'otop_categories': OTOPCategory.choices,
         # approved partners an admin can file a new catalog item under
-        'catalog_owner_choices': list(
-            User.objects.filter(
-                merchant_profile__status=MerchantApprovalStatus.APPROVED,
-                role__in=[UserRoles.HOMESTAY_OWNER, UserRoles.RESTAURANT_OWNER, UserRoles.WELLNESS_OWNER, UserRoles.OTOP_OWNER],
-            ).select_related('merchant_profile').order_by('role', 'merchant_profile__business_name')
-        ),
+        'catalog_owner_choices': _catalog_owner_choices(),
+        'service_category_choices': SERVICE_CATEGORY_CHOICES,
         'food_categories': FoodWellnessCategory.choices,
         'page_title': _("ศูนย์ควบคุมระบบแอดมิน (Admin Command Center) — WellTrip"),
         'active_tab': active_tab,
@@ -407,6 +403,25 @@ def admin_audit_log_view(request):
 # FULL ADMIN CRUD: 1. CATALOG (ACCOMMODATIONS, FOODS, SPAS, OTOP)
 # ==============================================================================
 
+_CATALOG_TYPE_FOR_ROLE = {
+    UserRoles.HOMESTAY_OWNER: "ACCOMMODATION", UserRoles.RESTAURANT_OWNER: "FOOD",
+    UserRoles.WELLNESS_OWNER: "WELLNESS", UserRoles.OTOP_OWNER: "OTOP",
+}
+
+
+def _catalog_owner_choices():
+    """(partner, catalog type) for every type an approved partner sells, extra services included."""
+    partners = User.objects.filter(
+        merchant_profile__status=MerchantApprovalStatus.APPROVED,
+        role__in=list(_CATALOG_TYPE_FOR_ROLE),
+    ).select_related('merchant_profile').order_by('merchant_profile__business_name')
+    return [
+        {'user': p, 'type': item_type}
+        for p in partners
+        for role, item_type in _CATALOG_TYPE_FOR_ROLE.items()
+        if p.has_service_role(role)
+    ]
+
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
 @require_http_methods(["POST"])
 def admin_catalog_add_view(request):
@@ -420,9 +435,10 @@ def admin_catalog_add_view(request):
             "WELLNESS": UserRoles.WELLNESS_OWNER, "OTOP": UserRoles.OTOP_OWNER,
         }.get(item_type)
         owner = User.objects.filter(
-            id=owner_id, role=role_for_type, merchant_profile__status=MerchantApprovalStatus.APPROVED,
-        ).first() if role_for_type else None
-        if owner is None:
+            id=owner_id, merchant_profile__status=MerchantApprovalStatus.APPROVED,
+        ).select_related('merchant_profile').first() if role_for_type else None
+        # The shop's main type or an extra service it opened
+        if owner is None or not owner.has_service_role(role_for_type):
             messages.error(request, _("ร้านที่เลือกไม่ตรงกับประเภทรายการ หรือยังไม่ได้รับอนุมัติ"))
             return redirect('/accounts/admin-center/?tab=catalog')
 
@@ -801,6 +817,12 @@ def admin_partner_edit_view(request, user_id):
     profile.description = description
     profile.google_maps_url = maps_url
     profile.opening_hours = hours
+    if request.POST.get('extra_services_present'):
+        # The main category is always on; keep the extras in the standard order
+        picked = set(request.POST.getlist('extra_services'))
+        profile.extra_services = [
+            code for code, _label in SERVICE_CATEGORY_CHOICES if code in picked and code != profile.business_category
+        ]
     profile.save()
 
     record_audit_log(
@@ -808,7 +830,7 @@ def admin_partner_edit_view(request, user_id):
         action="UPDATE",
         model_name="MerchantProfile",
         object_id=str(user.id),
-        changes={"business_name": business_name, "phone": phone},
+        changes={"business_name": business_name, "phone": phone, "extra_services": profile.extra_services},
         user=request.user,
     )
     messages.success(request, _("แก้ไขข้อมูลพาร์ทเนอร์ '{business_name}' เรียบร้อยแล้ว").format(business_name=profile.business_name))

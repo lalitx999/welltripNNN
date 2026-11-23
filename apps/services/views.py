@@ -243,7 +243,7 @@ def _owned_item(request, kind, item_id):
     if kind not in _EDITABLE:
         raise Http404
     model = _EDITABLE[kind][0]
-    if not (is_platform_admin(request.user) or request.user.role == (
+    if not (is_platform_admin(request.user) or request.user.has_service_role(
         UserRoles.RESTAURANT_OWNER if kind == 'food' else UserRoles.WELLNESS_OWNER
     )):
         raise Http404

@@ -361,7 +361,7 @@ def portal_dashboard_view(request):
     vendor_items = scope_to_owner(BookingItem.objects.select_related('booking'), user, 'vendor')
     return render(request, 'accounts/portal_dashboard.html', {
         'page_title': _("Partner Studio - ภาพรวมธุรกิจชุมชน"),
-        'listing_count': listing_counts.get(user.role, lambda: 0)(),
+        'listing_count': sum(count() for role, count in listing_counts.items() if role in user.service_roles),
         'awaiting_count': vendor_items.filter(booking__status=BookingStatus.AWAITING_PAYMENT).count(),
         'confirmed_count': vendor_items.filter(booking__status=BookingStatus.CONFIRMED).count(),
         'recent_items': vendor_items.order_by('-booking__created_at')[:8],
@@ -480,6 +480,96 @@ def portal_shop_image_view(request):
         ok, message = False, _("คำสั่งไม่ถูกต้อง")
     (messages.success if ok else messages.error)(request, message)
     return redirect('accounts:portal_shop')
+
+
+def _own_profile_or_redirect(request):
+    """(profile, None) for a signed-in partner, else (None, redirect response)."""
+    if not request.user.is_authenticated:
+        return None, redirect(f"/accounts/login/?next={request.path}")
+    profile = _own_shop_profile(request)
+    if profile is None:
+        messages.error(request, _("หน้านี้สำหรับบัญชีผู้ประกอบการ"))
+        return None, redirect('core:landing')
+    return profile, None
+
+
+@require_http_methods(["GET", "POST"])
+def portal_services_view(request):
+    """
+    "เปิดบริการเพิ่มเติม": a homestay can also sell OTOP goods, spa services or food.
+    Opens at once (the admin gets an email each time), and the Studio menu follows.
+    """
+    from apps.accounts.forms import ExtraServicesForm
+    from apps.core.services.notifications import send_admin_services_changed_alert
+
+    profile, response = _own_profile_or_redirect(request)
+    if response:
+        return response
+
+    # Unticking everything posts no 'services' at all, so bind on the method, not the data
+    form = ExtraServicesForm(request.POST if request.method == "POST" else None, profile=profile)
+    if request.method == "POST" and form.is_valid():
+        before = set(profile.service_categories[1:])
+        # Keep the order of the choices, so the menu stays stable
+        chosen = [code for code, _label in form.fields['services'].choices if code in form.cleaned_data['services']]
+        opened, closed = [c for c in chosen if c not in before], sorted(before - set(chosen))
+        if opened or closed:
+            profile.extra_services = chosen
+            profile.save(update_fields=['extra_services', 'updated_at'])
+            record_audit_log(request=request, action="UPDATE", model_name="MerchantProfile", object_id=str(profile.id),
+                             changes={'extra_services': {'opened': opened, 'closed': closed}}, user=request.user)
+            send_admin_services_changed_alert(profile, opened, closed)
+            messages.success(request, _("บันทึกบริการแล้ว เมนูของบริการที่เปิดจะอยู่ในแถบด้านข้าง"))
+        else:
+            messages.info(request, _("ไม่มีการเปลี่ยนแปลง"))
+        return redirect('accounts:portal_services')
+
+    return render(request, 'accounts/portal_services.html', {
+        'page_title': _("เปิดบริการเพิ่มเติม - Partner Studio"),
+        'profile': profile,
+        'form': form,
+    })
+
+
+@require_http_methods(["GET", "POST"])
+def portal_payout_view(request):
+    """Bank account for payouts. Seen only by the partner and platform admins."""
+    from apps.accounts.banks import mask_number
+    from apps.accounts.forms import PayoutAccountForm
+    from apps.core.services.notifications import send_admin_payout_account_changed_alert
+
+    profile, response = _own_profile_or_redirect(request)
+    if response:
+        return response
+
+    fields = PayoutAccountForm._meta.fields
+    before = {f: getattr(profile, f) for f in fields}
+    form = PayoutAccountForm(request.POST or None, instance=profile)
+    if request.method == "POST" and form.is_valid():
+        # Compare cleaned values: "123-4-56789-0" and "1234567890" are the same account
+        if any(form.cleaned_data[f] != before[f] for f in fields):
+            form.save()
+            record_audit_log(
+                request=request, action="UPDATE", model_name="MerchantProfile", object_id=str(profile.id),
+                changes={
+                    'payout_bank': profile.payout_bank,
+                    'payout_account_number': mask_number(profile.payout_account_number),
+                    'payout_account_name': profile.payout_account_name,
+                    'promptpay_id': mask_number(profile.promptpay_id),
+                },
+                user=request.user,
+            )
+            send_admin_payout_account_changed_alert(profile)
+            messages.success(request, _("บันทึกบัญชีรับเงินแล้ว"))
+        else:
+            messages.info(request, _("ไม่มีการเปลี่ยนแปลง"))
+        return redirect('accounts:portal_payout')
+
+    return render(request, 'accounts/portal_payout.html', {
+        'page_title': _("บัญชีรับเงิน - Partner Studio"),
+        'profile': profile,
+        'form': form,
+    })
 
 
 @role_required(UserRoles.COMMUNITY_ADMIN, UserRoles.SUPER_ADMIN)
