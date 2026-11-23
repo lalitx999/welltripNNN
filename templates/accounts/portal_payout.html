@@ -1,0 +1,36 @@
+{% extends "layouts/merchant.html" %}
+{% load i18n %}
+{% block title %}{% translate "บัญชีรับเงิน - Partner Studio" %}{% endblock %}
+{% block page_heading %}{% translate "บัญชีรับเงิน" %}{% endblock %}
+
+{% block content %}
+<div class="d-grid gap-4" style="max-width: 40rem;">
+  {% if profile.has_payout_account %}
+    <div class="alert alert-success rounded-4 mb-0 d-flex gap-2 align-items-start">
+      <i data-lucide="badge-check" class="flex-shrink-0 mt-1"></i>
+      <span>
+        <span class="fw-bold d-block">{% translate "ตั้งบัญชีรับเงินแล้ว" %}</span>
+        <small>{{ profile.get_payout_bank_display }} · {{ profile.payout_account_number }} · {{ profile.payout_account_name }}{% if profile.promptpay_id %} · {% translate "พร้อมเพย์" %} {{ profile.promptpay_id }}{% endif %}</small>
+      </span>
+    </div>
+  {% else %}
+    <div class="alert alert-warning rounded-4 mb-0 d-flex gap-2 align-items-start">
+      <i data-lucide="triangle-alert" class="flex-shrink-0 mt-1"></i>
+      <span>{% translate "ยังไม่ได้ตั้งบัญชีรับเงิน กรอกให้ครบเพื่อให้ทีมงานโอนรายได้ให้ร้านได้" %}</span>
+    </div>
+  {% endif %}
+
+  <div class="wt-card p-4">
+    <h2 class="h6 fw-bold mb-1"><i data-lucide="landmark" class="text-green me-1"></i>{% translate "บัญชีสำหรับรับเงินจาก WellTrip" %}</h2>
+    <p class="small text-secondary mb-3">{% translate "ลูกค้าชำระเงินเข้าบัญชีกลางของ WellTrip เมื่อเคลียร์ยอดแล้ว ทีมงานจะโอนส่วนของร้านเข้าบัญชีนี้" %}</p>
+    <form method="post" class="d-grid gap-3" autocomplete="off">
+      {% csrf_token %}
+      {% for field in form %}
+        {% include "portal/partials/form_field.html" with field=field label=field.label help=field.help_text %}
+      {% endfor %}
+      <div class="small text-secondary"><i data-lucide="lock" class="me-1"></i>{% translate "ข้อมูลนี้เห็นเฉพาะคุณและผู้ดูแลระบบ ไม่แสดงบนหน้าร้าน ทุกครั้งที่แก้ไขทีมงานจะได้รับอีเมลแจ้ง" %}</div>
+      <div><button type="submit" class="btn btn-green rounded-pill"><i data-lucide="save" class="me-1"></i>{% translate "บันทึกบัญชีรับเงิน" %}</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}

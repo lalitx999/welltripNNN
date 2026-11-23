@@ -295,3 +295,111 @@ class ShopImageForm(forms.Form):
     def clean_image(self):
         from apps.core.services.media import sanitize_and_strip_image
         return sanitize_and_strip_image(self.cleaned_data['image'])
+
+
+class ExtraServicesForm(forms.Form):
+    """Partner ticks the other kinds of business their shop runs (opens at once)."""
+    services = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label=gettext_lazy("บริการที่เปิดเพิ่ม"),
+    )
+
+    def __init__(self, *args, profile, **kwargs):
+        from apps.accounts.models import SERVICE_CATEGORY_CHOICES
+        super().__init__(*args, **kwargs)
+        # The main category is always on, so it is not offered again
+        self.fields['services'].choices = [
+            (code, label) for code, label in SERVICE_CATEGORY_CHOICES if code != profile.business_category
+        ]
+        self.profile = profile
+        if not self.is_bound:
+            self.initial['services'] = profile.service_categories[1:]
+
+    def clean_services(self):
+        chosen = self.cleaned_data['services']
+        closing = [c for c in self.profile.service_categories[1:] if c not in chosen]
+        labels = dict(self.fields['services'].choices)
+        for code in closing:
+            if live_listing_count(self.profile.user, code):
+                raise forms.ValidationError(
+                    gettext_lazy("ยังมีรายการ \"{service}\" เปิดขายอยู่ ปิดการขายรายการเหล่านั้นก่อน แล้วค่อยปิดบริการนี้").format(
+                        service=labels.get(code, code))
+                )
+        return chosen
+
+
+def live_listing_count(owner, category):
+    """Listings of one service category the owner still has open to customers."""
+    from apps.accommodations.models import Accommodation, AccommodationStatus
+    from apps.otop.models import OTOPProduct
+    from apps.services.models import FoodMenu, WellnessService
+
+    if category == 'HOMESTAY':
+        return Accommodation.objects.filter(owner=owner, status=AccommodationStatus.ACTIVE).count()
+    if category == 'RESTAURANT':
+        return FoodMenu.objects.filter(owner=owner, is_available=True).count()
+    if category == 'WELLNESS':
+        return WellnessService.objects.filter(owner=owner, is_active=True).count()
+    if category == 'OTOP':
+        return OTOPProduct.objects.filter(owner=owner, is_active=True).count()
+    return 0
+
+
+class PayoutAccountForm(forms.ModelForm):
+    """Bank account the admin transfers the partner's share to after settling the books."""
+
+    class Meta:
+        model = MerchantProfile
+        fields = ['payout_bank', 'payout_account_number', 'payout_account_name', 'promptpay_id']
+        labels = {
+            'payout_bank': gettext_lazy("ธนาคาร"),
+            'payout_account_number': gettext_lazy("เลขที่บัญชี"),
+            'payout_account_name': gettext_lazy("ชื่อบัญชี (ชื่อผู้รับในธนาคาร)"),
+            'promptpay_id': gettext_lazy("พร้อมเพย์ (ไม่บังคับ)"),
+        }
+        help_texts = {
+            'payout_account_name': gettext_lazy("พิมพ์ให้ตรงกับชื่อในสมุดบัญชี"),
+            'promptpay_id': gettext_lazy("เบอร์มือถือ 10 หลัก หรือเลขบัตรประชาชน 13 หลัก"),
+        }
+        widgets = {
+            'payout_bank': forms.Select(attrs={'class': 'form-select'}),
+            'payout_account_number': forms.TextInput(attrs={'class': 'form-control', 'inputmode': 'numeric',
+                                                            'autocomplete': 'off', 'placeholder': 'xxx-x-xxxxx-x'}),
+            'payout_account_name': forms.TextInput(attrs={'class': 'form-control', 'maxlength': 200, 'autocomplete': 'off'}),
+            'promptpay_id': forms.TextInput(attrs={'class': 'form-control', 'inputmode': 'numeric', 'autocomplete': 'off',
+                                                   'placeholder': gettext_lazy("เช่น 0812345678")}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name in ('payout_bank', 'payout_account_number', 'payout_account_name'):
+            self.fields[name].required = True
+        self.fields['payout_bank'].choices = [('', gettext_lazy("— เลือกธนาคาร —"))] + [
+            c for c in self.fields['payout_bank'].choices if c[0]
+        ]
+
+    @staticmethod
+    def _digits(value):
+        # People type dashes and spaces, e.g. 123-4-56789-0 or 081 234 5678
+        cleaned = str(value or '').replace('-', '').replace(' ', '').strip()
+        if cleaned and not cleaned.isdigit():
+            raise forms.ValidationError(gettext_lazy("กรอกเป็นตัวเลขเท่านั้น"))
+        return cleaned
+
+    def clean_payout_account_number(self):
+        number = self._digits(self.cleaned_data['payout_account_number'])
+        if not 10 <= len(number) <= 15:
+            raise forms.ValidationError(gettext_lazy("เลขที่บัญชีต้องมี 10-15 หลัก"))
+        return number
+
+    def clean_payout_account_name(self):
+        return ' '.join(self.cleaned_data['payout_account_name'].split())
+
+    def clean_promptpay_id(self):
+        pp = self._digits(self.cleaned_data.get('promptpay_id'))
+        if pp and len(pp) not in (10, 13):
+            raise forms.ValidationError(gettext_lazy("พร้อมเพย์ต้องเป็นเบอร์มือถือ 10 หลัก หรือเลขบัตรประชาชน 13 หลัก"))
+        if len(pp) == 10 and not pp.startswith('0'):
+            raise forms.ValidationError(gettext_lazy("เบอร์มือถือต้องขึ้นต้นด้วย 0"))
+        return pp

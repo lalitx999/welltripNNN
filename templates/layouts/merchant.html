@@ -9,23 +9,25 @@
 {% with current=request.resolver_match.url_name %}
   <a class="nav-link {% if current == 'portal_dashboard' %}active{% endif %}" href="{% url 'accounts:portal_dashboard' %}"><i data-lucide="layout-dashboard"></i>{% translate "ภาพรวม" %}</a>
   <a class="nav-link {% if current == 'portal_orders' %}active{% endif %}" href="{% url 'accounts:portal_orders' %}"><i data-lucide="receipt"></i>{% translate "คำสั่งซื้อของร้าน" %}</a>
-  {% if user.is_merchant %}<a class="nav-link {% if current == 'portal_shop' %}active{% endif %}" href="{% url 'accounts:portal_shop' %}"><i data-lucide="paintbrush"></i>{% translate "ตกแต่งร้าน" %}</a>{% endif %}
+  {% if user.is_merchant %}<a class="nav-link {% if current == 'portal_shop' %}active{% endif %}" href="{% url 'accounts:portal_shop' %}"><i data-lucide="paintbrush"></i>{% translate "ตกแต่งร้าน" %}</a>
+  <a class="nav-link {% if current == 'portal_services' %}active{% endif %}" href="{% url 'accounts:portal_services' %}"><i data-lucide="layout-grid"></i>{% translate "เปิดบริการเพิ่มเติม" %}</a>
+  <a class="nav-link {% if current == 'portal_payout' %}active{% endif %}" href="{% url 'accounts:portal_payout' %}"><i data-lucide="landmark"></i>{% translate "บัญชีรับเงิน" %}</a>{% endif %}
 
-  {% if user.role == "HOMESTAY_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
+  {% if user.manages_homestay or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
     <div class="wt-nav-label">{% translate "ที่พัก" %}</div>
     <a class="nav-link {% if current == 'homestay_studio' %}active{% endif %}" href="{% url 'accommodations:homestay_studio' %}"><i data-lucide="house"></i>{% translate "ที่พักและบ้านพัก" %}</a>
     <a class="nav-link {% if current == 'stay_bookings' %}active{% endif %}" href="{% url 'bookings:stay_bookings' %}"><i data-lucide="calendar-check"></i>{% translate "การจองและมัดจำ" %}</a>
     <a class="nav-link {% if current == 'calendar' %}active{% endif %}" href="{% url 'accommodations:calendar' %}"><i data-lucide="calendar-days"></i>{% translate "ปฏิทินราคาและห้องว่าง" %}</a>
   {% endif %}
-  {% if user.role == "RESTAURANT_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
+  {% if user.manages_restaurant or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
     <div class="wt-nav-label">{% translate "อาหาร" %}</div>
     <a class="nav-link {% if current == 'restaurant_studio' %}active{% endif %}" href="{% url 'services:restaurant_studio' %}"><i data-lucide="utensils"></i>{% translate "เมนูอาหาร" %}</a>
   {% endif %}
-  {% if user.role == "WELLNESS_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
+  {% if user.manages_wellness or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
     <div class="wt-nav-label">{% translate "สปา" %}</div>
     <a class="nav-link {% if current == 'wellness_studio' %}active{% endif %}" href="{% url 'services:wellness_studio' %}"><i data-lucide="flower-2"></i>{% translate "บริการและรอบเวลา" %}</a>
   {% endif %}
-  {% if user.role == "OTOP_OWNER" or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
+  {% if user.manages_otop or user.is_superuser or user.role == "COMMUNITY_ADMIN" or user.role == "SUPER_ADMIN" %}
     <div class="wt-nav-label">{% translate "สินค้า OTOP" %}</div>
     <a class="nav-link {% if current == 'otop_studio' %}active{% endif %}" href="{% url 'otop:otop_studio' %}"><i data-lucide="shopping-basket"></i>{% translate "สินค้าและสต็อก" %}</a>
   {% endif %}

@@ -1,0 +1,43 @@
+{% extends "layouts/merchant.html" %}
+{% load i18n %}
+{% block title %}{% translate "เปิดบริการเพิ่มเติม - Partner Studio" %}{% endblock %}
+{% block page_heading %}{% translate "เปิดบริการเพิ่มเติม" %}{% endblock %}
+
+{% block content %}
+<div class="d-grid gap-4" style="max-width: 48rem;">
+  <div class="wt-card p-4">
+    <h2 class="h6 fw-bold mb-1"><i data-lucide="layout-grid" class="text-green me-1"></i>{% translate "ร้านของคุณขายอะไรได้บ้าง" %}</h2>
+    <p class="small text-secondary mb-3">
+      {% blocktranslate trimmed with main=profile.get_business_category_display %}
+        ประเภทหลักของร้านคือ <strong>{{ main }}</strong> ถ้าร้านมีสินค้าหรือบริการอื่นด้วย ติ๊กเลือกแล้วกดบันทึก เมนูจัดการของบริการนั้นจะขึ้นในแถบด้านข้างทันที
+      {% endblocktranslate %}
+    </p>
+
+    <form method="post" class="d-grid gap-3">
+      {% csrf_token %}
+      <div class="row row-cols-1 row-cols-sm-2 g-2">
+        {% for opt in form.services %}
+          <div class="col">
+            <label class="wt-card p-3 h-100 d-flex gap-3 align-items-start mb-0" for="{{ opt.id_for_label }}" style="cursor: pointer;">
+              <input type="checkbox" name="{{ opt.data.name }}" value="{{ opt.data.value }}" id="{{ opt.id_for_label }}" class="form-check-input mt-1 flex-shrink-0" {% if opt.data.selected %}checked{% endif %}>
+              <span class="wt-icon-pill flex-shrink-0"><i data-lucide="{% if opt.data.value == 'HOMESTAY' %}house{% elif opt.data.value == 'RESTAURANT' %}utensils{% elif opt.data.value == 'WELLNESS' %}flower-2{% else %}shopping-basket{% endif %}"></i></span>
+              <span>
+                <span class="d-block fw-semibold">{{ opt.choice_label }}</span>
+                <small class="text-secondary">
+                  {% if opt.data.value == 'HOMESTAY' %}{% translate "ที่พัก ห้องพัก ปฏิทินราคา และรับมัดจำ" %}
+                  {% elif opt.data.value == 'RESTAURANT' %}{% translate "เมนูอาหารและเครื่องดื่มเพื่อสุขภาพ" %}
+                  {% elif opt.data.value == 'WELLNESS' %}{% translate "นวดแผนไทย สปา และเปิดรอบเวลาให้จอง" %}
+                  {% else %}{% translate "สินค้าชุมชน สต็อก และจัดส่ง" %}{% endif %}
+                </small>
+              </span>
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+      {% for error in form.services.errors %}<div class="small text-danger">{{ error }}</div>{% endfor %}
+      <div class="small text-secondary"><i data-lucide="info" class="me-1"></i>{% translate "เปิดใช้ได้ทันทีโดยไม่ต้องรออนุมัติ ทีมงานจะได้รับอีเมลแจ้งทุกครั้งที่มีการเปลี่ยนแปลง ถ้าจะปิดบริการ ให้ปิดการขายรายการของบริการนั้นก่อน คำสั่งซื้อเก่ายังอยู่ครบ" %}</div>
+      <div><button type="submit" class="btn btn-green rounded-pill"><i data-lucide="save" class="me-1"></i>{% translate "บันทึกบริการ" %}</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}

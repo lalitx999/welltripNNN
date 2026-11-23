@@ -171,6 +171,61 @@ def send_admin_new_merchant_alert(merchant_user) -> bool:
     return _queue_mail(subject, message, admin_email)
 
 
+def _partner_lines(profile) -> str:
+    user = profile.user
+    return (
+        f"- ร้าน: {profile.business_name}\n"
+        f"- ประเภทหลัก: {profile.get_business_category_display()}\n"
+        f"- อีเมล: {user.email}\n"
+        f"- เบอร์โทรศัพท์: {profile.phone_number or user.phone_number or 'ไม่ได้ระบุ'}\n"
+    )
+
+
+def send_admin_services_changed_alert(profile, opened, closed) -> bool:
+    """Partners open extra services without approval, so the admin hears about every change."""
+    labels = dict(profile._meta.get_field("business_category").choices)
+    opened_text = ", ".join(str(labels.get(c, c)) for c in opened) or "-"
+    closed_text = ", ".join(str(labels.get(c, c)) for c in closed) or "-"
+    subject = f"[WellTrip Admin Alert] ร้าน {profile.business_name} เปลี่ยนบริการเพิ่มเติม"
+    message = (
+        f"เรียน ผู้ดูแลระบบ WellTrip,\n\n"
+        f"พาร์ทเนอร์เปลี่ยนบริการเพิ่มเติมของร้าน (ใช้งานได้ทันที ไม่ต้องอนุมัติ):\n"
+        f"{_partner_lines(profile)}"
+        f"- เปิดเพิ่ม: {opened_text}\n"
+        f"- ปิด: {closed_text}\n"
+        f"- เวลา: {timezone.localtime().strftime('%Y-%m-%d %H:%M น.')}\n\n"
+        f"ตรวจสอบร้านค้าได้ที่:\n"
+        f"{_site_url()}/accounts/admin-center/?tab=approvals\n\n"
+        f"ระบบแจ้งเตือนอัตโนมัติ WellTrip Sisaket"
+    )
+    return _queue_mail(subject, message, getattr(settings, "ADMIN_EMAIL", "promlikit@sskru.ac.th"))
+
+
+def send_admin_payout_account_changed_alert(profile) -> bool:
+    """
+    A changed payout account is how a hijacked partner login would steal a transfer,
+    so the admin is told every time. Only the last 4 digits travel by email.
+    """
+    from apps.accounts.banks import mask_number
+
+    subject = f"[WellTrip Admin Alert] ร้าน {profile.business_name} แก้ไขบัญชีรับเงิน"
+    message = (
+        f"เรียน ผู้ดูแลระบบ WellTrip,\n\n"
+        f"พาร์ทเนอร์บันทึกบัญชีรับเงินใหม่:\n"
+        f"{_partner_lines(profile)}"
+        f"- ธนาคาร: {profile.get_payout_bank_display()}\n"
+        f"- เลขที่บัญชี: {mask_number(profile.payout_account_number)}\n"
+        f"- ชื่อบัญชี: {profile.payout_account_name}\n"
+        f"- พร้อมเพย์: {mask_number(profile.promptpay_id) or '-'}\n"
+        f"- เวลา: {timezone.localtime().strftime('%Y-%m-%d %H:%M น.')}\n\n"
+        f"ก่อนโอนเงินรอบถัดไป ควรยืนยันกับร้านว่าเป็นผู้แก้ไขเอง\n"
+        f"ดูเลขบัญชีเต็มได้ที่:\n"
+        f"{_site_url()}/accounts/admin-center/?tab=approvals\n\n"
+        f"ระบบแจ้งเตือนอัตโนมัติ WellTrip Sisaket"
+    )
+    return _queue_mail(subject, message, getattr(settings, "ADMIN_EMAIL", "promlikit@sskru.ac.th"))
+
+
 # ---------------------------------------------------------------------------
 # 3. Merchant KYC Approval / Rejection Decision
 # ---------------------------------------------------------------------------

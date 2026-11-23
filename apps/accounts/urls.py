@@ -20,6 +20,8 @@ urlpatterns = [
     path('portal/orders/', views.portal_orders_view, name='portal_orders'),
     path('portal/shop/', views.portal_shop_view, name='portal_shop'),
     path('portal/shop/images/', views.portal_shop_image_view, name='portal_shop_image'),
+    path('portal/services/', views.portal_services_view, name='portal_services'),
+    path('portal/payout/', views.portal_payout_view, name='portal_payout'),
     path('portal/orders/<int:item_id>/fulfillment/', views.portal_fulfillment_view, name='portal_fulfillment'),
     path('admin-center/', views.admin_dashboard_view, name='admin_dashboard'),
     

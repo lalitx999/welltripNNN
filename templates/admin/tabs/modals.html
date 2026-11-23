@@ -40,8 +40,8 @@
         <div><label class="form-label small fw-semibold" for="cat_owner">{% translate "ร้านเจ้าของรายการ" %}</label>
           <select id="cat_owner" name="owner_id" x-ref="owner" class="form-select">
             <option value="">{% translate "WellTrip ขายเอง (บัญชีแอดมิน)" %}</option>
-            {% for partner in catalog_owner_choices %}
-              <option value="{{ partner.id }}" x-show="type === '{% if partner.role == 'HOMESTAY_OWNER' %}ACCOMMODATION{% elif partner.role == 'RESTAURANT_OWNER' %}FOOD{% elif partner.role == 'WELLNESS_OWNER' %}WELLNESS{% else %}OTOP{% endif %}'">{{ partner.display_name }} ({{ partner.email }})</option>
+            {% for choice in catalog_owner_choices %}
+              <option value="{{ choice.user.id }}" x-show="type === '{{ choice.type }}'">{{ choice.user.display_name }} ({{ choice.user.email }})</option>
             {% endfor %}
           </select>
           <div class="form-text">{% translate "คำสั่งซื้อของรายการนี้จะเข้าร้านที่เลือก" %}</div>
@@ -126,6 +126,15 @@
           <div class="col-sm-7"><label class="form-label small fw-semibold" for="ep_maps">Google Maps URL</label><input id="ep_maps" type="url" name="google_maps_url" x-model="partner.maps_url" class="form-control"></div>
           <div class="col-sm-5"><label class="form-label small fw-semibold" for="ep_hours">{% translate "เวลาทำการ" %}</label><input id="ep_hours" type="text" name="opening_hours" x-model="partner.hours" class="form-control"></div>
         </div>
+        <fieldset>
+          <legend class="form-label small fw-semibold mb-1">{% translate "บริการเพิ่มเติม" %}</legend>
+          <input type="hidden" name="extra_services_present" value="1">
+          <div class="d-flex flex-wrap gap-3">
+            {% for code, label in service_category_choices %}
+              <div class="form-check" x-show="partner.category !== '{{ code }}'"><input class="form-check-input" type="checkbox" name="extra_services" value="{{ code }}" id="ep_extra_{{ code }}" x-model="partner.extras"><label class="form-check-label small" for="ep_extra_{{ code }}">{{ label }}</label></div>
+            {% endfor %}
+          </div>
+        </fieldset>
       </div>
       <div class="modal-footer"><button type="button" class="btn btn-outline-ink rounded-pill" data-bs-dismiss="modal">{% translate "ยกเลิก" %}</button><button type="submit" class="btn btn-green rounded-pill">{% translate "บันทึก" %}</button></div>
     </form>

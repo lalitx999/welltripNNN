@@ -199,7 +199,7 @@ def room_create_view(request):
     owned = scope_to_owner(Accommodation.objects.all(), request.user)
     if acc_id:
         accommodation = get_object_or_404(owned, id=acc_id)
-    elif request.user.role == UserRoles.HOMESTAY_OWNER:
+    elif request.user.has_service_role(UserRoles.HOMESTAY_OWNER):
         accommodation = owned.order_by('created_at').first()
         if accommodation is None:
             raise Http404
